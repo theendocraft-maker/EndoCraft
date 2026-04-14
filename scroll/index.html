@@ -794,7 +794,7 @@ function copyRaw(text,btn){
 
 async function api(system,user){
   const r=await fetch('https://endocraft-production.up.railway.app/api/chat',{
-    method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-d
+    method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:[{role:'user',content:user}]})
   });
   const d=await r.json();
