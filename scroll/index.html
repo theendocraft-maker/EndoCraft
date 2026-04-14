@@ -736,15 +736,13 @@ async function generate(){
   const outs=[...activeOutputs];
   const styleSuffix=STYLE_SUFFIXES[selectedStyle];
 
-  const sys=`You are an expert D&D chronicler and creative writer. Based on the player's session description, create the requested outputs.
-${charDesc}
-Return ONLY a valid JSON object with these keys (include only requested: ${outs.join(', ')}):
-${outs.includes('summary')?'"summary": Vivid session summary 150-200 words. Structure: Overview (2-3 sentences), Key Events (bullet points), Session End/Cliffhanger.':''}
-${outs.includes('npc')?'"npc": NPC log. For each NPC: name, role/location, key info, status (friendly/hostile/neutral).':''}
-${outs.includes('quest')?'"quest": Quest tracker with: Active Quests, New Clues, Open Questions, Completed, Possible Hooks.':''}
-${outs.includes('journal')?`"journal": 250-350 word in-character journal entry from ${char?char.name+"'s":'the main character\\'s'} perspective. Atmospheric fantasy prose, written by candlelight.`:''}
-${outs.includes('prompts')?`"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: ${styleSuffix}"}`:''} 
-Return ONLY the JSON object, no markdown, no explanation.`;
+  const charName = char ? char.name+"'s" : "the main character's";
+  const summaryPart = outs.includes('summary') ? '"summary": Vivid session summary 150-200 words. Structure: Overview (2-3 sentences), Key Events (bullet points), Session End/Cliffhanger.' : '';
+  const npcPart = outs.includes('npc') ? '"npc": NPC log. For each NPC: name, role/location, key info, status (friendly/hostile/neutral).' : '';
+  const questPart = outs.includes('quest') ? '"quest": Quest tracker with: Active Quests, New Clues, Open Questions, Completed, Possible Hooks.' : '';
+  const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from '+charName+' perspective. Atmospheric fantasy prose, written by candlelight.' : '';
+  const promptsPart = outs.includes('prompts') ? '"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: '+styleSuffix+'"}' : '';
+  const sys = 'You are an expert D&D chronicler and creative writer. Based on the player's session description, create the requested outputs.\n' + charDesc + '\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
 
   try{
     const raw=await api(sys,`SESSION:\n${story}${transcript?'\n\nTRANSCRIPT:\n'+transcript:''}`);
