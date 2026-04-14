@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft — Make Your D&D Sessions Unforgettable</title>
+<meta name="description" content="Turn your D&D sessions into summaries, NPC logs, quest trackers and epic AI-generated images. Free to try.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --surface2: #151522;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --accent: #7B6CF6;
+  --accent-dim: rgba(123,108,246,0.12);
+  --accent-border: rgba(123,108,246,0.25);
+  --gold: #E8B86D;
+  --gold-dim: rgba(232,184,109,0.1);
+  --text: #e8e8f0;
+  --text-muted: #6b6b88;
+  --text-dim: #3a3a55;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 32px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,8,16,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: white;
+}
+.nav-name {
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text);
+}
+.nav-name span { color: var(--accent); }
+
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-link {
+  font-size: 13px; color: var(--text-muted); text-decoration: none;
+  padding: 6px 14px; border-radius: 8px; transition: all 0.2s;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.nav-cta {
+  font-size: 13px; font-weight: 600; color: white;
+  background: var(--accent); border-radius: 8px;
+  padding: 8px 18px; text-decoration: none; transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 24px 80px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 500px;
+  background: radial-gradient(ellipse, rgba(123,108,246,0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-glow2 {
+  position: absolute; bottom: 100px; left: 20%;
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse, rgba(232,184,109,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--accent);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  border-radius: 20px; padding: 6px 16px; margin-bottom: 28px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 400; line-height: 1.1;
+  color: var(--text); margin-bottom: 24px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero-title em { font-style: italic; color: var(--gold); }
+
+.hero-sub {
+  font-size: clamp(15px, 2.5vw, 18px);
+  color: var(--text-muted); max-width: 520px;
+  line-height: 1.7; margin-bottom: 40px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-btns {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 64px;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.btn-primary {
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  letter-spacing: 1px; color: white; background: var(--accent);
+  border-radius: 10px; padding: 14px 28px; text-decoration: none;
+  transition: all 0.2s; border: none; cursor: pointer;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+.btn-secondary {
+  font-size: 14px; color: var(--text-muted);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 28px; text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* ── CASPIAN SHOWCASE ── */
+.showcase {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.4s ease both;
+  max-width: 700px;
+}
+.showcase-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  width: 200px; flex-shrink: 0;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.showcase-card:hover { transform: translateY(-4px); border-color: var(--border-hover); }
+.showcase-img {
+  width: 100%; aspect-ratio: 1;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+}
+.showcase-label {
+  padding: 10px 12px;
+  font-size: 11px; color: var(--text-muted); font-style: italic;
+  border-top: 1px solid var(--border);
+}
+
+/* ── FEATURES ── */
+.features {
+  padding: 100px 24px;
+  max-width: 1000px; margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 16px; text-align: center;
+}
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(28px, 5vw, 42px); font-weight: 400;
+  text-align: center; margin-bottom: 16px; color: var(--text);
+}
+.section-sub {
+  font-size: 16px; color: var(--text-muted);
+  text-align: center; max-width: 480px; margin: 0 auto 60px;
+  line-height: 1.7;
+}
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.feature-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px 24px;
+  transition: border-color 0.2s;
+}
+.feature-card:hover { border-color: var(--border-hover); }
+.fc-icon {
+  font-size: 28px; margin-bottom: 16px;
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--surface2); display: flex; align-items: center; justify-content: center;
+}
+.fc-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.fc-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+.fc-tag {
+  display: inline-block; margin-top: 12px;
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  padding: 3px 10px; border-radius: 20px;
+}
+.tag-free { background: rgba(76,175,125,0.12); color: #4CAF7D; border: 1px solid rgba(76,175,125,0.25); }
+.tag-viral { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+.tag-paid { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(232,184,109,0.25); }
+
+/* ── HOW IT WORKS ── */
+.how {
+  padding: 100px 24px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.how-inner { max-width: 900px; margin: 0 auto; }
+.steps {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0; margin-top: 60px; position: relative;
+}
+.step {
+  padding: 24px; text-align: center; position: relative;
+}
+.step:not(:last-child)::after {
+  content: '→';
+  position: absolute; right: -12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim); font-size: 18px;
+}
+.step-num {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+  color: var(--accent); margin: 0 auto 16px;
+}
+.step-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* ── PRICING ── */
+.pricing {
+  padding: 100px 24px;
+  max-width: 900px; margin: 0 auto;
+}
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px; margin-top: 60px;
+}
+.price-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px 24px;
+}
+.price-card.featured { border: 2px solid var(--accent); position: relative; }
+.featured-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: white;
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; padding: 4px 14px; border-radius: 20px;
+  white-space: nowrap;
+}
+.price-tier {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.price-amount {
+  font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--text);
+  margin-bottom: 4px;
+}
+.price-amount span { font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-muted); }
+.price-period { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
+.price-features { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.price-features li { font-size: 13px; color: var(--text-muted); display: flex; gap: 8px; align-items: flex-start; }
+.price-features li::before { content: '✓'; color: var(--accent); flex-shrink: 0; font-weight: 600; }
+.price-btn {
+  width: 100%; padding: 12px;
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; border-radius: 8px; border: none; cursor: pointer;
+  text-decoration: none; display: block; text-align: center; transition: all 0.2s;
+}
+.price-btn.primary { background: var(--accent); color: white; }
+.price-btn.primary:hover { opacity: 0.85; }
+.price-btn.outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.price-btn.outline:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* ── LINKS ── */
+.links-section {
+  padding: 80px 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.links-title {
+  font-family: 'DM Serif Display', serif; font-size: 28px;
+  color: var(--text); margin-bottom: 32px;
+}
+.links-grid {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+  max-width: 600px; margin: 0 auto;
+}
+.link-card {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 20px;
+  text-decoration: none; color: var(--text); transition: all 0.2s;
+  min-width: 160px;
+}
+.link-card:hover { border-color: var(--accent-border); background: var(--accent-dim); }
+.link-icon { font-size: 20px; }
+.link-info { text-align: left; }
+.link-name { font-size: 13px; font-weight: 500; }
+.link-desc { font-size: 11px; color: var(--text-muted); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 13px; color: var(--text-dim);
+}
+footer a { color: var(--text-muted); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .showcase-card { width: 140px; }
+  .step:not(:last-child)::after { display: none; }
+  .steps { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="nav-logo">E</div>
+    <span class="nav-name">EndoCraft<span>.</span></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#how">How it works</a>
+    <a class="nav-link" href="#pricing">Pricing</a>
+    <a class="nav-cta" href="/scroll">Try for free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-eyebrow">✦ D&D Session Companion</div>
+
+  <h1 class="hero-title">
+    Make Your Session<br><em>Unforgettable</em>
+  </h1>
+
+  <p class="hero-sub">
+    Tell us what happened at your table — we'll turn it into summaries, NPC logs, quest trackers and epic AI-generated images. No transcript needed.
+  </p>
+
+  <div class="hero-btns">
+    <a class="btn-primary" href="/scroll">✦ Try for free</a>
+    <a class="btn-secondary" href="#how">See how it works</a>
+  </div>
+
+  <div class="showcase">
+    <div class="showcase-card">
+      <div class="showcase-img">🎵</div>
+      <div class="showcase-label">Me before tonight's session</div>
+    </div>
+    <div class="showcase-card">
+      <div class="showcase-img">💀</div>
+      <div class="showcase-label">Alberich drank a rage potion</div>
+    </div>
+    <div class="showcase-card">
+      <div class="showcase-img">🔥</div>
+      <div class="showcase-label">Still threw the flaming net</div>
+    </div>
+  </div>
+
+  <p style="margin-top:24px;font-size:12px;color:var(--text-dim);font-style:italic;">
+    Based on a true story. Caspian survived. Barely.
+  </p>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-eyebrow">✦ What you get</div>
+  <h2 class="section-title">Everything your table needs</h2>
+  <p class="section-sub">Just describe what happened — no setup, no transcript, no technical knowledge required.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="fc-icon">📖</div>
+      <div class="fc-title">Session Summary</div>
+      <div class="fc-desc">A vivid recap of everything that happened — key events, turning points, and cliffhangers. Never forget a session again.</div>
+      <span class="fc-tag tag-free">FREE</span>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🎭</div>
+      <div class="fc-title">NPC Log</div>
+      <div class="fc-desc">Every character you met, what they said, and whether to trust them. Your party's memory, perfectly organized.</div>
+      <span class="fc-tag tag-free">FREE</span>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">⚔️</div>
+      <div class="fc-title">Quest Tracker</div>
+      <div class="fc-desc">Active quests, open mysteries, new clues and completed objectives — all automatically extracted from your story.</div>
+      <span class="fc-tag tag-free">FREE</span>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🖼️</div>
+      <div class="fc-title">Image Prompts</div>
+      <div class="fc-desc">The 3 most epic or funniest moments become ready-to-use image prompts for OpenArt or Midjourney. Share them with your group.</div>
+      <span class="fc-tag tag-viral">VIRAL</span>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🧠</div>
+      <div class="fc-title">Campaign Memory</div>
+      <div class="fc-desc">Your NPCs, locations and lore build up across sessions. The longer you play, the smarter EndoCraft gets about your world.</div>
+      <span class="fc-tag tag-paid">PAID</span>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🪶</div>
+      <div class="fc-title">In-World Journal</div>
+      <div class="fc-desc">A handwritten-style journal entry from your character's perspective. Atmospheric fantasy prose, written as if by candlelight.</div>
+      <span class="fc-tag tag-free">FREE</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="section-eyebrow">✦ How it works</div>
+    <h2 class="section-title">Three steps. That's it.</h2>
+    <p class="section-sub">No transcript needed. No Discord bot to set up. Just tell the story.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Tell your story</div>
+        <div class="step-desc">Describe what happened in your session — 3 sentences or 3 pages, whatever you remember.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Make it legendary</div>
+        <div class="step-desc">Hit the button. EndoCraft generates summaries, NPC logs, quest trackers and image prompts in seconds.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Share with your group</div>
+        <div class="step-desc">Copy the recap to your group chat. Share the images. Watch your party remember everything.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-eyebrow">✦ Pricing</div>
+  <h2 class="section-title">Start free. Upgrade with your party.</h2>
+  <p class="section-sub">Split the cost with your group — the more you share, the less you pay.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Tavern</div>
+      <div class="price-amount">0€ <span>/mo</span></div>
+      <div class="price-period">Forever free</div>
+      <ul class="price-features">
+        <li>3 sessions per month</li>
+        <li>Session summary</li>
+        <li>NPC log & quest tracker</li>
+        <li>Journal entry</li>
+        <li>Image prompts</li>
+      </ul>
+      <a class="price-btn outline" href="/scroll">Start for free</a>
+    </div>
+
+    <div class="price-card featured">
+      <div class="featured-badge">MOST POPULAR</div>
+      <div class="price-tier">Adventurer</div>
+      <div class="price-amount">5€ <span>/mo</span></div>
+      <div class="price-period">or split with your party</div>
+      <ul class="price-features">
+        <li>Unlimited sessions</li>
+        <li>Everything in Tavern</li>
+        <li>Campaign archive</li>
+        <li>Character consistency</li>
+        <li>Audio upload (coming soon)</li>
+      </ul>
+      <a class="price-btn primary" href="https://patreon.com/endocraft" target="_blank">Get Adventurer →</a>
+    </div>
+
+    <div class="price-card">
+      <div class="price-tier">Legend</div>
+      <div class="price-amount">12€ <span>/mo</span></div>
+      <div class="price-period">or €2/mo split 6 ways</div>
+      <ul class="price-features">
+        <li>Everything in Adventurer</li>
+        <li>Campaign memory (AI)</li>
+        <li>Party sharing (up to 6)</li>
+        <li>Priority support</li>
+        <li>Early access to new features</li>
+      </ul>
+      <a class="price-btn outline" href="https://patreon.com/endocraft" target="_blank">Get Legend →</a>
+    </div>
+  </div>
+</section>
+
+<!-- LINKS -->
+<section class="links-section">
+  <h2 class="links-title">Find us everywhere</h2>
+  <div class="links-grid">
+    <a class="link-card" href="/scroll">
+      <span class="link-icon">⚔️</span>
+      <div class="link-info">
+        <div class="link-name">Session Scroll</div>
+        <div class="link-desc">Try the tool free</div>
+      </div>
+    </a>
+    <a class="link-card" href="https://patreon.com/endocraft" target="_blank">
+      <span class="link-icon">🛡️</span>
+      <div class="link-info">
+        <div class="link-name">Patreon</div>
+        <div class="link-desc">Support EndoCraft</div>
+      </div>
+    </a>
+    <a class="link-card" href="https://tiktok.com/@endocraft" target="_blank">
+      <span class="link-icon">📱</span>
+      <div class="link-info">
+        <div class="link-name">TikTok</div>
+        <div class="link-desc">Follow for content</div>
+      </div>
+    </a>
+    <a class="link-card" href="https://instagram.com/endocraft" target="_blank">
+      <span class="link-icon">📸</span>
+      <div class="link-info">
+        <div class="link-name">Instagram</div>
+        <div class="link-desc">Behind the scenes</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 EndoCraft · Made with 🎲 for D&D players everywhere · <a href="mailto:hello@endocraft.app">hello@endocraft.app</a></p>
+</footer>
+
+</body>
+</html>
