@@ -742,7 +742,7 @@ async function generate(){
   const questPart = outs.includes('quest') ? '"quest": Quest tracker with: Active Quests, New Clues, Open Questions, Completed, Possible Hooks.' : '';
   const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from '+charName+' perspective. Atmospheric fantasy prose, written by candlelight.' : '';
   const promptsPart = outs.includes('prompts') ? '"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: '+styleSuffix+'"}' : '';
-  const sys = 'You are an expert D&D chronicler and creative writer. Based on the player's session description, create the requested outputs.\n' + charDesc + '\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
+  const sys = "You are an expert D&D chronicler and creative writer. Based on the player's session description, create the requested outputs.\n" + charDesc + '\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
 
   try{
     const raw=await api(sys,`SESSION:\n${story}${transcript?'\n\nTRANSCRIPT:\n'+transcript:''}`);
