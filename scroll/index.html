@@ -629,9 +629,10 @@ function buildSessionCard(data, story) {
 let currentSessionId = null;
 
 async function shareSession() {
-  const linkBox = document.getElementById('shareLinkBox');
-  linkBox.classList.add('visible');
-  linkBox.textContent = 'Generating link…';
+  const btn = document.querySelector('.share-btn.primary');
+  const orig = btn.textContent;
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
   
   try {
     const card = {
@@ -645,10 +646,27 @@ async function shareSession() {
     const id = await saveSession(card);
     currentSessionId = id;
     const link = 'https://endocraft.app/session/?id=' + id;
-    linkBox.textContent = link;
-    navigator.clipboard.writeText(link).catch(() => {});
+    const title = document.getElementById('scTitle').textContent;
+    
+    if (navigator.share) {
+      await navigator.share({
+        title: title,
+        text: '🎲 Check out our D&D session recap!',
+        url: link
+      });
+      btn.textContent = '✓ Shared!';
+    } else {
+      await navigator.clipboard.writeText(link);
+      btn.textContent = '✓ Link copied!';
+    }
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
   } catch(e) {
-    linkBox.textContent = 'Could not generate link — try again.';
+    if (e.name !== 'AbortError') {
+      btn.textContent = 'Try again';
+    } else {
+      btn.textContent = orig;
+    }
+    btn.disabled = false;
   }
 }
 
