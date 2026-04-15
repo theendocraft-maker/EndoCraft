@@ -129,7 +129,7 @@ h1 em { font-style: italic; color: var(--gold); }
 .story-card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 12px; overflow: hidden;
-  width: 190px; flex-shrink: 0;
+  width: 220px; flex-shrink: 0;
   transition: transform 0.2s, border-color 0.2s;
 }
 .story-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.1); }
@@ -315,6 +315,12 @@ footer a { color: var(--text-muted); text-decoration: none; }
   nav .nav-cta { display: none; }
 }
 </style>
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
 </head>
 <body>
 
@@ -343,16 +349,16 @@ footer a { color: var(--text-muted); text-decoration: none; }
 
   <div class="story-cards">
     <div class="story-card">
-      <div class="sc-img">🎵</div>
-      <div class="sc-caption">Me before tonight's session</div>
+      <img src="/caspian1.jpg" alt="Caspian the bard" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+      <div class="sc-caption">Me before tonight's session 🎵</div>
     </div>
     <div class="story-card">
-      <div class="sc-img">💀</div>
-      <div class="sc-caption">Alberich drank a rage potion</div>
+      <img src="/caspian2.jpg" alt="Caspian thrown into a wall" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+      <div class="sc-caption">Alberich drank a rage potion 💀</div>
     </div>
     <div class="story-card">
-      <div class="sc-img">🔥</div>
-      <div class="sc-caption">Still threw the flaming net</div>
+      <img src="/caspian3.jpg" alt="Caspian throws flaming net" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+      <div class="sc-caption">Still threw the flaming net 🔥</div>
     </div>
   </div>
 
