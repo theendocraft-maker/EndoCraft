@@ -580,31 +580,36 @@ function buildSessionCard(data, story) {
   const now = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' });
   document.getElementById('scDate').textContent = now;
   
-  // Title from summary first line
-  const summaryLines = (data.summary || '').split('\n').filter(l => l.trim());
-  const title = summaryLines[0] || 'Session ' + now;
-  document.getElementById('scTitle').textContent = title.length > 60 ? title.substring(0,60) + '…' : title;
+  const summary = data.summary || '';
   
-  // MVP
-  if (data.mvp) {
-    document.getElementById('scMvp').textContent = '⭐ MVP: ' + data.mvp;
-  }
+  // Extract bullets — handle both newline and inline • 
+  const allBullets = summary.split('•').slice(1).map(b => {
+    const clean = b.split('\n')[0].trim();
+    return clean;
+  }).filter(b => b.length > 5);
   
-  // Moments from summary bullets
-  const bullets = (data.summary || '').split('\n').filter(l => l.trim().startsWith('•'));
+  // Title = first sentence before first bullet
+  const beforeBullets = summary.split('•')[0].trim();
+  const firstSentence = beforeBullets.split('.')[0].trim();
+  const title = firstSentence.length > 5 ? firstSentence : ('Session ' + now);
+  document.getElementById('scTitle').textContent = title.length > 70 ? title.substring(0,70) + '…' : title;
+  
+  // Cliffhanger = last line after bullets
+  const afterBullets = summary.split('•').pop();
+  const cliffhanger = afterBullets ? afterBullets.replace(/^[^a-zA-Z]+/, '').trim() : '';
+  
+  // Moments
   const momentsEl = document.getElementById('scMoments');
   momentsEl.innerHTML = '';
-  bullets.slice(0, 3).forEach((b, i) => {
+  allBullets.slice(0, 3).forEach((b, i) => {
     const div = document.createElement('div');
     div.className = 'sc-moment';
-    div.innerHTML = '<span class="sc-num">0' + (i+1) + '</span>' + b.replace('•','').trim();
+    div.innerHTML = '<span class="sc-num">0' + (i+1) + '</span>' + b;
     momentsEl.appendChild(div);
   });
   
-  // Cliffhanger
-  const lastLine = summaryLines[summaryLines.length - 1];
-  if (lastLine && lastLine !== summaryLines[0]) {
-    document.getElementById('scCliffhanger').textContent = '⚡ ' + lastLine;
+  if (cliffhanger && cliffhanger.length > 10) {
+    document.getElementById('scCliffhanger').textContent = '⚡ ' + cliffhanger;
     document.getElementById('scCliffhanger').style.display = 'block';
   }
   
@@ -613,10 +618,10 @@ function buildSessionCard(data, story) {
   
   return {
     session_title: title,
-    summary: data.summary || '',
+    summary: summary,
     npc_log: data.npc || '',
-    moments: bullets.slice(0,3),
-    cliffhanger: lastLine || '',
+    moments: allBullets.slice(0,3),
+    cliffhanger: cliffhanger,
     image_prompt: data.prompts ? data.prompts[0]?.prompt || '' : ''
   };
 }
