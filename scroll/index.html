@@ -708,7 +708,7 @@ async function subscribeEmail() {
     });
     localStorage.setItem('ec_email_subscribed', 'true');
     emailSubscribed = true;
-    document.getElementById('emailSignup').innerHTML = '<div style="text-align:center;padding:8px;"><span style="font-size:20px;">🎲</span><div style="margin-top:8px;font-size:14px;color:var(--text);">You're in! We'll keep you posted.</div></div>';
+    document.getElementById('emailSignup').innerHTML = '<div style="text-align:center;padding:8px;"><span style="font-size:20px;">🎲</span><div style="margin-top:8px;font-size:14px;color:var(--color-text-primary);">You are in! We will keep you posted.</div></div>';
   } catch(e) {
     btn.textContent = 'Join';
     btn.disabled = false;
