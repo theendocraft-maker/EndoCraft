@@ -386,6 +386,37 @@ body {
   cursor: pointer;
 }
 .share-link-box.visible { display: block; }
+
+/* ── EMAIL SIGNUP ── */
+.email-signup {
+  background: var(--surface);
+  border: 1px solid var(--accent-border);
+  border-radius: 14px; padding: 20px;
+  display: none; flex-direction: column; gap: 12px;
+  animation: fadeUp 0.4s ease both;
+}
+.email-signup.visible { display: flex; }
+.es-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+.es-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-top: -6px; }
+.es-row { display: flex; gap: 8px; }
+.es-input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: var(--text); outline: none; transition: border-color 0.2s;
+}
+.es-input:focus { border-color: var(--accent-border); }
+.es-input::placeholder { color: var(--text-dim); }
+.es-btn {
+  padding: 10px 18px; background: var(--accent);
+  border: none; border-radius: 8px; color: white;
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.es-btn:hover { opacity: 0.85; }
+.es-skip { font-size: 12px; color: var(--text-dim); cursor: pointer; text-align: center; transition: color 0.2s; }
+.es-skip:hover { color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -545,6 +576,18 @@ body {
     </div>
     <div class="share-link-box" id="shareLinkBox" onclick="copyShareLink()">Generating link…</div>
 
+
+    <!-- Email Signup -->
+    <div class="email-signup" id="emailSignup">
+      <div class="es-title">✦ Stay in the loop</div>
+      <div class="es-sub">Get notified when we launch Campaign Memory, Party Codes and more.</div>
+      <div class="es-row">
+        <input type="email" class="es-input" id="emailInput" placeholder="your@email.com">
+        <button class="es-btn" onclick="subscribeEmail()">Join</button>
+      </div>
+      <div class="es-skip" onclick="dismissEmail()">No thanks</div>
+    </div>
+
     <!-- Upgrade nudge -->
     <div class="upgrade-nudge" id="upgradeNudge" style="display:none;">
       <div class="un-text"><strong>You've used your free sessions.</strong><br>Upgrade with your party — split €5/mo between 6 players.</div>
@@ -627,6 +670,51 @@ function buildSessionCard(data, story) {
 }
 
 let currentSessionId = null;
+
+let emailDismissed = localStorage.getItem('ec_email_dismissed') === 'true';
+let emailSubscribed = localStorage.getItem('ec_email_subscribed') === 'true';
+
+function showEmailSignup() {
+  if (emailDismissed || emailSubscribed) return;
+  document.getElementById('emailSignup').classList.add('visible');
+}
+
+function dismissEmail() {
+  localStorage.setItem('ec_email_dismissed', 'true');
+  emailDismissed = true;
+  document.getElementById('emailSignup').classList.remove('visible');
+}
+
+async function subscribeEmail() {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('emailInput').focus();
+    return;
+  }
+  const btn = document.querySelector('.es-btn');
+  btn.textContent = '…';
+  btn.disabled = true;
+  
+  try {
+    await fetch('https://dtlzsbhyngafhxkjjlst.supabase.co/rest/v1/subscribers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ email, source: 'tool' })
+    });
+    localStorage.setItem('ec_email_subscribed', 'true');
+    emailSubscribed = true;
+    document.getElementById('emailSignup').innerHTML = '<div style="text-align:center;padding:8px;"><span style="font-size:20px;">🎲</span><div style="margin-top:8px;font-size:14px;color:var(--text);">You're in! We'll keep you posted.</div></div>';
+  } catch(e) {
+    btn.textContent = 'Join';
+    btn.disabled = false;
+  }
+}
+
 
 async function shareSession() {
   const btn = document.querySelector('.share-btn.primary');
@@ -812,6 +900,7 @@ async function generate() {
     document.getElementById('loadingOverlay').classList.remove('visible');
     const cardData = buildSessionCard(data, story);
     document.getElementById('resultsView').classList.add('visible');
+    setTimeout(showEmailSignup, 2000);
 
   } catch(e) {
     clearInterval(loadingTimer);

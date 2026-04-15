@@ -471,6 +471,20 @@ footer a { color: var(--text-muted); text-decoration: none; }
 </section>
 
 <!-- LINKS -->
+<!-- EMAIL SIGNUP SECTION -->
+<section style="padding:60px 24px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#7B6CF6;margin-bottom:14px;">✦ Stay updated</div>
+    <h2 style="font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:#e8e8f0;margin-bottom:10px;">Be first to know.</h2>
+    <p style="font-size:15px;color:#6b6b88;line-height:1.6;margin-bottom:24px;">Campaign Memory, Party Codes, Discord integration — get notified when we launch new features.</p>
+    <div style="display:flex;gap:8px;max-width:400px;margin:0 auto;">
+      <input type="email" id="landingEmail" placeholder="your@email.com" style="flex:1;background:#0f0f1a;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:#e8e8f0;outline:none;">
+      <button onclick="landingSubscribe()" style="padding:12px 20px;background:#7B6CF6;border:none;border-radius:10px;color:white;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;white-space:nowrap;">Join free</button>
+    </div>
+    <div id="landingEmailMsg" style="margin-top:10px;font-size:13px;color:#6b6b88;min-height:20px;"></div>
+  </div>
+</section>
+
 <section class="links">
   <h2>Find us everywhere</h2>
   <div class="links-row">
@@ -497,5 +511,33 @@ footer a { color: var(--text-muted); text-decoration: none; }
   <p>© 2026 EndoCraft · Built for D&D players · <a href="mailto:hello@endocraft.app">hello@endocraft.app</a></p>
 </footer>
 
+
+<script>
+async function landingSubscribe() {
+  const email = document.getElementById('landingEmail').value.trim();
+  const msg = document.getElementById('landingEmailMsg');
+  if (!email || !email.includes('@')) { msg.textContent = 'Please enter a valid email.'; return; }
+  
+  try {
+    const res = await fetch('https://dtlzsbhyngafhxkjjlst.supabase.co/rest/v1/subscribers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263',
+        'Authorization': 'Bearer sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ email, source: 'landing' })
+    });
+    if (res.ok || res.status === 409) {
+      msg.style.color = '#4CAF7D';
+      msg.textContent = '🎲 You're in! We'll keep you posted.';
+      document.getElementById('landingEmail').value = '';
+    }
+  } catch(e) {
+    msg.textContent = 'Something went wrong — try again.';
+  }
+}
+</script>
 </body>
 </html>
