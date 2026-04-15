@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --surface2: #151522;
+  --border: rgba(255,255,255,0.06);
+  --accent: #7B6CF6;
+  --accent-dim: rgba(123,108,246,0.12);
+  --accent-border: rgba(123,108,246,0.25);
+  --gold: #E8B86D;
+  --text: #e8e8f0;
+  --text-muted: #6b6b88;
+  --text-dim: #3a3a55;
+  --green: #4CAF7D;
+  --green-dim: rgba(76,175,125,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+/* Login */
+.login-wrap {
+  min-height: 100vh; display: flex;
+  align-items: center; justify-content: center; padding: 24px;
+}
+.login-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; width: 100%; max-width: 360px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.login-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
+.login-sub { font-size: 13px; color: var(--text-muted); margin-top: -8px; }
+.pw-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 11px 14px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: var(--text); outline: none; transition: border-color 0.2s;
+}
+.pw-input:focus { border-color: var(--accent-border); }
+.pw-btn {
+  width: 100%; padding: 12px; background: var(--accent); border: none;
+  border-radius: 8px; color: white; font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer;
+}
+.pw-err { font-size: 12px; color: #E85555; display: none; }
+.pw-err.visible { display: block; }
+
+/* Dashboard */
+.dashboard { display: none; padding: 32px 24px; max-width: 1000px; margin: 0 auto; }
+.dashboard.visible { display: block; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 32px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 8px; background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: white;
+}
+.brand-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.logout-btn {
+  font-size: 12px; color: var(--text-muted); background: transparent;
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+
+/* Stat cards */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 700; color: var(--text); }
+.stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.stat-card.green { border-color: rgba(76,175,125,0.2); }
+.stat-card.green .stat-num { color: var(--green); }
+.stat-card.purple { border-color: var(--accent-border); }
+.stat-card.purple .stat-num { color: var(--accent); }
+.stat-card.gold { border-color: rgba(232,184,109,0.2); }
+.stat-card.gold .stat-num { color: var(--gold); }
+
+/* Tables */
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.data-table {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+}
+.table-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: var(--surface2); }
+.table-row.header { background: var(--surface2); }
+.table-row.header span { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+.col-email { flex: 1; font-size: 13px; color: var(--text); }
+.col-source {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px;
+}
+.source-tool { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+.source-landing { background: var(--green-dim); color: var(--green); border: 1px solid rgba(76,175,125,0.2); }
+.col-date { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.col-title { flex: 1; font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.col-link { font-size: 12px; color: var(--accent); text-decoration: none; white-space: nowrap; }
+.col-link:hover { text-decoration: underline; }
+
+.empty-state { padding: 32px; text-align: center; color: var(--text-dim); font-style: italic; font-size: 13px; }
+
+.refresh-btn {
+  font-size: 12px; color: var(--text-muted); background: transparent;
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 12px;
+  transition: all 0.2s;
+}
+.refresh-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+
+.loading-row { padding: 24px; text-align: center; color: var(--text-dim); font-size: 13px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="brand" style="margin-bottom:4px;">
+      <div class="brand-mark">E</div>
+      <span class="brand-name">EndoCraft Admin</span>
+    </div>
+    <div class="login-sub">Enter password to access dashboard</div>
+    <input type="password" class="pw-input" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <button class="pw-btn" onclick="login()">→ Enter</button>
+    <div class="pw-err" id="pwErr">Wrong password</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">E</div>
+      <span class="brand-name">EndoCraft Dashboard</span>
+    </div>
+    <button class="logout-btn" onclick="logout()">Log out</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card green">
+      <div class="stat-label">Subscribers</div>
+      <div class="stat-num" id="statSubs">—</div>
+      <div class="stat-sub">Total emails collected</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Sessions Generated</div>
+      <div class="stat-num" id="statSessions">—</div>
+      <div class="stat-sub">Total sessions in database</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Share Links</div>
+      <div class="stat-num" id="statShares">—</div>
+      <div class="stat-sub">Sessions shared with parties</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Today</div>
+      <div class="stat-num" id="statToday">—</div>
+      <div class="stat-sub">New subscribers today</div>
+    </div>
+  </div>
+
+  <!-- Subscribers -->
+  <div class="section-title">Recent Subscribers</div>
+  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+  <div class="data-table" id="subsList">
+    <div class="loading-row">Loading…</div>
+  </div>
+
+  <!-- Sessions -->
+  <div class="section-title">Recent Sessions</div>
+  <div class="data-table" id="sessionsList">
+    <div class="loading-row">Loading…</div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
+const ADMIN_PASSWORD = 'endocraft2026';
+
+function login() {
+  const pw = document.getElementById('pwInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('ec_admin', 'true');
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashboard').classList.add('visible');
+    loadData();
+  } else {
+    document.getElementById('pwErr').classList.add('visible');
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('ec_admin');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('dashboard').classList.remove('visible');
+  document.getElementById('pwInput').value = '';
+}
+
+// Auto-login if already authenticated
+if (sessionStorage.getItem('ec_admin') === 'true') {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('dashboard').classList.add('visible');
+  loadData();
+}
+
+async function supabase(table, params = '') {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + table + params, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    }
+  });
+  return res.json();
+}
+
+async function loadData() {
+  try {
+    const [subs, sessions] = await Promise.all([
+      supabase('subscribers', '?select=*&order=created_at.desc&limit=50'),
+      supabase('sessions', '?select=*&order=created_at.desc&limit=50')
+    ]);
+
+    // Stats
+    document.getElementById('statSubs').textContent = subs.length || 0;
+    document.getElementById('statSessions').textContent = sessions.length || 0;
+    document.getElementById('statShares').textContent = sessions.filter(s => s.id).length || 0;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todaySubs = subs.filter(s => s.created_at && s.created_at.startsWith(today));
+    document.getElementById('statToday').textContent = todaySubs.length || 0;
+
+    // Subscribers table
+    const subsList = document.getElementById('subsList');
+    if (!subs.length) {
+      subsList.innerHTML = '<div class="empty-state">No subscribers yet — share endocraft.app!</div>';
+    } else {
+      subsList.innerHTML = `
+        <div class="table-row header">
+          <span class="col-email">Email</span>
+          <span class="col-source">Source</span>
+          <span class="col-date">Date</span>
+        </div>
+        ${subs.map(s => `
+          <div class="table-row">
+            <span class="col-email">${s.email}</span>
+            <span class="col-source ${s.source === 'tool' ? 'source-tool' : 'source-landing'}">${s.source || 'unknown'}</span>
+            <span class="col-date">${new Date(s.created_at).toLocaleDateString('en-GB')}</span>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    // Sessions table
+    const sessionsList = document.getElementById('sessionsList');
+    if (!sessions.length) {
+      sessionsList.innerHTML = '<div class="empty-state">No sessions yet</div>';
+    } else {
+      sessionsList.innerHTML = `
+        <div class="table-row header">
+          <span class="col-title">Session Title</span>
+          <span class="col-date">Date</span>
+          <span class="col-link">Link</span>
+        </div>
+        ${sessions.map(s => `
+          <div class="table-row">
+            <span class="col-title">${s.session_title || '—'}</span>
+            <span class="col-date">${new Date(s.created_at).toLocaleDateString('en-GB')}</span>
+            <a class="col-link" href="https://endocraft.app/session/?id=${s.id}" target="_blank">View →</a>
+          </div>
+        `).join('')}
+      `;
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>
