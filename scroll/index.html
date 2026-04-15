@@ -571,9 +571,9 @@ async function generate() {
   const outs = [...activeOutputs];
   const styleSuffix = STYLE_SUFFIXES[selectedStyle];
 
-  const summaryPart = outs.includes('summary') ? '"summary": Vivid session summary 150-200 words. Structure: Overview (2-3 sentences), Key Events (bullet points), Session End/Cliffhanger.' : '';
-  const npcPart = outs.includes('npc') ? '"npc": NPC log. For each NPC mentioned: name, role/location, key info, status (friendly/hostile/neutral).' : '';
-  const questPart = outs.includes('quest') ? '"quest": Quest tracker with: Active Quests, New Clues, Open Questions, Completed, Possible Hooks.' : '';
+  const summaryPart = outs.includes('summary') ? '"summary": Session summary as plain text string. One opening sentence. Then 3-5 bullet points starting with • of the key moments. Then one closing sentence. MAXIMUM 100 words total. Short and punchy.' : '';
+  const npcPart = outs.includes('npc') ? '"npc": NPC log as plain text string. One line per NPC: "Name — role: one sentence." Max 5 NPCs. No JSON objects inside, just plain text.' : '';
+  const questPart = outs.includes('quest') ? '"quest": Quest tracker as plain text string. Format each section on its own line: Active: ... / New clues: ... / Open questions: ... Keep it brief.' : '';
   const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from the main character\'s perspective. Atmospheric fantasy prose, written by candlelight.' : '';
   const promptsPart = outs.includes('prompts') ? '"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence what happened","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: ' + styleSuffix + '"}' : '';
 
