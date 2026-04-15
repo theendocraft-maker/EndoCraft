@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft — Make Your Session Unforgettable</title>
+<title>EndoCraft — What happened in your session?</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -13,838 +13,662 @@
   --border: rgba(255,255,255,0.06);
   --border-hover: rgba(255,255,255,0.12);
   --accent: #7B6CF6;
-  --accent-dim: rgba(123,108,246,0.15);
-  --accent-border: rgba(123,108,246,0.3);
+  --accent-dim: rgba(123,108,246,0.12);
+  --accent-border: rgba(123,108,246,0.25);
   --gold: #E8B86D;
-  --gold-dim: rgba(232,184,109,0.12);
   --text: #e8e8f0;
   --text-muted: #6b6b88;
   --text-dim: #3a3a55;
-  --red: #E85555;
   --green: #4CAF7D;
+  --red: #E85555;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── TOPBAR ── */
 .topbar {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(8,8,16,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 56px;
+  padding: 16px 28px;
   display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
-
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .brand-mark {
-  width: 30px; height: 30px;
+  width: 28px; height: 28px; border-radius: 7px;
   background: var(--accent);
-  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700; color: white;
-  font-family: 'Syne', sans-serif;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: white;
 }
-.brand-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px; font-weight: 700;
-  color: var(--text); letter-spacing: 0.3px;
-}
-.brand-dot { color: var(--accent); }
+.brand-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+.brand-name span { color: var(--accent); }
 
 .topbar-right { display: flex; align-items: center; gap: 10px; }
-.sessions-badge {
-  font-size: 12px; font-weight: 500;
-  color: var(--accent);
-  background: var(--accent-dim);
-  border: 1px solid var(--accent-border);
+.sessions-pill {
+  font-size: 12px; color: var(--accent);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
   border-radius: 20px; padding: 4px 12px;
 }
-.upgrade-btn {
-  font-size: 12px; font-weight: 600;
-  color: #fff; background: var(--accent);
-  border: none; border-radius: 8px;
-  padding: 7px 14px; cursor: pointer;
-  transition: opacity 0.2s;
-  font-family: 'DM Sans', sans-serif;
+.topbar-link {
+  font-size: 12px; color: var(--text-muted); text-decoration: none;
+  padding: 5px 12px; border-radius: 6px; transition: all 0.2s;
+  border: 1px solid var(--border);
 }
-.upgrade-btn:hover { opacity: 0.85; }
+.topbar-link:hover { border-color: var(--border-hover); color: var(--text); }
 
-/* ── HERO ── */
-.hero {
-  text-align: center;
-  padding: 64px 24px 48px;
-  position: relative;
-  overflow: hidden;
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
 }
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -100px; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 400px;
-  background: radial-gradient(ellipse, rgba(123,108,246,0.12) 0%, transparent 70%);
-  pointer-events: none;
+
+/* ── STEP 1: INPUT ── */
+.step-input {
+  width: 100%; max-width: 680px;
+  display: flex; flex-direction: column; gap: 0;
+  animation: fadeUp 0.5s ease both;
 }
-.hero-eyebrow {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 3px; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 16px;
-}
-.hero-title {
+
+.step-label {
   font-family: 'DM Serif Display', serif;
-  font-size: clamp(32px, 6vw, 52px);
-  font-weight: 400; line-height: 1.15;
-  color: var(--text); margin-bottom: 16px;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 400; color: var(--text);
+  margin-bottom: 6px; line-height: 1.2;
 }
-.hero-title em { font-style: italic; color: var(--gold); }
-.hero-sub {
-  font-size: 16px; color: var(--text-muted);
-  max-width: 480px; margin: 0 auto; line-height: 1.6;
+.step-label em { font-style: italic; color: var(--gold); }
+
+.step-sub {
+  font-size: 14px; color: var(--text-muted);
+  margin-bottom: 20px; line-height: 1.5;
 }
 
-/* ── MAIN LAYOUT ── */
-.app-layout {
-  max-width: 1100px; margin: 0 auto;
-  padding: 0 24px 80px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-@media (max-width: 768px) {
-  .app-layout { grid-template-columns: 1fr; }
-  .hero { padding: 40px 20px 32px; }
-}
-
-/* ── PANELS ── */
-.panel {
+.story-box {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-}
-
-.panel-header {
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.panel-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text-muted);
-}
-.panel-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-
-/* ── CHARACTER PILL ── */
-.char-pill {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px; padding: 10px 14px;
-  cursor: pointer; transition: border-color 0.2s;
-}
-.char-pill:hover { border-color: var(--border-hover); }
-.char-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #9f35b0);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.char-info { flex: 1; }
-.char-name { font-size: 14px; font-weight: 500; color: var(--text); }
-.char-class { font-size: 12px; color: var(--text-muted); }
-.char-change { font-size: 11px; color: var(--text-dim); }
-
-/* ── STORY INPUT ── */
-.input-label {
-  font-size: 13px; font-weight: 500; color: var(--text-muted);
-  margin-bottom: 8px; display: block;
-}
-
-.story-input {
-  width: 100%; min-height: 160px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px 16px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px; line-height: 1.7;
-  color: var(--text); resize: vertical; outline: none;
   transition: border-color 0.2s;
 }
-.story-input:focus { border-color: var(--accent-border); }
-.story-input::placeholder { color: var(--text-dim); font-style: italic; }
+.story-box:focus-within { border-color: var(--accent-border); }
 
-/* ── EXAMPLE CHIPS ── */
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip {
-  font-size: 12px; color: var(--text-muted);
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 20px; padding: 5px 12px;
-  cursor: pointer; transition: all 0.2s;
-}
-.chip:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
-
-/* ── OUTPUT TOGGLES ── */
-.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
-.toggle {
-  font-size: 12px; font-weight: 500;
-  border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 12px;
-  cursor: pointer; transition: all 0.2s;
-  background: var(--surface2); color: var(--text-muted);
+.story-textarea {
+  width: 100%; min-height: 200px;
+  background: transparent; border: none; outline: none;
+  padding: 24px 24px 16px;
   font-family: 'DM Sans', sans-serif;
+  font-size: 16px; line-height: 1.75;
+  color: var(--text); resize: none;
 }
-.toggle:hover { border-color: var(--border-hover); }
-.toggle.on { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+.story-textarea::placeholder { color: var(--text-dim); }
 
-/* ── STYLE SELECTOR ── */
-.style-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-.style-opt {
+.story-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  gap: 12px;
+}
+
+.examples { display: flex; gap: 6px; flex-wrap: wrap; }
+.ex-chip {
+  font-size: 12px; color: var(--text-dim);
   background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 8px; text-align: center;
-  cursor: pointer; transition: all 0.2s;
+  border-radius: 20px; padding: 4px 10px;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
 }
-.style-opt:hover { border-color: var(--border-hover); }
-.style-opt.active { border-color: var(--accent-border); background: var(--accent-dim); }
-.style-opt .so-icon { font-size: 18px; margin-bottom: 4px; }
-.style-opt .so-name { font-size: 11px; font-weight: 600; color: var(--text); display: block; }
-.style-opt .so-desc { font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px; }
-.style-opt.active .so-name { color: var(--accent); }
+.ex-chip:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
 
-/* ── POWER USER ── */
-.pu-toggle {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--text-dim);
-  cursor: pointer; transition: color 0.2s; user-select: none;
-}
-.pu-toggle:hover { color: var(--text-muted); }
-.pu-section { display: none; }
-.pu-section.open { display: block; }
-
-.drop-zone {
-  border: 1px dashed var(--border);
-  border-radius: 10px; padding: 14px;
-  text-align: center; cursor: pointer;
-  font-size: 13px; color: var(--text-dim); font-style: italic;
-  transition: all 0.2s; margin-bottom: 10px;
-  background: var(--surface2);
-}
-.drop-zone:hover { border-color: var(--accent-border); color: var(--text-muted); }
-.drop-zone input { display: none; }
-
-.transcript-input {
-  width: 100%; min-height: 100px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px 14px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
-  color: var(--text); outline: none; resize: vertical; line-height: 1.6;
-}
-.transcript-input:focus { border-color: var(--accent-border); }
-.transcript-input::placeholder { color: var(--text-dim); font-style: italic; }
-
-/* ── GENERATE BUTTON ── */
 .gen-btn {
-  width: 100%; padding: 15px;
-  background: var(--accent); border: none; border-radius: 12px;
+  flex-shrink: 0;
+  padding: 10px 24px;
+  background: var(--accent); border: none; border-radius: 10px;
   color: white; font-family: 'Syne', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 2px;
-  cursor: pointer; transition: all 0.2s;
-  position: relative; overflow: hidden;
+  font-size: 13px; font-weight: 700; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
 }
-.gen-btn::after {
-  content: ''; position: absolute;
-  top: 0; left: -100%; width: 100%; height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
-  transition: left 0.5s;
-}
-.gen-btn:hover::after { left: 100%; }
-.gen-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.gen-btn:hover { opacity: 0.85; transform: translateY(-1px); }
 .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 /* ── LOADING ── */
-.loading { display: none; text-align: center; padding: 40px 20px; }
-.loading.visible { display: block; }
-.loading-spinner {
-  width: 32px; height: 32px; margin: 0 auto 12px;
+.loading-overlay {
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; padding: 40px;
+  animation: fadeIn 0.3s ease both;
+}
+.loading-overlay.visible { display: flex; }
+
+.loading-ring {
+  width: 40px; height: 40px;
   border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 13px; color: var(--text-muted); font-style: italic; }
-
-.error-msg {
-  display: none; padding: 12px 16px;
-  background: rgba(232,85,85,0.1); border: 1px solid rgba(232,85,85,0.3);
-  border-radius: 10px; font-size: 13px; color: var(--red);
+.loading-text {
+  font-size: 14px; color: var(--text-muted); font-style: italic;
 }
-.error-msg.visible { display: block; }
-
-/* ── RIGHT PANEL ── */
-.right-panel { position: sticky; top: 76px; }
-
-.empty-state {
-  padding: 60px 24px; text-align: center;
+.loading-steps {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 8px;
 }
-.empty-icon {
-  font-size: 36px; margin-bottom: 16px;
-  opacity: 0.3;
+.loading-step {
+  font-size: 12px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 8px;
+  transition: color 0.3s;
 }
-.empty-title { font-size: 15px; color: var(--text-muted); margin-bottom: 6px; }
-.empty-sub { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
-
-/* ── RESULT CARDS ── */
-.results { display: none; flex-direction: column; gap: 14px; padding: 20px; }
-.results.visible { display: flex; }
-
-.result-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden;
+.loading-step.active { color: var(--accent); }
+.loading-step.done { color: var(--green); }
+.step-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
 }
-.rc-header {
+
+/* ── RESULTS ── */
+.results-view {
+  display: none;
+  width: 100%; max-width: 680px;
+  flex-direction: column; gap: 16px;
+  animation: fadeUp 0.4s ease both;
+}
+.results-view.visible { display: flex; }
+
+.results-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
 }
-.rc-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+.results-title {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
 }
-.rc-copy {
-  font-size: 10px; color: var(--text-dim);
+.new-session-btn {
+  font-size: 12px; color: var(--text-muted);
   background: transparent; border: 1px solid var(--border);
-  border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  border-radius: 6px; padding: 5px 12px; cursor: pointer;
   transition: all 0.2s; font-family: 'DM Sans', sans-serif;
 }
-.rc-copy:hover { border-color: var(--accent-border); color: var(--accent); }
-.rc-body {
-  padding: 14px; font-size: 13px; line-height: 1.75;
+.new-session-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* Result Cards */
+.r-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+}
+.r-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-bottom: 1px solid var(--border);
+}
+.r-card-label {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+}
+.r-card-copy {
+  font-size: 11px; color: var(--text-dim);
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 5px; padding: 3px 8px; cursor: pointer;
+  transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.r-card-copy:hover { border-color: var(--accent-border); color: var(--accent); }
+.r-card-body {
+  padding: 18px; font-size: 14px; line-height: 1.8;
   color: var(--text-muted); white-space: pre-wrap;
 }
 
-/* ── PROMPT CARDS ── */
-.prompt-card {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px;
+/* Prompt cards */
+.prompts-label {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 10px; display: block;
 }
-.pc-num {
+.p-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px 18px; margin-bottom: 10px;
+}
+.p-num {
   font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 8px; display: block;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 6px; display: block;
 }
-.pc-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-.pc-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
-.pc-text {
+.p-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.p-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.p-prompt {
   font-size: 12px; color: var(--text-dim); font-style: italic;
-  line-height: 1.6; background: var(--surface);
+  line-height: 1.6; background: var(--surface2);
   border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
 }
-.pc-actions { display: flex; gap: 6px; }
-.pc-btn {
-  font-size: 10px; font-weight: 600;
+.p-actions { display: flex; gap: 6px; }
+.p-btn {
+  font-size: 11px; font-weight: 500;
   background: transparent; border: 1px solid var(--border);
-  border-radius: 6px; padding: 5px 10px;
-  cursor: pointer; transition: all 0.2s; color: var(--text-muted);
-  font-family: 'DM Sans', sans-serif;
-}
-.pc-btn:hover { border-color: var(--border-hover); color: var(--text); }
-.pc-btn.primary {
-  background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent);
-}
-.pc-btn.primary:hover { opacity: 0.8; }
-
-/* ── OPENART HINT ── */
-.openart-hint {
-  background: rgba(232,184,109,0.06); border: 1px solid rgba(232,184,109,0.2);
-  border-radius: 10px; padding: 12px 14px; margin-top: 4px;
-}
-.oh-title {
-  font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
-}
-.oh-text { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
-
-/* ── CHARS TAB ── */
-.chars-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.char-item {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 14px; cursor: pointer; transition: all 0.2s;
-}
-.char-item:hover { border-color: var(--border-hover); }
-.char-item.active { border-color: var(--accent-border); background: var(--accent-dim); }
-.ci-emoji { font-size: 20px; }
-.ci-info { flex: 1; }
-.ci-name { font-size: 13px; font-weight: 500; color: var(--text); }
-.ci-class { font-size: 11px; color: var(--text-muted); }
-.ci-check { color: var(--accent); display: none; font-size: 14px; }
-.char-item.active .ci-check { display: block; }
-
-/* ── FORM ── */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.fg { display: flex; flex-direction: column; gap: 6px; }
-.fg label {
-  font-size: 11px; font-weight: 600; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--text-dim);
-}
-.fg input, .fg textarea {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 9px 12px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
-  color: var(--text); outline: none; transition: border-color 0.2s;
-}
-.fg input:focus, .fg textarea:focus { border-color: var(--accent-border); }
-.fg input::placeholder, .fg textarea::placeholder { color: var(--text-dim); font-style: italic; }
-.fg textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
-
-/* ── TABS ── */
-.tabs {
-  display: flex; border-bottom: 1px solid var(--border);
-  padding: 0 20px;
-}
-.tab-btn {
-  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 14px 16px; cursor: pointer; border: none; background: transparent;
-  color: var(--text-dim); border-bottom: 2px solid transparent;
-  margin-bottom: -1px; transition: all 0.2s;
-}
-.tab-btn:hover { color: var(--text-muted); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-.small-btn {
-  font-size: 11px; font-weight: 600;
-  background: transparent; border: 1px solid var(--border);
-  border-radius: 8px; padding: 7px 14px; cursor: pointer;
+  border-radius: 6px; padding: 5px 12px; cursor: pointer;
   color: var(--text-muted); transition: all 0.2s;
   font-family: 'DM Sans', sans-serif;
 }
-.small-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.p-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.p-btn.primary { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
 
-.divider { height: 1px; background: var(--border); margin: 4px 0; }
+/* More options (hidden initially) */
+.more-options {
+  display: none;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; flex-direction: column; gap: 16px;
+}
+.more-options.visible { display: flex; }
+.mo-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+
+.toggles { display: flex; flex-wrap: wrap; gap: 6px; }
+.toggle {
+  font-size: 12px; border: 1px solid var(--border);
+  border-radius: 8px; padding: 5px 12px; cursor: pointer;
+  background: var(--surface2); color: var(--text-muted); transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.toggle.on { background: var(--accent-dim); border-color: var(--accent-border); color: var(--accent); }
+
+.style-row { display: flex; gap: 8px; }
+.style-opt {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 8px; text-align: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.style-opt.active { border-color: var(--accent-border); background: var(--accent-dim); }
+.so-icon { font-size: 18px; margin-bottom: 4px; }
+.so-name { font-size: 11px; font-weight: 600; color: var(--text); display: block; }
+.so-desc { font-size: 10px; color: var(--text-muted); display: block; }
+.style-opt.active .so-name { color: var(--accent); }
+
+.regen-btn {
+  width: 100%; padding: 12px;
+  background: var(--accent); border: none; border-radius: 10px;
+  color: white; font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.2s;
+}
+.regen-btn:hover { opacity: 0.85; }
+
+/* Upgrade nudge */
+.upgrade-nudge {
+  background: rgba(123,108,246,0.06); border: 1px solid var(--accent-border);
+  border-radius: 14px; padding: 16px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.un-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.un-text strong { color: var(--text); }
+.un-btn {
+  flex-shrink: 0; font-size: 12px; font-weight: 600;
+  color: white; background: var(--accent);
+  border: none; border-radius: 8px; padding: 8px 16px;
+  cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.un-btn:hover { opacity: 0.85; }
+
+/* Error */
+.error-msg {
+  display: none; padding: 14px 18px;
+  background: rgba(232,85,85,0.08); border: 1px solid rgba(232,85,85,0.25);
+  border-radius: 10px; font-size: 13px; color: var(--red);
+  max-width: 680px; width: 100%;
+}
+.error-msg.visible { display: block; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 500px) {
+  .topbar { padding: 14px 16px; }
+  .story-footer { flex-direction: column; align-items: stretch; }
+  .examples { display: none; }
+  .gen-btn { width: 100%; text-align: center; }
+  .style-row { flex-direction: column; }
+}
 </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
-<nav class="topbar">
-  <a class="brand" href="#">
+<div class="topbar">
+  <a class="brand" href="https://endocraft.app">
     <div class="brand-mark">E</div>
-    <span class="brand-name">EndoCraft<span class="brand-dot">.</span></span>
+    <span class="brand-name">EndoCraft<span>.</span></span>
   </a>
   <div class="topbar-right">
-    <span class="sessions-badge" id="sessionsBadge">3 free sessions left</span>
-    <button class="upgrade-btn" onclick="alert('Party plan coming soon — split the cost with your group! 🎲')">Upgrade with party →</button>
+    <span class="sessions-pill" id="sessionsPill">3 free sessions</span>
+    <a class="topbar-link" href="https://endocraft.app#pricing">Upgrade →</a>
   </div>
-</nav>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-eyebrow">✦ EndoCraft Session Scroll ✦</div>
-  <h1 class="hero-title">Make Your Session<br><em>Unforgettable</em></h1>
-  <p class="hero-sub">Tell us what happened — we'll turn it into summaries, NPC logs, quest trackers and image prompts.</p>
 </div>
 
-<!-- APP -->
-<div class="app-layout">
+<!-- MAIN -->
+<div class="main" id="mainArea">
 
-  <!-- LEFT: INPUT -->
-  <div class="panel">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('session',this)">Your Session</button>
-      <button class="tab-btn" onclick="switchTab('characters',this)">Characters</button>
-    </div>
+  <!-- STEP 1: INPUT -->
+  <div class="step-input" id="stepInput">
+    <h1 class="step-label">What happened in your <em>session?</em></h1>
+    <p class="step-sub">3 sentences or 3 pages — just tell the story.</p>
 
-    <!-- SESSION TAB -->
-    <div id="tab-session" class="tab-content active">
-      <div class="panel-body">
-
-        <!-- Character -->
-        <div>
-          <span class="input-label">Active character</span>
-          <div class="char-pill" onclick="switchTab('characters', document.querySelectorAll('.tab-btn')[1])">
-            <div class="char-avatar" id="pillAvatar">🎵</div>
-            <div class="char-info">
-              <div class="char-name" id="pillName">Caspian</div>
-              <div class="char-class" id="pillClass">Half-Elf Bard</div>
-            </div>
-            <span class="char-change">change →</span>
-          </div>
+    <div class="story-box">
+      <textarea class="story-textarea" id="storyInput" placeholder="We finally reached Baforlna's witch-bog. Alberich accidentally drank a rage potion and threw Caspian into a wall. Then an enemy set Caspian on fire — he still threw the flaming net and stabbed the monster with his rapier. Barely survived."></textarea>
+      <div class="story-footer">
+        <div class="examples">
+          <div class="ex-chip" onclick="fillEx('caspian')">🐇 Caspian's Witch-Bog</div>
+          <div class="ex-chip" onclick="fillEx('tavern')">🍺 Bar fight</div>
+          <div class="ex-chip" onclick="fillEx('dragon')">🐉 Dragon encounter</div>
         </div>
-
-        <!-- Story -->
-        <div>
-          <span class="input-label">What happened in your session?</span>
-          <textarea class="story-input" id="storyInput" placeholder="Just tell the story — 3 sentences or 3 pages, whatever feels right.
-
-Example: &quot;We reached Baforlna's witch-bog. Alberich accidentally drank a rage potion and threw Caspian into a wall. Then an enemy set him on fire — he still threw the flaming net and stabbed the monster.&quot;"></textarea>
-          <div class="chips" style="margin-top:8px;">
-            <span style="font-size:11px;color:var(--text-dim);font-style:italic;align-self:center;">Try:</span>
-            <div class="chip" onclick="fillExample('caspian')">🐇 Caspian's Witch-Bog</div>
-            <div class="chip" onclick="fillExample('tavern')">🍺 Bar fight gone wrong</div>
-            <div class="chip" onclick="fillExample('dragon')">🐉 First dragon encounter</div>
-          </div>
-        </div>
-
-        <!-- Outputs -->
-        <div>
-          <span class="input-label">What do you want?</span>
-          <div class="toggles">
-            <div class="toggle on" data-out="summary" onclick="toggleOut(this)">Summary</div>
-            <div class="toggle on" data-out="npc" onclick="toggleOut(this)">NPC Log</div>
-            <div class="toggle on" data-out="quest" onclick="toggleOut(this)">Quest Tracker</div>
-            <div class="toggle on" data-out="journal" onclick="toggleOut(this)">Journal Entry</div>
-            <div class="toggle on" data-out="prompts" onclick="toggleOut(this)">Image Prompts</div>
-          </div>
-        </div>
-
-        <!-- Style -->
-        <div id="styleSection">
-          <span class="input-label">Image style</span>
-          <div class="style-grid">
-            <div class="style-opt active" data-style="oilpainting" onclick="selectStyle(this)">
-              <div class="so-icon">🎨</div>
-              <span class="so-name">Oil Painting</span>
-              <span class="so-desc">Epic & cinematic</span>
-            </div>
-            <div class="style-opt" data-style="mtg" onclick="selectStyle(this)">
-              <div class="so-icon">🐉</div>
-              <span class="so-name">MTG Dark</span>
-              <span class="so-desc">Dark & dramatic</span>
-            </div>
-            <div class="style-opt" data-style="comic" onclick="selectStyle(this)">
-              <div class="so-icon">💥</div>
-              <span class="so-name">Comic</span>
-              <span class="so-desc">Fun & cartoonish</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Power user -->
-        <div>
-          <div class="pu-toggle" onclick="togglePU()">
-            <span id="puArrow">▶</span> Power user: add transcript
-          </div>
-          <div class="pu-section" id="puSection" style="margin-top:10px;">
-            <div class="drop-zone" id="dropZone">
-              <input type="file" id="fileInput" accept=".txt,.srt,.vtt,.md">
-              <span id="dropLabel">Drop file or click (.txt / .srt / .vtt)</span>
-            </div>
-            <textarea class="transcript-input" id="transcriptInput" placeholder="Or paste transcript here (Whisper, SRT, raw text)…"></textarea>
-          </div>
-        </div>
-
-        <button class="gen-btn" id="genBtn" onclick="generate()">✦ MAKE IT LEGENDARY</button>
-        <div class="loading" id="loading">
-          <div class="loading-spinner"></div>
-          <div class="loading-text">The chronicles are being written…</div>
-        </div>
-        <div class="error-msg" id="errorMsg"></div>
-
-      </div>
-    </div>
-
-    <!-- CHARACTERS TAB -->
-    <div id="tab-characters" class="tab-content">
-      <div class="panel-body">
-        <div>
-          <span class="input-label">Saved characters</span>
-          <div class="chars-list" id="charsList"></div>
-          <button class="small-btn" onclick="newChar()">+ New character</button>
-        </div>
-        <div class="divider"></div>
-        <div>
-          <span class="input-label" id="charFormLabel">Edit character</span>
-          <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px;">
-            <div class="form-grid">
-              <div class="fg"><label>Name</label><input type="text" id="charName" placeholder="e.g. Caspian"></div>
-              <div class="fg"><label>Class / Race</label><input type="text" id="charClass" placeholder="e.g. Half-Elf Bard"></div>
-            </div>
-            <div class="fg"><label>Appearance (for image prompts)</label><textarea id="charAppearance" placeholder="e.g. slender half-elf with copper-red hair, blue linen shirt, brown leather vest, lute on back, bright green eyes"></textarea></div>
-            <div class="fg"><label>Personality</label><textarea id="charPersonality" style="min-height:55px;" placeholder="e.g. charming but clumsy, overestimates his persuasion, saves himself with humor"></textarea></div>
-            <div class="fg" style="max-width:80px;"><label>Emoji</label><input type="text" id="charEmoji" placeholder="🎵"></div>
-            <button class="gen-btn" onclick="saveChar()" style="padding:12px;">✦ Save Character</button>
-          </div>
-        </div>
+        <button class="gen-btn" id="genBtn" onclick="generate()">Make it legendary ✦</button>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: OUTPUT -->
-  <div class="panel right-panel">
-    <div class="panel-header">
-      <span class="panel-title">Your Chronicles</span>
-    </div>
-
-    <div class="empty-state" id="emptyState">
-      <div class="empty-icon">✦</div>
-      <div class="empty-title">Nothing here yet</div>
-      <div class="empty-sub">Tell your story on the left<br>and hit Make it Legendary</div>
-    </div>
-
-    <div class="results" id="results">
-      <div id="resultSummary" style="display:none;" class="result-card">
-        <div class="rc-header">
-          <span class="rc-label">Session Summary</span>
-          <button class="rc-copy" onclick="copyText('summaryBody',this)">Copy</button>
-        </div>
-        <div class="rc-body" id="summaryBody"></div>
-      </div>
-      <div id="resultNpc" style="display:none;" class="result-card">
-        <div class="rc-header">
-          <span class="rc-label">NPC Log</span>
-          <button class="rc-copy" onclick="copyText('npcBody',this)">Copy</button>
-        </div>
-        <div class="rc-body" id="npcBody"></div>
-      </div>
-      <div id="resultQuest" style="display:none;" class="result-card">
-        <div class="rc-header">
-          <span class="rc-label">Quest Tracker</span>
-          <button class="rc-copy" onclick="copyText('questBody',this)">Copy</button>
-        </div>
-        <div class="rc-body" id="questBody"></div>
-      </div>
-      <div id="resultJournal" style="display:none;" class="result-card">
-        <div class="rc-header">
-          <span class="rc-label">Journal Entry</span>
-          <button class="rc-copy" onclick="copyText('journalBody',this)">Copy</button>
-        </div>
-        <div class="rc-body" id="journalBody"></div>
-      </div>
-      <div id="resultPrompts" style="display:none;">
-        <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding:0 0 0 0;">Image Prompts</div>
-        <div id="promptsGrid" style="display:flex;flex-direction:column;gap:10px;"></div>
-        <div class="openart-hint" style="margin-top:10px;">
-          <div class="oh-title">Next Steps</div>
-          <div class="oh-text">Copy prompt → open <strong style="color:var(--text);">OpenArt.ai</strong> → choose Seedream 4.5<br>For consistent characters: use Character Training with reference images</div>
-        </div>
-      </div>
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-ring"></div>
+    <div class="loading-text">Writing your chronicles…</div>
+    <div class="loading-steps">
+      <div class="loading-step active" id="ls1"><span class="step-dot"></span>Analyzing your session</div>
+      <div class="loading-step" id="ls2"><span class="step-dot"></span>Generating summary & NPC log</div>
+      <div class="loading-step" id="ls3"><span class="step-dot"></span>Creating image prompts</div>
     </div>
   </div>
 
+  <!-- ERROR -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- RESULTS -->
+  <div class="results-view" id="resultsView">
+
+    <div class="results-header">
+      <span class="results-title">Your Chronicles</span>
+      <button class="new-session-btn" onclick="newSession()">← New session</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="r-card" id="cardSummary" style="display:none;">
+      <div class="r-card-head">
+        <span class="r-card-label">Session Summary</span>
+        <button class="r-card-copy" onclick="copyCard('bodySummary',this)">Copy</button>
+      </div>
+      <div class="r-card-body" id="bodySummary"></div>
+    </div>
+
+    <!-- NPC -->
+    <div class="r-card" id="cardNpc" style="display:none;">
+      <div class="r-card-head">
+        <span class="r-card-label">NPC Log</span>
+        <button class="r-card-copy" onclick="copyCard('bodyNpc',this)">Copy</button>
+      </div>
+      <div class="r-card-body" id="bodyNpc"></div>
+    </div>
+
+    <!-- Prompts -->
+    <div id="promptsSection" style="display:none;">
+      <span class="prompts-label">Image Prompts</span>
+      <div id="promptsGrid"></div>
+    </div>
+
+    <!-- More options toggle -->
+    <button style="background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text-muted);font-size:13px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;" onclick="toggleMore(this)">
+      ⚙ Customize — choose outputs & style
+    </button>
+
+    <!-- More options panel -->
+    <div class="more-options" id="moreOptions">
+      <div>
+        <div class="mo-title" style="margin-bottom:10px;">Outputs</div>
+        <div class="toggles">
+          <div class="toggle on" data-out="summary" onclick="toggleOut(this)">Summary</div>
+          <div class="toggle on" data-out="npc" onclick="toggleOut(this)">NPC Log</div>
+          <div class="toggle" data-out="quest" onclick="toggleOut(this)">Quest Tracker</div>
+          <div class="toggle" data-out="journal" onclick="toggleOut(this)">Journal Entry</div>
+          <div class="toggle on" data-out="prompts" onclick="toggleOut(this)">Image Prompts</div>
+        </div>
+      </div>
+      <div>
+        <div class="mo-title" style="margin-bottom:10px;">Image Style</div>
+        <div class="style-row">
+          <div class="style-opt active" data-style="oilpainting" onclick="selectStyle(this)">
+            <div class="so-icon">🎨</div><span class="so-name">Oil Painting</span><span class="so-desc">Epic & cinematic</span>
+          </div>
+          <div class="style-opt" data-style="mtg" onclick="selectStyle(this)">
+            <div class="so-icon">🐉</div><span class="so-name">MTG Dark</span><span class="so-desc">Dark & dramatic</span>
+          </div>
+          <div class="style-opt" data-style="comic" onclick="selectStyle(this)">
+            <div class="so-icon">💥</div><span class="so-name">Comic</span><span class="so-desc">Fun & cartoonish</span>
+          </div>
+        </div>
+      </div>
+      <button class="regen-btn" onclick="generate()">✦ Regenerate with these settings</button>
+    </div>
+
+    <!-- Quest & Journal (hidden by default, shown via toggles) -->
+    <div class="r-card" id="cardQuest" style="display:none;">
+      <div class="r-card-head">
+        <span class="r-card-label">Quest Tracker</span>
+        <button class="r-card-copy" onclick="copyCard('bodyQuest',this)">Copy</button>
+      </div>
+      <div class="r-card-body" id="bodyQuest"></div>
+    </div>
+
+    <div class="r-card" id="cardJournal" style="display:none;">
+      <div class="r-card-head">
+        <span class="r-card-label">Journal Entry</span>
+        <button class="r-card-copy" onclick="copyCard('bodyJournal',this)">Copy</button>
+      </div>
+      <div class="r-card-body" id="bodyJournal"></div>
+    </div>
+
+    <!-- Upgrade nudge -->
+    <div class="upgrade-nudge" id="upgradeNudge" style="display:none;">
+      <div class="un-text"><strong>You've used your free sessions.</strong><br>Upgrade with your party — split €5/mo between 6 players.</div>
+      <button class="un-btn" onclick="window.open('https://endocraft.app#pricing','_blank')">Upgrade →</button>
+    </div>
+
+  </div>
 </div>
 
 <script>
-const CASPIAN = {
-  id:'caspian', name:'Caspian', cls:'Half-Elf Bard',
-  appearance:'slender half-elf with copper-red tousled hair, blue linen shirt, brown leather vest with brass buttons, ornate lute on back, bright emerald green eyes, slightly pointed ears, charming crooked smile',
-  personality:'overflowing charm but regularly clumsy, massively overestimates his persuasion, saves himself with humor and improvisation, secretly braver than he looks',
-  emoji:'🎵'
-};
+const API = 'https://endocraft-production.up.railway.app/api/chat';
 
 const EXAMPLES = {
-  caspian:`We finally reached Baforlna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.`,
-  tavern:`The party stopped at the Rusty Flagon for a drink. Gorath tried to arm-wrestle the barkeep for free ale, rolled a 2, and knocked over three tables. The whole tavern erupted into a brawl. Seraphine tried to cast Calm Emotions but only succeeded on the barkeep's dog. We escaped through the kitchen window with half a wheel of cheese and a new bounty on our heads.`,
-  dragon:`We stumbled into what we thought was an empty cave — it wasn't. A young green dragon named Verathrax was sleeping on a pile of stolen goods. Mira tried to sneak past. Nat 1. The dragon woke up and asked, very politely, why we were in her home. Thorben bluffed that we were exterminators. She believed him. We now have an ongoing contract to clear kobolds from the eastern tunnels.`
+  caspian: `We finally reached Baforlna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.`,
+  tavern: `The party stopped at the Rusty Flagon for a drink. Gorath tried to arm-wrestle the barkeep for free ale, rolled a 2, and knocked over three tables. The whole tavern erupted into a brawl. Seraphine tried to cast Calm Emotions but only succeeded on the barkeep's dog. We escaped through the kitchen window with half a wheel of cheese and a new bounty on our heads.`,
+  dragon: `We stumbled into what we thought was an empty cave — it wasn't. A young green dragon named Verathrax was sleeping on a pile of stolen goods. Mira tried to sneak past. Nat 1. The dragon woke up and asked, very politely, why we were in her home. Thorben bluffed that we were exterminators. She believed him. We now have an ongoing contract to clear kobolds from the eastern tunnels.`
 };
 
 const STYLE_SUFFIXES = {
-  oilpainting:'oil painting style, cinematic fantasy art, dramatic lighting, rich textures, painterly brushstrokes, epic composition, warm atmospheric glow, high fantasy aesthetic',
-  mtg:'Magic the Gathering card art style, dark fantasy illustration, dramatic composition, gothic atmosphere, detailed linework, moody lighting, deep shadows',
-  comic:'cartoon comic style, expressive characters, bold outlines, vibrant colors, humorous exaggerated expressions, dynamic poses, comic book panel art'
+  oilpainting: 'oil painting style, cinematic fantasy art, dramatic lighting, rich textures, epic composition, warm atmospheric glow',
+  mtg: 'Magic the Gathering card art style, dark fantasy illustration, dramatic composition, gothic atmosphere, moody lighting',
+  comic: 'cartoon comic style, expressive characters, bold outlines, vibrant colors, humorous exaggerated expressions'
 };
 
-let chars = JSON.parse(localStorage.getItem('ec_chars')||'null')||[CASPIAN];
-let activeId = localStorage.getItem('ec_activeChar')||'caspian';
+let activeOutputs = new Set(['summary','npc','prompts']);
 let selectedStyle = 'oilpainting';
-let activeOutputs = new Set(['summary','npc','quest','journal','prompts']);
-let editingId = null;
-let sessionsUsed = parseInt(localStorage.getItem('ec_sessions')||'0');
+let sessionsUsed = parseInt(localStorage.getItem('ec_sessions') || '0');
+let loadingTimer;
 
-document.addEventListener('DOMContentLoaded',()=>{
-  renderChars(); updatePill(); updateBadge(); loadCharEditor('caspian');
-  const dz=document.getElementById('dropZone');
-  const fi=document.getElementById('fileInput');
-  dz.addEventListener('click',()=>fi.click());
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--accent-border)';});
-  dz.addEventListener('dragleave',()=>dz.style.borderColor='');
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';if(e.dataTransfer.files[0])readFile(e.dataTransfer.files[0]);});
-  fi.addEventListener('change',e=>{if(e.target.files[0])readFile(e.target.files[0]);});
-});
+function updatePill() {
+  const left = Math.max(0, 3 - sessionsUsed);
+  const pill = document.getElementById('sessionsPill');
+  pill.textContent = left > 0 ? left + ' free sessions' : 'Unlimited ✦';
+}
+updatePill();
 
-function updateBadge(){
-  const left=Math.max(0,3-sessionsUsed);
-  document.getElementById('sessionsBadge').textContent=left>0?`${left} free sessions left`:'Unlimited ✦';
+function fillEx(k) { document.getElementById('storyInput').value = EXAMPLES[k]; }
+
+function toggleOut(btn) {
+  const t = btn.dataset.out;
+  if (activeOutputs.has(t)) { if (activeOutputs.size > 1) { activeOutputs.delete(t); btn.classList.remove('on'); } }
+  else { activeOutputs.add(t); btn.classList.add('on'); }
 }
 
-function switchTab(name,btn){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  if(btn) btn.classList.add('active');
+function selectStyle(btn) {
+  document.querySelectorAll('.style-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedStyle = btn.dataset.style;
 }
 
-function fillExample(k){ document.getElementById('storyInput').value=EXAMPLES[k]; if(k==='caspian')setActive('caspian'); }
-
-function toggleOut(btn){
-  const t=btn.dataset.out;
-  if(activeOutputs.has(t)){if(activeOutputs.size>1){activeOutputs.delete(t);btn.classList.remove('on');}}
-  else{activeOutputs.add(t);btn.classList.add('on');}
-  document.getElementById('styleSection').style.display=activeOutputs.has('prompts')?'block':'none';
+function toggleMore(btn) {
+  const panel = document.getElementById('moreOptions');
+  const open = panel.classList.toggle('visible');
+  btn.textContent = open ? '✕ Close settings' : '⚙ Customize — choose outputs & style';
 }
 
-function selectStyle(btn){
-  document.querySelectorAll('.style-opt').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); selectedStyle=btn.dataset.style;
+function animateLoadingSteps() {
+  const steps = ['ls1','ls2','ls3'];
+  let i = 0;
+  loadingTimer = setInterval(() => {
+    if (i > 0) {
+      document.getElementById(steps[i-1]).classList.remove('active');
+      document.getElementById(steps[i-1]).classList.add('done');
+    }
+    if (i < steps.length) {
+      document.getElementById(steps[i]).classList.add('active');
+      i++;
+    } else {
+      clearInterval(loadingTimer);
+    }
+  }, 5000);
 }
 
-function togglePU(){
-  const s=document.getElementById('puSection');
-  const a=document.getElementById('puArrow');
-  const open=s.classList.toggle('open');
-  a.textContent=open?'▼':'▶';
+function resetLoadingSteps() {
+  clearInterval(loadingTimer);
+  ['ls1','ls2','ls3'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+  });
+  document.getElementById('ls1').classList.add('active');
 }
 
-function readFile(f){
-  const r=new FileReader();
-  r.onload=e=>{document.getElementById('transcriptInput').value=e.target.result;document.getElementById('dropLabel').textContent='✓ '+f.name;};
-  r.readAsText(f);
-}
+async function generate() {
+  const story = document.getElementById('storyInput').value.trim();
+  if (!story) { document.getElementById('storyInput').focus(); return; }
 
-async function generate(){
-  const story=document.getElementById('storyInput').value.trim();
-  if(!story){showError('Please describe what happened in your session!');return;}
-  const char=chars.find(c=>c.id===activeId);
-  const transcript=document.getElementById('transcriptInput').value.trim();
-  const btn=document.getElementById('genBtn');
-  btn.disabled=true;
-  document.getElementById('loading').classList.add('visible');
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+
+  document.getElementById('stepInput').style.display = 'none';
+  document.getElementById('resultsView').classList.remove('visible');
   document.getElementById('errorMsg').classList.remove('visible');
-  document.getElementById('emptyState').style.display='none';
-  document.getElementById('results').classList.remove('visible');
+  document.getElementById('loadingOverlay').classList.add('visible');
+  resetLoadingSteps();
+  animateLoadingSteps();
 
-  const charDesc=char?`Main character: ${char.name} (${char.cls}). Appearance: ${char.appearance}. Personality: ${char.personality}.`:'';
-  const outs=[...activeOutputs];
-  const styleSuffix=STYLE_SUFFIXES[selectedStyle];
+  const outs = [...activeOutputs];
+  const styleSuffix = STYLE_SUFFIXES[selectedStyle];
 
-  const charName = char ? char.name+"'s" : "the main character's";
   const summaryPart = outs.includes('summary') ? '"summary": Vivid session summary 150-200 words. Structure: Overview (2-3 sentences), Key Events (bullet points), Session End/Cliffhanger.' : '';
-  const npcPart = outs.includes('npc') ? '"npc": NPC log. For each NPC: name, role/location, key info, status (friendly/hostile/neutral).' : '';
+  const npcPart = outs.includes('npc') ? '"npc": NPC log. For each NPC mentioned: name, role/location, key info, status (friendly/hostile/neutral).' : '';
   const questPart = outs.includes('quest') ? '"quest": Quest tracker with: Active Quests, New Clues, Open Questions, Completed, Possible Hooks.' : '';
-  const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from '+charName+' perspective. Atmospheric fantasy prose, written by candlelight.' : '';
-  const promptsPart = outs.includes('prompts') ? '"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: '+styleSuffix+'"}' : '';
-  const sys = "You are an expert D&D chronicler and creative writer. Based on the player's session description, create the requested outputs.\n" + charDesc + '\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
+  const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from the main character\'s perspective. Atmospheric fantasy prose, written by candlelight.' : '';
+  const promptsPart = outs.includes('prompts') ? '"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence what happened","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: ' + styleSuffix + '"}' : '';
 
-  try{
-    const raw=await api(sys,`SESSION:\n${story}${transcript?'\n\nTRANSCRIPT:\n'+transcript:''}`);
-    const data=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    showCard('summary','resultSummary','summaryBody',data.summary);
-    showCard('npc','resultNpc','npcBody',data.npc);
-    showCard('quest','resultQuest','questBody',data.quest);
-    showCard('journal','resultJournal','journalBody',data.journal);
-    if(data.prompts&&activeOutputs.has('prompts')){renderPrompts(data.prompts);document.getElementById('resultPrompts').style.display='block';}
-    else document.getElementById('resultPrompts').style.display='none';
-    document.getElementById('results').classList.add('visible');
-    sessionsUsed++; localStorage.setItem('ec_sessions',sessionsUsed); updateBadge();
-  }catch(e){showError('Something went wrong: '+e.message);document.getElementById('emptyState').style.display='block';}
-  finally{btn.disabled=false;document.getElementById('loading').classList.remove('visible');}
-}
+  const system = 'You are an expert D&D chronicler and creative writer. Based on the player\'s session description, create the requested outputs.\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
 
-function showCard(type,cardId,bodyId,content){
-  const el=document.getElementById(cardId);
-  if(content&&activeOutputs.has(type)){document.getElementById(bodyId).textContent=content;el.style.display='block';}
-  else el.style.display='none';
-}
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, system, messages: [{ role: 'user', content: 'SESSION:\n' + story }] })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error?.message || 'API error');
+    const raw = d.content.map(b => b.text || '').join('');
+    const data = JSON.parse(raw.replace(/```json|```/g, '').trim());
 
-function renderPrompts(prompts){
-  const grid=document.getElementById('promptsGrid');
-  grid.innerHTML='';
-  prompts.forEach((p,i)=>{
-    const d=document.createElement('div');
-    d.className='prompt-card';
-    d.innerHTML=`<span class="pc-num">Moment ${i+1}</span><div class="pc-title">${p.title}</div><div class="pc-desc">${p.desc}</div><div class="pc-text">${p.prompt}</div><div class="pc-actions"><button class="pc-btn" onclick="copyRaw('${esc(p.prompt)}',this)">Copy</button><button class="pc-btn primary" onclick="window.open('https://openart.ai/create?prompt=${encodeURIComponent(p.prompt)}','_blank')">→ OpenArt</button></div>`;
-    grid.appendChild(d);
-  });
-}
+    showResult('cardSummary', 'bodySummary', data.summary, outs.includes('summary'));
+    showResult('cardNpc', 'bodyNpc', data.npc, outs.includes('npc'));
+    showResult('cardQuest', 'bodyQuest', data.quest, outs.includes('quest'));
+    showResult('cardJournal', 'bodyJournal', data.journal, outs.includes('journal'));
 
-function esc(s){return s.replace(/'/g,"\\'").replace(/\n/g,' ');}
+    if (data.prompts && outs.includes('prompts')) {
+      renderPrompts(data.prompts);
+      document.getElementById('promptsSection').style.display = 'block';
+    } else {
+      document.getElementById('promptsSection').style.display = 'none';
+    }
 
-function showError(msg){const e=document.getElementById('errorMsg');e.textContent=msg;e.classList.add('visible');}
+    sessionsUsed++;
+    localStorage.setItem('ec_sessions', sessionsUsed);
+    updatePill();
 
-function copyText(id,btn){
-  navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{
-    const o=btn.textContent;btn.textContent='✓ Copied';setTimeout(()=>btn.textContent=o,2000);
-  });
-}
+    if (sessionsUsed >= 3) {
+      document.getElementById('upgradeNudge').style.display = 'flex';
+    }
 
-function copyRaw(text,btn){
-  navigator.clipboard.writeText(text).then(()=>{const o=btn.textContent;btn.textContent='✓';setTimeout(()=>btn.textContent=o,2000);});
-}
+    document.getElementById('loadingOverlay').classList.remove('visible');
+    document.getElementById('resultsView').classList.add('visible');
 
-async function api(system,user){
-  const r=await fetch('https://endocraft-production.up.railway.app/api/chat',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,system,messages:[{role:'user',content:user}]})
-  });
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error?.message||'API error');
-  return d.content.map(b=>b.text||'').join('');
-}
-
-function renderChars(){
-  const list=document.getElementById('charsList');
-  list.innerHTML='';
-  chars.forEach(c=>{
-    const el=document.createElement('div');
-    el.className='char-item'+(c.id===activeId?' active':'');
-    el.innerHTML=`<span class="ci-emoji">${c.emoji||'🧙'}</span><div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-class">${c.cls}</div></div><span class="ci-check">✓</span><button class="small-btn" style="font-size:10px;padding:4px 10px;" onclick="loadCharEditor('${c.id}');event.stopPropagation()">Edit</button>`;
-    el.addEventListener('click',()=>setActive(c.id));
-    list.appendChild(el);
-  });
-}
-
-function setActive(id){activeId=id;localStorage.setItem('ec_activeChar',id);renderChars();updatePill();}
-
-function updatePill(){
-  const c=chars.find(ch=>ch.id===activeId);
-  if(c){
-    document.getElementById('pillAvatar').textContent=c.emoji||'🧙';
-    document.getElementById('pillName').textContent=c.name;
-    document.getElementById('pillClass').textContent=c.cls;
+  } catch(e) {
+    clearInterval(loadingTimer);
+    document.getElementById('loadingOverlay').classList.remove('visible');
+    document.getElementById('stepInput').style.display = 'flex';
+    const em = document.getElementById('errorMsg');
+    em.textContent = 'Something went wrong: ' + e.message + ' — please try again.';
+    em.classList.add('visible');
+  } finally {
+    btn.disabled = false;
   }
 }
 
-function newChar(){editingId=null;document.getElementById('charFormLabel').textContent='New character';['charName','charClass','charAppearance','charPersonality'].forEach(id=>document.getElementById(id).value='');document.getElementById('charEmoji').value='🧙';}
-
-function loadCharEditor(id){
-  const c=chars.find(ch=>ch.id===id);if(!c)return;
-  editingId=id;
-  document.getElementById('charFormLabel').textContent='Edit '+c.name;
-  document.getElementById('charName').value=c.name;
-  document.getElementById('charClass').value=c.cls;
-  document.getElementById('charAppearance').value=c.appearance;
-  document.getElementById('charPersonality').value=c.personality;
-  document.getElementById('charEmoji').value=c.emoji||'🧙';
+function showResult(cardId, bodyId, content, show) {
+  const card = document.getElementById(cardId);
+  if (content && show) {
+    document.getElementById(bodyId).textContent = content;
+    card.style.display = 'block';
+  } else {
+    card.style.display = 'none';
+  }
 }
 
-function saveChar(){
-  const name=document.getElementById('charName').value.trim();
-  if(!name){alert('Please enter a name.');return;}
-  const c={id:editingId||'char_'+Date.now(),name,cls:document.getElementById('charClass').value.trim(),appearance:document.getElementById('charAppearance').value.trim(),personality:document.getElementById('charPersonality').value.trim(),emoji:document.getElementById('charEmoji').value.trim()||'🧙'};
-  if(editingId){const i=chars.findIndex(ch=>ch.id===editingId);if(i>=0)chars[i]=c;}
-  else chars.push(c);
-  localStorage.setItem('ec_chars',JSON.stringify(chars));
-  editingId=null;renderChars();updatePill();
-  document.getElementById('charFormLabel').textContent='Edit character';
+function renderPrompts(prompts) {
+  const grid = document.getElementById('promptsGrid');
+  grid.innerHTML = '';
+  prompts.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'p-card';
+    el.innerHTML = `<span class="p-num">Moment ${i+1}</span><div class="p-title">${p.title}</div><div class="p-desc">${p.desc}</div><div class="p-prompt">${p.prompt}</div><div class="p-actions"><button class="p-btn" onclick="copyRaw('${esc(p.prompt)}',this)">Copy prompt</button><button class="p-btn primary" onclick="window.open('https://openart.ai/create?prompt=${encodeURIComponent(p.prompt)}','_blank')">→ OpenArt</button></div>`;
+    grid.appendChild(el);
+  });
+}
+
+function esc(s) { return s.replace(/'/g, "\\'").replace(/\n/g, ' '); }
+
+function copyCard(id, btn) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
+    const o = btn.textContent; btn.textContent = '✓ Copied';
+    setTimeout(() => btn.textContent = o, 2000);
+  });
+}
+
+function copyRaw(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const o = btn.textContent; btn.textContent = '✓';
+    setTimeout(() => btn.textContent = o, 2000);
+  });
+}
+
+function newSession() {
+  document.getElementById('resultsView').classList.remove('visible');
+  document.getElementById('errorMsg').classList.remove('visible');
+  document.getElementById('storyInput').value = '';
+  document.getElementById('stepInput').style.display = 'flex';
+  document.getElementById('storyInput').focus();
+  window.scrollTo(0, 0);
 }
 </script>
 </body>
