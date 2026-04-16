@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoCraft — Make Your D&D Sessions Unforgettable</title>
 <meta name="description" content="Tell us what happened in your D&D session. We turn it into summaries, NPC logs and epic AI images. Free to try.">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;1,400&family=Cinzel+Decorative:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #080810;
@@ -333,142 +333,85 @@ footer a { color: var(--text-muted); text-decoration: none; }
     <a class="btn-ghost" href="#how">See how it works</a>
   </div>
 
-  <!-- THREE CARDS FAN -->
-  <div style="display:flex;justify-content:center;align-items:flex-end;gap:0;margin:40px auto 0;position:relative;width:min(600px,95vw);height:auto;padding-bottom:20px;">
-    <!-- Card 1: Legendary -->
-    <div class="lc-card" style="transform:rotate(-6deg) translateY(-20px);z-index:1;--border:rgba(232,184,109,0.5);--glow:rgba(232,184,109,0.15);--rc:#E8B86D;">
-      <div style="position:relative;background:#1a0a00;border-radius:18px;overflow:hidden;">
-        <img src="/caspian1.jpg" style="width:100%;display:block;aspect-ratio:3/4;object-fit:cover;object-position:center top;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);"></div>
-        <!-- Sparks -->
-        <div class="lc-sparks" data-color="#E8B86D" style="position:absolute;bottom:0;left:0;right:0;height:55%;z-index:2;pointer-events:none;overflow:hidden;"></div>
-        <!-- Top -->
-        <div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <img src="/IMG_8431.png" style="width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 5px #E8B86Dcc);">
-            <div>
-              <span style="font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:3px;color:#E8B86Daa;display:block;text-shadow:0 1px 8px #000;">EndoCraft</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#ffffff44;display:block;">Session VII</span>
-            </div>
+  <!-- CARD FAN -->
+  <div style="margin-top:40px;">
+    <div class="fan">
+  <div class="cw p0" id="lw0" onclick="lpick(0)">
+    <div class="lcard" id="lc0" style="box-shadow:0 0 0 1.5px rgba(232,184,109,.4),0 20px 50px rgba(0,0,0,.95)">
+      <div class="lci">
+        <img src="/caspian1.jpg" alt="">
+        <div class="lov"></div>
+        <div class="lsparks" id="lsp0"></div>
+        <div class="lct">
+          <div class="lbr">
+            <img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px #E8B86Dcc)">
+            <div><span class="lbn" style="color:#E8B86Dbb">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
           </div>
-          <div style="background:rgba(10,5,0,0.8);backdrop-filter:blur(12px);border:1px solid rgba(232,184,109,0.3);border-radius:30px;padding:3px 8px;font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:2px;color:#E8B86D;">✦ Legendary</div>
+          <div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div>
         </div>
-        <!-- Bottom -->
-        <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:10px 12px;">
-          <div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:#E8B86Dcc;margin-bottom:2px;text-shadow:0 1px 10px #000;">Harengon Bard</div>
-          <div style="font-family:'Cinzel Decorative',serif;font-size:18px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:6px;text-shadow:0 2px 20px #000;">Caspian</div>
-          <div style="display:flex;gap:3px;margin-bottom:5px;"><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #E8B86D22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#E8B86D;display:block;">🎵</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#E8B86D88;display:block;">Bard</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #E8B86D22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#E8B86D;display:block;">VI</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#E8B86D88;display:block;">Level</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #E8B86D22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#E8B86D;display:block;">★★★</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#E8B86D88;display:block;">Power</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #E8B86D22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#E8B86D;display:block;">S7</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#E8B86D88;display:block;">Session</span>
-            </div></div>
-          <div style="display:flex;justify-content:space-between;border-top:1px solid #E8B86D22;padding-top:5px;">
-            <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#E8B86D55;">#0001 / 9999</span>
-            <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#E8B86D33;">ENDOCRAFT</span>
-          </div>
+        <div class="lcb">
+          <div class="lcc" style="color:#E8B86Dcc">Harengon Bard</div>
+          <div class="lcn">Caspian</div>
+          <div class="lct2">The Flaming Net</div>
+          <div class="lst"><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">♩</span><span class="lsl" style="color:#E8B86D">Bard</span></div><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">VI</span><span class="lsl" style="color:#E8B86D">Level</span></div><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">✦✦✦</span><span class="lsl" style="color:#E8B86D">Power</span></div><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">S7</span><span class="lsl" style="color:#E8B86D">Session</span></div></div>
+          <div class="lsr" style="color:#E8B86D66">Caspian #003 / 9999</div>
         </div>
-        <!-- Holo -->
-        <div style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;"></div>
-      </div>
-    </div>
-    <!-- Card 2: Rare -->
-    <div class="lc-card" style="transform:rotate(0deg) translateY(0px);z-index:3;--border:rgba(96,165,250,0.5);--glow:rgba(96,165,250,0.12);--rc:#60a5fa;">
-      <div style="position:relative;background:#1a0a00;border-radius:18px;overflow:hidden;">
-        <img src="/caspian2.jpg" style="width:100%;display:block;aspect-ratio:3/4;object-fit:cover;object-position:center top;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);"></div>
-        <!-- Sparks -->
-        <div class="lc-sparks" data-color="#60a5fa" style="position:absolute;bottom:0;left:0;right:0;height:55%;z-index:2;pointer-events:none;overflow:hidden;"></div>
-        <!-- Top -->
-        <div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <img src="/IMG_8431.png" style="width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 5px #60a5facc);">
-            <div>
-              <span style="font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:3px;color:#60a5faaa;display:block;text-shadow:0 1px 8px #000;">EndoCraft</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#ffffff44;display:block;">Session VII</span>
-            </div>
-          </div>
-          <div style="background:rgba(0,5,20,0.8);backdrop-filter:blur(12px);border:1px solid rgba(96,165,250,0.3);border-radius:30px;padding:3px 8px;font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:2px;color:#60a5fa;">✦ Rare</div>
-        </div>
-        <!-- Bottom -->
-        <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:10px 12px;">
-          <div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:#60a5facc;margin-bottom:2px;text-shadow:0 1px 10px #000;">Gnome Barbarian</div>
-          <div style="font-family:'Cinzel Decorative',serif;font-size:18px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:6px;text-shadow:0 2px 20px #000;">Alberich</div>
-          <div style="display:flex;gap:3px;margin-bottom:5px;"><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #60a5fa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#60a5fa;display:block;">⚔️</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#60a5fa88;display:block;">Fighter</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #60a5fa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#60a5fa;display:block;">V</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#60a5fa88;display:block;">Level</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #60a5fa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#60a5fa;display:block;">★★☆</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#60a5fa88;display:block;">Power</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #60a5fa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#60a5fa;display:block;">S7</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#60a5fa88;display:block;">Session</span>
-            </div></div>
-          <div style="display:flex;justify-content:space-between;border-top:1px solid #60a5fa22;padding-top:5px;">
-            <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#60a5fa55;">#0042 / 9999</span>
-            <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#60a5fa33;">ENDOCRAFT</span>
-          </div>
-        </div>
-        <!-- Holo -->
-        <div style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;"></div>
-      </div>
-    </div>
-    <!-- Card 3: Epic -->
-    <div class="lc-card" style="transform:rotate(6deg) translateY(20px);z-index:2;--border:rgba(167,139,250,0.5);--glow:rgba(167,139,250,0.12);--rc:#a78bfa;">
-      <div style="position:relative;background:#1a0a00;border-radius:18px;overflow:hidden;">
-        <img src="/caspian3.jpg" style="width:100%;display:block;aspect-ratio:3/4;object-fit:cover;object-position:center top;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);"></div>
-        <!-- Sparks -->
-        <div class="lc-sparks" data-color="#a78bfa" style="position:absolute;bottom:0;left:0;right:0;height:55%;z-index:2;pointer-events:none;overflow:hidden;"></div>
-        <!-- Top -->
-        <div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <img src="/IMG_8431.png" style="width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 5px #a78bfacc);">
-            <div>
-              <span style="font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:3px;color:#a78bfaaa;display:block;text-shadow:0 1px 8px #000;">EndoCraft</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#ffffff44;display:block;">Session VII</span>
-            </div>
-          </div>
-          <div style="background:rgba(5,0,20,0.8);backdrop-filter:blur(12px);border:1px solid rgba(167,139,250,0.3);border-radius:30px;padding:3px 8px;font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:2px;color:#a78bfa;">✦ Epic</div>
-        </div>
-        <!-- Bottom -->
-        <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:10px 12px;">
-          <div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:#a78bfacc;margin-bottom:2px;text-shadow:0 1px 10px #000;">Harengon Bard</div>
-          <div style="font-family:'Cinzel Decorative',serif;font-size:18px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:6px;text-shadow:0 2px 20px #000;">Caspian</div>
-          <div style="display:flex;gap:3px;margin-bottom:5px;"><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #a78bfa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#a78bfa;display:block;">🔥</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#a78bfa88;display:block;">Spell</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #a78bfa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#a78bfa;display:block;">VI</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#a78bfa88;display:block;">Level</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #a78bfa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#a78bfa;display:block;">★★★</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#a78bfa88;display:block;">Power</span>
-            </div><div style="flex:1;text-align:center;background:rgba(6,3,0,.75);backdrop-filter:blur(8px);border:1px solid #a78bfa22;border-radius:6px;padding:4px 2px;">
-              <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#a78bfa;display:block;">S7</span>
-              <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:#a78bfa88;display:block;">Session</span>
-            </div></div>
-          <div style="display:flex;justify-content:space-between;border-top:1px solid #a78bfa22;padding-top:5px;">
-            <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#a78bfa55;">#0007 / 9999</span>
-            <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:#a78bfa33;">ENDOCRAFT</span>
-          </div>
-        </div>
-        <!-- Holo -->
-        <div style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;"></div>
+        <div class="lholo"></div>
       </div>
     </div>
   </div>
-  <p style="text-align:center;font-size:13px;color:rgba(255,255,255,0.3);margin-top:8px;font-family:'Cinzel',serif;letter-spacing:2px;">Based on a true story. Caspian survived. Barely.</p>
+  <div class="cw p1" id="lw1" onclick="lpick(1)">
+    <div class="lcard" id="lc1" style="box-shadow:0 0 0 1.5px rgba(96,165,250,.4),0 20px 50px rgba(0,0,0,.95)">
+      <div class="lci">
+        <img src="/caspian2.jpg" alt="">
+        <div class="lov"></div>
+        <div class="lsparks" id="lsp1"></div>
+        <div class="lct">
+          <div class="lbr">
+            <img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px #60a5facc)">
+            <div><span class="lbn" style="color:#60a5fabb">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
+          </div>
+          <div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div>
+        </div>
+        <div class="lcb">
+          <div class="lcc" style="color:#60a5facc">Dwarf Fighter</div>
+          <div class="lcn">Alberich</div>
+          <div class="lct2">The Rage Potion</div>
+          <div class="lst"><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">⚜</span><span class="lsl" style="color:#60a5fa">Fighter</span></div><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">V</span><span class="lsl" style="color:#60a5fa">Level</span></div><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">✦✦</span><span class="lsl" style="color:#60a5fa">Power</span></div><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">S7</span><span class="lsl" style="color:#60a5fa">Session</span></div></div>
+          <div class="lsr" style="color:#60a5fa66">Alberich #002 / 9999</div>
+        </div>
+        <div class="lholo"></div>
+      </div>
+    </div>
+  </div>
+  <div class="cw p2" id="lw2" onclick="lpick(2)">
+    <div class="lcard" id="lc2" style="box-shadow:0 0 0 1.5px rgba(167,139,250,.4),0 20px 50px rgba(0,0,0,.95)">
+      <div class="lci">
+        <img src="/caspian3.jpg" alt="">
+        <div class="lov"></div>
+        <div class="lsparks" id="lsp2"></div>
+        <div class="lct">
+          <div class="lbr">
+            <img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px #a78bfacc)">
+            <div><span class="lbn" style="color:#a78bfabb">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
+          </div>
+          <div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div>
+        </div>
+        <div class="lcb">
+          <div class="lcc" style="color:#a78bfacc">Harengon Bard</div>
+          <div class="lcn">Caspian</div>
+          <div class="lct2">The Witch-Bog Ambush</div>
+          <div class="lst"><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">♩</span><span class="lsl" style="color:#a78bfa">Bard</span></div><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">VI</span><span class="lsl" style="color:#a78bfa">Level</span></div><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">✦✦✦</span><span class="lsl" style="color:#a78bfa">Power</span></div><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">S7</span><span class="lsl" style="color:#a78bfa">Session</span></div></div>
+          <div class="lsr" style="color:#a78bfa66">Caspian #002 / 9999</div>
+        </div>
+        <div class="lholo"></div>
+      </div>
+    </div>
+  </div>
+    </div>
+    <p class="lfan-hint">✦ Klick auf eine Karte ✦</p>
+  </div>
+  <p class="hero-note" style="margin-top:8px;">Based on a true story. Caspian survived. Barely.</p>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -749,6 +692,34 @@ document.querySelectorAll('.lc-sparks').forEach(function(el) {
     el.appendChild(s);
   }
 });
+</script>
+<script>
+(function(){
+  let active = null;
+  const ws=[0,1,2].map(i=>document.getElementById('lw'+i));
+  const cs=[0,1,2].map(i=>document.getElementById('lc'+i));
+  const pos=['p0','p1','p2'];
+  const labels=['Legendary · Caspian — The Flaming Net','Rare · Alberich — The Rage Potion','Epic · Caspian — The Witch-Bog Ambush'];
+  window.lpick=function(idx){
+    if(active===idx){active=null;ws.forEach((w,i)=>w.className='cw '+pos[i]);document.querySelector('.lfan-hint').textContent='✦ Klick auf eine Karte ✦';return;}
+    active=idx;
+    document.querySelector('.lfan-hint').textContent=labels[idx]+' · Nochmal klicken';
+    ws.forEach((w,i)=>w.className='cw '+(i===idx?'active':'inactive'));
+  };
+  ws.forEach((w,idx)=>{
+    w.addEventListener('mousemove',e=>{
+      if(active!==idx)return;
+      const r=cs[idx].getBoundingClientRect();
+      const dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);
+      cs[idx].style.transform=`rotateX(${-dy*16}deg) rotateY(${dx*16}deg)`;
+    });
+    w.addEventListener('mouseleave',()=>cs[idx].style.transform='');
+    w.addEventListener('touchmove',e=>{if(active!==idx)return;e.preventDefault();const t=e.touches[0];const r=cs[idx].getBoundingClientRect();const dx=(t.clientX-r.left-r.width/2)/(r.width/2),dy=(t.clientY-r.top-r.height/2)/(r.height/2);cs[idx].style.transform=`rotateX(${-dy*16}deg) rotateY(${dx*16}deg)`;},{passive:false});
+    w.addEventListener('touchend',()=>cs[idx].style.transform='');
+  });
+  const sc=[['#E8B86D','#FFD060','#FFF0A0'],['#60a5fa','#93c5fd','#bfdbfe'],['#a78bfa','#c4b5fd','#ddd6fe']];
+  for(let i=0;i<3;i++){const sp=document.getElementById('lsp'+i);for(let j=0;j<18;j++){const s=document.createElement('div');s.className='lspark';const sz=1.5+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[i][j%3]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;sp.appendChild(s);}}
+})();
 </script>
 </body>
 </html>
