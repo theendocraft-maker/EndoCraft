@@ -35,7 +35,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 3
 .cw.p2{transform:rotate(13deg) translateX(155px);z-index:1;}
 .cw.active{transform:rotate(0deg) translateX(0) translateY(-24px) scale(1.15) !important;z-index:10 !important;}
 .cw.inactive{opacity:0.35;transform:scale(0.87) translateY(14px) !important;z-index:1 !important;}
-.lcard{border-radius:16px;overflow:hidden;position:relative;transition:transform 0.08s ease;transform-style:preserve-3d;}
+.lcard{border-radius:16px;overflow:hidden;position:relative;transition:transform 0.08s ease;transform-style:preserve-3d;perspective:800px;}
 .lci{width:100%;aspect-ratio:3/4;background:#1a0a00;position:relative;overflow:hidden;}
 .lci img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
 .lov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);}
@@ -58,7 +58,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 3
 @keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}100%{background-position:0% 0%;}}
 .lsparks{position:absolute;bottom:0;left:0;right:0;height:50%;z-index:5;pointer-events:none;overflow:hidden;}
 .lspark{position:absolute;border-radius:50%;animation:lsr2 var(--d) var(--dl) ease-in infinite;opacity:0;}
-@keyframes lsr2{0%{transform:translateY(100%) scale(0);opacity:0;}15%{opacity:1;}80%{opacity:.3;}100%{transform:translateY(-60px) translateX(var(--rx)) scale(2);opacity:0;}}
+@keyframes lsr2{0%{transform:translateY(100%) translateX(0) scale(0);opacity:0;}15%{opacity:1;}80%{opacity:.3;}100%{transform:translateY(-60px) translateX(var(--rx,0px)) scale(2);opacity:0;}}
 .fan-hint{font-family:'Cinzel',serif;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:3px;text-align:center;margin-top:10px;}
 .hero-note{text-align:center;font-size:12px;color:rgba(255,255,255,.18);margin-top:6px;font-style:italic;}
 
@@ -106,7 +106,7 @@ footer a:hover{color:var(--text);}
 
 <nav>
   <a href="/" class="nav-logo">
-    <img src="/IMG_8431.png" alt="EndoCraft">
+    <img src="/IMG_8431.PNG" alt="EndoCraft">
     EndoCraft.
   </a>
   <a href="/scroll" class="nav-cta">Try for free →</a>
@@ -129,7 +129,7 @@ footer a:hover{color:var(--text);}
       <div class="cw p0" id="lw0" onclick="lpick(0)">
         <div class="lcard" id="lc0" style="box-shadow:0 0 0 1.5px rgba(232,184,109,.4),0 20px 50px rgba(0,0,0,.95);">
           <div class="lci"><img src="/caspian1.jpg" alt="Caspian"><div class="lov"></div><div class="lsparks" id="lsp0"></div>
-            <div class="lct"><div class="lbr"><img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px rgba(232,184,109,.8))"><div><span class="lbn" style="color:rgba(232,184,109,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div><div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div></div>
+            <div class="lct"><div class="lbr"><img src="/IMG_8431.PNG" style="filter:drop-shadow(0 0 4px rgba(232,184,109,.8))"><div><span class="lbn" style="color:rgba(232,184,109,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div><div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div></div>
             <div class="lcb"><div class="lcc" style="color:rgba(232,184,109,.9)">Harengon Bard</div><div class="lcn">Caspian</div><div class="lct2">The Flaming Net</div>
               <div class="lst">
                 <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D">♩</span><span class="lsl" style="color:#E8B86D">Bard</span></div>
@@ -146,7 +146,7 @@ footer a:hover{color:var(--text);}
       <div class="cw p1" id="lw1" onclick="lpick(1)">
         <div class="lcard" id="lc1" style="box-shadow:0 0 0 1.5px rgba(96,165,250,.4),0 20px 50px rgba(0,0,0,.95);">
           <div class="lci"><img src="/caspian2.jpg" alt="Alberich"><div class="lov"></div><div class="lsparks" id="lsp1"></div>
-            <div class="lct"><div class="lbr"><img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px rgba(96,165,250,.8))"><div><span class="lbn" style="color:rgba(96,165,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div><div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div></div>
+            <div class="lct"><div class="lbr"><img src="/IMG_8431.PNG" style="filter:drop-shadow(0 0 4px rgba(96,165,250,.8))"><div><span class="lbn" style="color:rgba(96,165,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div><div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div></div>
             <div class="lcb"><div class="lcc" style="color:rgba(96,165,250,.9)">Dwarf Fighter</div><div class="lcn">Alberich</div><div class="lct2">The Rage Potion</div>
               <div class="lst">
                 <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa">⚜</span><span class="lsl" style="color:#60a5fa">Fighter</span></div>
@@ -163,7 +163,7 @@ footer a:hover{color:var(--text);}
       <div class="cw p2" id="lw2" onclick="lpick(2)">
         <div class="lcard" id="lc2" style="box-shadow:0 0 0 1.5px rgba(167,139,250,.4),0 20px 50px rgba(0,0,0,.95);">
           <div class="lci"><img src="/caspian3.jpg" alt="Moment"><div class="lov"></div><div class="lsparks" id="lsp2"></div>
-            <div class="lct"><div class="lbr"><img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px rgba(167,139,250,.8))"><div><span class="lbn" style="color:rgba(167,139,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div><div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div></div>
+            <div class="lct"><div class="lbr"><img src="/IMG_8431.PNG" style="filter:drop-shadow(0 0 4px rgba(167,139,250,.8))"><div><span class="lbn" style="color:rgba(167,139,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div><div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div></div>
             <div class="lcb"><div class="lcc" style="color:rgba(167,139,250,.9)">Harengon Bard</div><div class="lcn">Caspian</div><div class="lct2">The Witch-Bog Ambush</div>
               <div class="lst">
                 <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa">◈</span><span class="lsl" style="color:#a78bfa">Spell</span></div>
