@@ -144,6 +144,32 @@ footer a:hover{color:var(--text);}
 .mcard-ghost-txt { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 2px; color: rgba(255,255,255,.25); text-align: center; line-height: 1.4; }
 .mobile-scroll-hint { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px; color: rgba(255,255,255,.15); padding: 4px 0 12px; }
 .mobile-hero-note { text-align: center; font-size: 11px; color: rgba(255,255,255,.15); font-style: italic; padding-bottom: 8px; }
+
+/* Card Modal */
+.card-modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(4,2,0,.92); backdrop-filter: blur(12px);
+  align-items: center; justify-content: center;
+}
+.card-modal-bg.open { display: flex; }
+.card-modal-inner {
+  width: min(300px, 85vw); position: relative;
+  animation: modalIn 0.35s cubic-bezier(.23,1.2,.32,1);
+}
+@keyframes modalIn { from { transform: scale(0.7) translateY(40px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+.card-modal-close {
+  position: absolute; top: -40px; right: 0;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px;
+  color: rgba(255,255,255,.3); cursor: pointer; padding: 8px;
+}
+.card-modal-close:hover { color: rgba(255,255,255,.6); }
+.modal-card { border-radius: 16px; overflow: hidden; position: relative; transform-style: preserve-3d; transition: transform 0.08s ease; }
+.modal-sparks { position: absolute; bottom: 0; left: 0; right: 0; height: 50%; z-index: 5; pointer-events: none; overflow: hidden; }
+
+.rarity-card {
+  background: var(--rc-dim); border: 1px solid var(--rc-border);
+  border-radius: 14px; padding: 24px;
+}
 </style>
 </head>
 <body>
@@ -227,155 +253,126 @@ footer a:hover{color:var(--text);}
 </div>
 
 <!-- HOW IT WORKS -->
-
-<!-- MOBILE SCROLL ROW -->
-<div class="mobile-scroll-wrap">
-  <div class="mobile-scroll-row">
-    <!-- Card 1 Legendary -->
-    <div class="mcard" style="box-shadow:0 0 0 1.5px rgba(232,184,109,.4),0 10px 30px rgba(0,0,0,.9);">
-      <div class="lci" style="border-radius:12px;overflow:hidden;">
-        <img src="/caspian1.jpg" alt="Caspian">
-        <div class="lov"></div>
-        <div class="lsparks" id="msp0"></div>
-        <div class="lholo"></div>
-        <div class="lct">
-          <div class="lbr"><img src="/IMG_8431.PNG" style="filter:drop-shadow(0 0 4px rgba(232,184,109,.8));width:16px;height:16px;"><div><span class="lbn" style="color:rgba(232,184,109,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div>
-          <div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div>
-        </div>
-        <div class="lcb">
-          <div class="lcc" style="color:rgba(232,184,109,.9)">Harengon Bard</div>
-          <div class="lcn" style="font-size:15px">Caspian</div>
-          <div class="lct2">The Flaming Net</div>
-          <div class="lst">
-            <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D;font-size:9px">♩</span><span class="lsl" style="color:#E8B86D">Bard</span></div>
-            <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D;font-size:9px">VI</span><span class="lsl" style="color:#E8B86D">Level</span></div>
-            <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D;font-size:9px">✦✦✦</span><span class="lsl" style="color:#E8B86D">Power</span></div>
-          </div>
-          <div class="lsr" style="color:rgba(232,184,109,.45)">Caspian #003</div>
-        </div>
-      </div>
-    </div>
-    <!-- Card 2 Rare -->
-    <div class="mcard" style="box-shadow:0 0 0 1.5px rgba(96,165,250,.4),0 10px 30px rgba(0,0,0,.9);">
-      <div class="lci" style="border-radius:12px;overflow:hidden;">
-        <img src="/caspian2.jpg" alt="Alberich">
-        <div class="lov"></div>
-        <div class="lsparks" id="msp1"></div>
-        <div class="lholo"></div>
-        <div class="lct">
-          <div class="lbr"><img src="/IMG_8431.PNG" style="filter:drop-shadow(0 0 4px rgba(96,165,250,.8));width:16px;height:16px;"><div><span class="lbn" style="color:rgba(96,165,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div>
-          <div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div>
-        </div>
-        <div class="lcb">
-          <div class="lcc" style="color:rgba(96,165,250,.9)">Dwarf Fighter</div>
-          <div class="lcn" style="font-size:15px">Alberich</div>
-          <div class="lct2">The Rage Potion</div>
-          <div class="lst">
-            <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa;font-size:9px">⚜</span><span class="lsl" style="color:#60a5fa">Fighter</span></div>
-            <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa;font-size:9px">V</span><span class="lsl" style="color:#60a5fa">Level</span></div>
-            <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa;font-size:9px">✦✦</span><span class="lsl" style="color:#60a5fa">Power</span></div>
-          </div>
-          <div class="lsr" style="color:rgba(96,165,250,.45)">Alberich #002</div>
-        </div>
-      </div>
-    </div>
-    <!-- Card 3 Epic -->
-    <div class="mcard" style="box-shadow:0 0 0 1.5px rgba(167,139,250,.4),0 10px 30px rgba(0,0,0,.9);">
-      <div class="lci" style="border-radius:12px;overflow:hidden;">
-        <img src="/caspian3.jpg" alt="Moment">
-        <div class="lov"></div>
-        <div class="lsparks" id="msp2"></div>
-        <div class="lholo"></div>
-        <div class="lct">
-          <div class="lbr"><img src="/IMG_8431.PNG" style="filter:drop-shadow(0 0 4px rgba(167,139,250,.8));width:16px;height:16px;"><div><span class="lbn" style="color:rgba(167,139,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div>
-          <div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div>
-        </div>
-        <div class="lcb">
-          <div class="lcc" style="color:rgba(167,139,250,.9)">Harengon Bard</div>
-          <div class="lcn" style="font-size:15px">Caspian</div>
-          <div class="lct2">Witch-Bog Ambush</div>
-          <div class="lst">
-            <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa;font-size:9px">◈</span><span class="lsl" style="color:#a78bfa">Spell</span></div>
-            <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa;font-size:9px">VI</span><span class="lsl" style="color:#a78bfa">Level</span></div>
-            <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa;font-size:9px">✦✦✦</span><span class="lsl" style="color:#a78bfa">Power</span></div>
-          </div>
-          <div class="lsr" style="color:rgba(167,139,250,.45)">Caspian #002</div>
-        </div>
-      </div>
-    </div>
-    <div class="mcard-ghost">
-      <div class="mcard-ghost-plus">✦</div>
-      <div class="mcard-ghost-txt">Your cards<br>await</div>
-    </div>
-  </div>
-  <div class="mobile-scroll-hint">swipe for more →</div>
-  <p class="mobile-hero-note">Based on a true story. Caspian survived. Barely.</p>
-</div>
-<section id="how">
+<section id="how" style="padding:80px 24px;max-width:900px;margin:0 auto;">
   <span class="section-tag">✦ How it works</span>
   <h2>Three steps. That's it.</h2>
   <div class="steps">
-    <div class="step"><span class="step-num">01</span><h3>Tell the story</h3><p>3 sentences or 3 pages — whatever you remember from your session.</p></div>
-    <div class="step"><span class="step-num">02</span><h3>Hit the button</h3><p>EndoCraft generates your summary, NPC log and image prompts in seconds.</p></div>
-    <div class="step"><span class="step-num">03</span><h3>Share with your group</h3><p>Copy the recap to your group chat. Share the images. Everyone remembers.</p></div>
+    <div class="step">
+      <span class="step-num">01</span>
+      <h3>Tell the story</h3>
+      <p>3 sentences or 3 pages — whatever you remember. No transcript, no recording needed.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">02</span>
+      <h3>Your card appears</h3>
+      <p>EndoCraft generates your session summary, NPC log — and a collectible trading card of your most epic moment.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">03</span>
+      <h3>Share with your party</h3>
+      <p>Send the link. Everyone sees their cards. Your campaign builds itself — session by session.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CARDS SYSTEM -->
+<section style="background:linear-gradient(to bottom, var(--bg), #0d0a18, var(--bg));padding:80px 0;">
+  <div style="max-width:900px;margin:0 auto;padding:0 24px;">
+    <span class="section-tag">✦ The Card System</span>
+    <h2>Every session becomes<br>a collectible.</h2>
+    <p style="color:var(--text-dim);font-size:15px;line-height:1.7;max-width:560px;margin-bottom:56px;">Each character gets their own card series. Each session adds new cards. Rarities are earned — not bought. Your campaign archive grows with every roll of the dice.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:56px;">
+      <div class="rarity-card" style="--rc:#E8B86D;--rc-dim:rgba(232,184,109,.08);--rc-border:rgba(232,184,109,.2);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-family:'Cinzel',serif;font-size:18px;color:#E8B86D;">✦</span>
+          <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#E8B86D;">Legendary</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">Reserved for the session's defining moment. The impossible roll. The sacrifice. The speech that changed everything.</p>
+      </div>
+      <div class="rarity-card" style="--rc:#a78bfa;--rc-dim:rgba(167,139,250,.08);--rc-border:rgba(167,139,250,.2);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-family:'Cinzel',serif;font-size:18px;color:#a78bfa;">★</span>
+          <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#a78bfa;">Epic</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">A turning point. A clever plan that actually worked. A moment your party will be quoting for months.</p>
+      </div>
+      <div class="rarity-card" style="--rc:#60a5fa;--rc-dim:rgba(96,165,250,.08);--rc-border:rgba(96,165,250,.2);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-family:'Cinzel',serif;font-size:18px;color:#60a5fa;">◆</span>
+          <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#60a5fa;">Rare</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">A solid win. A great roleplay moment. The kind of session beat that makes everyone lean forward.</p>
+      </div>
+      <div class="rarity-card" style="--rc:rgba(255,255,255,.4);--rc-dim:rgba(255,255,255,.04);--rc-border:rgba(255,255,255,.1);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-family:'Cinzel',serif;font-size:18px;color:rgba(255,255,255,.4);">◇</span>
+          <span style="font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,.4);">Common</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">Every session gets documented. Every character gets their portrait card. The foundation of your collection.</p>
+      </div>
+    </div>
+
+    <!-- Who gets cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+      <div style="background:rgba(123,108,246,.06);border:1px solid rgba(123,108,246,.15);border-radius:16px;padding:28px 24px;">
+        <div style="font-size:28px;margin-bottom:14px;">⚔️</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;">Players</h3>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">Each new player gets a Character Portrait card — the first entry in their personal series. As sessions progress, new moment cards are added to their collection.</p>
+      </div>
+      <div style="background:rgba(232,184,109,.05);border:1px solid rgba(232,184,109,.12);border-radius:16px;padding:28px 24px;">
+        <div style="font-size:28px;margin-bottom:14px;">📖</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;">Dungeon Masters</h3>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">DMs get a World Archive — cards for key NPCs, plot twists, and session-defining moments they created. Silver-bordered, distinctly yours.</p>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- FEATURES -->
-<section style="background:var(--bg2);padding:80px 24px;max-width:100%;">
-  <div style="max-width:900px;margin:0 auto;">
-    <span class="section-tag">✦ What you get</span>
-    <h2>Everything your table needs</h2>
-    <div class="features">
-      <div class="feat"><span class="feat-icon">📖</span><h3>Session Summary</h3><p>Key events, turning points and cliffhangers — short and punchy.</p><span class="feat-badge badge-free">FREE</span></div>
-      <div class="feat"><span class="feat-icon">🎭</span><h3>NPC Log</h3><p>Every character you met and whether to trust them.</p><span class="feat-badge badge-free">FREE</span></div>
-      <div class="feat"><span class="feat-icon">🃏</span><h3>Session Cards</h3><p>Your 3 most epic moments become collectible trading cards.</p><span class="feat-badge badge-viral">NEW</span></div>
-      <div class="feat"><span class="feat-icon">🧠</span><h3>Campaign Memory</h3><p>Your world builds up across sessions automatically.</p><span class="feat-badge badge-paid">PAID</span></div>
+<section style="padding:80px 24px;max-width:900px;margin:0 auto;">
+  <span class="section-tag">✦ What you get</span>
+  <h2>Everything your table needs</h2>
+  <div class="features">
+    <div class="feat">
+      <span class="feat-icon">🃏</span>
+      <h3>Session Cards</h3>
+      <p>Your most epic moments become collectible trading cards — with AI-generated art, rarity system, and holo effects.</p>
+      <span class="feat-badge badge-free">FREE</span>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">📖</span>
+      <h3>Session Summary</h3>
+      <p>Key events, turning points, and cliffhangers — short, punchy, and ready to share.</p>
+      <span class="feat-badge badge-free">FREE</span>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">🎭</span>
+      <h3>NPC Log</h3>
+      <p>Every character your party met, what they said, and whether to trust them.</p>
+      <span class="feat-badge badge-free">FREE</span>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">🧠</span>
+      <h3>Campaign Memory</h3>
+      <p>Your world builds up across sessions. NPCs remember. Lore compounds. Your story grows.</p>
+      <span class="feat-badge badge-paid">COMING SOON</span>
     </div>
   </div>
 </section>
 
-<!-- PRICING -->
-<section id="pricing">
-  <span class="section-tag">✦ Pricing</span>
-  <h2>Start free. Upgrade with your party.</h2>
-  <div class="pricing">
-    <div class="plan">
-      <div class="plan-name">Tavern</div>
-      <div class="plan-price">0€ <span>/mo</span></div>
-      <div class="plan-desc">Forever free</div>
-      <ul>
-        <li>3 sessions per month</li>
-        <li>Summary, NPC Log, Session Cards</li>
-        <li>Journal Entry &amp; Quest Tracker</li>
-      </ul>
-      <a href="/scroll" class="plan-btn secondary">Start for free</a>
+<!-- EMAIL SUBSCRIBE -->
+<section style="padding:80px 24px;text-align:center;">
+  <div style="max-width:560px;margin:0 auto;background:linear-gradient(135deg, rgba(123,108,246,.08) 0%, rgba(232,184,109,.05) 100%);border:1px solid rgba(123,108,246,.2);border-radius:24px;padding:56px 32px;">
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--accent);margin-bottom:20px;">✦ Early Access</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,34px);font-weight:800;line-height:1.2;margin-bottom:16px;">Be the first to<br>build your collection.</h2>
+    <p style="font-size:15px;color:var(--text-dim);line-height:1.6;margin-bottom:32px;">We're rolling out full card generation, campaign memory, and party features. Get early access before everyone else.</p>
+    <div style="display:flex;gap:8px;max-width:420px;margin:0 auto;" id="subForm">
+      <input type="email" id="subEmail" placeholder="your@email.com" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 16px;font-size:14px;color:white;font-family:'DM Sans',sans-serif;outline:none;">
+      <button onclick="subscribe()" style="background:var(--accent);color:white;border:none;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Join waitlist</button>
     </div>
-    <div class="plan featured">
-      <div class="plan-badge">Most Popular</div>
-      <div class="plan-name">Adventurer</div>
-      <div class="plan-price">5€ <span>/mo</span></div>
-      <div class="plan-desc">For the dedicated DM</div>
-      <ul>
-        <li>Unlimited sessions</li>
-        <li>Everything in Tavern</li>
-        <li>Campaign Memory</li>
-        <li>Full card collection</li>
-      </ul>
-      <a href="/scroll" class="plan-btn primary">Get started</a>
-    </div>
-    <div class="plan">
-      <div class="plan-name">Legend</div>
-      <div class="plan-price">12€ <span>/mo</span></div>
-      <div class="plan-desc">For power users</div>
-      <ul>
-        <li>Everything in Adventurer</li>
-        <li>Priority image generation</li>
-        <li>Custom card styles</li>
-        <li>Early access to new features</li>
-      </ul>
-      <a href="/scroll" class="plan-btn secondary">Go legendary</a>
-    </div>
+    <p style="font-size:12px;color:rgba(255,255,255,.2);margin-top:14px;">No spam. Unsubscribe anytime.</p>
+    <div id="subSuccess" style="display:none;color:#a78bfa;font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;margin-top:16px;">✦ You're on the list. We'll be in touch.</div>
   </div>
 </section>
 
@@ -413,6 +410,118 @@ footer a:hover{color:var(--text);}
   const sc=[['#E8B86D','#FFD060','#FFF0A0'],['#60a5fa','#93c5fd','#bfdbfe'],['#a78bfa','#c4b5fd','#ddd6fe']];
   for(let i=0;i<3;i++){const sp=document.getElementById('lsp'+i);for(let j=0;j<18;j++){const s=document.createElement('div');s.className='lspark';const sz=1.5+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[i][j%3]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;sp.appendChild(s);}}
 })();
+
+// Card Modal
+const modalData = [
+  {
+    img: '/caspian1.jpg', rc: '#E8B86D', bg: 'rgba(10,5,0,.85)', border: 'rgba(232,184,109,.35)',
+    pill: '✦ Legendary', charClass: 'Harengon Bard', name: 'Caspian', title: 'The Flaming Net',
+    stats: [['♩','Bard'],['VI','Level'],['✦✦✦','Power'],['S7','Session']], serial: 'Caspian #003 / 9999',
+    shadow: '0 0 0 1.5px rgba(232,184,109,.5), 0 30px 80px rgba(0,0,0,.95)'
+  },
+  {
+    img: '/caspian2.jpg', rc: '#60a5fa', bg: 'rgba(0,5,20,.85)', border: 'rgba(96,165,250,.35)',
+    pill: '◆ Rare', charClass: 'Dwarf Fighter', name: 'Alberich', title: 'The Rage Potion',
+    stats: [['⚜','Fighter'],['V','Level'],['✦✦','Power'],['S7','Session']], serial: 'Alberich #002 / 9999',
+    shadow: '0 0 0 1.5px rgba(96,165,250,.5), 0 30px 80px rgba(0,0,0,.95)'
+  },
+  {
+    img: '/caspian3.jpg', rc: '#a78bfa', bg: 'rgba(5,0,20,.85)', border: 'rgba(167,139,250,.35)',
+    pill: '★ Epic', charClass: 'Harengon Bard', name: 'Caspian', title: 'Witch-Bog Ambush',
+    stats: [['◈','Spell'],['VI','Level'],['✦✦✦','Power'],['S7','Session']], serial: 'Caspian #002 / 9999',
+    shadow: '0 0 0 1.5px rgba(167,139,250,.5), 0 30px 80px rgba(0,0,0,.95)'
+  }
+];
+
+window.openCard = function(idx) {
+  const d = modalData[idx];
+  document.getElementById('modalImg').src = d.img;
+  document.getElementById('modalCard').style.boxShadow = d.shadow;
+  document.getElementById('modalLogoFilter').style.filter = `drop-shadow(0 0 4px ${d.rc}cc)`;
+  document.getElementById('modalBrandName').style.color = d.rc + 'bb';
+  const pill = document.getElementById('modalPill');
+  pill.textContent = d.pill;
+  pill.style.cssText = `background:${d.bg};border:1px solid ${d.border};color:${d.rc};border-radius:30px;padding:3px 8px;font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:2px;backdrop-filter:blur(12px);`;
+  document.getElementById('modalClass').textContent = d.charClass;
+  document.getElementById('modalClass').style.color = d.rc + 'cc';
+  document.getElementById('modalName').textContent = d.name;
+  document.getElementById('modalTitle').textContent = d.title;
+  document.getElementById('modalSerial').textContent = d.serial;
+  document.getElementById('modalSerial').style.color = d.rc + '55';
+  const stats = document.getElementById('modalStats');
+  stats.innerHTML = d.stats.map(([v,l]) => `<div class="ls" style="border:1px solid ${d.rc}22"><span class="lsv" style="color:${d.rc}">${v}</span><span class="lsl" style="color:${d.rc}">${l}</span></div>`).join('');
+
+  // Sparks
+  const sp = document.getElementById('modalSparks');
+  sp.innerHTML = '';
+  for(let j=0;j<25;j++){const s=document.createElement('div');s.className='lspark';const sz=1.5+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${d.rc};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;sp.appendChild(s);}
+
+  document.getElementById('cardModal').classList.add('open');
+
+  // Touch tilt
+  const card = document.getElementById('modalCard');
+  card.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const r = card.getBoundingClientRect();
+    const dx = (t.clientX-r.left-r.width/2)/(r.width/2);
+    const dy = (t.clientY-r.top-r.height/2)/(r.height/2);
+    card.style.transform = `rotateX(${-dy*14}deg) rotateY(${dx*14}deg)`;
+  }, {passive:false});
+  card.addEventListener('touchend', () => card.style.transform = '');
+};
+
+window.closeCard = function() {
+  document.getElementById('cardModal').classList.remove('open');
+};
+
+window.closeModal = function(e) {
+  if(e.target === document.getElementById('cardModal')) closeCard();
+};
+
+
+async function subscribe() {
+  const email = document.getElementById('subEmail').value;
+  if (!email || !email.includes('@')) return;
+  try {
+    await fetch('https://endocraft-production.up.railway.app/api/subscribe', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, source: 'landing' })
+    });
+  } catch(e) {}
+  document.getElementById('subForm').style.display = 'none';
+  document.getElementById('subSuccess').style.display = 'block';
+}
+
 </script>
+
+<!-- CARD MODAL -->
+<div class="card-modal-bg" id="cardModal" onclick="closeModal(event)">
+  <div class="card-modal-inner" id="modalInner">
+    <div class="card-modal-close" onclick="closeCard()">✦ CLOSE</div>
+    <div class="modal-card" id="modalCard">
+      <div class="lci" style="border-radius:16px;overflow:hidden;">
+        <img id="modalImg" src="" alt="">
+        <div class="lov"></div>
+        <div class="modal-sparks" id="modalSparks"></div>
+        <div class="lholo"></div>
+        <div class="lct">
+          <div class="lbr">
+            <img src="/IMG_8431.PNG" style="width:20px;height:20px;object-fit:contain;" id="modalLogoFilter">
+            <div><span class="lbn" id="modalBrandName">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
+          </div>
+          <div class="lpill" id="modalPill"></div>
+        </div>
+        <div class="lcb">
+          <div class="lcc" id="modalClass"></div>
+          <div class="lcn" id="modalName"></div>
+          <div class="lct2" id="modalTitle"></div>
+          <div class="lst" id="modalStats"></div>
+          <div class="lsr" id="modalSerial"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
