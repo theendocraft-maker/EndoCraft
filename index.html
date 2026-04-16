@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoCraft — Make Your D&D Sessions Unforgettable</title>
 <meta name="description" content="Tell us what happened in your D&D session. We turn it into summaries, NPC logs and epic AI images. Free to try.">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #080810;
@@ -539,5 +539,37 @@ async function landingSubscribe() {
   }
 }
 </script>
+
+<script>
+// Hero card sparks
+const heroSparks = document.getElementById('heroSparks');
+if (heroSparks) {
+  const colors = ['#E8B86D','#FFD060','#FFF0A0','#C8900A'];
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'hc-spark';
+    const sz = 1.5 + Math.random() * 3.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${colors[Math.floor(Math.random()*colors.length)]};--d:${1.5+Math.random()*3.5}s;--dl:-${Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;
+    heroSparks.appendChild(s);
+  }
+  const scene = document.getElementById('heroScene');
+  const card = document.getElementById('heroCard');
+  const foil = document.getElementById('heroFoil');
+  function applyHero(x, y) {
+    const r = scene.getBoundingClientRect();
+    const dx = (x-r.left-r.width/2)/(r.width/2);
+    const dy = (y-r.top-r.height/2)/(r.height/2);
+    card.style.transform = `rotateX(${-dy*18}deg) rotateY(${dx*18}deg) scale(1.05)`;
+    foil.style.filter = `hue-rotate(${dx*60}deg) brightness(1.4)`;
+    card.classList.add('held');
+  }
+  function resetHero() { card.style.transform = ''; foil.style.filter = ''; card.classList.remove('held'); }
+  scene.addEventListener('mousemove', e => applyHero(e.clientX, e.clientY));
+  scene.addEventListener('mouseleave', resetHero);
+  scene.addEventListener('touchmove', e => { e.preventDefault(); applyHero(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+  scene.addEventListener('touchend', resetHero);
+}
+</script>
+
 </body>
 </html>
