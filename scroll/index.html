@@ -417,6 +417,17 @@ body {
 .es-btn:hover { opacity: 0.85; }
 .es-skip { font-size: 12px; color: var(--text-dim); cursor: pointer; text-align: center; transition: color 0.2s; }
 .es-skip:hover { color: var(--text-muted); }
+
+/* Style picker */
+.style-pick {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; transition: all 0.2s;
+  flex-shrink: 0;
+}
+.style-pick.active { border-color: var(--accent-border); background: var(--accent-dim); }
+.style-pick:hover { border-color: var(--border-hover); }
 </style>
 </head>
 <body>
@@ -443,6 +454,12 @@ body {
 
     <div class="story-box">
       <textarea class="story-textarea" id="storyInput" placeholder="We finally reached Baflorna's witch-bog...">We finally reached Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.</textarea>
+      <div style="display:flex;gap:6px;padding:12px 16px 0;">
+        <div class="style-pick active" data-style="oilpainting" onclick="pickStyle(this)" title="Oil Painting">🎨</div>
+        <div class="style-pick" data-style="mtg" onclick="pickStyle(this)" title="MTG Dark">⚔️</div>
+        <div class="style-pick" data-style="photo" onclick="pickStyle(this)" title="Photorealistic">📷</div>
+        <span style="font-size:11px;color:var(--text-dim);margin:auto 0;margin-left:4px;" id="styleLabel">Oil Painting</span>
+      </div>
       <div class="story-footer">
         <div class="examples">
           <div class="ex-chip" onclick="fillEx('caspian')">🐇 Caspian's Witch-Bog</div>
@@ -667,6 +684,73 @@ function buildSessionCard(data, story) {
     cliffhanger: cliffhanger,
     image_prompt: data.prompts ? data.prompts[0]?.prompt || '' : ''
   };
+}
+
+
+const STYLE_PROMPTS = {
+  oilpainting: 'cinematic fantasy oil painting style, warm dramatic lighting, rich textures, epic composition, painterly brushstrokes, golden atmospheric glow',
+  mtg: 'Magic the Gathering card art style, dark fantasy illustration, dramatic composition, gothic atmosphere, moody blue-green lighting, highly detailed',
+  photo: 'photorealistic, hyperdetailed fur texture, cinematic photography, 85mm lens, shallow depth of field, volumetric lighting, 8k resolution'
+};
+
+const STYLE_LABELS = {
+  oilpainting: 'Oil Painting',
+  mtg: 'MTG Dark',
+  photo: 'Photorealistic'
+};
+
+let currentImageStyle = 'oilpainting';
+
+function pickStyle(btn) {
+  document.querySelectorAll('.style-pick').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentImageStyle = btn.dataset.style;
+  document.getElementById('styleLabel').textContent = STYLE_LABELS[currentImageStyle];
+}
+
+async function generateSessionImage(data, story) {
+  // Build image prompt from first image prompt if available
+  const basePrompt = data.prompts && data.prompts[0] 
+    ? data.prompts[0].desc + ', ' + data.prompts[0].title
+    : story.substring(0, 100);
+  
+  const fullPrompt = basePrompt + ', ' + STYLE_PROMPTS[currentImageStyle] + ', no text, no watermark';
+  
+  try {
+    const res = await fetch(API.replace('/api/chat', '/api/image'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: fullPrompt,
+        model: 'bytedance/seedream-4-5'
+      })
+    });
+    const d = await res.json();
+    if (d.url) {
+      showGeneratedImage(d.url);
+    }
+  } catch(e) {
+    console.log('Image generation failed:', e.message);
+  }
+}
+
+function showGeneratedImage(url) {
+  const wrap = document.getElementById('sessionCardWrap');
+  if (!wrap) return;
+  
+  // Update card image if it exists
+  const existingImg = document.getElementById('cardGeneratedImg');
+  if (existingImg) {
+    existingImg.src = url;
+    existingImg.style.display = 'block';
+  } else {
+    // Add image to session card
+    const imgEl = document.createElement('img');
+    imgEl.id = 'cardGeneratedImg';
+    imgEl.src = url;
+    imgEl.style.cssText = 'width:100%;border-radius:12px;margin-bottom:12px;display:block;';
+    wrap.querySelector('.sc-body').insertBefore(imgEl, wrap.querySelector('.sc-body').firstChild);
+  }
 }
 
 let currentSessionId = null;
