@@ -4,414 +4,179 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoCraft — Make Your D&D Sessions Unforgettable</title>
-<meta name="description" content="Tell us what happened in your D&D session. We turn it into summaries, NPC logs and epic AI images. Free to try.">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;1,400&family=Cinzel+Decorative:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #080810;
-  --surface: #0f0f1a;
-  --surface2: #151522;
-  --border: rgba(255,255,255,0.06);
-  --accent: #7B6CF6;
-  --accent-dim: rgba(123,108,246,0.1);
-  --accent-border: rgba(123,108,246,0.25);
-  --gold: #E8B86D;
-  --text: #e8e8f0;
-  --text-muted: #6b6b88;
-  --text-dim: #3a3a55;
-  --green: #4CAF7D;
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--surface:#1a1a24;
+  --text:#f0eff4;--text-dim:#888;--border:rgba(255,255,255,0.07);
+  --accent:#7B6CF6;--accent-dim:rgba(123,108,246,0.12);
+  --gold:#E8B86D;
 }
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);text-decoration:none;}
+.nav-logo img{width:24px;height:24px;object-fit:contain;}
+.nav-cta{background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  overflow-x: hidden;
-}
+/* HERO */
+.hero{text-align:center;padding:60px 20px 40px;max-width:680px;margin:0 auto;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(123,108,246,0.1);border:1px solid rgba(123,108,246,0.25);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--accent);letter-spacing:2px;font-family:'Cinzel',serif;margin-bottom:24px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,6vw,52px);font-weight:800;line-height:1.1;margin-bottom:20px;}
+.hero h1 em{color:var(--gold);font-style:italic;font-family:'Syne',sans-serif;}
+.hero p{font-size:16px;color:var(--text-dim);line-height:1.6;margin-bottom:32px;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;}
+.btn-primary{background:var(--accent);color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-secondary{background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:10px;padding:12px 24px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;}
 
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 0 28px; height: 58px;
-  display: flex; align-items: center; justify-content: space-between;
-  background: rgba(8,8,16,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.nav-logo {
-  width: 30px; height: 30px; border-radius: 8px;
-  background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: white;
-}
-.nav-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
-.nav-name span { color: var(--accent); }
-.nav-cta {
-  font-size: 13px; font-weight: 600; color: white;
-  background: var(--accent); border-radius: 8px;
-  padding: 8px 18px; text-decoration: none; transition: opacity 0.2s;
-}
-.nav-cta:hover { opacity: 0.85; }
-
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center;
-  padding: 100px 24px 60px;
-  position: relative; overflow: hidden;
-}
-
-.glow {
-  position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
-  width: 700px; height: 500px;
-  background: radial-gradient(ellipse, rgba(123,108,246,0.12) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.hero-tag {
-  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
-  letter-spacing: 3px; text-transform: uppercase;
-  color: var(--accent); background: var(--accent-dim);
-  border: 1px solid var(--accent-border);
-  border-radius: 20px; padding: 5px 14px;
-  margin-bottom: 24px; display: inline-block;
-  animation: up 0.5s ease both;
-}
-
-h1 {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(36px, 7vw, 64px);
-  font-weight: 400; line-height: 1.1;
-  margin-bottom: 20px;
-  animation: up 0.5s 0.1s ease both;
-}
-h1 em { font-style: italic; color: var(--gold); }
-
-.hero-sub {
-  font-size: clamp(15px, 2.5vw, 18px);
-  color: var(--text-muted); max-width: 460px;
-  line-height: 1.6; margin-bottom: 36px;
-  animation: up 0.5s 0.2s ease both;
-}
-
-.hero-btns {
-  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-  margin-bottom: 56px;
-  animation: up 0.5s 0.3s ease both;
-}
-.btn-main {
-  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
-  letter-spacing: 1px; color: white; background: var(--accent);
-  border-radius: 10px; padding: 14px 28px; text-decoration: none;
-  transition: all 0.2s;
-}
-.btn-main:hover { opacity: 0.85; transform: translateY(-2px); }
-.btn-ghost {
-  font-size: 14px; color: var(--text-muted);
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 24px; text-decoration: none;
-  transition: all 0.2s;
-}
-.btn-ghost:hover { border-color: rgba(255,255,255,0.12); color: var(--text); }
-
-/* ── STORY CARDS ── */
-.story-cards { display: none; }
-.story-card { display: none; }
-.story-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.1); }
-
-.sc-caption {
-  padding: 10px 12px;
-  font-size: 12px; color: var(--text-muted);
-  border-top: 1px solid var(--border);
-  font-style: italic; line-height: 1.4;
-}
-.hero-note {
-  margin-top: 20px; font-size: 12px; color: var(--text-dim); font-style: italic;
-  animation: up 0.5s 0.5s ease both;
-}
-
-/* ── HOW ── */
-.how {
-  padding: 80px 24px;
-  max-width: 800px; margin: 0 auto;
-  text-align: center;
-}
-.section-tag {
-  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
-  letter-spacing: 3px; text-transform: uppercase; color: var(--accent);
-  margin-bottom: 14px; display: block;
-}
-.section-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: clamp(24px, 4vw, 36px); font-weight: 400;
-  margin-bottom: 48px; color: var(--text);
-}
-
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-.step {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; padding: 24px 20px; text-align: center;
-}
-.step-num {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--accent-dim); border: 1px solid var(--accent-border);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
-  color: var(--accent); margin: 0 auto 14px;
-}
-.step-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-.step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-
-/* ── WHAT YOU GET ── */
-.features {
-  padding: 80px 24px;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.features-inner { max-width: 800px; margin: 0 auto; text-align: center; }
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px; margin-top: 0;
-}
-.feat {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px;
-  text-align: left;
-}
-.feat-icon { font-size: 24px; margin-bottom: 10px; display: block; }
-.feat-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-.feat-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-.feat-tag {
-  display: inline-block; margin-top: 10px;
-  font-size: 10px; font-weight: 600; letter-spacing: 1px;
-  padding: 3px 8px; border-radius: 20px;
-}
-.tag-free { background: rgba(76,175,125,0.1); color: var(--green); border: 1px solid rgba(76,175,125,0.2); }
-.tag-viral { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
-.tag-paid { background: rgba(232,184,109,0.08); color: var(--gold); border: 1px solid rgba(232,184,109,0.2); }
-
-/* ── PRICING ── */
-.pricing {
-  padding: 80px 24px;
-  max-width: 800px; margin: 0 auto;
-  text-align: center;
-}
-
-.price-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px; margin-top: 0;
-}
-.price-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; padding: 24px;
-  text-align: left; position: relative;
-}
-.price-card.popular {
-  border: 2px solid var(--accent);
-}
-.popular-tag {
-  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-  background: var(--accent); color: white;
-  font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700;
-  letter-spacing: 1px; padding: 4px 12px; border-radius: 20px;
-  white-space: nowrap;
-}
-.price-tier {
-  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 10px;
-}
-.price-amount {
-  font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--text);
-  margin-bottom: 2px;
-}
-.price-amount span { font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-muted); }
-.price-note { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; }
-.price-feats { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-.price-feats li { font-size: 13px; color: var(--text-muted); display: flex; gap: 6px; }
-.price-feats li::before { content: '✓'; color: var(--accent); flex-shrink: 0; }
-.price-btn {
-  width: 100%; padding: 11px;
-  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
-  letter-spacing: 1px; border-radius: 8px; border: none;
-  cursor: pointer; text-decoration: none; display: block;
-  text-align: center; transition: all 0.2s;
-}
-.price-btn.fill { background: var(--accent); color: white; }
-.price-btn.fill:hover { opacity: 0.85; }
-.price-btn.outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-.price-btn.outline:hover { border-color: rgba(255,255,255,0.12); color: var(--text); }
-
-/* ── LINKS ── */
-.links {
-  padding: 60px 24px;
-  border-top: 1px solid var(--border);
-  text-align: center;
-}
-.links h2 {
-  font-family: 'DM Serif Display', serif; font-size: 24px;
-  color: var(--text); margin-bottom: 24px; font-weight: 400;
-}
-.links-row {
-  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-}
-.link-card {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 18px;
-  text-decoration: none; color: var(--text); transition: all 0.2s;
-}
-.link-card:hover { border-color: var(--accent-border); background: var(--accent-dim); }
-.lc-icon { font-size: 18px; }
-.lc-name { font-size: 13px; font-weight: 500; }
-.lc-desc { font-size: 11px; color: var(--text-muted); }
-
-/* ── FOOTER ── */
-footer {
-  padding: 24px; border-top: 1px solid var(--border);
-  text-align: center; font-size: 12px; color: var(--text-dim);
-}
-footer a { color: var(--text-muted); text-decoration: none; }
-
-/* ── ANIMATIONS ── */
-@keyframes up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 600px) {
-  .steps { grid-template-columns: 1fr; }
-  .story-card { display: none; }
-  .story-cards { display: none; }
-  h1 { font-size: 32px; }
-  nav .nav-cta { display: none; }
-}
+/* CARD FAN */
+.fan-wrap{width:100%;overflow:visible;padding:20px 0 30px;}
+.fan{display:flex;justify-content:center;align-items:flex-end;position:relative;height:420px;width:min(600px,92vw);margin:0 auto;}
+.cw{position:absolute;bottom:0;width:min(190px,55vw);transform-origin:bottom center;transition:transform 0.45s cubic-bezier(.23,1.2,.32,1);cursor:pointer;}
+.cw.p0{transform:rotate(-13deg) translateX(min(-130px,-37vw));z-index:1;}
+.cw.p1{transform:rotate(0deg) translateX(0);z-index:2;}
+.cw.p2{transform:rotate(13deg) translateX(min(130px,37vw));z-index:1;}
+.cw.active{transform:rotate(0deg) translateX(0) translateY(-24px) scale(1.15) !important;z-index:10 !important;}
+.cw.inactive{opacity:0.35;transform:scale(0.87) translateY(14px) !important;z-index:1 !important;}
+.lcard{border-radius:16px;overflow:hidden;position:relative;transition:transform 0.08s ease;transform-style:preserve-3d;}
+.lci{width:100%;aspect-ratio:3/4;background:#1a0a00;position:relative;overflow:hidden;}
+.lci img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.lov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);}
+.lct{position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
+.lbr{display:flex;align-items:center;gap:5px;}
+.lbr img{width:20px;height:20px;object-fit:contain;}
+.lbn{font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:3px;display:block;text-shadow:0 1px 8px #000;}
+.lbs{font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;color:rgba(255,255,255,.3);display:block;}
+.lpill{border-radius:30px;padding:3px 8px;font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:2px;backdrop-filter:blur(12px);}
+.lcb{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:10px 12px;}
+.lcc{font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;margin-bottom:2px;text-shadow:0 1px 10px #000;}
+.lcn{font-family:'Cinzel Decorative',serif;font-size:17px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:3px;text-shadow:0 2px 20px #000;}
+.lct2{font-family:'EB Garamond',serif;font-size:10px;font-style:italic;color:rgba(255,230,160,.5);margin-bottom:5px;text-shadow:0 1px 8px #000;}
+.lst{display:flex;gap:3px;margin-bottom:4px;}
+.ls{flex:1;text-align:center;backdrop-filter:blur(8px);border-radius:5px;padding:4px 2px;background:rgba(4,2,0,.85);}
+.lsv{font-family:'Cinzel',serif;font-size:10px;font-weight:700;display:block;line-height:1.1;}
+.lsl{font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;display:block;opacity:.55;margin-top:1px;}
+.lsr{font-family:'Cinzel',serif;font-size:5px;letter-spacing:2px;opacity:.35;}
+.lholo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:16px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:lholo 5s ease infinite;opacity:.7;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}100%{background-position:0% 0%;}}
+.lsparks{position:absolute;bottom:0;left:0;right:0;height:50%;z-index:5;pointer-events:none;overflow:hidden;}
+.lspark{position:absolute;border-radius:50%;animation:lsr2 var(--d) var(--dl) ease-in infinite;opacity:0;}
+@keyframes lsr2{0%{transform:translateY(100%) scale(0);opacity:0;}15%{opacity:1;}80%{opacity:.3;}100%{transform:translateY(-60px) translateX(var(--rx)) scale(2);opacity:0;}}
+.fan-hint{font-family:'Cinzel',serif;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:3px;margin-top:12px;text-align:center;}
+.hero-note{text-align:center;font-size:12px;color:rgba(255,255,255,.2);margin-top:6px;font-family:'DM Sans',sans-serif;font-style:italic;}
 </style>
-<!-- Privacy-friendly analytics by Plausible -->
-<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
-<script>
-  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-  plausible.init()
-</script>
 </head>
 <body>
 
 <nav>
-  <a class="nav-brand" href="#">
-    <div class="nav-logo">E</div>
-    <span class="nav-name">EndoCraft<span>.</span></span>
+  <a href="/" class="nav-logo">
+    <img src="/IMG_8431.png" alt="EndoCraft">
+    EndoCraft.
   </a>
-  <a class="nav-cta" href="/scroll">Try for free →</a>
+  <a href="/scroll" class="nav-cta">Try for free →</a>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="glow"></div>
-
-  <div class="hero-tag">✦ D&D Session Companion</div>
-
-  <h1>Your sessions deserve<br>to be <em>remembered.</em></h1>
-
-  <p class="hero-sub">Tell us what happened — we turn it into summaries, NPC logs and epic AI images. No setup. No transcript needed.</p>
-
-  <div class="hero-btns">
-    <a class="btn-main" href="/scroll">✦ Try for free</a>
-    <a class="btn-ghost" href="#how">See how it works</a>
+<section style="background:var(--bg);padding-bottom:20px;">
+  <div class="hero">
+    <div class="hero-tag">✦ D&D Session Companion</div>
+    <h1>Your sessions deserve<br>to be <em>remembered.</em></h1>
+    <p>Tell us what happened — we turn it into summaries,<br>NPC logs and epic AI images. No setup. No transcript needed.</p>
+    <div class="hero-btns">
+      <a href="/scroll" class="btn-primary">✦ Try for free</a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
   </div>
 
-  <!-- CARD FAN -->
-  <div style="margin-top:40px;">
+  <div class="fan-wrap">
     <div class="fan">
-  <div class="cw p0" id="lw0" onclick="lpick(0)">
-    <div class="lcard" id="lc0" style="box-shadow:0 0 0 1.5px rgba(232,184,109,.4),0 20px 50px rgba(0,0,0,.95)">
-      <div class="lci">
-        <img src="/caspian1.jpg" alt="">
-        <div class="lov"></div>
-        <div class="lsparks" id="lsp0"></div>
-        <div class="lct">
-          <div class="lbr">
-            <img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px #E8B86Dcc)">
-            <div><span class="lbn" style="color:#E8B86Dbb">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
+      <div class="cw p0" id="lw0" onclick="lpick(0)">
+        <div class="lcard" id="lc0" style="box-shadow:0 0 0 1.5px rgba(232,184,109,.4),0 20px 50px rgba(0,0,0,.95);">
+          <div class="lci">
+            <img src="/caspian1.jpg" alt="Caspian">
+            <div class="lov"></div>
+            <div class="lsparks" id="lsp0"></div>
+            <div class="lct">
+              <div class="lbr"><img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px rgba(232,184,109,.8))"><div><span class="lbn" style="color:rgba(232,184,109,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div>
+              <div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div>
+            </div>
+            <div class="lcb">
+              <div class="lcc" style="color:rgba(232,184,109,.9)">Harengon Bard</div>
+              <div class="lcn">Caspian</div>
+              <div class="lct2">The Flaming Net</div>
+              <div class="lst">
+                <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D">♩</span><span class="lsl" style="color:#E8B86D">Bard</span></div>
+                <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D">VI</span><span class="lsl" style="color:#E8B86D">Level</span></div>
+                <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D">✦✦✦</span><span class="lsl" style="color:#E8B86D">Power</span></div>
+                <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D">S7</span><span class="lsl" style="color:#E8B86D">Session</span></div>
+              </div>
+              <div class="lsr" style="color:rgba(232,184,109,.45)">Caspian #003 / 9999</div>
+            </div>
+            <div class="lholo"></div>
           </div>
-          <div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div>
         </div>
-        <div class="lcb">
-          <div class="lcc" style="color:#E8B86Dcc">Harengon Bard</div>
-          <div class="lcn">Caspian</div>
-          <div class="lct2">The Flaming Net</div>
-          <div class="lst"><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">♩</span><span class="lsl" style="color:#E8B86D">Bard</span></div><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">VI</span><span class="lsl" style="color:#E8B86D">Level</span></div><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">✦✦✦</span><span class="lsl" style="color:#E8B86D">Power</span></div><div class="ls" style="border:1px solid #E8B86D22"><span class="lsv" style="color:#E8B86D">S7</span><span class="lsl" style="color:#E8B86D">Session</span></div></div>
-          <div class="lsr" style="color:#E8B86D66">Caspian #003 / 9999</div>
+      </div>
+
+      <div class="cw p1" id="lw1" onclick="lpick(1)">
+        <div class="lcard" id="lc1" style="box-shadow:0 0 0 1.5px rgba(96,165,250,.4),0 20px 50px rgba(0,0,0,.95);">
+          <div class="lci">
+            <img src="/caspian2.jpg" alt="Alberich">
+            <div class="lov"></div>
+            <div class="lsparks" id="lsp1"></div>
+            <div class="lct">
+              <div class="lbr"><img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px rgba(96,165,250,.8))"><div><span class="lbn" style="color:rgba(96,165,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div>
+              <div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div>
+            </div>
+            <div class="lcb">
+              <div class="lcc" style="color:rgba(96,165,250,.9)">Dwarf Fighter</div>
+              <div class="lcn">Alberich</div>
+              <div class="lct2">The Rage Potion</div>
+              <div class="lst">
+                <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa">⚜</span><span class="lsl" style="color:#60a5fa">Fighter</span></div>
+                <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa">V</span><span class="lsl" style="color:#60a5fa">Level</span></div>
+                <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa">✦✦</span><span class="lsl" style="color:#60a5fa">Power</span></div>
+                <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa">S7</span><span class="lsl" style="color:#60a5fa">Session</span></div>
+              </div>
+              <div class="lsr" style="color:rgba(96,165,250,.45)">Alberich #002 / 9999</div>
+            </div>
+            <div class="lholo"></div>
+          </div>
         </div>
-        <div class="lholo"></div>
+      </div>
+
+      <div class="cw p2" id="lw2" onclick="lpick(2)">
+        <div class="lcard" id="lc2" style="box-shadow:0 0 0 1.5px rgba(167,139,250,.4),0 20px 50px rgba(0,0,0,.95);">
+          <div class="lci">
+            <img src="/caspian3.jpg" alt="Moment">
+            <div class="lov"></div>
+            <div class="lsparks" id="lsp2"></div>
+            <div class="lct">
+              <div class="lbr"><img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px rgba(167,139,250,.8))"><div><span class="lbn" style="color:rgba(167,139,250,.7)">EndoCraft</span><span class="lbs">Witchlight · S7</span></div></div>
+              <div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div>
+            </div>
+            <div class="lcb">
+              <div class="lcc" style="color:rgba(167,139,250,.9)">Harengon Bard</div>
+              <div class="lcn">Caspian</div>
+              <div class="lct2">The Witch-Bog Ambush</div>
+              <div class="lst">
+                <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa">◈</span><span class="lsl" style="color:#a78bfa">Spell</span></div>
+                <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa">VI</span><span class="lsl" style="color:#a78bfa">Level</span></div>
+                <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa">✦✦✦</span><span class="lsl" style="color:#a78bfa">Power</span></div>
+                <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa">S7</span><span class="lsl" style="color:#a78bfa">Session</span></div>
+              </div>
+              <div class="lsr" style="color:rgba(167,139,250,.45)">Caspian #002 / 9999</div>
+            </div>
+            <div class="lholo"></div>
+          </div>
+        </div>
       </div>
     </div>
+    <p class="fan-hint" id="lfhint">✦ Klick auf eine Karte ✦</p>
   </div>
-  <div class="cw p1" id="lw1" onclick="lpick(1)">
-    <div class="lcard" id="lc1" style="box-shadow:0 0 0 1.5px rgba(96,165,250,.4),0 20px 50px rgba(0,0,0,.95)">
-      <div class="lci">
-        <img src="/caspian2.jpg" alt="">
-        <div class="lov"></div>
-        <div class="lsparks" id="lsp1"></div>
-        <div class="lct">
-          <div class="lbr">
-            <img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px #60a5facc)">
-            <div><span class="lbn" style="color:#60a5fabb">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
-          </div>
-          <div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div>
-        </div>
-        <div class="lcb">
-          <div class="lcc" style="color:#60a5facc">Dwarf Fighter</div>
-          <div class="lcn">Alberich</div>
-          <div class="lct2">The Rage Potion</div>
-          <div class="lst"><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">⚜</span><span class="lsl" style="color:#60a5fa">Fighter</span></div><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">V</span><span class="lsl" style="color:#60a5fa">Level</span></div><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">✦✦</span><span class="lsl" style="color:#60a5fa">Power</span></div><div class="ls" style="border:1px solid #60a5fa22"><span class="lsv" style="color:#60a5fa">S7</span><span class="lsl" style="color:#60a5fa">Session</span></div></div>
-          <div class="lsr" style="color:#60a5fa66">Alberich #002 / 9999</div>
-        </div>
-        <div class="lholo"></div>
-      </div>
-    </div>
-  </div>
-  <div class="cw p2" id="lw2" onclick="lpick(2)">
-    <div class="lcard" id="lc2" style="box-shadow:0 0 0 1.5px rgba(167,139,250,.4),0 20px 50px rgba(0,0,0,.95)">
-      <div class="lci">
-        <img src="/caspian3.jpg" alt="">
-        <div class="lov"></div>
-        <div class="lsparks" id="lsp2"></div>
-        <div class="lct">
-          <div class="lbr">
-            <img src="/IMG_8431.png" style="filter:drop-shadow(0 0 4px #a78bfacc)">
-            <div><span class="lbn" style="color:#a78bfabb">EndoCraft</span><span class="lbs">Witchlight · S7</span></div>
-          </div>
-          <div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div>
-        </div>
-        <div class="lcb">
-          <div class="lcc" style="color:#a78bfacc">Harengon Bard</div>
-          <div class="lcn">Caspian</div>
-          <div class="lct2">The Witch-Bog Ambush</div>
-          <div class="lst"><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">♩</span><span class="lsl" style="color:#a78bfa">Bard</span></div><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">VI</span><span class="lsl" style="color:#a78bfa">Level</span></div><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">✦✦✦</span><span class="lsl" style="color:#a78bfa">Power</span></div><div class="ls" style="border:1px solid #a78bfa22"><span class="lsv" style="color:#a78bfa">S7</span><span class="lsl" style="color:#a78bfa">Session</span></div></div>
-          <div class="lsr" style="color:#a78bfa66">Caspian #002 / 9999</div>
-        </div>
-        <div class="lholo"></div>
-      </div>
-    </div>
-  </div>
-    </div>
-    <p class="lfan-hint">✦ Klick auf eine Karte ✦</p>
-  </div>
-  <p class="hero-note" style="margin-top:8px;">Based on a true story. Caspian survived. Barely.</p>
+  <p class="hero-note">Based on a true story. Caspian survived. Barely.</p>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -713,6 +478,33 @@ document.querySelectorAll('.lc-sparks').forEach(function(el) {
       const dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);
       cs[idx].style.transform=`rotateX(${-dy*16}deg) rotateY(${dx*16}deg)`;
     });
+    w.addEventListener('mouseleave',()=>cs[idx].style.transform='');
+    w.addEventListener('touchmove',e=>{if(active!==idx)return;e.preventDefault();const t=e.touches[0];const r=cs[idx].getBoundingClientRect();const dx=(t.clientX-r.left-r.width/2)/(r.width/2),dy=(t.clientY-r.top-r.height/2)/(r.height/2);cs[idx].style.transform=`rotateX(${-dy*16}deg) rotateY(${dx*16}deg)`;},{passive:false});
+    w.addEventListener('touchend',()=>cs[idx].style.transform='');
+  });
+  const sc=[['#E8B86D','#FFD060','#FFF0A0'],['#60a5fa','#93c5fd','#bfdbfe'],['#a78bfa','#c4b5fd','#ddd6fe']];
+  for(let i=0;i<3;i++){const sp=document.getElementById('lsp'+i);for(let j=0;j<18;j++){const s=document.createElement('div');s.className='lspark';const sz=1.5+Math.random()*3;s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[i][j%3]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;sp.appendChild(s);}}
+})();
+</script>
+</body>
+</html>
+
+
+<script>
+(function(){
+  let active=null;
+  const ws=[0,1,2].map(i=>document.getElementById('lw'+i));
+  const cs=[0,1,2].map(i=>document.getElementById('lc'+i));
+  const pos=['p0','p1','p2'];
+  const labels=['Legendary · Caspian — The Flaming Net','Rare · Alberich — The Rage Potion','Epic · Caspian — The Witch-Bog Ambush'];
+  window.lpick=function(idx){
+    if(active===idx){active=null;ws.forEach((w,i)=>w.className='cw '+pos[i]);document.getElementById('lfhint').textContent='✦ Klick auf eine Karte ✦';return;}
+    active=idx;
+    document.getElementById('lfhint').textContent=labels[idx]+' · Nochmal klicken';
+    ws.forEach((w,i)=>w.className='cw '+(i===idx?'active':'inactive'));
+  };
+  ws.forEach((w,idx)=>{
+    w.addEventListener('mousemove',e=>{if(active!==idx)return;const r=cs[idx].getBoundingClientRect();const dx=(e.clientX-r.left-r.width/2)/(r.width/2),dy=(e.clientY-r.top-r.height/2)/(r.height/2);cs[idx].style.transform=`rotateX(${-dy*16}deg) rotateY(${dx*16}deg)`;});
     w.addEventListener('mouseleave',()=>cs[idx].style.transform='');
     w.addEventListener('touchmove',e=>{if(active!==idx)return;e.preventDefault();const t=e.touches[0];const r=cs[idx].getBoundingClientRect();const dx=(t.clientX-r.left-r.width/2)/(r.width/2),dy=(t.clientY-r.top-r.height/2)/(r.height/2);cs[idx].style.transform=`rotateX(${-dy*16}deg) rotateY(${dx*16}deg)`;},{passive:false});
     w.addEventListener('touchend',()=>cs[idx].style.transform='');
