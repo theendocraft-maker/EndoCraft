@@ -434,9 +434,11 @@ body {
   gap: 3px; padding: 10px 6px; border-radius: 10px;
   background: var(--surface2); border: 1px solid var(--border);
   cursor: pointer; transition: all 0.2s; text-align: center;
+  user-select: none;
 }
+.style-pick-card * { pointer-events: none; }
 .style-pick-card:hover { border-color: var(--accent-border); }
-.style-pick-card.active { border-color: var(--accent-border); background: var(--accent-dim); }
+.style-pick-card.active { border-color: var(--accent-border); background: rgba(123,108,246,0.18); box-shadow: inset 0 0 0 1px var(--accent-border); }
 .spc-name { font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--text-primary); }
 .style-pick-card.active .spc-name { color: var(--accent); }
 .spc-desc { font-size: 10px; color: var(--text-dim); }
@@ -801,7 +803,8 @@ const STYLE_LABELS = {
 
 let currentImageStyle = 'oilpainting';
 
-function pickStyle(btn) {
+function pickStyle(el) {
+  const btn = el.closest ? el.closest('[data-style]') : el;
   document.querySelectorAll('.style-pick, .style-pick-card').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentImageStyle = btn.dataset.style;

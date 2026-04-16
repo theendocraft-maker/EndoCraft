@@ -170,6 +170,30 @@ footer a:hover{color:var(--text);}
   background: var(--rc-dim); border: 1px solid var(--rc-border);
   border-radius: 14px; padding: 24px;
 }
+
+@keyframes tapHint {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.96); }
+  70% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+@keyframes tapPulse {
+  0%,100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.45), 0 10px 30px rgba(0,0,0,.9); }
+  50% { box-shadow: 0 0 0 3px rgba(232,184,109,.7), 0 0 30px rgba(232,184,109,.2), 0 10px 30px rgba(0,0,0,.9); }
+}
+@media (max-width: 600px) {
+  .mcard { animation: tapPulse 2.5s ease infinite; }
+  .mcard:nth-child(2) { animation-delay: 0.8s; }
+  .mcard:nth-child(3) { animation-delay: 1.6s; }
+  .mcard:active { animation: tapHint 0.3s ease; }
+  .mobile-scroll-hint {
+    animation: fadeInOut 3s ease infinite;
+    font-size: 9px !important;
+  }
+  @keyframes fadeInOut {
+    0%,100% { opacity: .15; } 50% { opacity: .4; }
+  }
+}
 </style>
 </head>
 <body>
@@ -274,8 +298,8 @@ footer a:hover{color:var(--text);}
           <div class="lpill" style="background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.35);color:#E8B86D;">✦ Legendary</div>
         </div>
         <div class="lcb">
-          <div class="lcc" style="color:rgba(232,184,109,.9)">Harengon Bard</div>
           <div class="lcn" style="font-size:15px">Caspian</div>
+          <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(232,184,109,.6);margin-bottom:6px;text-shadow:0 1px 8px #000;">Harengon Bard · Lv VI</div>
           <div class="lct2">Character Portrait</div>
           <div class="lst">
             <div class="ls" style="border:1px solid rgba(232,184,109,.15)"><span class="lsv" style="color:#E8B86D;font-size:9px">♩</span><span class="lsl" style="color:#E8B86D">Bard</span></div>
@@ -302,8 +326,8 @@ footer a:hover{color:var(--text);}
           <div class="lpill" style="background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.35);color:#60a5fa;">◆ Rare</div>
         </div>
         <div class="lcb">
-          <div class="lcc" style="color:rgba(96,165,250,.9)">Dwarf Fighter</div>
           <div class="lcn" style="font-size:15px">Alberich</div>
+          <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(96,165,250,.6);margin-bottom:6px;text-shadow:0 1px 8px #000;">Dwarf Fighter · Lv V</div>
           <div class="lct2">The Rage Potion</div>
           <div class="lst">
             <div class="ls" style="border:1px solid rgba(96,165,250,.15)"><span class="lsv" style="color:#60a5fa;font-size:9px">⚜</span><span class="lsl" style="color:#60a5fa">Fighter</span></div>
@@ -330,8 +354,8 @@ footer a:hover{color:var(--text);}
           <div class="lpill" style="background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.35);color:#a78bfa;">★ Epic</div>
         </div>
         <div class="lcb">
-          <div class="lcc" style="color:rgba(167,139,250,.9)">Harengon Bard</div>
           <div class="lcn" style="font-size:15px">Caspian</div>
+          <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(167,139,250,.6);margin-bottom:6px;text-shadow:0 1px 8px #000;">Harengon Bard · Lv VI</div>
           <div class="lct2">Witch-Bog Ambush</div>
           <div class="lst">
             <div class="ls" style="border:1px solid rgba(167,139,250,.15)"><span class="lsv" style="color:#a78bfa;font-size:9px">◈</span><span class="lsl" style="color:#a78bfa">Spell</span></div>
