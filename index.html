@@ -36,10 +36,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 2
 /* CARD FAN */
 .fan-wrap{width:100%;overflow:visible;padding:20px 0 30px;}
 .fan{display:flex;justify-content:center;align-items:flex-end;position:relative;height:420px;width:min(600px,92vw);margin:0 auto;}
-.cw{position:absolute;bottom:0;width:min(190px,55vw);transform-origin:bottom center;transition:transform 0.45s cubic-bezier(.23,1.2,.32,1);cursor:pointer;}
-.cw.p0{transform:rotate(-13deg) translateX(min(-130px,-37vw));z-index:1;}
+.cw{position:absolute;bottom:0;left:50%;width:190px;margin-left:-95px;transform-origin:bottom center;transition:transform 0.45s cubic-bezier(.23,1.2,.32,1);cursor:pointer;}
+.cw.p0{transform:rotate(-13deg) translateX(-130px);z-index:1;}
 .cw.p1{transform:rotate(0deg) translateX(0);z-index:2;}
-.cw.p2{transform:rotate(13deg) translateX(min(130px,37vw));z-index:1;}
+.cw.p2{transform:rotate(13deg) translateX(130px);z-index:1;}
 .cw.active{transform:rotate(0deg) translateX(0) translateY(-24px) scale(1.15) !important;z-index:10 !important;}
 .cw.inactive{opacity:0.35;transform:scale(0.87) translateY(14px) !important;z-index:1 !important;}
 .lcard{border-radius:16px;overflow:hidden;position:relative;transition:transform 0.08s ease;transform-style:preserve-3d;}
