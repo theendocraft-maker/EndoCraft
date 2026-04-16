@@ -100,6 +100,24 @@ h2{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,38px);font-weight:800;
 footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--text-dim);font-size:13px;}
 footer a{color:var(--text-dim);text-decoration:none;margin:0 12px;}
 footer a:hover{color:var(--text);}
+
+@media (max-width: 600px) {
+  .hero { padding: 24px 20px 0; }
+  .hero h1 { font-size: 28px; margin-bottom: 12px; }
+  .hero p { font-size: 14px; margin-bottom: 20px; }
+  .hero-tag { font-size: 9px; padding: 4px 10px; margin-bottom: 16px; }
+  .hero-btns { gap: 8px; margin-bottom: 0; }
+  .btn-p, .btn-s { padding: 10px 18px; font-size: 13px; }
+  .fan { height: 360px; }
+  .cw { width: 160px; margin-left: -80px; }
+  .cw.p0 { transform: rotate(-13deg) translateX(-108px); }
+  .cw.p2 { transform: rotate(13deg) translateX(108px); }
+  .cw.active { transform: rotate(0deg) translateX(0) translateY(-16px) scale(1.1) !important; }
+  .lcn { font-size: 15px; }
+  .fan-wrap { padding: 8px 0 16px; }
+  nav { padding: 12px 16px; }
+  .nav-cta { padding: 7px 14px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
