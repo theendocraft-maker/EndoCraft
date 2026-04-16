@@ -347,22 +347,37 @@ footer a { color: var(--text-muted); text-decoration: none; }
     <a class="btn-ghost" href="#how">See how it works</a>
   </div>
 
-  <div class="story-cards">
-    <div class="story-card">
-      <img src="/caspian1.jpg" alt="Caspian the bard" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
-      <div class="sc-caption">Me before tonight's session 🎵</div>
-    </div>
-    <div class="story-card">
-      <img src="/caspian2.jpg" alt="Caspian thrown into a wall" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
-      <div class="sc-caption">Alberich drank a rage potion 💀</div>
-    </div>
-    <div class="story-card">
-      <img src="/caspian3.jpg" alt="Caspian throws flaming net" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
-      <div class="sc-caption">Still threw the flaming net 🔥</div>
+  <div class="hero-card-scene" id="heroScene">
+    <div class="hero-card" id="heroCard">
+      <div class="hc-foil" id="heroFoil"></div>
+      <div class="hc-img">
+        <img src="/caspian1.jpg" alt="Caspian">
+        <div class="hc-sparks" id="heroSparks"></div>
+        <div class="hc-top">
+          <div class="hc-brand">
+            <img src="/caspian1.jpg" alt="EC" style="border-radius:50%;width:20px;height:20px;object-fit:cover;">
+            <div><span class="hc-brand-name">EndoCraft</span><span class="hc-campaign">Witchlight · Session VII</span></div>
+          </div>
+          <div class="hc-rarity">✦ Legendary</div>
+        </div>
+        <div class="hc-bottom">
+          <div class="hc-class">Harengon Bard</div>
+          <div class="hc-name">Caspian</div>
+          <div class="hc-stats">
+            <div class="hc-stat"><span class="hc-sv">🎵</span><span class="hc-sl">Bard</span></div>
+            <div class="hc-stat"><span class="hc-sv">VI</span><span class="hc-sv" style="font-size:5px;color:rgba(232,184,109,0.5);">Level</span></div>
+            <div class="hc-stat"><span class="hc-sv">★★★</span><span class="hc-sl">Power</span></div>
+            <div class="hc-stat"><span class="hc-sv">S7</span><span class="hc-sl">Session</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span class="hc-serial">#0001 / 9999</span>
+            <span style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(232,184,109,0.2);">ENDOCRAFT</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <p class="hero-note">Based on a true story. Caspian survived. Barely.</p>
+  <p class="hero-note" style="margin-top:16px;">Based on a true story. Caspian survived. Barely.</p>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -571,5 +586,33 @@ if (heroSparks) {
 }
 </script>
 
+<script>
+const hs = document.getElementById('heroSparks');
+if (hs) {
+  const sc = ['#E8B86D','#FFD060','#FFF0A0','#C8900A'];
+  for (let i = 0; i < 25; i++) {
+    const s = document.createElement('div');
+    s.className = 'hc-spark';
+    const sz = 1.5 + Math.random() * 3.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[Math.floor(Math.random()*sc.length)]};--d:${1.5+Math.random()*3.5}s;--dl:-${Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;
+    hs.appendChild(s);
+  }
+  const scene = document.getElementById('heroScene');
+  const card = document.getElementById('heroCard');
+  const foil = document.getElementById('heroFoil');
+  function applyH(x,y) {
+    const r = scene.getBoundingClientRect();
+    const dx=(x-r.left-r.width/2)/(r.width/2), dy=(y-r.top-r.height/2)/(r.height/2);
+    card.style.transform=`rotateX(${-dy*18}deg) rotateY(${dx*18}deg) scale(1.05)`;
+    foil.style.filter=`hue-rotate(${dx*60}deg) brightness(1.4)`;
+    card.classList.add('held');
+  }
+  function resetH() { card.style.transform=''; foil.style.filter=''; card.classList.remove('held'); }
+  scene.addEventListener('mousemove',e=>applyH(e.clientX,e.clientY));
+  scene.addEventListener('mouseleave',resetH);
+  scene.addEventListener('touchmove',e=>{e.preventDefault();applyH(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+  scene.addEventListener('touchend',resetH);
+}
+</script>
 </body>
 </html>
