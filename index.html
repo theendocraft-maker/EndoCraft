@@ -121,24 +121,10 @@ h1 em { font-style: italic; color: var(--gold); }
 .btn-ghost:hover { border-color: rgba(255,255,255,0.12); color: var(--text); }
 
 /* ── STORY CARDS ── */
-.story-cards {
-  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-  max-width: 660px;
-  animation: up 0.5s 0.4s ease both;
-}
-.story-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden;
-  width: 220px; flex-shrink: 0;
-  transition: transform 0.2s, border-color 0.2s;
-}
+.story-cards { display: none; }
+.story-card { display: none; }
 .story-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.1); }
-.sc-img {
-  width: 100%; aspect-ratio: 1;
-  background: var(--surface2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 52px;
-}
+
 .sc-caption {
   padding: 10px 12px;
   font-size: 12px; color: var(--text-muted);
@@ -309,8 +295,8 @@ footer a { color: var(--text-muted); text-decoration: none; }
 
 @media (max-width: 600px) {
   .steps { grid-template-columns: 1fr; }
-  .story-card { width: 140px; }
-  .story-cards { gap: 8px; }
+  .story-card { display: none; }
+  .story-cards { display: none; }
   h1 { font-size: 32px; }
   nav .nav-cta { display: none; }
 }
