@@ -506,8 +506,8 @@ body {
       <div class="story-footer">
         <div class="examples">
           <div class="ex-chip" onclick="fillEx('caspian')">🐇 Caspian's Witch-Bog</div>
-          <div class="ex-chip" onclick="fillEx('tavern')">🍺 Bar fight</div>
-          <div class="ex-chip" onclick="fillEx('dragon')">🐉 Dragon encounter</div>
+          <div class="ex-chip" onclick="fillEx('tavern')">⚔️ Fortress siege</div>
+          <div class="ex-chip" onclick="fillEx('dragon')">💀 The Lich King</div>
         </div>
         <button class="gen-btn" id="genBtn" onclick="generate()">Make it legendary ✦</button>
       </div>
@@ -802,10 +802,11 @@ const STYLE_LABELS = {
 let currentImageStyle = 'oilpainting';
 
 function pickStyle(btn) {
-  document.querySelectorAll('.style-pick').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.style-pick, .style-pick-card').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentImageStyle = btn.dataset.style;
-  document.getElementById('styleLabel').textContent = STYLE_LABELS[currentImageStyle];
+  const lbl = document.getElementById('styleLabel');
+  if (lbl) lbl.textContent = STYLE_LABELS[currentImageStyle];
 }
 
 
@@ -1060,8 +1061,8 @@ function copyShareLink() {
 
 const EXAMPLES = {
   caspian: `We finally reached Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.`,
-  tavern: `The party stopped at the Rusty Flagon for a drink. Gorath tried to arm-wrestle the barkeep for free ale, rolled a 2, and knocked over three tables. The whole tavern erupted into a brawl. Seraphine tried to cast Calm Emotions but only succeeded on the barkeep's dog. We escaped through the kitchen window with half a wheel of cheese and a new bounty on our heads.`,
-  dragon: `We stumbled into what we thought was an empty cave — it wasn't. A young green dragon named Verathrax was sleeping on a pile of stolen goods. Mira tried to sneak past. Nat 1. The dragon woke up and asked, very politely, why we were in her home. Thorben bluffed that we were exterminators. She believed him. We now have an ongoing contract to clear kobolds from the eastern tunnels.`
+  tavern: `The fortress gates were sealed and the dragon circled overhead. Seraphine had one scroll of Dimension Door, one chance. She grabbed Torvan — the gravely wounded paladin — and stepped through reality itself, reappearing inside the enemy command tent. Torvan raised his holy symbol and called down radiant fire. The dragon shrieked and broke off its assault. The gates held. The battle turned. Nobody expected a half-elf warlock and a dying paladin to save the entire city.`,
+  dragon: `The lich opened the Tomb of the Forgotten King and raised every knight buried within — three hundred skeletal warriors in gleaming armor. Drakon didn't hesitate. He channeled his last spell slot, called upon his god, and cast Earthquake. The tomb collapsed. The army crumbled. But Drakon was buried under forty feet of stone. The party spent the next six hours digging him out by hand. He was alive. Barely. He rolled a 1 on his death save and then a 20 on his inspiration. We're still not over it.`
 };
 
 const STYLE_SUFFIXES = {
