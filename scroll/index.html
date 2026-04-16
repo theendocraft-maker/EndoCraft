@@ -471,7 +471,7 @@ body {
   </a>
   <div class="topbar-right">
     <span class="sessions-pill" id="sessionsPill">3 free sessions</span>
-    <a class="topbar-link" href="https://endocraft.app#pricing">Upgrade →</a>
+    
   </div>
 </div>
 
@@ -523,7 +523,7 @@ body {
     <div class="loading-steps">
       <div class="loading-step active" id="ls1"><span class="step-dot"></span>Analyzing your session</div>
       <div class="loading-step" id="ls2"><span class="step-dot"></span>Generating summary & NPC log</div>
-      <div class="loading-step" id="ls3"><span class="step-dot"></span>Creating image prompts</div>
+      
     </div>
   </div>
 
@@ -544,7 +544,7 @@ body {
         <div id="tcCard" style="border-radius:18px;overflow:hidden;position:relative;transform-style:preserve-3d;transition:transform 0.08s ease;cursor:pointer;animation:tcGlow 4s ease infinite;">
           <div id="tcFoil" style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:tcHolo 6s ease infinite;opacity:.8;"></div>
           <div id="tcImgWrap" style="position:relative;background:#1a0a00;">
-            <img id="tcImg" src="" alt="" style="width:min(300px,85vw);aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;">
+            <img id="tcImg" src="" alt="" style="width:min(300px,85vw);aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;background:linear-gradient(160deg,#1a0a00,#2a1505,#0a0f1a);min-height:200px;">
             <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);"></div>
             <div id="tcSparks" style="position:absolute;bottom:0;left:0;right:0;height:55%;z-index:2;pointer-events:none;overflow:hidden;"></div>
             <!-- Top -->
@@ -610,13 +610,7 @@ body {
       <div class="r-card-body" id="bodyNpc"></div>
     </div>
 
-    <!-- Prompts -->
-    <div id="promptsSection" style="display:none;">
-      <span class="prompts-label">Image Prompts</span>
-      <div id="promptsGrid"></div>
-    </div>
-
-    <!-- More options toggle -->
+        <!-- More options toggle -->
     <button style="background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text-muted);font-size:13px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;" onclick="toggleMore(this)">
       ⚙ Customize — choose outputs & style
     </button>
@@ -630,7 +624,7 @@ body {
           <div class="toggle on" data-out="npc" onclick="toggleOut(this)">NPC Log</div>
           <div class="toggle" data-out="quest" onclick="toggleOut(this)">Quest Tracker</div>
           <div class="toggle" data-out="journal" onclick="toggleOut(this)">Journal Entry</div>
-          <div class="toggle on" data-out="prompts" onclick="toggleOut(this)">Image Prompts</div>
+          
         </div>
       </div>
       <div>
@@ -707,10 +701,7 @@ body {
       <div class="es-skip" onclick="dismissEmail()">No thanks</div>
     </div>
 
-    <!-- Upgrade nudge -->
-    <div class="upgrade-nudge" id="upgradeNudge" style="display:none;">
-      <div class="un-text"><strong>You've used your free sessions.</strong><br>Upgrade with your party — split €5/mo between 6 players.</div>
-      <button class="un-btn" onclick="window.open('https://endocraft.app#pricing','_blank')">Upgrade →</button>
+          <button class="un-btn" onclick="window.open('https://endocraft.app#pricing','_blank')">Upgrade →</button>
     </div>
 
   </div>
@@ -816,6 +807,7 @@ function pickStyle(el) {
 function showTradingCard(data) {
   const wrap = document.getElementById('tradingCardWrap');
   wrap.style.display = 'block';
+  wrap.scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('shareRow').style.display = 'flex';
   
   // Fill card data
@@ -838,10 +830,6 @@ function showTradingCard(data) {
     <div style="flex:1;text-align:center;background:rgba(4,2,0,.85);border:1px solid rgba(232,184,109,.15);border-radius:5px;padding:5px 3px;">
       <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#E8B86D;display:block;">${date}</span>
       <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:rgba(232,184,109,.5);display:block;">Date</span>
-    </div>
-    <div style="flex:1;text-align:center;background:rgba(4,2,0,.85);border:1px solid rgba(232,184,109,.15);border-radius:5px;padding:5px 3px;">
-      <span style="font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#E8B86D;display:block;">✦✦✦</span>
-      <span style="font-family:'Cinzel',serif;font-size:5px;letter-spacing:1px;color:rgba(232,184,109,.5);display:block;">Power</span>
     </div>
   `;
   
@@ -1074,7 +1062,7 @@ const STYLE_SUFFIXES = {
   comic: 'cartoon comic style, expressive characters, bold outlines, vibrant colors, humorous exaggerated expressions'
 };
 
-let activeOutputs = new Set(['summary','npc','prompts']);
+let activeOutputs = new Set(['summary','npc']);
 let selectedStyle = 'oilpainting';
 let sessionsUsed = parseInt(localStorage.getItem('ec_sessions') || '0');
 let loadingTimer;
@@ -1153,7 +1141,7 @@ async function generate() {
   const npcPart = outs.includes('npc') ? '"npc": NPC log as plain text string. One line per NPC: "Name — role: one sentence." Max 5 NPCs. No JSON objects inside, just plain text.' : '';
   const questPart = outs.includes('quest') ? '"quest": Quest tracker as plain text string. Format each section on its own line: Active: ... / New clues: ... / Open questions: ... Keep it brief.' : '';
   const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from the main character\'s perspective. Atmospheric fantasy prose, written by candlelight.' : '';
-  const promptsPart = outs.includes('prompts') ? '"prompts": Array of 3 objects, each: {"title":"6 words max","desc":"one sentence what happened","prompt":"50-80 word English image prompt with character description, scene, atmosphere, ending with: ' + styleSuffix + '"}' : '';
+  const promptsPart = '';
 
   const system = 'You are an expert D&D chronicler and creative writer. Based on the player\'s session description, create the requested outputs.\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
 
