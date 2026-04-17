@@ -1348,6 +1348,7 @@ async function generate() {
 
     document.getElementById('loadingOverlay').classList.remove('visible');
     const cardData = buildSessionCard(data, story);
+    document.getElementById('stepInput').style.display = 'none';
     document.getElementById('resultsView').classList.add('visible');
     showTradingCard(data);
     // Show hero selection modal
@@ -1355,6 +1356,7 @@ async function generate() {
     window._pendingImageStory = story;
     const hm = document.getElementById('heroModal');
     hm.style.display = 'flex';
+    hm.style.flexDirection = 'column';
     setTimeout(() => document.getElementById('charInput')?.focus(), 100);
     setTimeout(showEmailSignup, 2000);
 
@@ -1372,8 +1374,9 @@ async function generate() {
 
 function showResult(cardId, bodyId, content, show) {
   const card = document.getElementById(cardId);
-  if (content && show) {
-    document.getElementById(bodyId).textContent = content;
+  const body = document.getElementById(bodyId);
+  if (content && show && body) {
+    body.textContent = content;
     if(card) card.style.display = 'block';
   } else {
     card.style.display = 'none';
