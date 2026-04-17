@@ -978,19 +978,18 @@ async function generateSessionImage(data, story) {
   const charInput = charMatch ? charMatch[1].trim() : '';
   
   // Build prompt: character always in foreground
-  // Scene-first prompt — like a movie poster or book cover
-  const sceneDesc = moment || title || summary.substring(0, 150);
-  const charPart = charInput ? ', featuring ' + charInput : ', featuring a fantasy hero';
+  // Use raw story for most accurate image — scene first
+  const rawStory = document.getElementById('storyInput')?.value || story;
+  const sceneDesc = rawStory.substring(0, 300);
   
-  // Style-specific composition hints
   const styleComposition = {
-    photo: 'wide cinematic shot, dramatic depth of field, golden hour lighting, photorealistic, 8k, hyperdetailed',
-    oilpainting: 'epic fantasy oil painting, wide establishing shot, dramatic lighting, rich colors, painterly, cinematic composition',
-    mtg: 'Magic the Gathering card art, wide panoramic scene, dark dramatic atmosphere, gothic fantasy, highly detailed illustration'
+    photo: 'photorealistic, cinematic photography, dramatic lighting, 8k hyperdetailed, shallow depth of field',
+    oilpainting: 'epic fantasy oil painting, dramatic lighting, rich colors, painterly brushwork, cinematic composition',
+    mtg: 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'
   };
   const composition = styleComposition[currentImageStyle] || styleComposition.photo;
   
-  const prompt = 'Epic D&D scene: ' + sceneDesc + charPart + ', dramatic wide-angle composition, environment and action visible, ' + composition + ', no text, no letters, no writing, no watermark, vertical format';
+  const prompt = sceneDesc + ', ' + composition + ', vertical portrait format, no text, no letters, no writing, no watermark';
 
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
