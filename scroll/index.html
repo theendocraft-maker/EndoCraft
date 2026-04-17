@@ -652,7 +652,7 @@ body {
     </div>
 
     <!-- TRADING CARD — PRIMARY OUTPUT -->
-    <div id="tradingCardWrap" style="display:none;">
+    <div id="tradingCardWrap" style="display:none;" onclick="openCardModal()" title="Tap to expand">
       <div style="perspective:1000px;margin:0 auto;width:fit-content;" id="tcScene">
         <div id="tcCard" style="border-radius:18px;overflow:hidden;position:relative;transform-style:preserve-3d;transition:transform 0.08s ease;cursor:pointer;animation:tcGlow 4s ease infinite;width:min(300px,85vw);margin:0 auto;">
           <div id="tcFoil" style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:tcHolo 6s ease infinite;opacity:.8;"></div>
@@ -690,6 +690,7 @@ body {
           </div>
         </div>
       </div>
+      <div style="text-align:center;margin-top:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.2);cursor:pointer;" onclick="openCardModal()">✦ tap to expand</div>
       <!-- Loading state -->
       <div id="tcImgLoading" style="display:none;text-align:center;padding:8px 0;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);">
         <span style="animation:pulse 1.5s ease infinite;display:inline-block;">✦ Generating your card image…</span>
@@ -820,8 +821,8 @@ body {
     <div class="share-link-box" id="shareLinkBox" onclick="copyShareLink()">Generating link…</div>
 
 
-    <!-- Email Signup -->
-    <div class="email-signup" id="emailSignup">
+    <!-- Email Signup (hidden - using Save Card CTA instead) -->
+    <div class="email-signup" id="emailSignup" style="display:none!important;">
       <div class="es-title">✦ Stay in the loop</div>
       <div class="es-sub">Get notified when we launch Campaign Memory, Party Codes and more.</div>
       <div class="es-row">
@@ -1442,7 +1443,7 @@ Return ONLY the JSON object. No markdown. No explanation.`;
     document.getElementById('resultsView').classList.add('visible');
     showTradingCard(data);
     generateSessionImage(data, story);
-    setTimeout(showEmailSignup, 2000);
+    // emailSignup removed - using cardSubscribeCta instead
 
   } catch(e) {
     console.error('Generate error:', e.stack || e.message);
