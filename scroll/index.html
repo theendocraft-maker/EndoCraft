@@ -335,11 +335,10 @@ body {
 
 @media (max-width: 500px) {
   .topbar { padding: 14px 16px; }
-  .story-footer { flex-direction: column; align-items: stretch; }
-  .examples { display: none; }
-  .gen-btn { width: 100%; text-align: center; }
-  .story-footer { flex-direction: column; gap: 10px; }
-  .examples { order: 2; }
+  .story-footer { flex-direction: column; gap: 10px; align-items: stretch; }
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; order: 2; }
+  .ex-chip { font-size: 12px; padding: 8px 14px; min-height: 38px; touch-action: manipulation; -webkit-tap-highlight-color: rgba(123,108,246,0.2); }
+  .gen-btn { width: 100%; text-align: center; order: 1; }
   .style-row { flex-direction: column; }
 }
 
@@ -988,7 +987,7 @@ async function generateSessionImage(data, story) {
   
   const styleComposition = {
     photo: 'photorealistic, cinematic photography, dramatic lighting, 8k hyperdetailed, shallow depth of field',
-    comic: 'comic book illustration, bold ink outlines, vibrant saturated colors, dynamic action lines, Marvel fantasy art style, highly detailed',
+    comic: 'comic book illustration, bold ink outlines, vibrant colors, dynamic action, Marvel fantasy art, no speech bubbles, no text, no captions, no words',
     oilpainting: 'epic fantasy oil painting, dramatic lighting, rich colors, painterly brushwork, cinematic composition',
     mtg: 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'
   };
@@ -1226,14 +1225,14 @@ function copyShareLink() {
 
 
 const EXAMPLES = {
-  caspian: `Caspian is on fire in a dark swamp. He throws a burning rope net over three swamp monsters. He grins despite being at 1 HP. My character: Caspian, a small rabbit-person bard, brown fur, blue shirt, brown vest.`,
+  caspian: `Caspian is on fire in a dark swamp. He throws a burning net over three swamp monsters. He grins despite being at 1 HP. My character: Caspian, a small rabbit-person bard, brown fur, blue shirt, brown vest.`,
   tavern: `Lyra fires her last arrow directly into the eye of a black dragon diving at her. The dragon crashes behind her. She doesn't move. My character: Lyra, wood elf ranger, green cloak, auburn braided hair, wooden bow.`,
   dragon: `Brother Aldric raises his iron holy symbol in a graveyard at night. A burst of golden light erupts and 20 zombies around him crumble to ash. My character: Brother Aldric, elderly human cleric, white robes, grey beard, iron cross.`
 };
 
 window.STYLE_SUFFIXES = window.STYLE_SUFFIXES || {};
 const STYLE_SUFFIXES = window.STYLE_SUFFIXES = {
-  comic: 'comic book illustration style, bold ink outlines, vibrant colors, dynamic action lines, Marvel fantasy art, highly detailed',
+  comic: 'comic book illustration style, bold ink outlines, vibrant colors, dynamic action lines, Marvel fantasy art, no speech bubbles, no text boxes, no captions, no words, highly detailed',
   oilpainting: 'oil painting style, cinematic fantasy art, dramatic lighting, rich textures, epic composition, warm atmospheric glow',
   mtg: 'Magic the Gathering card art style, dark fantasy illustration, dramatic composition, gothic atmosphere, moody lighting',
   comic: 'cartoon comic style, expressive characters, bold outlines, vibrant colors, humorous exaggerated expressions'
