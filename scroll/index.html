@@ -551,11 +551,11 @@ body {
     <p class="step-sub">Describe the scene, the characters, the moment that mattered. The more vivid — the better your card.</p>
 
     <div class="story-box">
-      <textarea class="story-textarea" id="storyInput" placeholder="We finally reached Baflorna's witch-bog...">We finally reached Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.</textarea>
+      <textarea class="story-textarea" id="storyInput" placeholder="We finally reached Baflorna's witch-bog...">The ancient black dragon Malachar descended on our camp at dawn — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.</textarea>
       <div style="padding:12px 16px 0;">
         <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;font-family:'Cinzel',serif;margin-bottom:8px;">✦ CHOOSE YOUR STYLE</div>
         <div style="display:flex;gap:8px;">
-          <div class="style-pick-card active" data-style="oilpainting" onclick="pickStyle(this)">
+          <div class="style-pick-card" data-style="oilpainting" onclick="pickStyle(this)">
             <span style="font-size:18px;">🎨</span>
             <span class="spc-name">Oil Painting</span>
             <span class="spc-desc">Epic & cinematic</span>
@@ -565,7 +565,7 @@ body {
             <span class="spc-name">MTG Dark</span>
             <span class="spc-desc">Dark & dramatic</span>
           </div>
-          <div class="style-pick-card" data-style="photo" onclick="pickStyle(this)">
+          <div class="style-pick-card active" data-style="photo" onclick="pickStyle(this)">
             <span style="font-size:18px;">📷</span>
             <span class="spc-name">Photorealistic</span>
             <span class="spc-desc">Hyper-detailed</span>
@@ -875,7 +875,7 @@ const STYLE_LABELS = {
   photo: 'Photorealistic'
 };
 
-let currentImageStyle = window.currentImageStyle = 'oilpainting';
+let currentImageStyle = window.currentImageStyle = 'photo';
 
 function pickStyle(el) {
   const btn = el.closest ? el.closest('[data-style]') : el;
@@ -976,8 +976,11 @@ async function generateSessionImage(data, story) {
   
   // Build prompt: character always in foreground
   let charDesc = charInput ? charInput + ', ' : 'fantasy hero, ';
-  let sceneDesc = moment || title || summary.substring(0, 100);
-  const prompt = charDesc + 'close-up portrait in foreground, dramatic action moment: ' + sceneDesc + ', epic D&D scene, ' + styleSuffix + ', vertical portrait composition, character fills frame, no text, no watermark';
+  let sceneDesc = moment || title || summary.substring(0, 120);
+  // Extract key action verb for better composition
+  const actionWords = sceneDesc.match(/(fires?|shoots?|cast|summon|strikes?|charges?|leaps?|dodge|slash|stab|raises?|calls?)/i);
+  const actionHint = actionWords ? 'mid-action ' + actionWords[0] + ', ' : 'dramatic action pose, ';
+  const prompt = charDesc + actionHint + 'extreme close-up portrait, face and upper body filling frame, with ' + sceneDesc + ' happening in dramatic background, epic D&D fantasy, ' + styleSuffix + ', vertical portrait, character dominant in foreground, no text, no watermark';
 
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
