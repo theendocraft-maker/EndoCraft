@@ -889,9 +889,10 @@ function pickStyle(el) {
 
 function showTradingCard(data) {
   const wrap = document.getElementById('tradingCardWrap');
+  if (!wrap) return;
   wrap.style.display = 'block';
   wrap.scrollIntoView({behavior:'smooth', block:'start'});
-  document.getElementById('shareRow').style.display = 'flex';
+  const _sr = document.getElementById('shareRow'); if (_sr) _sr.style.display = 'flex';
   
   // Fill card data from data object directly
   const shortTitle = data.session_title || 'Session Recap';
@@ -1157,8 +1158,8 @@ async function saveCard() {
       body: JSON.stringify({ email, source: 'card', session_title: document.getElementById('tcName')?.textContent })
     });
   } catch(e) {}
-  document.getElementById('cardSubForm').style.display = 'none';
-  document.getElementById('cardSubSuccess').style.display = 'block';
+  const _csf = document.getElementById('cardSubForm'); if (_csf) _csf.style.display = 'none';
+  const _css = document.getElementById('cardSubSuccess'); if (_css) _css.style.display = 'block';
   localStorage.setItem('ec_email_subscribed', 'true');
 }
 
@@ -1295,7 +1296,7 @@ async function generate() {
   const btn = document.getElementById('genBtn');
   btn.disabled = true;
 
-  document.getElementById('stepInput').style.display = 'none';
+    const _si5 = document.getElementById('stepInput'); if(_si5) _si5.style.display = 'none';
   document.getElementById('resultsView').classList.remove('visible');
   document.getElementById('errorMsg').classList.remove('visible');
   document.getElementById('loadingOverlay').classList.add('visible');
@@ -1348,7 +1349,7 @@ async function generate() {
 
     document.getElementById('loadingOverlay').classList.remove('visible');
     const cardData = buildSessionCard(data, story);
-    document.getElementById('stepInput').style.display = 'none';
+    const _si = document.getElementById('stepInput'); if(_si) _si.style.display = 'none';
     document.getElementById('resultsView').classList.add('visible');
     showTradingCard(data);
     // Show hero selection modal
@@ -1363,7 +1364,7 @@ async function generate() {
   } catch(e) {
     clearInterval(loadingTimer);
     document.getElementById('loadingOverlay').classList.remove('visible');
-    document.getElementById('stepInput').style.display = 'flex';
+    const _si3 = document.getElementById('stepInput'); if(_si3) _si3.style.display = 'flex';
     const em = document.getElementById('errorMsg');
     em.textContent = 'Something went wrong: ' + e.message + ' — please try again.';
     em.classList.add('visible');
@@ -1414,7 +1415,7 @@ function newSession() {
   document.getElementById('resultsView').classList.remove('visible');
   document.getElementById('errorMsg').classList.remove('visible');
   document.getElementById('storyInput').value = '';
-  document.getElementById('stepInput').style.display = 'flex';
+  const _si4 = document.getElementById('stepInput'); if(_si4) _si4.style.display = 'flex';
   document.getElementById('storyInput').focus();
   window.scrollTo(0, 0);
 }
