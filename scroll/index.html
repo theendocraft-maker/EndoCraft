@@ -898,7 +898,9 @@ function showTradingCard(data) {
   const shortTitle = data.session_title || 'Session Recap';
   const subtitle = data.legendary_moment || 'A moment for the ages';
   
-  const charVal = window._heroName || document.getElementById('charInput')?.value?.trim() || '';
+  const storyTextForCard = document.getElementById('storyInput')?.value || '';
+  const charMatchCard = storyTextForCard.match(/[Mm]y character is ([^,]+)/);
+  const charVal = charMatchCard ? charMatchCard[1].trim() : '';
   document.getElementById('tcClass').textContent = charVal ? charVal.split(',')[1]?.trim() || charVal : '';
   document.getElementById('tcName').textContent = shortTitle;
   document.getElementById('tcMoment').textContent = subtitle;
@@ -967,7 +969,10 @@ async function generateSessionImage(data, story) {
   const summary = data.summary || story;
   const title = data.session_title || '';
   const moment = data.legendary_moment || '';
-  const charInput = window._heroName || document.getElementById('charInput')?.value?.trim() || '';
+  // Extract character description from story if mentioned
+  const storyText = document.getElementById('storyInput')?.value || story;
+  const charMatch = storyText.match(/[Mm]y character is ([^.]+)/);
+  const charInput = charMatch ? charMatch[1].trim() : '';
   
   // Build prompt: character always in foreground
   let charDesc = charInput ? charInput + ', ' : 'fantasy hero, ';
@@ -1096,21 +1101,6 @@ async function subscribeEmail() {
 
 
 
-
-function confirmHero(skip) {
-  const hm = document.getElementById('heroModal');
-  if (hm) hm.style.display = 'none';
-  if (!skip) {
-    // Copy value to charInput for the prompt builder
-    const val = document.getElementById('charInput')?.value || '';
-    window._heroName = val;
-  } else {
-    window._heroName = '';
-  }
-  if (window._pendingImageData) {
-    generateSessionImage(window._pendingImageData, window._pendingImageStory);
-  }
-}
 
 function openCardModal() {
   const modal = document.getElementById('tcModal');
@@ -1352,18 +1342,7 @@ async function generate() {
     const _si = document.getElementById('stepInput'); if(_si) _si.style.display = 'none';
     document.getElementById('resultsView').classList.add('visible');
     showTradingCard(data);
-    // Show hero selection modal
-    window._pendingImageData = data;
-    window._pendingImageStory = story;
-    const hm = document.getElementById('heroModal');
-    if (hm) {
-      hm.style.display = 'flex';
-      hm.style.flexDirection = 'column';
-      setTimeout(() => document.getElementById('charInput')?.focus(), 100);
-    } else {
-      // heroModal not found - generate image directly
-      generateSessionImage(data, story);
-    }
+    generateSessionImage(data, story);
     setTimeout(showEmailSignup, 2000);
 
   } catch(e) {
