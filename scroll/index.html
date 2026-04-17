@@ -897,7 +897,7 @@ function showTradingCard(data) {
   const shortTitle = data.session_title || 'Session Recap';
   const subtitle = data.legendary_moment || 'A moment for the ages';
   
-  const charVal = document.getElementById('charInput')?.value?.trim() || '';
+  const charVal = window._heroName || document.getElementById('charInput')?.value?.trim() || '';
   document.getElementById('tcClass').textContent = charVal ? charVal.split(',')[1]?.trim() || charVal : '';
   document.getElementById('tcName').textContent = shortTitle;
   document.getElementById('tcMoment').textContent = subtitle;
@@ -966,7 +966,7 @@ async function generateSessionImage(data, story) {
   const summary = data.summary || story;
   const title = data.session_title || '';
   const moment = data.legendary_moment || '';
-  const charInput = document.getElementById('charInput')?.value?.trim() || '';
+  const charInput = window._heroName || document.getElementById('charInput')?.value?.trim() || '';
   
   // Build prompt: character always in foreground
   let charDesc = charInput ? charInput + ', ' : 'fantasy hero, ';
@@ -1094,6 +1094,22 @@ async function subscribeEmail() {
 
 
 
+
+
+function confirmHero(skip) {
+  const hm = document.getElementById('heroModal');
+  hm.style.display = 'none';
+  if (!skip) {
+    // Copy value to charInput for the prompt builder
+    const val = document.getElementById('charInput')?.value || '';
+    window._heroName = val;
+  } else {
+    window._heroName = '';
+  }
+  if (window._pendingImageData) {
+    generateSessionImage(window._pendingImageData, window._pendingImageStory);
+  }
+}
 
 function openCardModal() {
   const modal = document.getElementById('tcModal');
@@ -1334,7 +1350,12 @@ async function generate() {
     const cardData = buildSessionCard(data, story);
     document.getElementById('resultsView').classList.add('visible');
     showTradingCard(data);
-    generateSessionImage(data, story);
+    // Show hero selection modal
+    window._pendingImageData = data;
+    window._pendingImageStory = story;
+    const hm = document.getElementById('heroModal');
+    hm.style.display = 'flex';
+    setTimeout(() => document.getElementById('charInput')?.focus(), 100);
     setTimeout(showEmailSignup, 2000);
 
   } catch(e) {
