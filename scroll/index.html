@@ -1099,7 +1099,7 @@ async function subscribeEmail() {
 
 function confirmHero(skip) {
   const hm = document.getElementById('heroModal');
-  hm.style.display = 'none';
+  if (hm) hm.style.display = 'none';
   if (!skip) {
     // Copy value to charInput for the prompt builder
     const val = document.getElementById('charInput')?.value || '';
@@ -1356,12 +1356,18 @@ async function generate() {
     window._pendingImageData = data;
     window._pendingImageStory = story;
     const hm = document.getElementById('heroModal');
-    hm.style.display = 'flex';
-    hm.style.flexDirection = 'column';
-    setTimeout(() => document.getElementById('charInput')?.focus(), 100);
+    if (hm) {
+      hm.style.display = 'flex';
+      hm.style.flexDirection = 'column';
+      setTimeout(() => document.getElementById('charInput')?.focus(), 100);
+    } else {
+      // heroModal not found - generate image directly
+      generateSessionImage(data, story);
+    }
     setTimeout(showEmailSignup, 2000);
 
   } catch(e) {
+    console.error('Generate error:', e.stack || e.message);
     clearInterval(loadingTimer);
     document.getElementById('loadingOverlay').classList.remove('visible');
     const _si3 = document.getElementById('stepInput'); if(_si3) _si3.style.display = 'flex';
