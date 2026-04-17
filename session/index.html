@@ -3,222 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft — Session</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>EndoCraft — Session Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@1,400&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #080810;
-  --surface: #0f0f1a;
-  --border: rgba(255,255,255,0.06);
-  --accent: #7B6CF6;
-  --accent-dim: rgba(123,108,246,0.12);
-  --accent-border: rgba(123,108,246,0.25);
-  --gold: #E8B86D;
-  --text: #e8e8f0;
-  --text-muted: #6b6b88;
-  --text-dim: #3a3a55;
-}
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg); color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 40px 20px 80px;
-}
-
-.topbar {
-  width: 100%; max-width: 480px;
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 40px;
-}
-.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
-.brand-mark {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; color: white;
-}
-.brand-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
-.brand-name span { color: var(--accent); }
-.try-btn {
-  font-size: 12px; font-weight: 600; color: white;
-  background: var(--accent); border-radius: 8px;
-  padding: 7px 16px; text-decoration: none;
-}
-
-/* Loading */
-.loading {
-  display: flex; flex-direction: column; align-items: center; gap: 16px;
-  padding: 60px 20px; color: var(--text-muted); font-style: italic;
-}
-.loading-ring {
-  width: 36px; height: 36px;
-  border: 2px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Card */
-.card-wrap { width: 100%; max-width: 480px; }
-.card {
-  background: #ffffff; border-radius: 20px;
-  overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-}
-.card-accent { height: 5px; background: linear-gradient(to right, #7B6CF6, #E8B86D); }
-.card-body { padding: 22px; }
-.card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.card-campaign { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600; color: #7B6CF6; letter-spacing: 1px; }
-.card-date { font-size: 11px; color: #aaaaaa; }
-.card-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: #111; margin-bottom: 8px; line-height: 1.2; }
-.card-mvp { font-size: 12px; color: #7B6CF6; font-weight: 500; margin-bottom: 14px; }
-.card-moments { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-.card-moment {
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 10px 12px; background: #f5f5f8; border-radius: 10px;
-  font-size: 13px; color: #555; line-height: 1.4;
-}
-.card-num { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: #7B6CF6; flex-shrink: 0; margin-top: 1px; }
-.card-cliffhanger {
-  font-size: 12px; color: #888; font-style: italic;
-  padding: 10px 12px; background: #fff8ee; border-radius: 8px;
-  border-left: 3px solid #E8B86D; margin-bottom: 14px;
-}
-.card-npc { margin-bottom: 14px; }
-.card-npc-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
-.card-npc-text { font-size: 13px; color: #666; line-height: 1.6; }
-.card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid #eeeeee; }
-.card-players { font-size: 11px; color: #aaaaaa; }
-.card-logo { font-family: 'Syne', sans-serif; font-size: 10px; color: #aaaaaa; font-weight: 700; letter-spacing: 1px; }
-
-/* CTA */
-.cta-box {
-  margin-top: 24px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 20px; text-align: center;
-}
-.cta-text { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
-.cta-text strong { color: var(--text); }
-.cta-btn {
-  display: block; width: 100%; padding: 13px;
-  background: var(--accent); color: white;
-  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-  letter-spacing: 1px; border-radius: 10px; text-decoration: none;
-  transition: opacity 0.2s;
-}
-.cta-btn:hover { opacity: 0.85; }
-
-.error-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-.error-state h2 { font-size: 20px; color: var(--text); margin-bottom: 8px; }
+body { background: #06030a; color: #e8e8f0; font-family: "DM Sans", sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 20px 80px; }
+.topbar { width: 100%; max-width: 500px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.try-btn { font-size: 12px; font-weight: 600; color: white; background: #7B6CF6; border-radius: 8px; padding: 8px 16px; text-decoration: none; }
+#tcScene { perspective: 1200px; margin: 0 auto; width: fit-content; }
+#tcCard { width: min(300px, 88vw); border-radius: 20px; position: relative; overflow: hidden; transform-style: preserve-3d; cursor: pointer; animation: tcAutoSpin 8s ease-in-out infinite, tcGlow 4s ease infinite; }
+@keyframes tcAutoSpin { 0% { transform: rotateX(3deg) rotateY(-10deg); } 25% { transform: rotateX(-4deg) rotateY(8deg); } 50% { transform: rotateX(4deg) rotateY(12deg); } 75% { transform: rotateX(-3deg) rotateY(-7deg); } 100% { transform: rotateX(3deg) rotateY(-10deg); } }
+@keyframes tcGlow { 0%,100% { box-shadow: 0 0 0 1px rgba(232,184,109,.15), 0 20px 60px rgba(0,0,0,.95); } 50% { box-shadow: 0 0 0 2px rgba(232,184,109,.4), 0 0 60px rgba(232,184,109,.12), 0 20px 80px rgba(0,0,0,.95); } }
+.tc-foil { position: absolute; inset: 0; z-index: 20; pointer-events: none; border-radius: 20px; mix-blend-mode: color-dodge; background: linear-gradient(135deg, rgba(255,0,80,.03) 0%, rgba(255,160,0,.05) 14%, rgba(0,255,120,.05) 42%, rgba(0,200,255,.05) 56%, rgba(255,0,80,.03) 100%); background-size: 200% 200%; animation: tcHolo 6s ease infinite; opacity: .7; }
+@keyframes tcHolo { 0% { background-position: 0% 0%; opacity: .7; } 50% { background-position: 100% 100%; opacity: 1; } 100% { background-position: 0% 0%; opacity: .7; } }
+#tcImgWrap { width: 100%; position: relative; background: linear-gradient(160deg,#1a0a00,#2a1505,#0a0f1a); }
+#tcImg { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; object-position: center top; opacity: 0; transition: opacity 0.5s ease; }
+#tcImgWrap::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(6,3,0,.65) 0%, transparent 22%, transparent 45%, rgba(6,3,0,.6) 65%, rgba(4,2,0,.98) 84%, rgba(4,2,0,1) 100%); }
+.tc-sparks { position: absolute; bottom: 0; left: 0; right: 0; height: 55%; z-index: 2; pointer-events: none; overflow: hidden; }
+.tc-spark { position: absolute; border-radius: 50%; animation: tcSpark var(--d) var(--dl) ease-in infinite; opacity: 0; }
+@keyframes tcSpark { 0% { transform: translateY(100%) scale(0); opacity: 0; } 15% { opacity: 1; } 80% { opacity: .3; } 100% { transform: translateY(-60px) translateX(var(--rx,0)) scale(2.5); opacity: 0; } }
+.tc-top { position: absolute; top: 0; left: 0; right: 0; z-index: 10; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+.tc-brand { display: flex; align-items: center; gap: 6px; }
+.tc-brand img { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(232,184,109,.9)); }
+.tc-brand-name { font-family: "Cinzel", serif; font-size: 7px; font-weight: 700; letter-spacing: 3px; color: rgba(232,184,109,.65); display: block; text-shadow: 0 1px 8px #000; }
+.tc-brand-sub { font-family: "Cinzel", serif; font-size: 6px; letter-spacing: 2px; color: rgba(255,240,200,.35); display: block; }
+.tc-pill { background: rgba(10,5,0,.8); backdrop-filter: blur(12px); border: 1px solid rgba(232,184,109,.3); border-radius: 30px; padding: 4px 10px; font-family: "Cinzel", serif; font-size: 7px; font-weight: 700; letter-spacing: 2px; color: #E8B86D; }
+.tc-bottom { position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; padding: 12px 14px; }
+.tc-class { font-family: "Cinzel", serif; font-size: 7px; letter-spacing: 3px; color: rgba(232,184,109,.85); margin-bottom: 3px; text-shadow: 0 1px 10px #000; }
+.tc-name { font-family: "Cinzel Decorative", serif; font-size: 18px; font-weight: 700; color: #fffbf0; line-height: 1.1; margin-bottom: 3px; text-shadow: 0 2px 20px #000; }
+.tc-moment { font-family: "EB Garamond", serif; font-size: 12px; font-style: italic; color: rgba(255,230,160,.55); margin-bottom: 8px; text-shadow: 0 1px 8px #000; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tc-stats { display: flex; gap: 4px; margin-bottom: 6px; }
+.tc-stat { flex: 1; text-align: center; background: rgba(6,3,0,.75); backdrop-filter: blur(8px); border: 1px solid rgba(232,184,109,.1); border-radius: 6px; padding: 5px 3px; }
+.tc-sv { font-family: "Cinzel", serif; font-size: 11px; font-weight: 700; color: #E8B86D; display: block; }
+.tc-sl { font-family: "Cinzel", serif; font-size: 5px; letter-spacing: 1px; color: rgba(232,184,109,.5); display: block; margin-top: 1px; }
+.tc-footer { display: flex; justify-content: space-between; border-top: 1px solid rgba(232,184,109,.1); padding-top: 5px; }
+.tc-serial { font-family: "Cinzel", serif; font-size: 6px; letter-spacing: 2px; color: rgba(232,184,109,.3); }
+@keyframes tcSpin { to { transform: rotate(360deg); } }
+.card-meta { text-align: center; margin-top: 20px; max-width: 300px; width: 100%; }
+.card-meta-title { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.card-meta-moment { font-size: 13px; color: rgba(255,255,255,.4); font-style: italic; margin-bottom: 16px; }
+.detail-toggle { font-family: "Cinzel", serif; font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,.2); cursor: pointer; padding: 8px 0; display: block; text-align: center; }
+.detail-section { display: none; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 16px; margin-top: 8px; }
+.detail-section.open { display: block; }
+.detail-label { font-family: "Cinzel", serif; font-size: 9px; letter-spacing: 2px; color: rgba(123,108,246,.7); margin-bottom: 8px; }
+.detail-text { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.6; }
+.cta-box { margin-top: 28px; text-align: center; max-width: 300px; }
+.cta-text { font-size: 14px; color: rgba(255,255,255,.4); margin-bottom: 14px; line-height: 1.5; }
+.cta-btn { display: inline-block; background: #7B6CF6; color: white; border-radius: 12px; padding: 14px 28px; font-size: 14px; font-weight: 600; text-decoration: none; }
+.state-box { text-align: center; padding: 60px 20px; }
+.spinner { width: 36px; height: 36px; border: 2px solid rgba(232,184,109,.2); border-top-color: #E8B86D; border-radius: 50%; animation: tcSpin 1s linear infinite; margin: 0 auto 16px; }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <a class="brand" href="https://endocraft.app">
-    <div class="brand-mark">E</div>
-    <span class="brand-name">EndoCraft<span>.</span></span>
+  <a href="https://endocraft.app">
+    <img src="https://endocraft.app/IMG_8431.PNG" style="height:30px;width:auto;" alt="EndoCraft">
   </a>
-  <a class="try-btn" href="https://endocraft.app/scroll">Try for free →</a>
+  <a href="https://endocraft.app/scroll" class="try-btn">Create your card →</a>
 </div>
 
-<div id="loadingState" class="loading">
-  <div class="loading-ring"></div>
-  <span>Loading session…</span>
+<div class="state-box" id="loadingState">
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:rgba(255,255,255,.4);">Loading session card…</div>
 </div>
 
-<div id="errorState" class="error-state" style="display:none;">
-  <h2>Session not found</h2>
-  <p>This link may have expired or doesn't exist.</p>
+<div class="state-box" id="errorState" style="display:none;">
+  <div style="font-size:32px;margin-bottom:12px;">🎲</div>
+  <div style="font-size:14px;color:rgba(255,255,255,.4);">This session card doesn't exist.</div>
+  <a href="https://endocraft.app/scroll" style="display:inline-block;margin-top:16px;color:#7B6CF6;font-size:14px;">Create your own →</a>
 </div>
 
-<div id="cardWrap" class="card-wrap" style="display:none;">
-  <div class="card">
-    <div class="card-accent"></div>
-    <div class="card-body">
-      <div class="card-top">
-        <span class="card-campaign" id="cardCampaign">EndoCraft</span>
-        <span class="card-date" id="cardDate"></span>
+<div id="cardWrap" style="display:none;flex-direction:column;align-items:center;width:100%;">
+  <div id="tcScene">
+    <div id="tcCard">
+      <div class="tc-foil"></div>
+      <div id="tcImgWrap">
+        <img id="tcImg" src="" alt="">
+        <div class="tc-sparks" id="tcSparks"></div>
+        <div class="tc-top">
+          <div class="tc-brand">
+            <img src="https://endocraft.app/IMG_8431.PNG" alt="EC">
+            <div>
+              <span class="tc-brand-name">EndoCraft</span>
+              <span class="tc-brand-sub" id="tcCampaign">Session</span>
+            </div>
+          </div>
+          <div class="tc-pill">✦ Legendary</div>
+        </div>
+        <div class="tc-bottom">
+          <div class="tc-class" id="tcClass"></div>
+          <div class="tc-name" id="tcName"></div>
+          <div class="tc-moment" id="tcMoment"></div>
+          <div class="tc-stats" id="tcStats"></div>
+          <div class="tc-footer">
+            <span class="tc-serial" id="tcSerial">#0001 / 9999</span>
+            <span class="tc-serial">EndoCraft</span>
+          </div>
+        </div>
       </div>
-      <div class="card-title" id="cardTitle"></div>
-      <div class="card-mvp" id="cardMvp" style="display:none;"></div>
-      <div class="card-moments" id="cardMoments"></div>
-      <div class="card-cliffhanger" id="cardCliffhanger" style="display:none;"></div>
-      <div class="card-npc" id="cardNpcWrap" style="display:none;">
-        <div class="card-npc-label">NPC Log</div>
-        <div class="card-npc-text" id="cardNpc"></div>
+    </div>
+  </div>
+
+  <div class="card-meta">
+    <div class="card-meta-title" id="cardTitle"></div>
+    <div class="card-meta-moment" id="cardMoment"></div>
+    <span class="detail-toggle" onclick="document.getElementById('detailSection').classList.toggle('open')">✦ SESSION DETAILS ▾</span>
+    <div class="detail-section" id="detailSection">
+      <div id="summaryBlock" style="display:none;margin-bottom:12px;">
+        <div class="detail-label">SUMMARY</div>
+        <div class="detail-text" id="summaryText"></div>
       </div>
-      <div class="card-footer">
-        <span class="card-players" id="cardPlayers">Your party</span>
-        <span class="card-logo">endocraft.app</span>
+      <div id="npcBlock" style="display:none;">
+        <div class="detail-label">NPC LOG</div>
+        <div class="detail-text" id="npcText"></div>
       </div>
     </div>
   </div>
 
   <div class="cta-box">
-    <div class="cta-text"><strong>Want this for your sessions?</strong><br>Tell EndoCraft what happened — get summaries, NPC logs and image prompts in seconds.</div>
-    <a class="cta-btn" href="https://endocraft.app/scroll">✦ Try for free</a>
+    <div class="cta-text">Turn your D&D sessions into collectible cards — free.</div>
+    <a href="https://endocraft.app/scroll" class="cta-btn">✦ Create your card</a>
   </div>
 </div>
 
 <script>
-const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
+const SUPABASE_URL = "https://dtlzsbhyngafhxkjjlst.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4NzM4MDMsImV4cCI6MjA1NzQ0OTgwM30.r8W_9WqNNZ4L5FuEBpbqWBz_ZVjO9FhMcCZvkf8MNzI";
+
+function renderCard(s) {
+  document.getElementById("loadingState").style.display = "none";
+  const wrap = document.getElementById("cardWrap");
+  wrap.style.display = "flex";
+
+  const title = s.session_title || "Session Recap";
+  const moment = s.legendary_moment || "";
+  const date = new Date(s.created_at).toLocaleDateString("en", {month:"short", day:"numeric"});
+
+  document.getElementById("tcName").textContent = title;
+  document.getElementById("tcMoment").textContent = moment;
+  document.getElementById("tcCampaign").textContent = "Session · " + date;
+  document.getElementById("tcSerial").textContent = "#" + (s.id || "0001").toString().substring(0,4).toUpperCase() + " / 9999";
+  document.getElementById("cardTitle").textContent = title;
+  document.getElementById("cardMoment").textContent = moment;
+
+  document.getElementById("tcStats").innerHTML =
+    "<div class='tc-stat'><span class='tc-sv'>✦</span><span class='tc-sl'>Moment</span></div>" +
+    "<div class='tc-stat'><span class='tc-sv'>" + date + "</span><span class='tc-sl'>Date</span></div>" +
+    "<div class='tc-stat'><span class='tc-sv'>S1</span><span class='tc-sl'>Session</span></div>";
+
+  if (s.image_url) {
+    const img = document.getElementById("tcImg");
+    img.onload = () => { img.style.opacity = "1"; };
+    img.src = s.image_url;
+  }
+
+  if (s.summary) { document.getElementById("summaryText").textContent = s.summary; document.getElementById("summaryBlock").style.display = "block"; }
+  if (s.npc_log) { document.getElementById("npcText").textContent = s.npc_log; document.getElementById("npcBlock").style.display = "block"; }
+
+  // Sparks
+  const sp = document.getElementById("tcSparks");
+  const sc = ["#E8B86D","#FFD060","#FFF0A0","#C8900A"];
+  for(let i=0;i<25;i++){
+    const el=document.createElement("div"); el.className="tc-spark";
+    const sz=1.5+Math.random()*3.5;
+    el.style.cssText="width:"+sz+"px;height:"+sz+"px;left:"+(5+Math.random()*90)+"%;bottom:0;background:"+sc[i%4]+";--d:"+(1.5+Math.random()*3.5)+"s;--dl:"+(-(Math.random()*6))+"s;--rx:"+(Math.random()-.5)*60+"px;box-shadow:0 0 "+(3+Math.random()*5)+"px currentColor;";
+    sp.appendChild(el);
+  }
+
+  // Tilt
+  const card = document.getElementById("tcCard");
+  const scene = document.getElementById("tcScene");
+  scene.addEventListener("mousemove", e => {
+    card.style.animation = "tcGlow 4s ease infinite";
+    const r = card.getBoundingClientRect();
+    card.style.transform = "rotateX("+(-(e.clientY-r.top-r.height/2)/(r.height/2)*16)+"deg) rotateY("+((e.clientX-r.left-r.width/2)/(r.width/2)*16)+"deg) scale(1.04)";
+  });
+  scene.addEventListener("mouseleave", () => { card.style.animation = "tcAutoSpin 8s ease-in-out infinite, tcGlow 4s ease infinite"; card.style.transform = ""; });
+  scene.addEventListener("touchmove", e => {
+    e.preventDefault(); card.style.animation = "tcGlow 4s ease infinite";
+    const t=e.touches[0], r=card.getBoundingClientRect();
+    card.style.transform = "rotateX("+(-(t.clientY-r.top-r.height/2)/(r.height/2)*14)+"deg) rotateY("+((t.clientX-r.left-r.width/2)/(r.width/2)*14)+"deg)";
+  },{passive:false});
+  scene.addEventListener("touchend", () => { card.style.animation = "tcAutoSpin 8s ease-in-out infinite, tcGlow 4s ease infinite"; card.style.transform = ""; });
+}
 
 async function loadSession() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  
+  const id = new URLSearchParams(window.location.search).get("id");
   if (!id) { showError(); return; }
-  
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/sessions?id=eq.' + id + '&select=*', {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY
-      }
+    const res = await fetch(SUPABASE_URL + "/rest/v1/sessions?id=eq." + id + "&select=*", {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY }
     });
     const data = await res.json();
     if (!data || data.length === 0) { showError(); return; }
     renderCard(data[0]);
-  } catch(e) {
-    showError();
-  }
-}
-
-function renderCard(s) {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('cardWrap').style.display = 'block';
-  
-  document.getElementById('cardTitle').textContent = s.session_title || 'D&D Session';
-  
-  const date = new Date(s.created_at);
-  document.getElementById('cardDate').textContent = date.toLocaleDateString('en-GB');
-  
-  if (s.moments && s.moments.length > 0) {
-    const momentsEl = document.getElementById('cardMoments');
-    s.moments.forEach((m, i) => {
-      const div = document.createElement('div');
-      div.className = 'card-moment';
-      div.innerHTML = '<span class="card-num">0' + (i+1) + '</span>' + (typeof m === 'string' ? m : JSON.stringify(m));
-      momentsEl.appendChild(div);
-    });
-  }
-  
-  if (s.cliffhanger) {
-    document.getElementById('cardCliffhanger').textContent = '⚡ ' + s.cliffhanger;
-    document.getElementById('cardCliffhanger').style.display = 'block';
-  }
-  
-  if (s.npc_log && s.npc_log.length > 10) {
-    document.getElementById('cardNpc').textContent = s.npc_log;
-    document.getElementById('cardNpcWrap').style.display = 'block';
-  }
+  } catch(e) { showError(); }
 }
 
 function showError() {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('errorState').style.display = 'block';
+  document.getElementById("loadingState").style.display = "none";
+  document.getElementById("errorState").style.display = "block";
 }
 
 loadSession();

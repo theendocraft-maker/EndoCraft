@@ -1067,6 +1067,14 @@ async function generateSessionImage(data, story) {
         if (ph) { ph.style.opacity = '0'; setTimeout(() => ph.style.display='none', 500); }
       };
       img.src = d.url;
+      // Save image_url to session in Supabase
+      if (window._currentSessionId) {
+        fetch('https://dtlzsbhyngafhxkjjlst.supabase.co/rest/v1/sessions?id=eq.' + window._currentSessionId, {
+          method: 'PATCH',
+          headers: {'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4NzM4MDMsImV4cCI6MjA1NzQ0OTgwM30.r8W_9WqNNZ4L5FuEBpbqWBz_ZVjO9FhMcCZvkf8MNzI','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE4NzM4MDMsImV4cCI6MjA1NzQ0OTgwM30.r8W_9WqNNZ4L5FuEBpbqWBz_ZVjO9FhMcCZvkf8MNzI'},
+          body: JSON.stringify({ image_url: d.url })
+        }).catch(()=>{});
+      }
     } else {
       throw new Error(d.error || 'No image');
     }
@@ -1243,6 +1251,7 @@ async function shareSession() {
     };
     const id = await saveSession(card);
     currentSessionId = id;
+    window._currentSessionId = id;
     const link = 'https://endocraft.app/session/?id=' + id;
     const title = document.getElementById('scTitle').textContent;
     
