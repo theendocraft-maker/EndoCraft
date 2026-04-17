@@ -548,7 +548,7 @@ body {
   <!-- STEP 1: INPUT -->
   <div class="step-input" id="stepInput">
     <h1 class="step-label">What happened in your <em>session?</em></h1>
-    <p class="step-sub">3 sentences or 3 pages — just tell the story.</p>
+    <p class="step-sub">Describe the scene, the characters, the moment that mattered. The more vivid — the better your card.</p>
 
     <div class="story-box">
       <textarea class="story-textarea" id="storyInput" placeholder="We finally reached Baflorna's witch-bog...">We finally reached Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.</textarea>
@@ -574,9 +574,9 @@ body {
       </div>
       <div class="story-footer">
         <div class="examples">
-          <div class="ex-chip" onclick="fillEx('caspian')">🐇 Caspian's Witch-Bog</div>
-          <div class="ex-chip" onclick="fillEx('tavern')">⚔️ Fortress siege</div>
-          <div class="ex-chip" onclick="fillEx('dragon')">💀 The Lich King</div>
+          <div class="ex-chip" onclick="fillEx('caspian')">🐇 The Witch-Bog</div>
+          <div class="ex-chip" onclick="fillEx('tavern')">🏰 Dragon Siege</div>
+          <div class="ex-chip" onclick="fillEx('dragon')">🐉 Dragon at Dawn</div>
         </div>
         <button class="gen-btn" id="genBtn" onclick="generate()">Make it legendary ✦</button>
       </div>
@@ -1218,9 +1218,9 @@ function copyShareLink() {
 
 
 const EXAMPLES = {
-  caspian: `We finally reached Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.`,
-  tavern: `The fortress gates were sealed and the dragon circled overhead. Seraphine had one scroll of Dimension Door, one chance. She grabbed Torvan — the gravely wounded paladin — and stepped through reality itself, reappearing inside the enemy command tent. Torvan raised his holy symbol and called down radiant fire. The dragon shrieked and broke off its assault. The gates held. The battle turned. Nobody expected a half-elf warlock and a dying paladin to save the entire city.`,
-  dragon: `The lich opened the Tomb of the Forgotten King and raised every knight buried within — three hundred skeletal warriors in gleaming armor. Drakon didn't hesitate. He channeled his last spell slot, called upon his god, and cast Earthquake. The tomb collapsed. The army crumbled. But Drakon was buried under forty feet of stone. The party spent the next six hours digging him out by hand. He was alive. Barely. He rolled a 1 on his death save and then a 20 on his inspiration. We're still not over it.`
+  caspian: `We finally reached Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed from the water. Alberich drank a rage potion by accident and hurled Caspian into a stone wall. A Lornling then set Caspian on fire, dropping him to 1 HP. With his last breath, Caspian conjured a flaming net with his "Power of Imagination" spell, threw it at the creatures, and finished one off with a rapier stab. My character is Caspian — a small brown-furred Harengon Bard in a blue shirt and brown leather vest, holding a lute.`,
+  tavern: `The fortress gates were sealed and an ancient red dragon circled above, setting towers ablaze. Seraphine had one Dimension Door scroll. She grabbed Torvan — half-dead paladin — and stepped through reality, landing inside the dragon's command tent. Torvan raised his holy symbol and called down radiant fire. The dragon shrieked and fled. The city was saved by two exhausted heroes at the end of their rope. My character is Seraphine — a half-elf warlock with silver hair, dark robes, and glowing violet eyes.`,
+  dragon: `The ancient black dragon Malachar descended on our camp at dawn. We were outnumbered, unprepared, and half the party was still asleep. Lyra the ranger stepped forward alone, knocked her last arrow — the one her father gave her — and fired it straight into the dragon's eye. Malachar screamed, clipped a mountain peak, and crashed into the valley below. Nobody moved for a full minute. My character is Lyra — a wood elf ranger with green cloak, braided auburn hair, and a longbow carved from living wood.`
 };
 
 window.STYLE_SUFFIXES = window.STYLE_SUFFIXES || {};
