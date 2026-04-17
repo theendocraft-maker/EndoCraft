@@ -460,6 +460,72 @@ body {
   100% { transform: translateY(-60px) translateX(var(--rx,0)) scale(2); opacity: 0; }
 }
 .tc-spark { position: absolute; border-radius: 50%; animation: tcSpark var(--d) var(--dl) ease-in infinite; opacity: 0; }
+
+/* ── TRADING CARD ── */
+#tcScene { perspective: 1200px; margin: 0 auto; width: fit-content; }
+#tcCard {
+  width: min(280px, 82vw);
+  border-radius: 20px; position: relative; overflow: hidden;
+  transform-style: preserve-3d; transition: transform 0.08s ease; cursor: pointer;
+  animation: tcAutoSpin 7s ease-in-out infinite, tcGlow 4s ease infinite;
+}
+#tcCard.held { animation: tcGlow 4s ease infinite; }
+@keyframes tcAutoSpin {
+  0%   { transform: rotateX(3deg) rotateY(-10deg); }
+  25%  { transform: rotateX(-4deg) rotateY(8deg); }
+  50%  { transform: rotateX(4deg) rotateY(12deg); }
+  75%  { transform: rotateX(-3deg) rotateY(-7deg); }
+  100% { transform: rotateX(3deg) rotateY(-10deg); }
+}
+@keyframes tcGlow {
+  0%,100% { box-shadow: 0 0 0 1px rgba(232,184,109,.15), 0 20px 60px rgba(0,0,0,.95); }
+  50% { box-shadow: 0 0 0 2px rgba(232,184,109,.4), 0 0 60px rgba(232,184,109,.12), 0 20px 80px rgba(0,0,0,.95); }
+}
+#tcImgWrap { width: 100%; position: relative; background: linear-gradient(160deg,#1a0a00,#2a1505,#0a0f1a); }
+#tcImg { width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover; object-position: center top; opacity: 0; transition: opacity 0.5s ease; }
+#tcImgWrap::after {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(to bottom, rgba(6,3,0,.65) 0%, transparent 22%, transparent 45%, rgba(6,3,0,.6) 65%, rgba(4,2,0,.98) 84%, rgba(4,2,0,1) 100%),
+    linear-gradient(to right, rgba(6,3,0,.3) 0%, transparent 10%, transparent 90%, rgba(6,3,0,.3) 100%);
+}
+.tc-foil {
+  position: absolute; inset: 0; z-index: 20; pointer-events: none;
+  border-radius: 20px; mix-blend-mode: color-dodge;
+  background: linear-gradient(135deg, rgba(255,0,80,.03) 0%, rgba(255,160,0,.05) 14%, rgba(255,255,0,.04) 28%, rgba(0,255,120,.05) 42%, rgba(0,200,255,.05) 56%, rgba(80,0,255,.04) 70%, rgba(255,0,200,.05) 84%, rgba(255,0,80,.03) 100%);
+  background-size: 200% 200%; animation: tcHolo 6s ease infinite; opacity: .7;
+}
+@keyframes tcHolo { 0% { background-position: 0% 0%; opacity: .7; } 50% { background-position: 100% 100%; opacity: 1; } 100% { background-position: 0% 0%; opacity: .7; } }
+.tc-sparks { position: absolute; bottom: 0; left: 0; right: 0; height: 55%; z-index: 2; pointer-events: none; overflow: hidden; }
+.tc-spark { position: absolute; border-radius: 50%; animation: tcSpark var(--d) var(--dl) ease-in infinite; opacity: 0; }
+@keyframes tcSpark { 0% { transform: translateY(100%) translateX(0) scale(0); opacity: 0; } 15% { opacity: 1; } 80% { opacity: .3; } 100% { transform: translateY(-60px) translateX(var(--rx,0)) scale(2.5); opacity: 0; } }
+.tc-top { position: absolute; top: 0; left: 0; right: 0; z-index: 10; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+.tc-brand { display: flex; align-items: center; gap: 6px; }
+.tc-brand img { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(232,184,109,.9)); }
+.tc-brand-name { font-family: 'Cinzel', serif; font-size: 7px; font-weight: 700; letter-spacing: 3px; color: rgba(232,184,109,.65); display: block; text-shadow: 0 1px 8px #000; }
+.tc-brand-sub { font-family: 'Cinzel', serif; font-size: 6px; letter-spacing: 2px; color: rgba(255,240,200,.35); display: block; }
+.tc-pill { background: rgba(10,5,0,.8); backdrop-filter: blur(12px); border: 1px solid rgba(232,184,109,.3); border-radius: 30px; padding: 4px 10px; font-family: 'Cinzel', serif; font-size: 7px; font-weight: 700; letter-spacing: 2px; color: #E8B86D; }
+.tc-bottom { position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; padding: 12px 14px; }
+.tc-class { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 3px; color: rgba(232,184,109,.85); margin-bottom: 3px; text-shadow: 0 1px 10px #000; display: flex; align-items: center; gap: 6px; }
+.tc-class::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(232,184,109,.2), transparent); }
+.tc-name { font-family: 'Cinzel Decorative', serif; font-size: 20px; font-weight: 700; color: #fffbf0; line-height: 1; margin-bottom: 3px; text-shadow: 0 2px 20px #000; }
+.tc-moment { font-family: 'EB Garamond', serif; font-size: 12px; font-style: italic; color: rgba(255,230,160,.55); margin-bottom: 8px; text-shadow: 0 1px 8px #000; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tc-stats { display: flex; gap: 4px; margin-bottom: 6px; }
+.tc-stat { flex: 1; text-align: center; background: rgba(6,3,0,.75); backdrop-filter: blur(8px); border: 1px solid rgba(232,184,109,.1); border-radius: 6px; padding: 5px 3px; }
+.tc-sv { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: #E8B86D; display: block; }
+.tc-sl { font-family: 'Cinzel', serif; font-size: 5px; letter-spacing: 1px; color: rgba(232,184,109,.5); display: block; margin-top: 1px; }
+.tc-footer { display: flex; justify-content: space-between; border-top: 1px solid rgba(232,184,109,.1); padding-top: 5px; }
+.tc-serial { font-family: 'Cinzel', serif; font-size: 6px; letter-spacing: 2px; color: rgba(232,184,109,.3); }
+.tc-placeholder { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.tc-spinner { width: 36px; height: 36px; border: 2px solid rgba(232,184,109,.15); border-top-color: #E8B86D; border-radius: 50%; animation: tcSpin 1s linear infinite; }
+@keyframes tcSpin { to { transform: rotate(360deg); } }
+.tc-loading-txt { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: rgba(232,184,109,.45); animation: pulse 2s ease infinite; }
+
+/* Card popup/modal */
+.tc-modal-bg { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(4,2,0,.92); backdrop-filter: blur(16px); align-items: center; justify-content: center; }
+.tc-modal-bg.open { display: flex; }
+.tc-modal-inner { position: relative; width: min(320px, 90vw); animation: tcModalIn 0.35s cubic-bezier(.23,1.2,.32,1); }
+@keyframes tcModalIn { from { transform: scale(0.7) translateY(40px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+.tc-modal-close { position: absolute; top: -36px; right: 0; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,.3); cursor: pointer; padding: 8px; }
 </style>
 </head>
 <body>
@@ -851,14 +917,16 @@ function showTradingCard(data) {
   
   // Sparks
   const sp = document.getElementById('tcSparks');
-  sp.innerHTML = '';
-  const sc = ['#E8B86D','#FFD060','#FFF0A0','#C8900A'];
-  for(let i=0;i<30;i++){
-    const s=document.createElement('div');
-    s.className='tc-spark';
-    const sz=1.5+Math.random()*3.5;
-    s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[i%4]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;
-    sp.appendChild(s);
+  if (sp) {
+    sp.innerHTML = '';
+    const sc = ['#E8B86D','#FFD060','#FFF0A0','#C8900A'];
+    for(let i=0;i<30;i++){
+      const s=document.createElement('div');
+      s.className='tc-spark';
+      const sz=1.5+Math.random()*3.5;
+      s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[i%4]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;
+      sp.appendChild(s);
+    }
   }
   
   // Tilt
@@ -866,27 +934,20 @@ function showTradingCard(data) {
   const card = document.getElementById('tcCard');
   const foil = document.getElementById('tcFoil');
   scene.addEventListener('mousemove', e => {
+    card.classList.add('held');
     const r = card.getBoundingClientRect();
     const dx = (e.clientX-r.left-r.width/2)/(r.width/2);
     const dy = (e.clientY-r.top-r.height/2)/(r.height/2);
-    card.style.animation = 'tcGlow 4s ease infinite';
     card.style.transform = `rotateX(${-dy*16}deg) rotateY(${dx*16}deg) scale(1.04)`;
-    foil.style.filter = `hue-rotate(${dx*60}deg) brightness(1.4)`;
+    const foilEl = card.querySelector('.tc-foil');
+    if (foilEl) foilEl.style.filter = `hue-rotate(${dx*60}deg) brightness(1.4)`;
   });
   scene.addEventListener('mouseleave', () => {
-    card.style.animation = 'tcGlow 4s ease infinite';
+    card.classList.remove('held');
     card.style.transform = '';
-    foil.style.filter = '';
+    const foilEl = card.querySelector('.tc-foil');
+    if (foilEl) foilEl.style.filter = '';
   });
-  scene.addEventListener('touchmove', e => {
-    e.preventDefault();
-    const t = e.touches[0];
-    const r = card.getBoundingClientRect();
-    const dx = (t.clientX-r.left-r.width/2)/(r.width/2);
-    const dy = (t.clientY-r.top-r.height/2)/(r.height/2);
-    card.style.transform = `rotateX(${-dy*14}deg) rotateY(${dx*14}deg)`;
-  },{passive:false});
-  scene.addEventListener('touchend', () => card.style.transform = '');
 }
 
 // Image generation
@@ -1025,6 +1086,43 @@ async function subscribeEmail() {
 }
 
 
+
+
+function openCardModal() {
+  const modal = document.getElementById('tcModal');
+  const modalCard = document.getElementById('tcModalCard');
+  const origCard = document.getElementById('tcCard');
+  // Clone the card for modal
+  const clone = origCard.cloneNode(true);
+  clone.style.animation = 'tcGlow 4s ease infinite';
+  clone.id = 'tcCardClone';
+  // Add tilt to clone
+  clone.addEventListener('mousemove', e => {
+    const r = clone.getBoundingClientRect();
+    const dx = (e.clientX-r.left-r.width/2)/(r.width/2);
+    const dy = (e.clientY-r.top-r.height/2)/(r.height/2);
+    clone.style.transform = `rotateX(${-dy*18}deg) rotateY(${dx*18}deg) scale(1.02)`;
+    const f = clone.querySelector('.tc-foil');
+    if(f) f.style.filter = `hue-rotate(${dx*60}deg) brightness(1.4)`;
+  });
+  clone.addEventListener('mouseleave', () => { clone.style.transform=''; });
+  clone.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t=e.touches[0]; const r=clone.getBoundingClientRect();
+    const dx=(t.clientX-r.left-r.width/2)/(r.width/2), dy=(t.clientY-r.top-r.height/2)/(r.height/2);
+    clone.style.transform=`rotateX(${-dy*18}deg) rotateY(${dx*18}deg)`;
+  },{passive:false});
+  clone.addEventListener('touchend', ()=>clone.style.transform='');
+  modalCard.innerHTML = '';
+  modalCard.appendChild(clone);
+  modal.classList.add('open');
+}
+
+function closeCardModal(e) {
+  if (e.target === document.getElementById('tcModal')) {
+    document.getElementById('tcModal').classList.remove('open');
+  }
+}
 
 async function saveCard() {
   const email = document.getElementById('cardSubEmail').value;
