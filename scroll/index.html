@@ -592,10 +592,22 @@ body {
     </div>
 
     <!-- DETAILS — collapsible -->
-    <details id="sessionDetails" style="margin-top:4px;">
-      <summary style="cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);padding:12px 0;list-style:none;display:flex;align-items:center;gap:8px;">
+    <!-- Subscribe CTA -->
+    <div id="cardSubscribeCta" style="background:linear-gradient(135deg,rgba(123,108,246,.08),rgba(232,184,109,.05));border:1px solid rgba(123,108,246,.2);border-radius:14px;padding:18px 20px;margin-top:4px;">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:8px;">✦ SAVE YOUR CARD</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Don't lose this moment.</div>
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">Enter your email and we'll send you this card + notify you when full card collections launch.</div>
+      <div style="display:flex;gap:8px;" id="cardSubForm">
+        <input type="email" id="cardSubEmail" placeholder="your@email.com" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:13px;color:white;font-family:'DM Sans',sans-serif;outline:none;min-width:0;">
+        <button onclick="saveCard()" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Save card</button>
+      </div>
+      <div id="cardSubSuccess" style="display:none;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#a78bfa;margin-top:10px;">✦ Card saved. We'll be in touch.</div>
+    </div>
+
+    <details id="sessionDetails" style="margin-top:12px;">
+      <summary style="cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);padding:12px 0;list-style:none;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);">
         <span>✦ SESSION DETAILS</span>
-        <span style="font-size:9px;opacity:.5;">(summary · npc log · more)</span>
+        <span style="font-size:9px;opacity:.5;">(summary · npc log)</span>
       </summary>
       <div style="display:flex;flex-direction:column;gap:12px;padding-top:8px;">
 
@@ -877,36 +889,50 @@ function showTradingCard(data) {
   scene.addEventListener('touchend', () => card.style.transform = '');
 }
 
+// Image generation
 async function generateSessionImage(data, story) {
-  const tcil = document.getElementById('tcImgLoading'); if(tcil) tcil.style.display='block';
-  
-  const basePrompt = data.prompts && data.prompts[0] 
-    ? data.prompts[0].desc + ', ' + data.prompts[0].title
-    : story.substring(0, 120);
-  
+  const loadingMessages = ['Forging your card…','Painting the scene…','Channeling the arcane…','Almost ready…'];
+  let msgIdx = 0;
+  const loadingTextEl = document.getElementById('tcLoadingText');
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    if (loadingTextEl) loadingTextEl.textContent = loadingMessages[msgIdx];
+  }, 2500);
+
   const styleSuffix = STYLE_SUFFIXES[currentImageStyle] || STYLE_SUFFIXES.oilpainting;
-  const fullPrompt = basePrompt + ', ' + styleSuffix + ', no text, no watermark, vertical portrait format';
-  
+  const summary = data.summary || story;
+  const title = data.session_title || '';
+  const moment = data.legendary_moment || '';
+  const prompt = [title, moment, summary.substring(0, 200)].filter(Boolean).join(', ') + ', ' + styleSuffix + ', vertical portrait, no text, no watermark';
+
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ prompt: fullPrompt, model: 'bytedance/seedream-4-5' })
+      body: JSON.stringify({ prompt, model: 'bytedance/seedream-4-5' })
     });
     const d = await res.json();
     if (d.url) {
       const img = document.getElementById('tcImg');
+      img.onload = () => {
+        img.style.opacity = '1';
+        const ph = document.getElementById('tcImgPlaceholder');
+        if (ph) { ph.style.opacity = '0'; setTimeout(() => ph.style.display='none', 500); }
+      };
       img.src = d.url;
-      img.style.display = 'block';
+    } else {
+      throw new Error(d.error || 'No image');
     }
   } catch(e) {
-    console.log('Image gen failed:', e.message);
+    console.error('Image gen failed:', e.message);
+    const ph = document.getElementById('tcImgPlaceholder');
+    if (ph) ph.innerHTML = '<div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:rgba(232,184,109,.4);text-align:center;padding:20px;">Image generation<br>unavailable</div>';
   } finally {
-    const tcil2 = document.getElementById('tcImgLoading'); if(tcil2) tcil2.style.display='none';
+    clearInterval(msgInterval);
   }
 }
 
-// Legacy generateSessionImage override:
+// Single generateSessionImage:
 async function _legacyGenerateSessionImage(data, story) {
   // Build image prompt from first image prompt if available
   const basePrompt = data.prompts && data.prompts[0] 
@@ -998,6 +1024,22 @@ async function subscribeEmail() {
   }
 }
 
+
+
+async function saveCard() {
+  const email = document.getElementById('cardSubEmail').value;
+  if (!email || !email.includes('@')) return;
+  try {
+    await fetch('https://endocraft-production.up.railway.app/api/subscribe', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, source: 'card', session_title: document.getElementById('tcName')?.textContent })
+    });
+  } catch(e) {}
+  document.getElementById('cardSubForm').style.display = 'none';
+  document.getElementById('cardSubSuccess').style.display = 'block';
+  localStorage.setItem('ec_email_subscribed', 'true');
+}
 
 async function shareSession() {
   const btn = document.querySelector('.share-btn.primary');
