@@ -897,6 +897,8 @@ function showTradingCard(data) {
   const shortTitle = data.session_title || 'Session Recap';
   const subtitle = data.legendary_moment || 'A moment for the ages';
   
+  const charVal = document.getElementById('charInput')?.value?.trim() || '';
+  document.getElementById('tcClass').textContent = charVal ? charVal.split(',')[1]?.trim() || charVal : '';
   document.getElementById('tcName').textContent = shortTitle;
   document.getElementById('tcMoment').textContent = subtitle;
   document.getElementById('tcCampaign').textContent = 'Session · ' + new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
@@ -964,7 +966,12 @@ async function generateSessionImage(data, story) {
   const summary = data.summary || story;
   const title = data.session_title || '';
   const moment = data.legendary_moment || '';
-  const prompt = [title, moment, summary.substring(0, 200)].filter(Boolean).join(', ') + ', ' + styleSuffix + ', vertical portrait, no text, no watermark';
+  const charInput = document.getElementById('charInput')?.value?.trim() || '';
+  
+  // Build prompt: character always in foreground
+  let charDesc = charInput ? charInput + ', ' : 'fantasy hero, ';
+  let sceneDesc = moment || title || summary.substring(0, 100);
+  const prompt = charDesc + 'close-up portrait in foreground, dramatic action moment: ' + sceneDesc + ', epic D&D scene, ' + styleSuffix + ', vertical portrait composition, character fills frame, no text, no watermark';
 
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
