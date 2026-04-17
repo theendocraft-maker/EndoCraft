@@ -763,12 +763,11 @@ function buildSessionCard(data, story) {
   });
   
   if (cliffhanger && cliffhanger.length > 10) {
-    document.getElementById('scCliffhanger').textContent = '⚡ ' + cliffhanger;
-    document.getElementById('scCliffhanger').style.display = 'block';
+    const ch = document.getElementById('scCliffhanger'); if(ch){ch.textContent='⚡ '+cliffhanger;ch.style.display='block';}
   }
   
   document.getElementById('sessionCardWrap').classList.add('visible');
-  document.getElementById('shareRow').style.display = 'flex';
+  const sr = document.getElementById('shareRow'); if(sr) sr.style.display='flex';
   
   return {
     session_title: title,
@@ -875,7 +874,7 @@ function showTradingCard(data) {
 }
 
 async function generateSessionImage(data, story) {
-  document.getElementById('tcImgLoading').style.display = 'block';
+  const tcil = document.getElementById('tcImgLoading'); if(tcil) tcil.style.display='block';
   
   const basePrompt = data.prompts && data.prompts[0] 
     ? data.prompts[0].desc + ', ' + data.prompts[0].title
@@ -899,7 +898,7 @@ async function generateSessionImage(data, story) {
   } catch(e) {
     console.log('Image gen failed:', e.message);
   } finally {
-    document.getElementById('tcImgLoading').style.display = 'none';
+    const tcil2 = document.getElementById('tcImgLoading'); if(tcil2) tcil2.style.display='none';
   }
 }
 
