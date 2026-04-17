@@ -530,6 +530,26 @@ body {
 .tc-modal-inner { position: relative; width: min(320px, 90vw); animation: tcModalIn 0.35s cubic-bezier(.23,1.2,.32,1); }
 @keyframes tcModalIn { from { transform: scale(0.7) translateY(40px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 .tc-modal-close { position: absolute; top: -36px; right: 0; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,.3); cursor: pointer; padding: 8px; }
+
+.wizard-step-label {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  color: var(--text-dim); margin-bottom: 12px;
+}
+.style-card-big {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 18px 20px; cursor: pointer;
+  transition: all 0.2s; touch-action: manipulation;
+}
+.style-card-big * { pointer-events: none; }
+.style-card-big:hover { border-color: var(--accent-border); }
+.style-card-big.active { border-color: var(--accent-border); background: rgba(123,108,246,.12); }
+.scb-left { display: flex; align-items: center; gap: 16px; }
+.scb-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.style-card-big.active .scb-name { color: var(--accent); }
+.scb-desc { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+.scb-check { font-family: 'Cinzel', serif; font-size: 16px; color: var(--accent); opacity: 0; transition: opacity 0.2s; min-width: 20px; }
+.style-card-big.active .scb-check { opacity: 1; }
 </style>
 </head>
 <body>
@@ -549,42 +569,63 @@ body {
 <!-- MAIN -->
 <div class="main" id="mainArea">
 
-  <!-- STEP 1: INPUT -->
+  <!-- STEP BY STEP INPUT -->
   <div class="step-input" id="stepInput">
-    <h1 class="step-label">What happened in your <em>session?</em></h1>
-    <p class="step-sub">What happened? Who did it? What did they look like? One vivid paragraph — then we paint it.</p>
 
-    <div class="story-box">
-      <textarea class="story-textarea" id="storyInput" placeholder="We finally reached Baflorna's witch-bog...">We were ambushed deep in Baflorna's witch-bog — a dark, foggy swamp reeking of decay. The Lornlings ambushed us from the water. Alberich accidentally drank a rage potion and hurled Caspian straight into a stone wall. Then an enemy Lornling set Caspian on fire, dropping him to nearly zero HP. Despite everything, Caspian used his "Power of Imagination" spell to conjure a flaming net, threw it at the creatures, and finished one off with a theatrical rapier stab. He survived — barely.</textarea>
-      <div style="padding:12px 16px 0;">
-        <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;font-family:'Cinzel',serif;margin-bottom:8px;">✦ CHOOSE YOUR STYLE</div>
-        <div style="display:flex;gap:8px;">
-          <div class="style-pick-card" data-style="comic" onclick="pickStyle(this)">
-            <span style="font-size:18px;">💥</span>
-            <span class="spc-name">Comic</span>
-            <span class="spc-desc">Bold & expressive</span>
-          </div>
-          <div class="style-pick-card" data-style="mtg" onclick="pickStyle(this)">
-            <span style="font-size:18px;">🐉</span>
-            <span class="spc-name">MTG Dark</span>
-            <span class="spc-desc">Dark & dramatic</span>
-          </div>
-          <div class="style-pick-card active" data-style="photo" onclick="pickStyle(this)">
-            <span style="font-size:18px;">📷</span>
-            <span class="spc-name">Photorealistic</span>
-            <span class="spc-desc">Hyper-detailed</span>
+    <!-- Step 1: Story -->
+    <div class="wizard-step" id="wizStep1">
+      <div class="wizard-step-label">Step 1 of 2</div>
+      <h1 class="step-label">What happened in your <em>session?</em></h1>
+      <p class="step-sub">Describe the moment. Add your character. We paint the rest.</p>
+      <div class="story-box">
+        <textarea class="story-textarea" id="storyInput" placeholder="What happened? Describe the moment and your character.&#10;&#10;Example: Lyra fires her last arrow into the eye of a black dragon diving at her.&#10;My character: Lyra, wood elf ranger, green cloak, auburn braided hair, longbow."></textarea>
+        <div class="story-footer">
+          <div style="width:100%;padding:10px 16px 0;">
+            <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;">✦ EXAMPLES — tap to try</div>
+            <div class="examples">
+              <div class="ex-chip" onclick="fillEx('caspian')">⚡ Shadow Blade</div>
+              <div class="ex-chip" onclick="fillEx('tavern')">🐉 Lyra & the Dragon</div>
+              <div class="ex-chip" onclick="fillEx('dragon')">💀 Aldric's Last Stand</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="story-footer">
-        <div class="examples">
-          <div class="ex-chip" onclick="fillEx('caspian')">🔥 Caspian's Flaming Net</div>
-          <div class="ex-chip" onclick="fillEx('tavern')">🐉 Lyra & the Dragon</div>
-          <div class="ex-chip" onclick="fillEx('dragon')">💀 Aldric's Last Stand</div>
+      <button class="gen-btn" id="nextBtn" onclick="goToStep2()" style="margin-top:12px;width:100%;">Next — choose your style →</button>
+    </div>
+
+    <!-- Step 2: Style -->
+    <div class="wizard-step" id="wizStep2" style="display:none;">
+      <div class="wizard-step-label">Step 2 of 2</div>
+      <h1 class="step-label">How should it <em>look?</em></h1>
+      <p class="step-sub">Pick the art style for your card.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
+        <div class="style-card-big active" data-style="photo" onclick="pickStyleBig(this)">
+          <div class="scb-left">
+            <span style="font-size:32px;">📷</span>
+            <div>
+              <div class="scb-name">Cinematic</div>
+              <div class="scb-desc">Photorealistic, dramatic lighting, hyperdetailed</div>
+            </div>
+          </div>
+          <div class="scb-check">✦</div>
         </div>
-        <button class="gen-btn" id="genBtn" onclick="generate()">Make it legendary ✦</button>
+        <div class="style-card-big" data-style="comic" onclick="pickStyleBig(this)">
+          <div class="scb-left">
+            <span style="font-size:32px;">💥</span>
+            <div>
+              <div class="scb-name">Comic</div>
+              <div class="scb-desc">Bold ink, vibrant colors, Marvel fantasy art</div>
+            </div>
+          </div>
+          <div class="scb-check"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="goToStep1()" style="background:transparent;border:1px solid var(--border);border-radius:12px;padding:14px 20px;color:var(--text-dim);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+        <button class="gen-btn" id="genBtn" onclick="generate()" style="flex:1;">Make it legendary ✦</button>
       </div>
     </div>
+
   </div>
 
   <!-- LOADING -->
@@ -880,6 +921,30 @@ const STYLE_LABELS = {
 };
 
 let currentImageStyle = window.currentImageStyle = 'photo';
+
+
+function goToStep2() {
+  const story = document.getElementById('storyInput').value.trim();
+  if (!story) { document.getElementById('storyInput').focus(); return; }
+  document.getElementById('wizStep1').style.display = 'none';
+  document.getElementById('wizStep2').style.display = 'block';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function goToStep1() {
+  document.getElementById('wizStep2').style.display = 'none';
+  document.getElementById('wizStep1').style.display = 'block';
+}
+
+function pickStyleBig(el) {
+  document.querySelectorAll('.style-card-big').forEach(b => {
+    b.classList.remove('active');
+    b.querySelector('.scb-check').textContent = '';
+  });
+  el.classList.add('active');
+  el.querySelector('.scb-check').textContent = '✦';
+  currentImageStyle = window.currentImageStyle = el.dataset.style;
+}
 
 function pickStyle(el) {
   const btn = el.closest ? el.closest('[data-style]') : el;
@@ -1225,9 +1290,12 @@ function copyShareLink() {
 
 
 const EXAMPLES = {
-  caspian: `Caspian is on fire in a dark swamp. He throws a burning net over three swamp monsters. He grins despite being at 1 HP. My character: Caspian, a small rabbit-person bard, brown fur, blue shirt, brown vest.`,
-  tavern: `Lyra fires her last arrow directly into the eye of a black dragon diving at her. The dragon crashes behind her. She doesn't move. My character: Lyra, wood elf ranger, green cloak, auburn braided hair, wooden bow.`,
-  dragon: `Brother Aldric raises his iron holy symbol in a graveyard at night. A burst of golden light erupts and 20 zombies around him crumble to ash. My character: Brother Aldric, elderly human cleric, white robes, grey beard, iron cross.`
+  caspian: `Seraphine steps through a portal and appears behind the enemy general. She drives a shadow blade into his back. The fortress falls silent.
+My character: Seraphine, half-elf warlock, silver hair, black robes, glowing violet eyes.`,
+  tavern: `Lyra fires her last arrow directly into the eye of a black dragon diving straight at her. The dragon crashes into the valley below. She doesn't move.
+My character: Lyra, wood elf ranger, green cloak, auburn braided hair, longbow.`,
+  dragon: `Brother Aldric raises his iron holy symbol in a dark graveyard. A burst of golden light erupts outward and 20 zombies around him crumble to ash at once.
+My character: Brother Aldric, elderly human cleric, white robes, grey beard, iron cross.`
 };
 
 window.STYLE_SUFFIXES = window.STYLE_SUFFIXES || {};
@@ -1313,15 +1381,29 @@ async function generate() {
   const outs = [...activeOutputs];
   const styleSuffix = STYLE_SUFFIXES[selectedStyle];
 
-  const titlePart = '"session_title": A dramatic 2-4 word title for this session (e.g. "The Last Stand", "Fire and Shadow"). Max 4 words, no punctuation.';
-  const summaryPart = outs.includes('summary') ? '"summary": Session summary as plain text string. One opening sentence. Then 3-5 bullet points starting with • of the key moments. Then one closing sentence. MAXIMUM 100 words total. Short and punchy.' : '';
-  const npcPart = outs.includes('npc') ? '"npc": NPC log as plain text string. One line per NPC: "Name — role: one sentence." Max 5 NPCs. No JSON objects inside, just plain text.' : '';
-  const questPart = outs.includes('quest') ? '"quest": Quest tracker as plain text string. Format each section on its own line: Active: ... / New clues: ... / Open questions: ... Keep it brief.' : '';
-  const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from the main character\'s perspective. Atmospheric fantasy prose, written by candlelight.' : '';
-  const promptsPart = '';
-  const momentPart = '"legendary_moment": One sentence (max 8 words) describing the single most epic moment.';
+  const summaryPart = outs.includes('summary') ? '"summary": Session summary. One sentence intro, then 3-5 bullet points with •, then one closing sentence. Max 100 words.' : '';
+  const npcPart = outs.includes('npc') ? '"npc": NPC log. One line per NPC: "Name — role: one sentence." Max 5 NPCs.' : '';
+  const questPart = outs.includes('quest') ? '"quest": Quest tracker. Active: ... / New clues: ... / Open questions: ...' : '';
+  const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry, atmospheric fantasy prose.' : '';
 
-  const system = 'You are an expert D&D chronicler and creative writer. Based on the player\'s session description, create the requested outputs.\nReturn ONLY a valid JSON object with these keys: session_title, legendary_moment, ' + outs.join(', ') + '.\n' + titlePart + '\n' + momentPart + '\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
+  const system = `You are an expert D&D chronicler and image prompt engineer.
+Return ONLY a valid JSON object with these exact keys:
+
+"session_title": A dramatic 2-4 word title. No punctuation.
+"legendary_moment": The single most epic moment in one sentence, max 8 words.
+"image_prompt": A highly detailed image generation prompt for the most epic moment. Structure it EXACTLY like this:
+  - Start with the character: [race, gender, class, specific appearance: hair, clothing, weapon]
+  - Then the action: [what they are doing RIGHT NOW, specific and visual]
+  - Then the background: [what is happening in the scene around them]
+  - Then lighting and mood: [dramatic, golden, dark etc]
+  - End with: "${currentImageStyle === 'comic' ? 'comic book illustration, bold ink outlines, vibrant colors, dynamic action lines, Marvel fantasy art, no speech bubbles, no text, no captions' : currentImageStyle === 'photo' ? 'photorealistic, cinematic photography, dramatic lighting, 8k hyperdetailed, shallow depth of field' : 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'}, vertical portrait, no text, no letters, no watermark"
+  - IMPORTANT: The character must be the clear focal point, filling 60% of the frame, with the scene visible behind them.
+${summaryPart ? '"summary": ' + summaryPart : ''}
+${npcPart ? '"npc": ' + npcPart : ''}
+${questPart ? '"quest": ' + questPart : ''}
+${journalPart ? '"journal": ' + journalPart : ''}
+
+Return ONLY the JSON object. No markdown. No explanation.`;
 
   try {
     const res = await fetch(API, {
