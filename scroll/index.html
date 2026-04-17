@@ -899,8 +899,10 @@ function showTradingCard(data) {
   const subtitle = data.legendary_moment || 'A moment for the ages';
   
   const storyTextForCard = document.getElementById('storyInput')?.value || '';
-  const charMatchCard = storyTextForCard.match(/[Mm]y character is ([^,]+)/);
-  const charVal = charMatchCard ? charMatchCard[1].trim() : '';
+  const charMatchCard = storyTextForCard.match(/[Mm]y character is ([^,—]+)/);
+  const rawCharVal = charMatchCard ? charMatchCard[1].trim() : '';
+  // Only show name, not appearance description
+  const charVal = rawCharVal.split(/[,—\s]+/)[0] || '';
   document.getElementById('tcClass').textContent = charVal ? charVal.split(',')[1]?.trim() || charVal : '';
   document.getElementById('tcName').textContent = shortTitle;
   document.getElementById('tcMoment').textContent = subtitle;
