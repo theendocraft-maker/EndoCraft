@@ -453,6 +453,7 @@ body {
   100% { background-position: 0% 0%; opacity: .7; }
 }
 @keyframes pulse { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
+@keyframes tcSpin { to { transform: rotate(360deg); } }
 @keyframes tcSpark {
   0% { transform: translateY(100%) scale(0); opacity: 0; }
   15% { opacity: 1; } 80% { opacity: .3; }
@@ -546,6 +547,11 @@ body {
           <div id="tcFoil" style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:tcHolo 6s ease infinite;opacity:.8;"></div>
           <div id="tcImgWrap" style="position:relative;background:#1a0a00;">
             <img id="tcImg" src="" alt="" style="width:min(300px,85vw);aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;background:linear-gradient(160deg,#1a0a00,#2a1505,#0a0f1a);min-height:200px;">
+            <!-- Image loading animation -->
+            <div id="tcImgPlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:3;">
+              <div style="width:40px;height:40px;border:2px solid rgba(232,184,109,.2);border-top-color:#E8B86D;border-radius:50%;animation:tcSpin 1s linear infinite;"></div>
+              <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(232,184,109,.5);animation:pulse 2s ease infinite;" id="tcLoadingText">Forging your card…</div>
+            </div>
             <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.65) 0%,transparent 22%,transparent 45%,rgba(6,3,0,.6) 65%,rgba(4,2,0,.98) 84%,rgba(4,2,0,1) 100%);"></div>
             <div id="tcSparks" style="position:absolute;bottom:0;left:0;right:0;height:55%;z-index:2;pointer-events:none;overflow:hidden;"></div>
             <!-- Top -->
@@ -702,7 +708,6 @@ body {
       <div class="es-skip" onclick="dismissEmail()">No thanks</div>
     </div>
 
-          <button class="un-btn" onclick="window.open('https://endocraft.app#pricing','_blank')">Upgrade →</button>
     </div>
 
   </div>
@@ -792,13 +797,13 @@ const STYLE_LABELS = {
   photo: 'Photorealistic'
 };
 
-let currentImageStyle = 'oilpainting';
+let currentImageStyle = window.currentImageStyle = 'oilpainting';
 
 function pickStyle(el) {
   const btn = el.closest ? el.closest('[data-style]') : el;
   document.querySelectorAll('.style-pick, .style-pick-card').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  currentImageStyle = btn.dataset.style;
+  currentImageStyle = window.currentImageStyle = btn.dataset.style;
   const lbl = document.getElementById('styleLabel');
   if (lbl) lbl.textContent = STYLE_LABELS[currentImageStyle];
 }
@@ -1056,7 +1061,8 @@ const EXAMPLES = {
   dragon: `The lich opened the Tomb of the Forgotten King and raised every knight buried within — three hundred skeletal warriors in gleaming armor. Drakon didn't hesitate. He channeled his last spell slot, called upon his god, and cast Earthquake. The tomb collapsed. The army crumbled. But Drakon was buried under forty feet of stone. The party spent the next six hours digging him out by hand. He was alive. Barely. He rolled a 1 on his death save and then a 20 on his inspiration. We're still not over it.`
 };
 
-const STYLE_SUFFIXES = {
+window.STYLE_SUFFIXES = window.STYLE_SUFFIXES || {};
+const STYLE_SUFFIXES = window.STYLE_SUFFIXES = {
   oilpainting: 'oil painting style, cinematic fantasy art, dramatic lighting, rich textures, epic composition, warm atmospheric glow',
   mtg: 'Magic the Gathering card art style, dark fantasy illustration, dramatic composition, gothic atmosphere, moody lighting',
   comic: 'cartoon comic style, expressive characters, bold outlines, vibrant colors, humorous exaggerated expressions'
