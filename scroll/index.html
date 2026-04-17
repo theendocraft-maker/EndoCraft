@@ -122,6 +122,8 @@ body {
 
 .examples { display: flex; gap: 6px; flex-wrap: wrap; }
 .ex-chip {
+  -webkit-tap-highlight-color: rgba(123,108,246,0.3);
+  touch-action: manipulation;
   font-size: 12px; color: var(--text-dim);
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 20px; padding: 4px 10px;
@@ -336,6 +338,8 @@ body {
   .story-footer { flex-direction: column; align-items: stretch; }
   .examples { display: none; }
   .gen-btn { width: 100%; text-align: center; }
+  .story-footer { flex-direction: column; gap: 10px; }
+  .examples { order: 2; }
   .style-row { flex-direction: column; }
 }
 
@@ -556,10 +560,10 @@ body {
       <div style="padding:12px 16px 0;">
         <div style="font-size:11px;color:var(--text-dim);letter-spacing:2px;font-family:'Cinzel',serif;margin-bottom:8px;">✦ CHOOSE YOUR STYLE</div>
         <div style="display:flex;gap:8px;">
-          <div class="style-pick-card" data-style="oilpainting" onclick="pickStyle(this)">
-            <span style="font-size:18px;">🎨</span>
-            <span class="spc-name">Oil Painting</span>
-            <span class="spc-desc">Epic & cinematic</span>
+          <div class="style-pick-card" data-style="comic" onclick="pickStyle(this)">
+            <span style="font-size:18px;">💥</span>
+            <span class="spc-name">Comic</span>
+            <span class="spc-desc">Bold & expressive</span>
           </div>
           <div class="style-pick-card" data-style="mtg" onclick="pickStyle(this)">
             <span style="font-size:18px;">🐉</span>
@@ -984,6 +988,7 @@ async function generateSessionImage(data, story) {
   
   const styleComposition = {
     photo: 'photorealistic, cinematic photography, dramatic lighting, 8k hyperdetailed, shallow depth of field',
+    comic: 'comic book illustration, bold ink outlines, vibrant saturated colors, dynamic action lines, Marvel fantasy art style, highly detailed',
     oilpainting: 'epic fantasy oil painting, dramatic lighting, rich colors, painterly brushwork, cinematic composition',
     mtg: 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'
   };
@@ -1221,13 +1226,14 @@ function copyShareLink() {
 
 
 const EXAMPLES = {
-  caspian: `A small anthropomorphic rabbit bard hurls a large burning rope net at three swamp monsters in a foggy night swamp. The net is on fire. The bard himself is also on fire but grinning. My character is Caspian — small rabbit-person, brown fur, blue linen shirt, brown leather vest, no weapon in hand.`,
-  tavern: `A woman elf archer releases an arrow at point-blank range directly into the eye of a giant black dragon that is diving straight at her, mouth open. The dragon's face fills the entire background. My character is Lyra — slender wood elf, green hooded cloak, auburn hair in a braid, carved wooden longbow.`,
-  dragon: `An old man in white robes holds a large iron cross above his head in a dark graveyard at night. A circle of blinding golden light erupts from the cross and the zombies and skeletons surrounding him on all sides crumble to dust at once. My character is Brother Aldric — elderly human, white robes, grey beard, large iron holy symbol on a chain.`
+  caspian: `Caspian is on fire in a dark swamp. He throws a burning rope net over three swamp monsters. He grins despite being at 1 HP. My character: Caspian, a small rabbit-person bard, brown fur, blue shirt, brown vest.`,
+  tavern: `Lyra fires her last arrow directly into the eye of a black dragon diving at her. The dragon crashes behind her. She doesn't move. My character: Lyra, wood elf ranger, green cloak, auburn braided hair, wooden bow.`,
+  dragon: `Brother Aldric raises his iron holy symbol in a graveyard at night. A burst of golden light erupts and 20 zombies around him crumble to ash. My character: Brother Aldric, elderly human cleric, white robes, grey beard, iron cross.`
 };
 
 window.STYLE_SUFFIXES = window.STYLE_SUFFIXES || {};
 const STYLE_SUFFIXES = window.STYLE_SUFFIXES = {
+  comic: 'comic book illustration style, bold ink outlines, vibrant colors, dynamic action lines, Marvel fantasy art, highly detailed',
   oilpainting: 'oil painting style, cinematic fantasy art, dramatic lighting, rich textures, epic composition, warm atmospheric glow',
   mtg: 'Magic the Gathering card art style, dark fantasy illustration, dramatic composition, gothic atmosphere, moody lighting',
   comic: 'cartoon comic style, expressive characters, bold outlines, vibrant colors, humorous exaggerated expressions'
