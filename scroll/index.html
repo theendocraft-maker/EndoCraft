@@ -1163,9 +1163,9 @@ async function generate() {
 
     if (data.prompts && outs.includes('prompts')) {
       renderPrompts(data.prompts);
-      document.getElementById('promptsSection').style.display = 'block';
+      /* prompts removed */
     } else {
-      document.getElementById('promptsSection').style.display = 'none';
+      /* prompts removed */
     }
 
     sessionsUsed++;
@@ -1173,7 +1173,7 @@ async function generate() {
     updatePill();
 
     if (sessionsUsed >= 3) {
-      document.getElementById('upgradeNudge').style.display = 'flex';
+      /* upgrade nudge removed */
     }
 
     document.getElementById('loadingOverlay').classList.remove('visible');
@@ -1197,7 +1197,7 @@ function showResult(cardId, bodyId, content, show) {
   const card = document.getElementById(cardId);
   if (content && show) {
     document.getElementById(bodyId).textContent = content;
-    card.style.display = 'block';
+    if(card) card.style.display = 'block';
   } else {
     card.style.display = 'none';
   }
