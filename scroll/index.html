@@ -568,8 +568,8 @@ body {
             <!-- Bottom -->
             <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 14px;">
               <div id="tcClass" style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;color:rgba(232,184,109,.9);margin-bottom:3px;text-shadow:0 1px 10px #000;"></div>
-              <div id="tcName" style="font-family:'Cinzel Decorative',serif;font-size:22px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:3px;text-shadow:0 2px 20px #000;"></div>
-              <div id="tcMoment" style="font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:rgba(255,230,160,.55);margin-bottom:8px;text-shadow:0 1px 8px #000;"></div>
+              <div id="tcName" style="font-family:'Cinzel Decorative',serif;font-size:18px;font-weight:700;color:#fffbf0;line-height:1.15;margin-bottom:3px;text-shadow:0 2px 20px #000;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></div>
+              <div id="tcMoment" style="font-family:'EB Garamond',serif;font-size:11px;font-style:italic;color:rgba(255,230,160,.55);margin-bottom:8px;text-shadow:0 1px 8px #000;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></div>
               <div id="tcStats" style="display:flex;gap:4px;margin-bottom:6px;"></div>
               <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(232,184,109,.15);padding-top:5px;">
                 <span id="tcSerial" style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(232,184,109,.3);">#0001 / 9999</span>
@@ -815,14 +815,13 @@ function showTradingCard(data) {
   wrap.scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('shareRow').style.display = 'flex';
   
-  // Fill card data
-  const title = document.getElementById('scTitle').textContent || 'Session Recap';
-  const mvp = document.getElementById('scMvp').textContent || '';
-  const campaign = document.getElementById('scCampaign').textContent || 'Campaign';
+  // Fill card data from data object directly
+  const shortTitle = data.session_title || 'Session Recap';
+  const subtitle = data.legendary_moment || 'A moment for the ages';
   
-  document.getElementById('tcName').textContent = title.split(':')[0] || title;
-  document.getElementById('tcMoment').textContent = title.split(':')[1]?.trim() || mvp;
-  document.getElementById('tcCampaign').textContent = campaign;
+  document.getElementById('tcName').textContent = shortTitle;
+  document.getElementById('tcMoment').textContent = subtitle;
+  document.getElementById('tcCampaign').textContent = 'Session · ' + new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
   
   // Stats
   const stats = document.getElementById('tcStats');
@@ -1143,13 +1142,15 @@ async function generate() {
   const outs = [...activeOutputs];
   const styleSuffix = STYLE_SUFFIXES[selectedStyle];
 
+  const titlePart = '"session_title": A dramatic 2-4 word title for this session (e.g. "The Last Stand", "Fire and Shadow"). Max 4 words, no punctuation.';
   const summaryPart = outs.includes('summary') ? '"summary": Session summary as plain text string. One opening sentence. Then 3-5 bullet points starting with • of the key moments. Then one closing sentence. MAXIMUM 100 words total. Short and punchy.' : '';
   const npcPart = outs.includes('npc') ? '"npc": NPC log as plain text string. One line per NPC: "Name — role: one sentence." Max 5 NPCs. No JSON objects inside, just plain text.' : '';
   const questPart = outs.includes('quest') ? '"quest": Quest tracker as plain text string. Format each section on its own line: Active: ... / New clues: ... / Open questions: ... Keep it brief.' : '';
   const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry from the main character\'s perspective. Atmospheric fantasy prose, written by candlelight.' : '';
   const promptsPart = '';
+  const momentPart = '"legendary_moment": One sentence (max 8 words) describing the single most epic moment.';
 
-  const system = 'You are an expert D&D chronicler and creative writer. Based on the player\'s session description, create the requested outputs.\nReturn ONLY a valid JSON object with these keys (include only requested: ' + outs.join(', ') + '):\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
+  const system = 'You are an expert D&D chronicler and creative writer. Based on the player\'s session description, create the requested outputs.\nReturn ONLY a valid JSON object with these keys: session_title, legendary_moment, ' + outs.join(', ') + '.\n' + titlePart + '\n' + momentPart + '\n' + summaryPart + '\n' + npcPart + '\n' + questPart + '\n' + journalPart + '\n' + promptsPart + '\nReturn ONLY the JSON object, no markdown, no explanation.';
 
   try {
     const res = await fetch(API, {
