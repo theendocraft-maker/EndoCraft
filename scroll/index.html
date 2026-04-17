@@ -392,7 +392,7 @@ body {
 .share-link-box.visible { display: block; }
 
 /* ── EMAIL SIGNUP ── */
-.email-signup {
+.email-signup { display: none !important;
   background: var(--surface);
   border: 1px solid var(--accent-border);
   border-radius: 14px; padding: 20px;
@@ -821,16 +821,7 @@ body {
     <div class="share-link-box" id="shareLinkBox" onclick="copyShareLink()">Generating link…</div>
 
 
-    <!-- Email Signup (hidden - using Save Card CTA instead) -->
-    <div class="email-signup" id="emailSignup" style="display:none!important;">
-      <div class="es-title">✦ Stay in the loop</div>
-      <div class="es-sub">Get notified when we launch Campaign Memory, Party Codes and more.</div>
-      <div class="es-row">
-        <input type="email" class="es-input" id="emailInput" placeholder="your@email.com">
-        <button class="es-btn" onclick="subscribeEmail()">Join</button>
-      </div>
-      <div class="es-skip" onclick="dismissEmail()">No thanks</div>
-    </div>
+
 
     </div>
 
@@ -1505,5 +1496,13 @@ function newSession() {
   window.scrollTo(0, 0);
 }
 </script>
+
+<!-- Card Modal -->
+<div class="tc-modal-bg" id="tcModal" onclick="closeCardModal(event)">
+  <div class="tc-modal-inner">
+    <div class="tc-modal-close" onclick="document.getElementById('tcModal').classList.remove('open')">✕ CLOSE</div>
+    <div id="tcModalCard" style="perspective:1200px;"></div>
+  </div>
+</div>
 </body>
 </html>
