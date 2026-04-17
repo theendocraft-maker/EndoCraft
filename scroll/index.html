@@ -1116,7 +1116,7 @@ function resetLoadingSteps() {
   clearInterval(loadingTimer);
   ['ls1','ls2','ls3'].forEach(id => {
     const el = document.getElementById(id);
-    el.classList.remove('active','done');
+    if (el) el.classList.remove('active','done');
   });
   document.getElementById('ls1').classList.add('active');
 }
