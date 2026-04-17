@@ -975,12 +975,19 @@ async function generateSessionImage(data, story) {
   const charInput = charMatch ? charMatch[1].trim() : '';
   
   // Build prompt: character always in foreground
-  let charDesc = charInput ? charInput + ', ' : 'fantasy hero, ';
-  let sceneDesc = moment || title || summary.substring(0, 120);
-  // Extract key action verb for better composition
-  const actionWords = sceneDesc.match(/(fires?|shoots?|cast|summon|strikes?|charges?|leaps?|dodge|slash|stab|raises?|calls?)/i);
-  const actionHint = actionWords ? 'mid-action ' + actionWords[0] + ', ' : 'dramatic action pose, ';
-  const prompt = charDesc + actionHint + 'extreme close-up portrait, face and upper body filling frame, with ' + sceneDesc + ' happening in dramatic background, epic D&D fantasy, ' + styleSuffix + ', vertical portrait, character dominant in foreground, no text, no watermark';
+  // Scene-first prompt — like a movie poster or book cover
+  const sceneDesc = moment || title || summary.substring(0, 150);
+  const charPart = charInput ? ', featuring ' + charInput : ', featuring a fantasy hero';
+  
+  // Style-specific composition hints
+  const styleComposition = {
+    photo: 'wide cinematic shot, dramatic depth of field, golden hour lighting, photorealistic, 8k, hyperdetailed',
+    oilpainting: 'epic fantasy oil painting, wide establishing shot, dramatic lighting, rich colors, painterly, cinematic composition',
+    mtg: 'Magic the Gathering card art, wide panoramic scene, dark dramatic atmosphere, gothic fantasy, highly detailed illustration'
+  };
+  const composition = styleComposition[currentImageStyle] || styleComposition.photo;
+  
+  const prompt = 'Epic D&D scene: ' + sceneDesc + charPart + ', dramatic wide-angle composition, environment and action visible, ' + composition + ', no text, no watermark, vertical format';
 
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
