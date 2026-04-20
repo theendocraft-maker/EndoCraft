@@ -1,0 +1,18 @@
+# Claude Code internal data (worktrees, project cache)
+.claude/
+**/.claude/
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Editor junk
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Node/logs (falls du mal npm brauchst)
+node_modules/
+npm-debug.log*
