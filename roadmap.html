@@ -271,7 +271,7 @@ async function subscribe(e, source) {
     await fetch('https://endocraft-production.up.railway.app/api/subscribe', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ email, source: 'roadmap-' + source })
+      body: JSON.stringify({ email, source: 'roadmap' })
     });
   } catch(err) { console.error(err); }
   document.getElementById(isHero ? 'heroForm' : 'ctaForm').style.display = 'none';
