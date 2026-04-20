@@ -132,6 +132,29 @@ body {
 }
 .ex-chip:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-dim); }
 
+/* Surprise-me roll button */
+.surprise-btn {
+  -webkit-tap-highlight-color: rgba(123,108,246,0.3);
+  touch-action: manipulation;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--accent);
+  background: linear-gradient(135deg, rgba(123,108,246,.15), rgba(232,184,109,.10));
+  border: 1px solid var(--accent-border);
+  border-radius: 22px;
+  padding: 9px 16px;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(123,108,246,.12);
+}
+.surprise-btn:hover {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(123,108,246,.25), rgba(232,184,109,.15));
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(123,108,246,.22);
+}
+.surprise-btn:active { transform: translateY(0); }
+
 .gen-btn {
   flex-shrink: 0;
   padding: 10px 24px;
@@ -710,13 +733,12 @@ body {
       <div class="story-box">
         <textarea class="story-textarea" id="storyInput" placeholder="What happened? Describe the moment and your character.&#10;&#10;Example: Lyra fires her last arrow into the eye of a black dragon diving at her.&#10;My character: Lyra, wood elf ranger, green cloak, auburn braided hair, longbow."></textarea>
         <div class="story-footer">
-          <div style="width:100%;padding:10px 16px 0;">
-            <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;">✦ EXAMPLES — tap to try</div>
-            <div class="examples">
-              <div class="ex-chip" onclick="fillEx('caspian')">⚡ Shadow Blade</div>
-              <div class="ex-chip" onclick="fillEx('tavern')">🐉 Lyra & the Dragon</div>
-              <div class="ex-chip" onclick="fillEx('dragon')">💀 Aldric's Last Stand</div>
-            </div>
+          <div style="width:100%;padding:10px 16px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <button type="button" class="surprise-btn" onclick="surpriseStory()">
+              🎲 <span style="font-weight:700;">Surprise me</span>
+              <span style="opacity:.55;font-weight:400;">— roll a new scenario</span>
+            </button>
+            <span id="surpriseLabel" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;color:var(--text-dim);"></span>
           </div>
         </div>
       </div>
@@ -1538,14 +1560,68 @@ function copyShareLink() {
 }
 
 
-const EXAMPLES = {
-  caspian: `Seraphine steps through a portal and appears behind the enemy general. She drives a shadow blade into his back. The fortress falls silent.
-My character: Seraphine, half-elf warlock, silver hair, black robes, glowing violet eyes.`,
-  tavern: `Lyra fires her last arrow directly into the eye of a black dragon diving straight at her. The dragon crashes into the valley below. She doesn't move.
-My character: Lyra, wood elf ranger, green cloak, auburn braided hair, longbow.`,
-  dragon: `Brother Aldric raises his iron holy symbol in a dark graveyard. A burst of golden light erupts outward and 20 zombies around him crumble to ash at once.
-My character: Brother Aldric, elderly human cleric, white robes, grey beard, iron cross.`
-};
+// ── RANDOM STORY LIBRARY ──
+// Every entry is hand-crafted to produce a great card image: cinematic
+// moment, clear character, specific visual details, strong emotion.
+const RANDOM_STORIES = [
+  {
+    id:'caspian', emoji:'💋', label:'The Unwanted Kiss',
+    story:`Caspian, a small brown-furred harengon bard in a blue shirt and brown leather vest, gets kissed on the cheek by Grimhilda the hag — a grotesque old crone who mistook him for her long-lost love. His rabbit ears flatten back in horror, eyes wide with pure disgust. Swamp mist closes in around them. A single tear of absolute regret slides down his fur.
+My character: Caspian, harengon bard, small brown fur, blue shirt, brown leather vest, long floppy rabbit ears.`
+  },
+  {
+    id:'lyra', emoji:'🐉', label:'Dragon\u2019s Eye',
+    story:`Lyra fires her last arrow directly into the eye of a black dragon diving straight at her. Time seems to slow. Her auburn braid whips in the mountain wind. The sunset paints everything gold and red. Behind her, her wounded party looks up in disbelief.
+My character: Lyra, wood elf ranger, forest-green cloak, auburn braided hair, silver longbow, fierce green eyes.`
+  },
+  {
+    id:'seraphine', emoji:'\u26A1', label:'Shadow Strike',
+    story:`Seraphine steps silently through a swirling portal of violet shadow and appears directly behind the enemy war general. Her curved dagger of pure darkness pierces his armor. Golden runes flicker across her skin. The fortress torches dim as if afraid.
+My character: Seraphine, half-elf warlock, loose silver hair, flowing black robes, glowing violet eyes, pact of the blade.`
+  },
+  {
+    id:'aldric', emoji:'\u2728', label:'Divine Dawn',
+    story:`Brother Aldric raises his iron holy symbol high in a rain-soaked graveyard at dawn. A massive burst of golden divine light erupts outward. Twenty zombies around him crumble to ash mid-lunge. His old face is lit with absolute conviction.
+My character: Brother Aldric, elderly human cleric, white weather-worn robes, grey beard, iron holy cross, wise lined face.`
+  },
+  {
+    id:'vex', emoji:'\uD83D\uDD25', label:'Last Ember',
+    story:`Vex, a tiefling sorcerer with cracked golden horns, casts her final fireball at an army of cultists surrounding her. The spell is three times bigger than anything she has ever cast. Golden flames curl from her tattooed palms. Her eyes go white with raw power. She knows this will burn her out.
+My character: Vex, tiefling sorcerer, cracked golden horns, red skin, glowing arcane tattoos, tattered purple robes, burning amber eyes.`
+  },
+  {
+    id:'pip', emoji:'\uD83D\uDDE1\uFE0F', label:'Silent Strike',
+    story:`Pip, a halfling rogue in dusty grey leathers, drops silently from the rafters of a candlelit study and drives her twin daggers into the neck of a sleeping archmage. Dust motes hang frozen in the candlelight. Her face is completely calm, almost bored.
+My character: Pip, halfling rogue, grey leather armor, dark curly hair tied back, twin curved daggers, sharp emerald-green eyes.`
+  },
+  {
+    id:'aelwyn', emoji:'\uD83D\uDC3B', label:'Beast Within',
+    story:`Moonlight pours through a dense forest canopy. Aelwyn, a half-elf druid, is caught mid-transformation into a massive dire bear — bones cracking, fur erupting. Her expression is frozen between human grief and feral fury. Amber runes spiral up her bared arms. The forest is silent around her.
+My character: Aelwyn, half-elf druid, long silver-white braids, deer-hide cloak, glowing amber tattoos, piercing hazel eyes.`
+  },
+  {
+    id:'azara', emoji:'\u2744\uFE0F', label:'Frost Exhale',
+    story:`Azara, a silver dragonborn sorceress, exhales a massive torrent of ice-blue frost breath at a charging frost giant. Her silver scales catch the cold northern light. Snowflakes crystallize mid-air around her horns. Her eyes glow electric blue.
+My character: Azara, silver dragonborn sorceress, gleaming silver scales, pale-blue flowing robes, electric-blue glowing eyes, crystal-studded horns.`
+  },
+  {
+    id:'felix', emoji:'\uD83C\uDFB6', label:'Bard\u2019s Charm',
+    story:`Felix, a charming half-elf bard with a crooked smile, leans across a candlelit tavern table and whispers something into a duchess\u2019s ear. She blushes deep red behind her feathered fan. Her two guards grip their halberds but dare not move. He already has the key to the vault.
+My character: Felix, half-elf bard, chestnut hair falling over one eye, dark velvet coat, crooked grin, hazel mischievous eyes, lute slung over shoulder.`
+  },
+  {
+    id:'kora', emoji:'\uD83D\uDCA2', label:'Chains of Wrath',
+    story:`Kora, a half-orc barbarian, rips rusted iron chains apart around her wrists with sheer fury. Blood streaks her tusked face. The slave-masters back away in horror. Her eyes have gone pure red with rage. She is going to kill every single one of them.
+My character: Kora, half-orc barbarian, muscular, short black mohawk, ritual tribal scars, torn leather armor, tusked jaw, raging red eyes.`
+  }
+];
+
+// Backwards-compat: the old examples keep working
+const EXAMPLES = Object.fromEntries(RANDOM_STORIES.map(s => [s.id, s.story]));
+// aliases for original chip keys
+EXAMPLES.caspian = RANDOM_STORIES.find(s=>s.id==='seraphine')?.story || EXAMPLES.caspian;
+EXAMPLES.tavern  = RANDOM_STORIES.find(s=>s.id==='lyra')?.story       || EXAMPLES.tavern;
+EXAMPLES.dragon  = RANDOM_STORIES.find(s=>s.id==='aldric')?.story     || EXAMPLES.dragon;
 
 window.STYLE_SUFFIXES = window.STYLE_SUFFIXES || {};
 const STYLE_SUFFIXES = window.STYLE_SUFFIXES = {
@@ -1568,6 +1644,34 @@ function updatePill() {
 updatePill();
 
 function fillEx(k) { document.getElementById('storyInput').value = EXAMPLES[k]; }
+
+// ── RANDOM / SURPRISE STORY ──
+let _lastRandomId = null;
+function surpriseStory(){
+  // Avoid rolling the same story twice in a row
+  let pool = RANDOM_STORIES;
+  if (_lastRandomId && pool.length > 1) pool = pool.filter(s => s.id !== _lastRandomId);
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  _lastRandomId = pick.id;
+  const ta = document.getElementById('storyInput');
+  if (!ta) return;
+  ta.value = pick.story;
+  // Feedback: label update + subtle flash
+  const lbl = document.getElementById('surpriseLabel');
+  if (lbl) lbl.textContent = pick.emoji + '  ' + pick.label;
+  ta.style.transition = 'background .35s ease';
+  ta.style.background = 'rgba(123,108,246,.09)';
+  setTimeout(() => ta.style.background = '', 450);
+  // Put cursor at the "My character:" line so user can quickly edit
+  const idx = pick.story.indexOf('My character:');
+  if (idx > -1) { ta.focus(); try { ta.setSelectionRange(idx, pick.story.length); } catch(_){} }
+}
+
+// Pre-fill a random story on first page load (only if textarea is empty)
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('storyInput');
+  if (ta && !ta.value.trim()) surpriseStory();
+});
 
 function toggleOut(btn) {
   const t = btn.dataset.out;
