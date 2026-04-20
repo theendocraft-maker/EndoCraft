@@ -1519,8 +1519,46 @@ Return ONLY the JSON object. No markdown. No explanation.`;
     clearInterval(loadingTimer);
     document.getElementById('loadingOverlay').classList.remove('visible');
     buildSessionCard(data, story);
-    showPackOverlay(data, story);
-    // showTradingCard + generateSessionImage called from inside showPackOverlay
+
+    // ── PACK OPENING TRIGGER (robust) ──
+    console.log('[PACK] loading hidden, triggering pack overlay', {rarity: data.rarity});
+    (function triggerPack(){
+      var ov = document.getElementById('packOverlay');
+      if (!ov) { console.error('[PACK] packOverlay element missing!'); return; }
+
+      if (typeof window.showPackOverlay === 'function') {
+        try {
+          window.showPackOverlay(data, story);
+          console.log('[PACK] showPackOverlay called');
+        } catch (e) {
+          console.error('[PACK] showPackOverlay threw:', e);
+        }
+      } else {
+        console.error('[PACK] window.showPackOverlay not defined — check for script errors on page load');
+        // Hard fallback: show overlay + let user tap to continue to card
+        ov.classList.add('visible');
+        var hint2 = document.getElementById('hint');
+        if (hint2) { hint2.textContent = 'TAP ANYWHERE TO CONTINUE'; hint2.style.color = 'rgba(255,200,80,.9)'; }
+        ov.addEventListener('click', function once(){
+          ov.removeEventListener('click', once);
+          ov.classList.remove('visible');
+          if (typeof showTradingCard === 'function') showTradingCard(data);
+          if (typeof generateSessionImage === 'function') generateSessionImage(data, story);
+          document.getElementById('resultsView').classList.add('visible');
+        }, { once: true });
+      }
+
+      // safety: ensure overlay becomes visible 150ms after call
+      setTimeout(function(){
+        if (!ov.classList.contains('visible')) {
+          console.warn('[PACK] overlay was not visible — forcing it now');
+          ov.classList.add('visible');
+        } else {
+          console.log('[PACK] overlay visible ✓');
+        }
+      }, 150);
+    })();
+    // showTradingCard + generateSessionImage called from inside showPackOverlay (via showPackCard)
 
   } catch(e) {
     console.error('Generate error:', e.stack || e.message);
@@ -1856,6 +1894,7 @@ window.showPackOverlay=function(data,story){
   requestAnimationFrame(packLoop);
 };
 
+console.log('[PACK] IIFE loaded, showPackOverlay =', typeof window.showPackOverlay);
 })(); // end IIFE
 </script>
 
