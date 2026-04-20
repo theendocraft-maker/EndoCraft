@@ -333,6 +333,18 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── RARITY ── */
+@keyframes glitch {
+  0%   { transform: translate(0); filter: none; }
+  20%  { transform: translate(-3px, 1px); filter: hue-rotate(90deg) saturate(2); }
+  40%  { transform: translate(3px, -1px); filter: hue-rotate(180deg) invert(0.1); }
+  60%  { transform: translate(-2px, 2px); filter: hue-rotate(270deg) saturate(1.5); }
+  80%  { transform: translate(2px, -2px); filter: hue-rotate(0deg); }
+  100% { transform: translate(0); filter: none; }
+}
+.tc-misprint { animation: glitch 0.4s infinite !important; }
+.tc-misprint #tcName, .tc-misprint #tcMoment { filter: invert(1) hue-rotate(180deg); }
+
 @media (max-width: 500px) {
   .topbar { padding: 14px 16px; }
   .main { padding: 16px 20px; justify-content: flex-start; }
@@ -969,6 +981,30 @@ function showTradingCard(data) {
   document.getElementById('tcMoment').textContent = subtitle;
   document.getElementById('tcCampaign').textContent = 'Session · ' + new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
   
+  // ── RARITY BADGE ──
+  const rarityConfig = {
+    legendary: { label: '⚡ LEGENDARY', color: '#FFD700', bg: 'rgba(255,200,0,0.15)', border: 'rgba(255,200,0,0.5)' },
+    epic:      { label: '✦ EPIC',      color: '#C084FC', bg: 'rgba(192,132,252,0.12)', border: 'rgba(192,132,252,0.4)' },
+    rare:      { label: '◆ RARE',      color: '#60A5FA', bg: 'rgba(96,165,250,0.1)', border: 'rgba(96,165,250,0.35)' },
+    common:    { label: '• COMMON',    color: 'rgba(255,255,255,0.5)', bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)' },
+    misprint:  { label: '⚠ MISPRINT',  color: '#FF6B6B', bg: 'rgba(255,0,0,0.1)', border: 'rgba(255,0,0,0.3)' }
+  };
+  const rarity = data.rarity || 'rare';
+  const roll = data.visible_roll !== undefined ? data.visible_roll : '?';
+  const rc = rarityConfig[rarity] || rarityConfig.rare;
+  const pill = document.getElementById('tcPill');
+  if (pill) {
+    pill.textContent = rc.label + '  Nat ' + roll;
+    pill.style.color = rc.color;
+    pill.style.background = rc.bg;
+    pill.style.borderColor = rc.border;
+  }
+  // Misprint = CSS glitch on card
+  const cardEl = document.getElementById('tcCard');
+  if (cardEl) {
+    cardEl.classList.toggle('tc-misprint', rarity === 'misprint');
+  }
+  
   // Stats
   const stats = document.getElementById('tcStats');
   const date = new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
@@ -1050,7 +1086,16 @@ async function generateSessionImage(data, story) {
   };
   const composition = styleComposition[currentImageStyle] || styleComposition.photo;
   
-  const prompt = sceneDesc + ', ' + composition + ', vertical portrait format, no text, no letters, no writing, no watermark';
+  const prompt = sceneDesc + ', ' + composition + ((() => {
+    const RARITY_IMG_SUFFIX = {
+      legendary: ', divine light, god-rays, transcendent power, mythic aura, ultra-epic',
+      epic: ', dramatic lighting, heroic pose, epic battle atmosphere',
+      rare: ', dynamic composition, detailed scene',
+      common: '',
+      misprint: ''
+    };
+    return RARITY_IMG_SUFFIX[data.rarity] || '';
+  })()) + ', vertical portrait format, no text, no letters, no writing, no watermark';
 
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
@@ -1416,6 +1461,8 @@ Return ONLY the JSON object. No markdown. No explanation.`;
     if (!res.ok) throw new Error(d.error?.message || 'API error');
     const raw = d.content.map(b => b.text || '').join('');
     const data = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    data.rarity = d.rarity || 'rare';
+    data.visible_roll = d.visible_roll !== undefined ? d.visible_roll : 10;
 
     showResult('cardSummary', 'bodySummary', data.summary, outs.includes('summary'));
     showResult('cardNpc', 'bodyNpc', data.npc, outs.includes('npc'));
