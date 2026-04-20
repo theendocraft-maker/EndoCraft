@@ -1138,12 +1138,21 @@ async function generateSessionImage(data, story) {
     const d = await res.json();
     if (d.url) {
       const img = document.getElementById('tcImg');
-      img.onload = () => {
-        img.style.opacity = '1';
-        const ph = document.getElementById('tcImgPlaceholder');
-        if (ph) { ph.style.opacity = '0'; setTimeout(() => ph.style.display='none', 500); }
-      };
-      img.src = d.url;
+      // Await actual pixel decode so we don't reveal the pack before the image is ready
+      await new Promise((resolve) => {
+        let settled = false;
+        const done = () => { if (!settled) { settled = true; resolve(); } };
+        img.onload = () => {
+          img.style.opacity = '1';
+          const ph = document.getElementById('tcImgPlaceholder');
+          if (ph) { ph.style.opacity = '0'; setTimeout(() => ph.style.display='none', 500); }
+          done();
+        };
+        img.onerror = () => { console.warn('[IMG] onerror — continuing anyway'); done(); };
+        img.src = d.url;
+        // Safety cap: don't wait longer than 30s
+        setTimeout(done, 30000);
+      });
       // Save image_url to session in Supabase
       if (window._currentSessionId) {
         fetch('https://dtlzsbhyngafhxkjjlst.supabase.co/rest/v1/sessions?id=eq.' + window._currentSessionId, {
@@ -1517,8 +1526,33 @@ Return ONLY the JSON object. No markdown. No explanation.`;
     }
 
     clearInterval(loadingTimer);
-    document.getElementById('loadingOverlay').classList.remove('visible');
+    // Keep loading overlay visible while the image is being forged — switch message + mark image step active
+    (function(){
+      var _lo = document.getElementById('loadingOverlay');
+      var _lt = _lo ? _lo.querySelector('.loading-text') : null;
+      if (_lt) _lt.textContent = 'Forging your card image…';
+      var _ls2 = document.getElementById('ls2');
+      if (_ls2) { _ls2.classList.remove('active'); _ls2.classList.add('done'); }
+      var _ls3 = document.getElementById('ls3');
+      if (_ls3) { _ls3.style.display = 'flex'; _ls3.classList.add('active'); }
+    })();
+
     buildSessionCard(data, story);
+
+    // Pre-populate trading-card DOM (the parent #resultsView is display:none, so nothing appears visually yet)
+    if (typeof showTradingCard === 'function') {
+      try { showTradingCard(data); } catch(e){ console.error('[PACK] showTradingCard pre-populate threw:', e); }
+    }
+
+    // Wait for the image to finish generating + decoding BEFORE we show the pack
+    console.log('[PACK] starting image generation (pre-pack) …');
+    if (typeof generateSessionImage === 'function') {
+      try { await generateSessionImage(data, story); } catch(e){ console.error('[PACK] image gen threw:', e); }
+    }
+    console.log('[PACK] image ready — hiding loading, revealing pack');
+
+    // Now hide the loading overlay and trigger the pack
+    document.getElementById('loadingOverlay').classList.remove('visible');
 
     // ── PACK OPENING TRIGGER (robust) ──
     console.log('[PACK] loading hidden, triggering pack overlay', {rarity: data.rarity});
@@ -1818,9 +1852,10 @@ function showPackCard(){
     overlay.style.transition='';
     const si=document.getElementById('stepInput');if(si)si.style.display='none';
     // Build card now (after pack reveal) so it appears fresh
+    // Note: image has already been generated BEFORE the pack was shown, so tcImg.src is set and loaded
     if(_packRevealData){
       if(typeof showTradingCard==='function')showTradingCard(_packRevealData);
-      if(typeof generateSessionImage==='function')generateSessionImage(_packRevealData,_packRevealStory);
+      // image already generated pre-pack — no need to re-call generateSessionImage
     }
     document.getElementById('resultsView').classList.add('visible');
     const tw=document.getElementById('tradingCardWrap');
