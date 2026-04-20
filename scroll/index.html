@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoCraft — What happened in your session?</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <style>
 :root {
   --bg: #080810;
@@ -483,8 +484,9 @@ body {
 #tcCard {
   width: min(280px, 82vw);
   border-radius: 20px; position: relative; overflow: hidden;
-  transform-style: preserve-3d; transition: transform 0.08s ease; cursor: pointer;
-  animation: tcAutoSpin 7s ease-in-out infinite, tcGlow 4s ease infinite;
+  cursor: pointer;
+  /* legacy tcAutoSpin removed — would fight the 3D flip on #tcFlipWrap */
+  animation: tcGlow 4s ease infinite;
 }
 #tcCard.held { animation: tcGlow 4s ease infinite; }
 @keyframes tcAutoSpin {
@@ -595,6 +597,90 @@ body {
 @keyframes hintPulse{0%,100%{opacity:.3;}50%{opacity:.9;}}
 #scene{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:24px;}
 @keyframes cardRevealIn{from{transform:scale(0.85) translateY(24px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+
+/* ═════════════ FLIP + CARD BACK ═════════════ */
+#tcFlipWrap{position:relative;width:min(300px,85vw);aspect-ratio:220/308;margin:0 auto;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .8s cubic-bezier(.23,1.2,.32,1);cursor:pointer;animation:tcFloat 4.5s ease-in-out infinite;}
+#tcFlipWrap.flipped{animation:tcFloatFlipped 4.5s ease-in-out infinite;}
+@keyframes tcFloat{0%,100%{transform:translateY(0) rotateY(-4deg) rotateX(2deg);}50%{transform:translateY(-8px) rotateY(4deg) rotateX(-1deg);}}
+@keyframes tcFloatFlipped{0%,100%{transform:rotateY(180deg) translateY(0) rotateX(2deg);}50%{transform:rotateY(180deg) translateY(-8px) rotateX(-1deg);}}
+#tcFlipWrap > #tcBack,#tcFlipWrap > #tcCard{position:absolute !important;inset:0;width:100% !important;height:100% !important;margin:0 !important;backface-visibility:hidden !important;-webkit-backface-visibility:hidden !important;}
+#tcFlipWrap > #tcCard{transform:rotateY(180deg) !important;transition:none !important;}
+
+/* CARD BACK */
+#tcBack{border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#0e0818,#080510,#0c0618);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 1px rgba(232,184,109,.15);}
+#tcBack::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(232,184,109,.06),transparent);}
+#tcBack::after{content:"";position:absolute;inset:14px;border-radius:10px;border:1px solid rgba(232,184,109,.12);pointer-events:none;}
+.tc-back-texture{position:absolute;inset:0;background-image:repeating-linear-gradient(60deg,rgba(232,184,109,.012) 0,rgba(232,184,109,.012) 1px,transparent 0,transparent 50%);background-size:20px 20px;}
+.tc-back-logo{width:72px;height:72px;object-fit:contain;position:relative;filter:drop-shadow(0 0 16px rgba(232,184,109,.55)) drop-shadow(0 0 40px rgba(232,184,109,.15));}
+.tc-back-name{font-family:"Cinzel Decorative",serif;font-size:18px;color:rgba(232,184,109,.85);letter-spacing:2px;position:relative;text-shadow:0 0 30px rgba(232,184,109,.3);}
+.tc-back-div{display:flex;align-items:center;gap:10px;position:relative;}
+.tc-back-line{width:32px;height:1px;background:rgba(232,184,109,.2);}
+.tc-back-diamond{width:5px;height:5px;background:rgba(232,184,109,.5);transform:rotate(45deg);}
+.tc-back-tagline{font-family:"Cinzel",serif;font-size:8px;letter-spacing:4px;color:rgba(232,184,109,.32);text-align:center;padding:0 30px;line-height:2;position:relative;}
+
+/* ═════════════ RARITY VISUAL VARIANTS ═════════════ */
+/* Reusable overlay containers (hidden by default, shown per rarity) */
+.rar-sweep,.rar-sweep2,.rar-corner-sparks,.rar-border-shimmer,.rar-float-particles,.rar-scanlines,.rar-glitch{display:none;position:absolute;inset:0;pointer-events:none;}
+
+/* Common */
+#tcCard.r-common{animation:none !important;box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 1px rgba(148,163,184,.25) !important;}
+#tcCard.r-common #tcPill{border-color:rgba(148,163,184,.35) !important;color:#CBD5E1 !important;background:rgba(20,20,30,.75) !important;}
+
+/* Rare */
+#tcCard.r-rare{animation:rGlowRare 3s ease infinite !important;}
+@keyframes rGlowRare{0%,100%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 1.5px rgba(96,165,250,.4),0 0 20px rgba(59,130,246,.15);}50%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(96,165,250,.7),0 0 40px rgba(59,130,246,.3);}}
+#tcCard.r-rare #tcPill{border-color:rgba(96,165,250,.5) !important;color:#60A5FA !important;}
+#tcCard.r-rare .rar-sweep{display:block;background:linear-gradient(105deg,transparent 30%,rgba(96,165,250,.1) 50%,transparent 70%);animation:rSweepRare 3s ease infinite;z-index:25;}
+@keyframes rSweepRare{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
+
+/* Epic */
+#tcCard.r-epic{animation:rGlowEpic 2.5s ease infinite !important;}
+@keyframes rGlowEpic{0%,100%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(167,139,250,.5),0 0 40px rgba(139,92,246,.25);}50%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2.5px rgba(167,139,250,.8),0 0 70px rgba(139,92,246,.45);}}
+#tcCard.r-epic #tcPill{border-color:rgba(167,139,250,.5) !important;color:#C084FC !important;}
+#tcCard.r-epic .rar-sweep{display:block;background:linear-gradient(135deg,transparent 20%,rgba(167,139,250,.12) 50%,transparent 80%);animation:rSweepEpic1 2.5s ease infinite;z-index:25;border-radius:18px;}
+#tcCard.r-epic .rar-sweep2{display:block;background:linear-gradient(225deg,transparent 20%,rgba(232,184,109,.08) 50%,transparent 80%);animation:rSweepEpic2 2.5s ease .8s infinite;z-index:25;border-radius:18px;}
+@keyframes rSweepEpic1{0%{transform:translateX(-150%) translateY(-150%);}100%{transform:translateX(150%) translateY(150%);}}
+@keyframes rSweepEpic2{0%{transform:translateX(150%) translateY(-150%);}100%{transform:translateX(-150%) translateY(150%);}}
+#tcCard.r-epic .rar-corner-sparks{display:block;z-index:26;}
+.rar-corner-sparks span{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(192,132,252,.9);animation:rCornerSpk 2s ease infinite;}
+.rar-corner-sparks span:nth-child(1){top:14px;left:14px;animation-delay:0s;}
+.rar-corner-sparks span:nth-child(2){top:14px;right:14px;animation-delay:.5s;}
+.rar-corner-sparks span:nth-child(3){bottom:14px;left:14px;animation-delay:1s;}
+.rar-corner-sparks span:nth-child(4){bottom:14px;right:14px;animation-delay:1.5s;}
+@keyframes rCornerSpk{0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(2.5);opacity:1;box-shadow:0 0 8px rgba(192,132,252,1);}}
+
+/* Legendary */
+#tcCard.r-legendary{animation:rGlowLegend 2s ease infinite !important;}
+@keyframes rGlowLegend{0%,100%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(232,184,109,.6),0 0 60px rgba(232,184,109,.3);}50%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 3px rgba(232,184,109,.9),0 0 100px rgba(232,184,109,.5);}}
+#tcCard.r-legendary #tcPill{border-color:rgba(232,184,109,.6) !important;color:#E8B86D !important;background:rgba(10,5,0,.9) !important;}
+#tcCard.r-legendary .rar-sweep{display:block;overflow:hidden;border-radius:18px;z-index:25;}
+#tcCard.r-legendary .rar-sweep::after{content:"";position:absolute;top:-50%;left:-50%;width:40%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,220,100,.22),rgba(255,255,200,.3),rgba(255,220,100,.22),transparent);animation:rLegendSweep 3s ease infinite;transform:rotate(15deg);}
+@keyframes rLegendSweep{0%{transform:rotate(15deg) translateX(-200%);}100%{transform:rotate(15deg) translateX(600%);}}
+#tcCard.r-legendary .rar-border-shimmer{display:block;border-radius:18px;z-index:30;}
+.rar-border-shimmer::before{content:"";position:absolute;inset:-1px;border-radius:19px;background:conic-gradient(from var(--ra, 0deg),rgba(232,184,109,0),rgba(232,184,109,.8),rgba(255,255,200,.9),rgba(232,184,109,.8),rgba(232,184,109,0));animation:rBorderRot 3s linear infinite;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;padding:1.5px;}
+@keyframes rBorderRot{to{--ra:360deg;}}
+@property --ra{syntax:"<angle>";initial-value:0deg;inherits:false;}
+#tcCard.r-legendary .rar-float-particles{display:block;overflow:hidden;z-index:7;}
+.rar-fp{position:absolute;border-radius:50%;animation:rFP var(--d) var(--dl) ease-in infinite;opacity:0;}
+@keyframes rFP{0%{transform:translateY(0) scale(0);opacity:0;}15%{opacity:.8;}85%{opacity:.3;}100%{transform:translateY(-120px) translateX(var(--rx)) scale(1.5);opacity:0;}}
+
+/* Misprint */
+#tcCard.r-misprint{animation:rGlowMisprint 1.5s ease infinite !important;}
+@keyframes rGlowMisprint{0%,100%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(239,68,68,.5),0 0 40px rgba(239,68,68,.2);}50%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(239,68,68,.8),0 0 60px rgba(239,68,68,.35);}}
+#tcCard.r-misprint #tcPill{border-color:rgba(239,68,68,.5) !important;color:#F87171 !important;}
+#tcCard.r-misprint .rar-scanlines{display:block;background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px);animation:rScanMove 8s linear infinite;border-radius:18px;z-index:28;}
+@keyframes rScanMove{0%{background-position:0 0;}100%{background-position:0 100px;}}
+#tcCard.r-misprint .rar-glitch{display:block;animation:rGlitchBars 3s step-start infinite;overflow:hidden;border-radius:18px;z-index:29;}
+@keyframes rGlitchBars{0%,94%{opacity:0;}95%{opacity:1;}96%{clip-path:inset(20% 0 60% 0);transform:translateX(-8px);}97%{clip-path:inset(50% 0 30% 0);transform:translateX(6px);}98%{clip-path:inset(70% 0 10% 0);transform:translateX(-4px);}99%,100%{opacity:0;}}
+.rar-glitch::after{content:"";position:absolute;inset:0;background:rgba(239,68,68,.15);}
+
+/* FLIP HINT + DOWNLOAD */
+#tcActions{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:16px;}
+#tcActions.visible{display:flex;}
+#tcFlipHint{font-family:"Cinzel",serif;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,.3);cursor:pointer;animation:tcFlipHintPulse 2.5s ease infinite;padding:4px 8px;}
+@keyframes tcFlipHintPulse{0%,100%{opacity:.2;}50%{opacity:.7;}}
+#tcDownloadBtn{background:rgba(232,184,109,.12);color:#E8B86D;border:1px solid rgba(232,184,109,.3);border-radius:10px;padding:9px 20px;font-family:"Syne",sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+#tcDownloadBtn:hover{background:rgba(232,184,109,.18);border-color:rgba(232,184,109,.5);}
 </style>
 </head>
 <body>
@@ -696,9 +782,27 @@ body {
     </div>
 
     <!-- TRADING CARD — PRIMARY OUTPUT -->
-    <div id="tradingCardWrap" style="display:none;" onclick="openCardModal()" title="Tap to expand">
-      <div style="perspective:1000px;margin:0 auto;width:fit-content;" id="tcScene">
-        <div id="tcCard" style="border-radius:18px;overflow:hidden;position:relative;transform-style:preserve-3d;transition:transform 0.08s ease;cursor:pointer;animation:tcGlow 4s ease infinite;width:min(300px,85vw);margin:0 auto;">
+    <div id="tradingCardWrap" style="display:none;" title="Tap card to flip">
+      <div id="tcScene" style="perspective:1200px;margin:0 auto;width:min(300px,85vw);">
+      <div id="tcFlipWrap" onclick="tcToggleFlip(event)">
+      <!-- ── CARD BACK (shown initially) ── -->
+      <div id="tcBack">
+        <div class="tc-back-texture"></div>
+        <img class="tc-back-logo" src="https://endocraft.app/IMG_8431.PNG" alt="">
+        <div class="tc-back-name">EndoCraft</div>
+        <div class="tc-back-div"><div class="tc-back-line"></div><div class="tc-back-diamond"></div><div class="tc-back-line"></div></div>
+        <div class="tc-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+      </div>
+      <!-- ── CARD FRONT ── -->
+        <div id="tcCard" style="border-radius:18px;overflow:hidden;position:relative;cursor:pointer;width:min(300px,85vw);margin:0 auto;">
+          <!-- Rarity overlays (shown/hidden by r-* class on #tcCard) -->
+          <div class="rar-sweep"></div>
+          <div class="rar-sweep2"></div>
+          <div class="rar-corner-sparks"><span></span><span></span><span></span><span></span></div>
+          <div class="rar-border-shimmer"></div>
+          <div class="rar-float-particles" id="tcFloatParticles"></div>
+          <div class="rar-scanlines"></div>
+          <div class="rar-glitch"></div>
           <div id="tcFoil" style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:tcHolo 6s ease infinite;opacity:.8;"></div>
           <div id="tcImgWrap" style="position:relative;background:linear-gradient(160deg,#1a0a00,#12080a,#0a0f1a);width:100%;aspect-ratio:3/4;">
             <img id="tcImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;opacity:0;transition:opacity 0.5s ease;">
@@ -733,13 +837,18 @@ body {
             </div>
           </div>
         </div>
+      </div><!-- /tcFlipWrap -->
+      </div><!-- /tcScene -->
+      </div><!-- /tradingCardWrap -->
+      <!-- Flip hint + download -->
+      <div id="tcActions">
+        <div id="tcFlipHint" onclick="tcToggleFlip()">TAP CARD TO FLIP</div>
+        <button id="tcDownloadBtn" onclick="tcDownload()">↓ Save Card</button>
       </div>
-      <div style="text-align:center;margin-top:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.2);cursor:pointer;" onclick="openCardModal()">✦ tap to expand</div>
-      <!-- Loading state -->
+      <!-- Loading state (kept for backwards compat, hidden by default) -->
       <div id="tcImgLoading" style="display:none;text-align:center;padding:8px 0;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);">
         <span style="animation:pulse 1.5s ease infinite;display:inline-block;">✦ Generating your card image…</span>
       </div>
-    </div>
 
     <!-- Share buttons -->
     <div class="share-row" id="shareRow" style="display:none;">
@@ -1031,10 +1140,34 @@ function showTradingCard(data) {
     pill.style.background = rc.bg;
     pill.style.borderColor = rc.border;
   }
-  // Misprint = CSS glitch on card
+  // ── Apply rarity visual class ──
   const cardEl = document.getElementById('tcCard');
   if (cardEl) {
-    cardEl.classList.toggle('tc-misprint', rarity === 'misprint');
+    cardEl.classList.remove('r-common','r-rare','r-epic','r-legendary','r-misprint','tc-misprint');
+    cardEl.classList.add('r-' + rarity);
+    if (rarity === 'misprint') cardEl.classList.add('tc-misprint'); // legacy glitch on name/moment
+  }
+
+  // ── Reset flip state: always show BACK first when (re)building card ──
+  const _fw = document.getElementById('tcFlipWrap');
+  if (_fw) _fw.classList.remove('flipped');
+  const _hint = document.getElementById('tcFlipHint');
+  if (_hint) _hint.textContent = 'TAP CARD TO FLIP';
+  const _act = document.getElementById('tcActions');
+  if (_act) _act.classList.add('visible');
+
+  // ── Legendary floating particles ──
+  const _fp = document.getElementById('tcFloatParticles');
+  if (_fp) {
+    _fp.innerHTML = '';
+    if (rarity === 'legendary') {
+      for (let i=0;i<20;i++){
+        const p=document.createElement('div');p.className='rar-fp';
+        const sz=1+Math.random()*2.5;
+        p.style.cssText=`width:${sz}px;height:${sz}px;left:${(10+Math.random()*80).toFixed(1)}%;bottom:${(Math.random()*60).toFixed(0)}%;background:rgba(232,184,109,${(0.4+Math.random()*.6).toFixed(2)});box-shadow:0 0 ${Math.floor(Math.random()*6)+2}px rgba(232,184,109,.8);--d:${(3+Math.random()*4).toFixed(2)}s;--dl:${(-Math.random()*6).toFixed(2)}s;--rx:${((Math.random()-.5)*30).toFixed(1)}px;`;
+        _fp.appendChild(p);
+      }
+    }
   }
   
   // Stats
@@ -1051,39 +1184,68 @@ function showTradingCard(data) {
     </div>
   `;
   
-  // Sparks
+  // ── Sparks (count + palette per rarity) ──
   const sp = document.getElementById('tcSparks');
   if (sp) {
     sp.innerHTML = '';
-    const sc = ['#E8B86D','#FFD060','#FFF0A0','#C8900A'];
-    for(let i=0;i<30;i++){
+    const sparkConfig = {
+      legendary: { cols: ['#FFD060','#FFF0A0','#FFAA20','#FFFFFF','#FFB800'], count: 30 },
+      epic:      { cols: ['#A855F7','#C084FC','#E9D5FF','#FFFFFF'],            count: 20 },
+      rare:      { cols: ['#3B82F6','#60A5FA','#BAE6FD','#FFFFFF'],            count: 12 },
+      common:    { cols: ['#94A3B8','#CBD5E1'],                                 count: 4  },
+      misprint:  { cols: ['#EF4444','#F87171','#FCA5A5','#FFFFFF'],             count: 16 }
+    };
+    const cfg = sparkConfig[rarity] || sparkConfig.rare;
+    for(let i=0;i<cfg.count;i++){
       const s=document.createElement('div');
       s.className='tc-spark';
       const sz=1.5+Math.random()*3.5;
-      s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${sc[i%4]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;
+      s.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;bottom:0;background:${cfg.cols[i%cfg.cols.length]};--d:${1.5+Math.random()*3.5}s;--dl:${-Math.random()*6}s;--rx:${(Math.random()-.5)*60}px;box-shadow:0 0 ${3+Math.random()*5}px currentColor;`;
       sp.appendChild(s);
     }
   }
   
   // Tilt
   const scene = document.getElementById('tcScene');
+  // NOTE: old pointer-tilt removed — would conflict with the 3D flip transform on #tcFlipWrap.
+  // The flip itself + rarity glows already give enough motion.
+}
+
+// ── CARD FLIP ──
+function tcToggleFlip(event){
+  if (event) { event.stopPropagation(); }
+  const wrap = document.getElementById('tcFlipWrap');
+  if (!wrap) return;
+  wrap.classList.toggle('flipped');
+  const hint = document.getElementById('tcFlipHint');
+  if (hint) hint.textContent = wrap.classList.contains('flipped') ? 'TAP TO FLIP BACK' : 'TAP CARD TO FLIP';
+}
+
+// ── DOWNLOAD CARD AS PNG (html2canvas) ──
+function tcDownload(){
+  const wrap = document.getElementById('tcFlipWrap');
   const card = document.getElementById('tcCard');
-  const foil = document.getElementById('tcFoil');
-  scene.addEventListener('mousemove', e => {
-    card.classList.add('held');
-    const r = card.getBoundingClientRect();
-    const dx = (e.clientX-r.left-r.width/2)/(r.width/2);
-    const dy = (e.clientY-r.top-r.height/2)/(r.height/2);
-    card.style.transform = `rotateX(${-dy*16}deg) rotateY(${dx*16}deg) scale(1.04)`;
-    const foilEl = card.querySelector('.tc-foil');
-    if (foilEl) foilEl.style.filter = `hue-rotate(${dx*60}deg) brightness(1.4)`;
-  });
-  scene.addEventListener('mouseleave', () => {
-    card.classList.remove('held');
-    card.style.transform = '';
-    const foilEl = card.querySelector('.tc-foil');
-    if (foilEl) foilEl.style.filter = '';
-  });
+  if (!card) return;
+  if (typeof html2canvas === 'undefined') { alert('Download library still loading — try again in a sec.'); return; }
+
+  // Make sure front is facing before screenshot (user probably wants the front)
+  const wasFlipped = wrap && wrap.classList.contains('flipped');
+  if (!wasFlipped && wrap) wrap.classList.add('flipped');
+
+  const doit = () => {
+    html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true, allowTaint: true, logging: false })
+      .then(canvas => {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        const stamp = new Date().toISOString().slice(0,10);
+        a.download = `endocraft-card-${stamp}.png`;
+        a.click();
+      })
+      .catch(err => { console.error('[DL] html2canvas failed:', err); alert('Download fehlgeschlagen: ' + err.message); });
+  };
+
+  if (!wasFlipped) setTimeout(doit, 850); // wait for flip to finish
+  else doit();
 }
 
 // Image generation
