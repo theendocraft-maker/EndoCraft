@@ -3,204 +3,350 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>EndoCraft — Admin</title>
+<link rel="icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #080810;
-  --surface: #0f0f1a;
-  --surface2: #151522;
-  --border: rgba(255,255,255,0.06);
-  --accent: #7B6CF6;
-  --accent-dim: rgba(123,108,246,0.12);
-  --accent-border: rgba(123,108,246,0.25);
-  --gold: #E8B86D;
-  --text: #e8e8f0;
-  --text-muted: #6b6b88;
-  --text-dim: #3a3a55;
-  --green: #4CAF7D;
-  --green-dim: rgba(76,175,125,0.1);
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --surface:#1a1a24;
+  --surface2:#1f1f2b;
+  --border:rgba(255,255,255,0.08);
+  --border-hover:rgba(255,255,255,0.15);
+  --text:#f0eff4;
+  --text-muted:rgba(255,255,255,0.5);
+  --text-dim:rgba(255,255,255,0.25);
+  --accent:#7B6CF6;
+  --accent-dim:rgba(123,108,246,0.12);
+  --accent-border:rgba(123,108,246,0.3);
+  --gold:#E8B86D;
+  --gold-bright:#F2D187;
+  --gold-dim:rgba(232,184,109,0.12);
+  --green:#4CAF7D;
+  --green-dim:rgba(76,175,125,0.12);
+  --red:#E04A3A;
+  --red-dim:rgba(224,74,58,0.12);
+  --blue:#60A5FA;
+  --blue-dim:rgba(96,165,250,0.12);
+  --purple:#A78BFA;
+  --purple-dim:rgba(167,139,250,0.12);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;line-height:1.5;}
 
-/* Login */
-.login-wrap {
-  min-height: 100vh; display: flex;
-  align-items: center; justify-content: center; padding: 24px;
-}
-.login-box {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 32px; width: 100%; max-width: 360px;
-  display: flex; flex-direction: column; gap: 16px;
-}
-.login-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
-.login-sub { font-size: 13px; color: var(--text-muted); margin-top: -8px; }
-.pw-input {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 11px 14px; font-family: 'DM Sans', sans-serif;
-  font-size: 14px; color: var(--text); outline: none; transition: border-color 0.2s;
-}
-.pw-input:focus { border-color: var(--accent-border); }
-.pw-btn {
-  width: 100%; padding: 12px; background: var(--accent); border: none;
-  border-radius: 8px; color: white; font-family: 'Syne', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer;
-}
-.pw-err { font-size: 12px; color: #E85555; display: none; }
-.pw-err.visible { display: block; }
+/* ========== LOGIN ========== */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at center,rgba(232,184,109,.04),transparent 70%),var(--bg);}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:40px 36px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+.login-head{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:12px;}
+.login-head img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(232,184,109,.35));}
+.login-title{font-family:'Cinzel Decorative',serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:1px;}
+.login-sub{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);}
+.pw-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;}
+.pw-input:focus{border-color:var(--accent-border);}
+.pw-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:10px;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.pw-btn:hover{opacity:.92;}
+.pw-err{font-size:12px;color:#E85555;display:none;text-align:center;}
+.pw-err.visible{display:block;}
 
-/* Dashboard */
-.dashboard { display: none; padding: 32px 24px; max-width: 1000px; margin: 0 auto; }
-.dashboard.visible { display: block; }
+/* ========== DASHBOARD ========== */
+.dashboard{display:none;min-height:100vh;}
+.dashboard.visible{display:block;}
 
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 32px;
-}
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 30px; height: 30px; border-radius: 8px; background: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: white;
-}
-.brand-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
-.logout-btn {
-  font-size: 12px; color: var(--text-muted); background: transparent;
-  border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.75);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.brand img{width:26px;height:26px;object-fit:contain;}
+.brand-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.01em;}
+.brand-sub{color:var(--text-muted);font-weight:500;margin-left:6px;font-size:13px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn-ghost{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
 
-/* Stat cards */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 28px; }
-.stat-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px;
-}
-.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-.stat-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 700; color: var(--text); }
-.stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-.stat-card.green { border-color: rgba(76,175,125,0.2); }
-.stat-card.green .stat-num { color: var(--green); }
-.stat-card.purple { border-color: var(--accent-border); }
-.stat-card.purple .stat-num { color: var(--accent); }
-.stat-card.gold { border-color: rgba(232,184,109,0.2); }
-.stat-card.gold .stat-num { color: var(--gold); }
+.content{max-width:1200px;margin:0 auto;padding:32px 32px 80px;}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:36px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:border-color .3s;}
+.stat-card:hover{border-color:var(--border-hover);}
+.stat-label{font-family:'Cinzel',serif;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-0.02em;}
+.stat-num.loading{font-size:24px;color:var(--text-dim);font-weight:400;}
+.stat-sub{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);margin-top:6px;}
+.stat-delta{display:inline-flex;align-items:center;gap:4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;padding:3px 8px;border-radius:20px;margin-top:8px;font-weight:700;}
+.stat-delta.up{background:var(--green-dim);color:var(--green);}
+.stat-delta.flat{background:var(--surface2);color:var(--text-dim);}
+.stat-card.accent{border-color:var(--accent-border);}
+.stat-card.accent .stat-num{color:var(--accent);}
+.stat-card.gold{border-color:rgba(232,184,109,0.2);}
+.stat-card.gold .stat-num{color:var(--gold);}
+.stat-card.green{border-color:rgba(76,175,125,0.2);}
+.stat-card.green .stat-num{color:var(--green);}
+.stat-card.red{border-color:rgba(224,74,58,0.2);}
+.stat-card.red .stat-num{color:var(--red);}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto;}
+.tab{padding:14px 22px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text-muted);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;cursor:pointer;transition:color .2s, border-color .2s;white-space:nowrap;font-weight:700;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab .tab-count{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;letter-spacing:0.5px;margin-left:8px;color:var(--text-dim);font-weight:500;}
+.tab.active .tab-count{color:var(--gold);border-color:rgba(232,184,109,0.25);background:var(--gold-dim);}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:240px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.search-input:focus{border-color:var(--accent-border);}
+.search-input::placeholder{color:var(--text-dim);}
+.filter-pill{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-muted);cursor:pointer;transition:all .2s;font-weight:700;}
+.filter-pill:hover{border-color:var(--gold);color:var(--gold);}
+.filter-pill.active{background:var(--gold-dim);border-color:rgba(232,184,109,0.35);color:var(--gold);}
 
 /* Tables */
-.section-title {
-  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 12px;
-}
-.data-table {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden; margin-bottom: 24px;
-}
-.table-row {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 16px; border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
-}
-.table-row:last-child { border-bottom: none; }
-.table-row:hover { background: var(--surface2); }
-.table-row.header { background: var(--surface2); }
-.table-row.header span { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
-.col-email { flex: 1; font-size: 13px; color: var(--text); }
-.col-source {
-  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 20px;
-}
-.source-tool { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
-.source-landing { background: var(--green-dim); color: var(--green); border: 1px solid rgba(76,175,125,0.2); }
-.col-date { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
-.col-title { flex: 1; font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.col-link { font-size: 12px; color: var(--accent); text-decoration: none; white-space: nowrap; }
-.col-link:hover { text-decoration: underline; }
+.data-table{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.table-row{display:grid;gap:16px;padding:14px 18px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s;}
+.table-row:last-child{border-bottom:none;}
+.table-row:hover{background:var(--surface2);}
+.table-row.header{background:var(--surface2);}
+.table-row.header span{font-family:'Cinzel',serif;font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--text-muted);text-transform:uppercase;}
 
-.empty-state { padding: 32px; text-align: center; color: var(--text-dim); font-style: italic; font-size: 13px; }
+/* Subscribers table layout */
+.subs-table .table-row{grid-template-columns:1fr 120px 100px 120px;}
+.col-email{font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.col-source{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;font-weight:700;padding:3px 8px;border-radius:20px;text-align:center;text-transform:uppercase;}
+.source-landing{background:var(--green-dim);color:var(--green);border:1px solid rgba(76,175,125,0.25);}
+.source-scroll{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(232,184,109,0.25);}
+.source-card{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(232,184,109,0.25);}
+.source-roadmap{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);}
+.source-tool{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,0.25);}
+.source-unknown{background:var(--surface2);color:var(--text-dim);border:1px solid var(--border);}
+.col-source-empty{color:var(--text-dim);font-style:italic;font-size:11px;}
+.col-count{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;color:var(--text-muted);}
+.col-date{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-muted);white-space:nowrap;}
 
-.refresh-btn {
-  font-size: 12px; color: var(--text-muted); background: transparent;
-  border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px;
-  cursor: pointer; font-family: 'DM Sans', sans-serif; margin-bottom: 12px;
-  transition: all 0.2s;
+/* Sessions table layout */
+.sessions-table .table-row{grid-template-columns:1fr 120px 80px;}
+.col-title{font-family:'Syne',sans-serif;font-size:13px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.col-link{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--accent);text-decoration:none;font-weight:700;}
+.col-link:hover{color:var(--gold);}
+
+/* Cards gallery */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.card-tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:transform .3s, border-color .3s, box-shadow .3s;cursor:pointer;position:relative;}
+.card-tile:hover{transform:translateY(-4px);border-color:rgba(232,184,109,0.35);box-shadow:0 16px 40px rgba(0,0,0,0.6);}
+.card-tile-img{aspect-ratio:3/4;overflow:hidden;position:relative;background:linear-gradient(160deg,#1a0a00,#12080a,#0a0f1a);}
+.card-tile-img img{width:100%;height:100%;object-fit:cover;object-position:center top;}
+.card-tile-img.no-img{display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;}
+.card-tile-rarity{position:absolute;top:10px;right:10px;padding:3px 8px;border-radius:20px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;font-weight:700;text-transform:uppercase;backdrop-filter:blur(8px);}
+.rarity-legendary{background:rgba(10,5,0,0.85);color:var(--gold);border:1px solid rgba(232,184,109,0.5);}
+.rarity-epic{background:rgba(5,0,20,0.85);color:var(--purple);border:1px solid rgba(167,139,250,0.5);}
+.rarity-rare{background:rgba(0,5,20,0.85);color:var(--blue);border:1px solid rgba(96,165,250,0.5);}
+.rarity-common{background:rgba(20,20,30,0.85);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2);}
+.rarity-misprint{background:rgba(20,4,4,0.85);color:var(--red);border:1px solid rgba(224,74,58,0.5);}
+.card-tile-body{padding:12px 14px 14px;}
+.card-tile-class{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--text-dim);margin-bottom:2px;text-transform:uppercase;}
+.card-tile-name{font-family:'Cinzel Decorative',serif;font-size:17px;color:var(--text);line-height:1.1;margin-bottom:2px;}
+.card-tile-title{font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:var(--text-muted);margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-tile-meta{display:flex;justify-content:space-between;align-items:center;gap:6px;padding-top:6px;border-top:1px solid var(--border);}
+.card-tile-serial{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);font-weight:500;}
+.card-tile-email{font-family:'DM Sans',sans-serif;font-size:10px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:right;}
+
+/* Empty state */
+.empty-state{padding:48px 24px;text-align:center;color:var(--text-dim);}
+.empty-state-icon{font-size:32px;margin-bottom:12px;opacity:.5;}
+.empty-state-text{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;line-height:1.6;max-width:360px;margin:0 auto;}
+
+/* Rarity breakdown mini-chart */
+.rarity-breakdown{display:flex;gap:6px;margin-top:8px;align-items:stretch;}
+.rarity-bar{flex:var(--weight,1);height:4px;border-radius:2px;min-width:2px;}
+.rarity-bar.legendary{background:var(--gold);}
+.rarity-bar.epic{background:var(--purple);}
+.rarity-bar.rare{background:var(--blue);}
+.rarity-bar.common{background:rgba(255,255,255,0.35);}
+.rarity-bar.misprint{background:var(--red);}
+
+/* Loading */
+.loading-row{padding:32px;text-align:center;color:var(--text-dim);font-family:'EB Garamond',serif;font-style:italic;font-size:13px;}
+
+/* Modal for card detail */
+.modal-bg{display:none;position:fixed;inset:0;z-index:1000;background:rgba(4,2,0,.92);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:32px;}
+.modal-bg.open{display:flex;}
+.modal-inner{background:var(--surface);border:1px solid var(--border);border-radius:18px;max-width:520px;width:100%;padding:32px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-close{position:absolute;top:16px;right:16px;background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 12px;color:var(--text-muted);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;cursor:pointer;}
+.modal-close:hover{color:var(--text);border-color:var(--border-hover);}
+.modal-img{width:100%;max-width:280px;aspect-ratio:3/4;margin:0 auto 18px;border-radius:12px;overflow:hidden;}
+.modal-img img{width:100%;height:100%;object-fit:cover;object-position:center top;}
+.modal-meta{display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid var(--border);}
+.modal-meta-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.modal-meta-key{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
+.modal-meta-value{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);word-break:break-all;text-align:right;}
+
+/* Mobile */
+@media (max-width: 700px){
+  .content{padding:20px 16px 60px;}
+  .topbar{padding:14px 16px;}
+  .brand-sub{display:none;}
+  .stat-card{padding:16px 18px;}
+  .stat-num{font-size:26px;}
+  .tab{padding:12px 16px;font-size:10px;letter-spacing:2px;}
+  .subs-table .table-row{grid-template-columns:1fr auto;gap:8px;}
+  .subs-table .col-source,.subs-table .col-count{display:none;}
+  .sessions-table .table-row{grid-template-columns:1fr auto;}
+  .sessions-table .col-date{display:none;}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
+  .card-tile-name{font-size:15px;}
 }
-.refresh-btn:hover { border-color: var(--accent-border); color: var(--accent); }
-
-.loading-row { padding: 24px; text-align: center; color: var(--text-dim); font-size: 13px; font-style: italic; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ============ LOGIN ============ -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-box">
-    <div class="brand" style="margin-bottom:4px;">
-      <div class="brand-mark">E</div>
-      <span class="brand-name">EndoCraft Admin</span>
+    <div class="login-head">
+      <img src="../IMG_8431.PNG" alt="EndoCraft">
+      <div class="login-title">EndoCraft</div>
+      <div class="login-sub">✦ ADMIN ACCESS</div>
     </div>
-    <div class="login-sub">Enter password to access dashboard</div>
     <input type="password" class="pw-input" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
-    <button class="pw-btn" onclick="login()">→ Enter</button>
+    <button class="pw-btn" onclick="login()">Enter →</button>
     <div class="pw-err" id="pwErr">Wrong password</div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- ============ DASHBOARD ============ -->
 <div class="dashboard" id="dashboard">
+
+  <!-- Top Nav -->
   <div class="topbar">
-    <div class="brand">
-      <div class="brand-mark">E</div>
-      <span class="brand-name">EndoCraft Dashboard</span>
-    </div>
-    <button class="logout-btn" onclick="logout()">Log out</button>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card green">
-      <div class="stat-label">Subscribers</div>
-      <div class="stat-num" id="statSubs">—</div>
-      <div class="stat-sub">Total emails collected</div>
-    </div>
-    <div class="stat-card purple">
-      <div class="stat-label">Sessions Generated</div>
-      <div class="stat-num" id="statSessions">—</div>
-      <div class="stat-sub">Total sessions in database</div>
-    </div>
-    <div class="stat-card gold">
-      <div class="stat-label">Share Links</div>
-      <div class="stat-num" id="statShares">—</div>
-      <div class="stat-sub">Sessions shared with parties</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Today</div>
-      <div class="stat-num" id="statToday">—</div>
-      <div class="stat-sub">New subscribers today</div>
+    <a class="brand" href="/">
+      <img src="../IMG_8431.PNG" alt="EndoCraft">
+      <span class="brand-name">EndoCraft.<span class="brand-sub">Admin</span></span>
+    </a>
+    <div class="topbar-right">
+      <button class="btn-ghost" onclick="loadData()">↻ Refresh</button>
+      <button class="btn-ghost" onclick="logout()">Log out</button>
     </div>
   </div>
 
-  <!-- Subscribers -->
-  <div class="section-title">Recent Subscribers</div>
-  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
-  <div class="data-table" id="subsList">
-    <div class="loading-row">Loading…</div>
-  </div>
+  <div class="content">
 
-  <!-- Sessions -->
-  <div class="section-title">Recent Sessions</div>
-  <div class="data-table" id="sessionsList">
-    <div class="loading-row">Loading…</div>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-label">Subscribers</div>
+        <div class="stat-num loading" id="statSubs">—</div>
+        <div class="stat-sub" id="statSubsSub">—</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">Cards Sealed</div>
+        <div class="stat-num loading" id="statCards">—</div>
+        <div class="stat-sub" id="statCardsSub">—</div>
+        <div class="rarity-breakdown" id="rarityBreakdown" style="display:none;"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sessions Generated</div>
+        <div class="stat-num loading" id="statSessions">—</div>
+        <div class="stat-sub" id="statSessionsSub">—</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Today</div>
+        <div class="stat-num loading" id="statToday">—</div>
+        <div class="stat-sub" id="statTodaySub">New subs + cards</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">Legendary Rate</div>
+        <div class="stat-num loading" id="statLegendaryRate">—</div>
+        <div class="stat-sub">Expected: ~8%</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Misprint Rate</div>
+        <div class="stat-num loading" id="statMisprintRate">—</div>
+        <div class="stat-sub">Expected: ~3%</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="subs" onclick="switchTab('subs')">Subscribers <span class="tab-count" id="tabSubsCount">—</span></button>
+      <button class="tab" data-tab="cards" onclick="switchTab('cards')">Cards <span class="tab-count" id="tabCardsCount">—</span></button>
+      <button class="tab" data-tab="sessions" onclick="switchTab('sessions')">Sessions <span class="tab-count" id="tabSessionsCount">—</span></button>
+    </div>
+
+    <!-- Subscribers Panel -->
+    <div class="tab-panel active" id="panelSubs">
+      <div class="filter-bar">
+        <input type="text" class="search-input" placeholder="Search email…" id="subsSearch" oninput="renderSubs()">
+        <button class="filter-pill active" data-source-filter="all" onclick="filterSubsSource('all')">All</button>
+        <button class="filter-pill" data-source-filter="landing" onclick="filterSubsSource('landing')">Landing</button>
+        <button class="filter-pill" data-source-filter="roadmap" onclick="filterSubsSource('roadmap')">Roadmap</button>
+        <button class="filter-pill" data-source-filter="card" onclick="filterSubsSource('card')">Card Save</button>
+        <button class="filter-pill" data-source-filter="scroll" onclick="filterSubsSource('scroll')">Scroll</button>
+      </div>
+      <div class="data-table subs-table" id="subsList"><div class="loading-row">Loading…</div></div>
+    </div>
+
+    <!-- Cards Panel -->
+    <div class="tab-panel" id="panelCards">
+      <div class="filter-bar">
+        <input type="text" class="search-input" placeholder="Search character / email / title…" id="cardsSearch" oninput="renderCards()">
+        <button class="filter-pill active" data-rarity-filter="all" onclick="filterCardsRarity('all')">All</button>
+        <button class="filter-pill" data-rarity-filter="legendary" onclick="filterCardsRarity('legendary')">Legendary</button>
+        <button class="filter-pill" data-rarity-filter="epic" onclick="filterCardsRarity('epic')">Epic</button>
+        <button class="filter-pill" data-rarity-filter="rare" onclick="filterCardsRarity('rare')">Rare</button>
+        <button class="filter-pill" data-rarity-filter="common" onclick="filterCardsRarity('common')">Common</button>
+        <button class="filter-pill" data-rarity-filter="misprint" onclick="filterCardsRarity('misprint')">Misprint</button>
+      </div>
+      <div id="cardsList"><div class="loading-row">Loading…</div></div>
+    </div>
+
+    <!-- Sessions Panel -->
+    <div class="tab-panel" id="panelSessions">
+      <div class="filter-bar">
+        <input type="text" class="search-input" placeholder="Search session title…" id="sessionsSearch" oninput="renderSessions()">
+      </div>
+      <div class="data-table sessions-table" id="sessionsList"><div class="loading-row">Loading…</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Card Detail Modal -->
+<div class="modal-bg" id="cardModal" onclick="if(event.target.id==='cardModal')closeModal()">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeModal()">✕ CLOSE</button>
+    <div class="modal-img" id="modalImg"></div>
+    <h2 id="modalName" style="font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--text);margin-bottom:4px;"></h2>
+    <div id="modalClass" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;"></div>
+    <p id="modalTitle" style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--text-muted);margin-bottom:4px;"></p>
+    <p id="modalMoment" style="font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);line-height:1.6;margin-bottom:20px;"></p>
+    <div class="modal-meta">
+      <div class="modal-meta-row"><span class="modal-meta-key">Rarity</span><span class="modal-meta-value" id="modalRarity"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Roll</span><span class="modal-meta-value" id="modalRoll"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Number</span><span class="modal-meta-value" id="modalNumber"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Email</span><span class="modal-meta-value" id="modalEmail"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Sealed</span><span class="modal-meta-value" id="modalDate"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Card ID</span><span class="modal-meta-value" id="modalId" style="font-size:10px;"></span></div>
+    </div>
   </div>
 </div>
 
 <script>
 const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
-const ADMIN_PASSWORD = 'endocraft2026';
+const ADMIN_PASSWORD = 'halal';
 
-function login() {
+// State
+let allSubs = [];
+let allCards = [];
+let allSessions = [];
+let subsSourceFilter = 'all';
+let cardsRarityFilter = 'all';
+
+function login(){
   const pw = document.getElementById('pwInput').value;
   if (pw === ADMIN_PASSWORD) {
     sessionStorage.setItem('ec_admin', 'true');
@@ -211,91 +357,268 @@ function login() {
     document.getElementById('pwErr').classList.add('visible');
   }
 }
-
-function logout() {
+function logout(){
   sessionStorage.removeItem('ec_admin');
   document.getElementById('loginWrap').style.display = 'flex';
   document.getElementById('dashboard').classList.remove('visible');
   document.getElementById('pwInput').value = '';
 }
-
-// Auto-login if already authenticated
 if (sessionStorage.getItem('ec_admin') === 'true') {
   document.getElementById('loginWrap').style.display = 'none';
   document.getElementById('dashboard').classList.add('visible');
   loadData();
 }
 
-async function supabase(table, params = '') {
+async function supabase(table, params = ''){
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + table + params, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY
-    }
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
   });
+  if (!res.ok) return [];
   return res.json();
 }
 
-async function loadData() {
+async function loadData(){
   try {
-    const [subs, sessions] = await Promise.all([
-      supabase('subscribers', '?select=*&order=created_at.desc&limit=50'),
-      supabase('sessions', '?select=*&order=created_at.desc&limit=50')
+    const [subs, sessions, cards] = await Promise.all([
+      supabase('subscribers', '?select=*&order=created_at.desc&limit=200'),
+      supabase('sessions', '?select=*&order=created_at.desc&limit=200'),
+      supabase('cards', '?select=*&order=number.desc&limit=200')
     ]);
+    allSubs = Array.isArray(subs) ? subs : [];
+    allCards = Array.isArray(cards) ? cards : [];
+    allSessions = Array.isArray(sessions) ? sessions : [];
 
-    // Stats
-    document.getElementById('statSubs').textContent = subs.length || 0;
-    document.getElementById('statSessions').textContent = sessions.length || 0;
-    document.getElementById('statShares').textContent = sessions.filter(s => s.id).length || 0;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const todaySubs = subs.filter(s => s.created_at && s.created_at.startsWith(today));
-    document.getElementById('statToday').textContent = todaySubs.length || 0;
-
-    // Subscribers table
-    const subsList = document.getElementById('subsList');
-    if (!subs.length) {
-      subsList.innerHTML = '<div class="empty-state">No subscribers yet — share endocraft.app!</div>';
-    } else {
-      subsList.innerHTML = `
-        <div class="table-row header">
-          <span class="col-email">Email</span>
-          <span class="col-source">Source</span>
-          <span class="col-date">Date</span>
-        </div>
-        ${subs.map(s => `
-          <div class="table-row">
-            <span class="col-email">${s.email}</span>
-            <span class="col-source ${s.source === 'tool' ? 'source-tool' : 'source-landing'}">${s.source || 'unknown'}</span>
-            <span class="col-date">${new Date(s.created_at).toLocaleDateString('en-GB')}</span>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // Sessions table
-    const sessionsList = document.getElementById('sessionsList');
-    if (!sessions.length) {
-      sessionsList.innerHTML = '<div class="empty-state">No sessions yet</div>';
-    } else {
-      sessionsList.innerHTML = `
-        <div class="table-row header">
-          <span class="col-title">Session Title</span>
-          <span class="col-date">Date</span>
-          <span class="col-link">Link</span>
-        </div>
-        ${sessions.map(s => `
-          <div class="table-row">
-            <span class="col-title">${s.session_title || '—'}</span>
-            <span class="col-date">${new Date(s.created_at).toLocaleDateString('en-GB')}</span>
-            <a class="col-link" href="https://endocraft.app/session/?id=${s.id}" target="_blank">View →</a>
-          </div>
-        `).join('')}
-      `;
-    }
+    renderStats();
+    renderSubs();
+    renderCards();
+    renderSessions();
   } catch(e) {
-    console.error(e);
+    console.error('loadData failed', e);
   }
+}
+
+function renderStats(){
+  const today = new Date().toISOString().split('T')[0];
+  const todaySubs = allSubs.filter(s => (s.created_at || '').startsWith(today));
+  const todayCards = allCards.filter(c => (c.created_at || '').startsWith(today));
+
+  setStat('statSubs', allSubs.length);
+  setStat('statCards', allCards.length);
+  setStat('statSessions', allSessions.length);
+  setStat('statToday', todaySubs.length + todayCards.length);
+
+  document.getElementById('statSubsSub').textContent = `+${todaySubs.length} today · ${uniqueSources(allSubs)} sources`;
+  document.getElementById('statCardsSub').textContent = `+${todayCards.length} today`;
+  document.getElementById('statSessionsSub').textContent = allSessions.filter(s => s.id).length + ' with share link';
+  document.getElementById('statTodaySub').textContent = `${todaySubs.length} subs · ${todayCards.length} cards`;
+
+  // Rarity stats
+  const rarityCount = { legendary: 0, epic: 0, rare: 0, common: 0, misprint: 0 };
+  allCards.forEach(c => {
+    if (c.rarity && rarityCount[c.rarity] !== undefined) rarityCount[c.rarity]++;
+  });
+  const total = allCards.length || 1;
+  document.getElementById('statLegendaryRate').textContent = ((rarityCount.legendary / total * 100).toFixed(1)) + '%';
+  document.getElementById('statMisprintRate').textContent = ((rarityCount.misprint / total * 100).toFixed(1)) + '%';
+
+  // Rarity breakdown mini-chart
+  const breakdown = document.getElementById('rarityBreakdown');
+  if (allCards.length > 0) {
+    breakdown.style.display = 'flex';
+    breakdown.innerHTML = Object.entries(rarityCount).map(([r, n]) =>
+      `<div class="rarity-bar ${r}" style="--weight:${n};" title="${r}: ${n}"></div>`
+    ).join('');
+  } else {
+    breakdown.style.display = 'none';
+  }
+
+  // Remove loading state
+  document.querySelectorAll('.stat-num.loading').forEach(el => el.classList.remove('loading'));
+
+  // Tab counts
+  document.getElementById('tabSubsCount').textContent = allSubs.length;
+  document.getElementById('tabCardsCount').textContent = allCards.length;
+  document.getElementById('tabSessionsCount').textContent = allSessions.length;
+}
+
+function setStat(id, val){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = val;
+  el.classList.remove('loading');
+}
+
+function uniqueSources(subs){
+  return new Set(subs.map(s => s.source || 'unknown')).size;
+}
+
+// ========== Tabs ==========
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1)));
+}
+
+// ========== Subscribers ==========
+function filterSubsSource(s){
+  subsSourceFilter = s;
+  document.querySelectorAll('[data-source-filter]').forEach(b => b.classList.toggle('active', b.dataset.sourceFilter === s));
+  renderSubs();
+}
+function renderSubs(){
+  const q = (document.getElementById('subsSearch').value || '').trim().toLowerCase();
+  let list = allSubs;
+  if (subsSourceFilter !== 'all') list = list.filter(s => s.source === subsSourceFilter);
+  if (q) list = list.filter(s => (s.email || '').toLowerCase().includes(q));
+  const el = document.getElementById('subsList');
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✦</div><div class="empty-state-text">No subscribers match your filter.</div></div>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="table-row header">
+      <span>Email</span>
+      <span>Source</span>
+      <span>Cards</span>
+      <span>Date</span>
+    </div>
+    ${list.map(s => {
+      const sourceKey = s.source || 'unknown';
+      const sourceClass = ['landing','scroll','card','roadmap','tool'].includes(sourceKey) ? 'source-' + sourceKey : 'source-unknown';
+      const cardCount = allCards.filter(c => c.email === s.email).length;
+      return `
+        <div class="table-row">
+          <span class="col-email" title="${esc(s.email)}">${esc(s.email)}</span>
+          <span class="col-source ${sourceClass}">${esc(sourceKey)}</span>
+          <span class="col-count">${cardCount > 0 ? cardCount + ' card' + (cardCount>1?'s':'') : '—'}</span>
+          <span class="col-date">${fmtDate(s.created_at)}</span>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+// ========== Cards ==========
+function filterCardsRarity(r){
+  cardsRarityFilter = r;
+  document.querySelectorAll('[data-rarity-filter]').forEach(b => b.classList.toggle('active', b.dataset.rarityFilter === r));
+  renderCards();
+}
+function renderCards(){
+  const q = (document.getElementById('cardsSearch').value || '').trim().toLowerCase();
+  let list = allCards;
+  if (cardsRarityFilter !== 'all') list = list.filter(c => c.rarity === cardsRarityFilter);
+  if (q) list = list.filter(c =>
+    (c.character_name || '').toLowerCase().includes(q) ||
+    (c.session_title || '').toLowerCase().includes(q) ||
+    (c.email || '').toLowerCase().includes(q)
+  );
+  const el = document.getElementById('cardsList');
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🃏</div><div class="empty-state-text">No cards yet — users need to hit "Seal it" on their Session Scroll card to save it permanently.</div></div>';
+    return;
+  }
+  el.innerHTML = `<div class="cards-grid">${list.map((c, idx) => {
+    const rarityLbl = rarityLabel(c.rarity);
+    const num = c.rarity === 'misprint' && c.misprint_number
+      ? 'Nº ' + String(c.misprint_number).padStart(4, '0') + ' / 300'
+      : '#' + String(c.number || 0).padStart(4, '0') + ' / 9999';
+    return `
+      <div class="card-tile" onclick='openCardModal(${idx})'>
+        ${c.image_url
+          ? `<div class="card-tile-img"><img src="${esc(c.image_url)}" alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img');this.remove();"></div>`
+          : `<div class="card-tile-img no-img">NO IMAGE</div>`}
+        <div class="card-tile-rarity rarity-${c.rarity || 'common'}">${rarityLbl}</div>
+        <div class="card-tile-body">
+          <div class="card-tile-class">${esc(c.character_class || '—')}</div>
+          <div class="card-tile-name">${esc(c.character_name || 'Hero')}</div>
+          <div class="card-tile-title">${esc(c.session_title || '—')}</div>
+          <div class="card-tile-meta">
+            <span class="card-tile-serial">${num}</span>
+            <span class="card-tile-email" title="${esc(c.email)}">${esc(c.email)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function rarityLabel(r){
+  return ({legendary:'✦ Legendary', epic:'★ Epic', rare:'◆ Rare', common:'◇ Common', misprint:'◈ Misprint'}[r]) || (r || 'Common');
+}
+
+function openCardModal(idx){
+  const list = getFilteredCards();
+  const c = list[idx];
+  if (!c) return;
+  document.getElementById('modalImg').innerHTML = c.image_url ? `<img src="${esc(c.image_url)}" alt="">` : '';
+  document.getElementById('modalName').textContent = c.character_name || 'Hero';
+  document.getElementById('modalClass').textContent = c.character_class || '';
+  document.getElementById('modalTitle').textContent = c.session_title || '';
+  document.getElementById('modalMoment').textContent = c.legendary_moment || '';
+  document.getElementById('modalRarity').textContent = rarityLabel(c.rarity);
+  document.getElementById('modalRoll').textContent = c.visible_roll ? ('Nat ' + c.visible_roll) : '—';
+  document.getElementById('modalNumber').textContent = c.rarity === 'misprint' && c.misprint_number
+    ? 'Nº ' + String(c.misprint_number).padStart(4, '0') + ' / 300'
+    : '#' + String(c.number || 0).padStart(4, '0') + ' / 9999';
+  document.getElementById('modalEmail').textContent = c.email || '—';
+  document.getElementById('modalDate').textContent = fmtDate(c.created_at);
+  document.getElementById('modalId').textContent = c.id || '—';
+  document.getElementById('cardModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('cardModal').classList.remove('open'); }
+
+function getFilteredCards(){
+  const q = (document.getElementById('cardsSearch').value || '').trim().toLowerCase();
+  let list = allCards;
+  if (cardsRarityFilter !== 'all') list = list.filter(c => c.rarity === cardsRarityFilter);
+  if (q) list = list.filter(c =>
+    (c.character_name || '').toLowerCase().includes(q) ||
+    (c.session_title || '').toLowerCase().includes(q) ||
+    (c.email || '').toLowerCase().includes(q)
+  );
+  return list;
+}
+
+// ========== Sessions ==========
+function renderSessions(){
+  const q = (document.getElementById('sessionsSearch').value || '').trim().toLowerCase();
+  let list = allSessions;
+  if (q) list = list.filter(s => (s.session_title || '').toLowerCase().includes(q));
+  const el = document.getElementById('sessionsList');
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><div class="empty-state-text">No sessions match.</div></div>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="table-row header">
+      <span>Session Title</span>
+      <span>Date</span>
+      <span>Link</span>
+    </div>
+    ${list.map(s => `
+      <div class="table-row">
+        <span class="col-title">${esc(s.session_title || '—')}</span>
+        <span class="col-date">${fmtDate(s.created_at)}</span>
+        <a class="col-link" href="https://endocraft.app/session/?id=${esc(s.id)}" target="_blank">View →</a>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ========== Utils ==========
+function esc(str){ return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(iso){
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = (now - d) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return d.toLocaleDateString('en-GB');
+  } catch(e) { return '—'; }
 }
 </script>
 </body>
