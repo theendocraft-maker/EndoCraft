@@ -219,6 +219,7 @@ footer a:hover{color:var(--text);}
       <a href="/scroll" class="btn-p">✦ Try for free</a>
       <a href="#how" class="btn-s">See how it works</a>
     </div>
+    <a href="/roadmap.html" style="display:inline-block;margin-top:14px;font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;font-family:'DM Sans',sans-serif;letter-spacing:0.3px;transition:color .2s;" onmouseover="this.style.color='rgba(232,184,109,.8)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Not ready? Join the waitlist →</a>
   </div>
 
   <div class="fan-wrap" style="position:relative;">
@@ -498,6 +499,7 @@ footer a:hover{color:var(--text);}
       <button onclick="subscribe()" style="background:var(--accent);color:white;border:none;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Join waitlist</button>
     </div>
     <p style="font-size:12px;color:rgba(255,255,255,.2);margin-top:14px;">No spam. Unsubscribe anytime.</p>
+    <div id="socialProof" style="display:none;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:rgba(232,184,109,.55);margin-top:18px;"></div>
     <div id="subSuccess" style="display:none;color:#a78bfa;font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;margin-top:16px;">✦ You're on the list. We'll be in touch.</div>
   </div>
 </section>
@@ -618,6 +620,36 @@ async function subscribe() {
   document.getElementById('subForm').style.display = 'none';
   document.getElementById('subSuccess').style.display = 'block';
 }
+
+// Social proof — fetch subscriber count from Supabase
+(async function loadSocialProof(){
+  try {
+    const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
+    const res = await fetch(SUPABASE_URL + '/rest/v1/subscribers?select=email&limit=1', {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'count=exact',
+        'Range-Unit': 'items',
+        'Range': '0-0'
+      }
+    });
+    const cr = res.headers.get('content-range'); // e.g. "0-0/127"
+    if (!cr) return;
+    const total = parseInt(cr.split('/')[1], 10);
+    if (isNaN(total)) return;
+    const el = document.getElementById('socialProof');
+    if (!el) return;
+    if (total < 10) {
+      el.textContent = '✦ Be among the first adventurers';
+    } else {
+      el.textContent = `✦ Join ${total.toLocaleString()} adventurers already on the list`;
+    }
+    el.style.display = 'block';
+  } catch(e) { /* silently skip */ }
+})();
 
 
 // Mobile sparks
