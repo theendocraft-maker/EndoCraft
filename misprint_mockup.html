@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misprint Mockup — Professional Printing-Error Direction</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg-deep:#050508;
+  --surface:#1a1a24;
+  --border:rgba(255,255,255,0.08);
+  --text:#f0eff4;
+  --text-muted:rgba(255,255,255,0.5);
+  --text-dim:rgba(255,255,255,0.25);
+  --accent:#7B6CF6;
+  --gold:#E8B86D;
+  --gold-bright:#F2D187;
+  --misprint-red:#E04A3A;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;padding:0 0 80px;}
+
+.mock-label{position:sticky;top:0;z-index:200;background:rgba(10,10,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;}
+.mock-label-l{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);}
+.mock-label-r{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);}
+
+.mock-wrap{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative;}
+.mock-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at center, rgba(232,184,109,0.04) 0%, transparent 60%), var(--bg-deep);}
+.mock-content{position:relative;z-index:1;}
+
+.mock-divider{height:60px;background:linear-gradient(180deg,transparent,rgba(232,184,109,0.08),transparent);display:flex;align-items:center;justify-content:center;}
+.mock-divider-text{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;color:var(--text-dim);}
+
+.variant-row{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;}
+.variant-col{display:flex;flex-direction:column;align-items:center;gap:16px;max-width:320px;}
+.variant-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--misprint-red);text-align:center;}
+.variant-note{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--text-muted);text-align:center;line-height:1.55;}
+
+/* ============ CARD (shared) ============ */
+.card{
+  position:relative;width:300px;aspect-ratio:3/4;border-radius:20px;overflow:hidden;
+  box-shadow:
+    0 0 0 1.5px rgba(232,184,109,0.45),
+    0 40px 100px rgba(0,0,0,0.95),
+    0 0 60px rgba(232,184,109,0.12);
+}
+
+.card-front{position:absolute;inset:0;}
+.card-img-wrap{position:absolute;inset:0;overflow:hidden;}
+.card-img{width:100%;height:100%;object-fit:cover;display:block;}
+.card-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,0.55) 0%,transparent 22%,transparent 48%,rgba(6,3,0,0.68) 70%,rgba(4,2,0,0.97) 92%,rgba(4,2,0,1) 100%);z-index:5;}
+.card-holo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:20px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.6;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}}
+
+.card-front-top{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.card-brand{display:flex;align-items:center;gap:7px;}
+.card-brand img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(232,184,109,0.9));}
+.card-brand-text{display:flex;flex-direction:column;line-height:1.2;}
+.card-brand-name{font-family:'Cinzel',serif;font-size:7px;font-weight:700;letter-spacing:3px;color:rgba(232,184,109,0.8);text-shadow:0 1px 8px #000;}
+.card-brand-sub{font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(255,240,200,0.4);text-shadow:0 1px 6px #000;margin-top:1px;}
+
+.card-pill{
+  background:rgba(20,4,4,0.88);
+  border:1px solid rgba(224,74,58,0.55);
+  color:var(--misprint-red);
+  border-radius:30px;padding:4px 10px;
+  font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;
+  backdrop-filter:blur(12px);white-space:nowrap;
+}
+
+.card-front-bottom{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:18px 18px;}
+.card-class{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;color:rgba(232,184,109,0.85);margin-bottom:4px;text-shadow:0 1px 10px #000;}
+.card-name{font-family:'Cinzel Decorative',serif;font-size:26px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:4px;text-shadow:0 2px 20px #000;}
+.card-title{font-family:'EB Garamond',serif;font-size:11px;font-style:italic;color:rgba(255,230,160,0.55);margin-bottom:10px;text-shadow:0 1px 8px #000;line-height:1.3;}
+.card-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:8px;}
+.stat{background:rgba(4,2,0,0.85);border:1px solid rgba(232,184,109,0.18);border-radius:5px;padding:4px 2px;text-align:center;backdrop-filter:blur(6px);}
+.stat-value{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--gold);line-height:1;display:block;}
+.stat-label{font-family:'Cinzel',serif;font-size:5px;letter-spacing:1.5px;color:rgba(232,184,109,0.55);display:block;margin-top:2px;}
+.card-footline{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px;border-top:1px solid rgba(232,184,109,0.1);}
+.card-serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(232,184,109,0.5);}
+
+/* ============ VARIANT A — CHROMATIC REGISTRATION OFFSET ============ */
+/* Uses 3 copies of the image with blend modes to fake CMYK plate misalignment */
+.misprint-a .card-img-wrap {
+  isolation: isolate;
+}
+.misprint-a .card-img {
+  filter: saturate(1.05);
+}
+.misprint-a .card-img.ghost-cyan {
+  position: absolute; top: 0; left: 0;
+  transform: translate(-3px, 1px);
+  filter: sepia(1) hue-rotate(150deg) saturate(4);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.misprint-a .card-img.ghost-red {
+  position: absolute; top: 0; left: 0;
+  transform: translate(3px, -1px);
+  filter: sepia(1) hue-rotate(-20deg) saturate(4);
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  pointer-events: none;
+}
+/* subtle misregistration on serial too */
+.misprint-a .card-serial {
+  color: rgba(232,184,109,0.5);
+  text-shadow: -1px 0 rgba(224,74,58,0.5), 1px 0 rgba(74,180,230,0.5);
+}
+
+/* ============ VARIANT B — DIAGONAL RUBBER STAMP ============ */
+.misprint-stamp{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%) rotate(-14deg);
+  z-index:15;
+  font-family:'Cinzel Decorative',serif;
+  font-weight:900;
+  font-size:42px;
+  letter-spacing:4px;
+  color:rgba(224,74,58,0.72);
+  border:3px double rgba(224,74,58,0.6);
+  padding:6px 16px 4px;
+  text-transform:uppercase;
+  pointer-events:none;
+  background:transparent;
+  /* Grunge / inconsistent ink look */
+  text-shadow:0 0 3px rgba(224,74,58,0.4);
+  opacity:0.88;
+  /* Paper-grain feel via slight transparency holes */
+  mix-blend-mode:hard-light;
+  filter:contrast(1.15) drop-shadow(0 0 1px rgba(224,74,58,0.3));
+}
+
+/* ============ VARIANT C — COMBO: subtle chromatic + corner stamp ============ */
+.misprint-c .card-img.ghost-cyan {
+  position: absolute; top: 0; left: 0;
+  transform: translate(-1.5px, 0.5px);
+  filter: sepia(1) hue-rotate(150deg) saturate(3);
+  mix-blend-mode: screen;
+  opacity: 0.32;
+  pointer-events: none;
+}
+.misprint-c .card-img.ghost-red {
+  position: absolute; top: 0; left: 0;
+  transform: translate(1.5px, -0.5px);
+  filter: sepia(1) hue-rotate(-20deg) saturate(3);
+  mix-blend-mode: screen;
+  opacity: 0.28;
+  pointer-events: none;
+}
+.misprint-corner{
+  position:absolute;
+  bottom:14px; left:14px;
+  z-index:15;
+  background:transparent;
+  color:rgba(224,74,58,0.72);
+  font-family:'Cinzel',serif;
+  font-size:7px;
+  font-weight:700;
+  letter-spacing:2.5px;
+  padding:4px 8px 3px;
+  border:1px solid rgba(224,74,58,0.55);
+  transform:rotate(-5deg);
+  pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1;
+}
+.misprint-corner-word{font-family:'Cinzel Decorative',serif;font-size:10px;font-weight:900;letter-spacing:3px;}
+.misprint-corner-num{font-family:'Cinzel',serif;font-size:6.5px;letter-spacing:2px;opacity:0.9;}
+
+/* "Currently" reference style for comparison (simplified) */
+.misprint-current{
+  animation: oldGlitchShake 0.5s infinite;
+}
+.misprint-current .card-img{
+  animation: oldScanlinesPulse 2s infinite;
+}
+.misprint-current .card-img-wrap::after{
+  content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0,rgba(0,0,0,.22) 1px,transparent 1px,transparent 3px);
+  mix-blend-mode:multiply;
+}
+.misprint-current .card-name, .misprint-current .card-title{
+  filter: invert(1) hue-rotate(180deg);
+}
+@keyframes oldGlitchShake{
+  0%,100%{transform:translate(0,0) rotate(0.5deg);}
+  25%{transform:translate(-1px,1px) rotate(-0.5deg);}
+  50%{transform:translate(1px,-1px) rotate(0.7deg);}
+  75%{transform:translate(-1px,-1px) rotate(-0.3deg);}
+}
+@keyframes oldScanlinesPulse{0%,100%{filter:hue-rotate(0);}50%{filter:hue-rotate(20deg);}}
+
+@media (max-width:860px){
+  .variant-row{gap:28px;}
+  .card{width:min(280px,82vw);}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ REFERENCE: Current overloaded misprint ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ CURRENT (REFERENCE) — overloaded glitchcore</span>
+  <span class="mock-label-r">scanlines + shake + inverted text + color shifts</span>
+</div>
+<div class="mock-wrap">
+  <div class="mock-bg"></div>
+  <div class="mock-content">
+    <div class="variant-col">
+      <div class="card misprint-current">
+        <div class="card-front">
+          <div class="card-img-wrap">
+            <img class="card-img" src="./image-gen-the-strike.png" alt="">
+          </div>
+          <div class="card-ov"></div>
+          <div class="card-front-top">
+            <div class="card-brand">
+              <img src="./IMG_8431.PNG">
+              <div class="card-brand-text">
+                <span class="card-brand-name">EndoCraft</span>
+                <span class="card-brand-sub">Session 14 · Crypt of Ashborne</span>
+              </div>
+            </div>
+            <div class="card-pill">⚠ MISPRINT</div>
+          </div>
+          <div class="card-front-bottom">
+            <div class="card-class">Human Fighter · Lv VII</div>
+            <div class="card-name">Thorne</div>
+            <div class="card-title">The Impossible Strike</div>
+            <div class="card-stats">
+              <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+              <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+              <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+              <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+            </div>
+            <div class="card-footline">
+              <span class="card-serial">THORNE #0217 / 9999</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="variant-note" style="max-width:320px;">Aktuell: Shake + Scanlines + invertierte Namen + Hue-Rotation. Wirkt kaputt, nicht wertvoll.</div>
+    </div>
+  </div>
+</div>
+
+<div class="mock-divider"><span class="mock-divider-text">↓ PROFESSIONAL ALTERNATIVES ↓</span></div>
+
+<!-- ============ 3 PROFESSIONAL VARIANTS ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ PROFESSIONAL — PRINT-ERROR AESTHETIC</span>
+  <span class="mock-label-r">wie echte Vintage-Druckfehler: subtil, sammelbar, nicht digital</span>
+</div>
+
+<div class="mock-wrap">
+  <div class="mock-bg"></div>
+  <div class="mock-content">
+
+    <div class="variant-row">
+
+      <!-- VARIANT A — Chromatic Registration Offset -->
+      <div class="variant-col">
+        <div class="variant-label">A · CMYK PLATE OFFSET</div>
+        <div class="card misprint-a">
+          <div class="card-front">
+            <div class="card-img-wrap">
+              <img class="card-img" src="./image-gen-the-strike.png" alt="">
+              <img class="card-img ghost-cyan" src="./image-gen-the-strike.png" alt="">
+              <img class="card-img ghost-red" src="./image-gen-the-strike.png" alt="">
+            </div>
+            <div class="card-ov"></div>
+            <div class="card-holo"></div>
+            <div class="card-front-top">
+              <div class="card-brand">
+                <img src="./IMG_8431.PNG">
+                <div class="card-brand-text">
+                  <span class="card-brand-name">EndoCraft</span>
+                  <span class="card-brand-sub">Session 14 · Crypt of Ashborne</span>
+                </div>
+              </div>
+              <div class="card-pill">⚠ MISPRINT</div>
+            </div>
+            <div class="card-front-bottom">
+              <div class="card-class">Human Fighter · Lv VII</div>
+              <div class="card-name">Thorne</div>
+              <div class="card-title">The Impossible Strike</div>
+              <div class="card-stats">
+                <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+                <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+                <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+                <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+              </div>
+              <div class="card-footline">
+                <span class="card-serial">THORNE #0217 / 9999</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="variant-note">Farbkanäle sind leicht verschoben — wie bei schlecht ausgerichteten Druckplatten. Subtil, du musst zweimal hinschauen. Wie ein alter Comic mit Registration-Error.</div>
+      </div>
+
+      <!-- VARIANT B — Diagonal Rubber Stamp -->
+      <div class="variant-col">
+        <div class="variant-label">B · DIAGONAL QA STAMP</div>
+        <div class="card">
+          <div class="card-front">
+            <div class="card-img-wrap">
+              <img class="card-img" src="./image-gen-the-strike.png" alt="">
+            </div>
+            <div class="card-ov"></div>
+            <div class="card-holo"></div>
+            <div class="card-front-top">
+              <div class="card-brand">
+                <img src="./IMG_8431.PNG">
+                <div class="card-brand-text">
+                  <span class="card-brand-name">EndoCraft</span>
+                  <span class="card-brand-sub">Session 14 · Crypt of Ashborne</span>
+                </div>
+              </div>
+              <div class="card-pill">⚠ MISPRINT</div>
+            </div>
+            <div class="misprint-stamp">MISPRINT</div>
+            <div class="card-front-bottom">
+              <div class="card-class">Human Fighter · Lv VII</div>
+              <div class="card-name">Thorne</div>
+              <div class="card-title">The Impossible Strike</div>
+              <div class="card-stats">
+                <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+                <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+                <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+                <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+              </div>
+              <div class="card-footline">
+                <span class="card-serial">THORNE #0217 / 9999</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="variant-note">Diagonaler "MISPRINT"-Stempel wie von der Qualitätskontrolle. Rotes, durchscheinendes "Gummi-Stempel-Rot". Unmissverständlich, aber würdevoll.</div>
+      </div>
+
+      <!-- VARIANT C — Combo -->
+      <div class="variant-col">
+        <div class="variant-label">C · SUBTLE CHROMATIC + CORNER SEAL</div>
+        <div class="card misprint-c">
+          <div class="card-front">
+            <div class="card-img-wrap">
+              <img class="card-img" src="./image-gen-the-strike.png" alt="">
+              <img class="card-img ghost-cyan" src="./image-gen-the-strike.png" alt="">
+              <img class="card-img ghost-red" src="./image-gen-the-strike.png" alt="">
+            </div>
+            <div class="card-ov"></div>
+            <div class="card-holo"></div>
+            <div class="card-front-top">
+              <div class="card-brand">
+                <img src="./IMG_8431.PNG">
+                <div class="card-brand-text">
+                  <span class="card-brand-name">EndoCraft</span>
+                  <span class="card-brand-sub">Session 14 · Crypt of Ashborne</span>
+                </div>
+              </div>
+              <div class="card-pill">⚠ MISPRINT</div>
+            </div>
+            <div class="misprint-corner">
+              <span class="misprint-corner-word">MISPRINT</span>
+              <span class="misprint-corner-num">Nº 0032 / 0300</span>
+            </div>
+            <div class="card-front-bottom">
+              <div class="card-class">Human Fighter · Lv VII</div>
+              <div class="card-name">Thorne</div>
+              <div class="card-title">The Impossible Strike</div>
+              <div class="card-stats">
+                <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+                <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+                <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+                <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+              </div>
+              <div class="card-footline">
+                <span class="card-serial">THORNE #0217 / 9999</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="variant-note">Dezente Farbversatz + kleiner roter "MISPRINT Nº 0032 / 0300" Eckstempel. Zwei subtile Signale. Fühlt sich an wie ein vintage Trading-Card Grade-Error — limited batch innerhalb der Misprints.</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

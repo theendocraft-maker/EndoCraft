@@ -476,8 +476,9 @@ body {
   80%  { transform: translate(2px, -2px); filter: hue-rotate(0deg); }
   100% { transform: translate(0); filter: none; }
 }
-.tc-misprint { animation: glitch 0.4s infinite !important; }
-.tc-misprint #tcName, .tc-misprint #tcMoment { filter: invert(1) hue-rotate(180deg); }
+/* NEW Misprint — professional CMYK print-error aesthetic (replaces old glitchcore) */
+.tc-misprint { animation: none !important; transform: none !important; }
+.tc-misprint #tcName, .tc-misprint #tcMoment { filter: none !important; }
 
 @media (max-width: 500px) {
   .topbar { padding: 14px 16px; }
@@ -842,13 +843,48 @@ body {
 @keyframes rFP{0%{transform:translateY(0) scale(0);opacity:0;}15%{opacity:.8;}85%{opacity:.3;}100%{transform:translateY(-120px) translateX(var(--rx)) scale(1.5);opacity:0;}}
 
 /* Misprint */
-#tcCard.r-misprint{animation:rGlowMisprint 1.5s ease infinite !important;}
-@keyframes rGlowMisprint{0%,100%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(239,68,68,.5),0 0 40px rgba(239,68,68,.2);}50%{box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 2px rgba(239,68,68,.8),0 0 60px rgba(239,68,68,.35);}}
-#tcCard.r-misprint #tcPill{border-color:rgba(239,68,68,.5) !important;color:#F87171 !important;}
-#tcCard.r-misprint .rar-scanlines{display:block;background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0px,rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px);animation:rScanMove 8s linear infinite;border-radius:18px;z-index:28;}
-@keyframes rScanMove{0%{background-position:0 0;}100%{background-position:0 100px;}}
-#tcCard.r-misprint .rar-glitch{display:block;animation:rGlitchBars 3s step-start infinite;overflow:hidden;border-radius:18px;z-index:29;}
-@keyframes rGlitchBars{0%,94%{opacity:0;}95%{opacity:1;}96%{clip-path:inset(20% 0 60% 0);transform:translateX(-8px);}97%{clip-path:inset(50% 0 30% 0);transform:translateX(6px);}98%{clip-path:inset(70% 0 10% 0);transform:translateX(-4px);}99%,100%{opacity:0;}}
+/* Misprint — calm red-edge glow (no more aggressive pulse), classy border */
+#tcCard.r-misprint{animation:none !important;box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 1.5px rgba(224,74,58,.55),0 0 40px rgba(224,74,58,.18) !important;}
+#tcCard.r-misprint #tcPill{border-color:rgba(224,74,58,.55) !important;color:#E04A3A !important;background:rgba(20,4,4,.88) !important;}
+/* Kill old glitch/scanline overlays for misprint — the "error" is now the CMYK image offset */
+#tcCard.r-misprint .rar-scanlines,
+#tcCard.r-misprint .rar-glitch{display:none !important;animation:none !important;}
+
+/* CMYK chromatic plate-offset — shown only when misprint */
+.tc-misprint-ghost{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+  pointer-events:none;
+  display:none;
+  z-index:2;
+}
+#tcCard.r-misprint .tc-misprint-ghost{display:block;}
+#tcCard.r-misprint .tc-misprint-ghost.cyan{
+  transform:translate(-3px,1px);
+  filter:sepia(1) hue-rotate(150deg) saturate(4);
+  mix-blend-mode:screen;
+  opacity:0.5;
+}
+#tcCard.r-misprint .tc-misprint-ghost.red{
+  transform:translate(3px,-1px);
+  filter:sepia(1) hue-rotate(-20deg) saturate(4);
+  mix-blend-mode:screen;
+  opacity:0.45;
+}
+/* Red-tinted serial with subtle chromatic shadow on the text itself */
+#tcCard.r-misprint #tcSerial{
+  color:rgba(224,74,58,0.75) !important;
+  text-shadow:-0.5px 0 rgba(74,180,230,0.4), 0.5px 0 rgba(224,74,58,0.6) !important;
+}
+#tcCard.r-misprint .tc-footline{border-top-color:rgba(224,74,58,0.2) !important;}
+
+/* Back certificate — Misprint-adapted colors */
+#tcBack.r-misprint-back::before{border-color:rgba(224,74,58,0.3) !important;}
+#tcBack.r-misprint-back::after{border-color:rgba(224,74,58,0.12) !important;}
+#tcBack.r-misprint-back .tc-back-type{color:rgba(224,74,58,0.75) !important;}
+#tcBack.r-misprint-back .tc-ritual-prose strong.misprint-red{color:#F26957;}
+#tcBack.r-misprint-back #tcBackNumber{color:#F26957 !important;font-family:'Cinzel',serif !important;font-size:9px !important;letter-spacing:1px !important;font-weight:700 !important;}
 .rar-glitch::after{content:"";position:absolute;inset:0;background:rgba(239,68,68,.15);}
 
 /* FLIP HINT + DOWNLOAD */
@@ -996,7 +1032,7 @@ body {
           <span class="tc-d20-ornament-line right"></span>
         </div>
 
-        <p class="tc-ritual-prose">The dice were cast.<br>They landed on <strong id="tcBackRoll">20</strong>.<br>A <strong id="tcBackRarity">Legendary</strong> card was sealed.</p>
+        <p class="tc-ritual-prose" id="tcRitualProse">The dice were cast.<br>They landed on <strong id="tcBackRoll">20</strong>.<br>A <strong id="tcBackRarity">Legendary</strong> card was sealed.</p>
 
         <div class="tc-back-div">
           <span class="tc-back-line"></span>
@@ -1036,6 +1072,9 @@ body {
           <div id="tcFoil" style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:tcHolo 6s ease infinite;opacity:.8;"></div>
           <div id="tcImgWrap" style="position:relative;background:linear-gradient(160deg,#1a0a00,#12080a,#0a0f1a);width:100%;aspect-ratio:3/4;">
             <img id="tcImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;opacity:0;transition:opacity 0.5s ease;">
+            <!-- CMYK chromatic ghosts — invisible by default, shown only when #tcCard.r-misprint -->
+            <img id="tcImgGhostCyan" class="tc-misprint-ghost cyan" src="" alt="">
+            <img id="tcImgGhostRed" class="tc-misprint-ghost red" src="" alt="">
             <!-- Image loading animation -->
             <div id="tcImgPlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:3;">
               <div style="width:40px;height:40px;border:2px solid rgba(232,184,109,.2);border-top-color:#E8B86D;border-radius:50%;animation:tcSpin 1s linear infinite;"></div>
@@ -1393,11 +1432,7 @@ function showTradingCard(data) {
     setText('tcBackRoll', roll);
     setText('tcBackRarity', rarityTitle);
 
-    // Edition stays static "I · 2026"
     const nowStamp = Date.now();
-    const cardNum = (nowStamp % 9999).toString().padStart(4, '0');
-    setText('tcBackNumber', '#' + cardNum + ' / 9999');
-
     const today = new Date().toISOString().split('T')[0];
     setText('tcBackIssued', today);
     setText('tcBackModel', 'Seedream 4.5');
@@ -1412,6 +1447,40 @@ function showTradingCard(data) {
     // Pseudo-card-ID (timestamp + seed) — real UUID comes from Supabase later
     const cardId = (nowStamp.toString(16) + seedHex).padStart(16,'0');
     setText('tcBackCardId', '0x' + cardId.slice(0,4) + '…' + cardId.slice(-4));
+
+    // ── Rarity-specific back content ──
+    const backEl = document.getElementById('tcBack');
+    const backType = document.querySelector('.tc-back-type');
+    const proseEl = document.getElementById('tcRitualProse');
+
+    if (rarity === 'misprint') {
+      // Misprint: small numbered batch (300 per year), red-tinted everything
+      const misprintNum = (nowStamp % 300 + 1).toString().padStart(4, '0');
+      setText('tcBackNumber', 'Nº ' + misprintNum + ' / 0300');
+      if (backEl) backEl.classList.add('r-misprint-back');
+      if (backType) backType.textContent = 'CERTIFICATE · MISPRINT BATCH';
+      if (proseEl) {
+        proseEl.innerHTML = 'The dice were cast.<br>They landed on <strong>' + roll + '</strong>.<br>A <strong class="misprint-red">Misprint</strong> was born —<br>Nº <strong class="misprint-red">' + parseInt(misprintNum) + ' of 300</strong> this year.';
+      }
+      // Also swap front footline serial to misprint numbering
+      const serialEl = document.getElementById('tcSerial');
+      if (serialEl) serialEl.innerHTML = 'MISPRINT · Nº <strong style="color:#F26957;">' + misprintNum + ' / 0300</strong>';
+    } else {
+      // All other rarities: standard character-edition numbering
+      const cardNum = (nowStamp % 9999).toString().padStart(4, '0');
+      setText('tcBackNumber', '#' + cardNum + ' / 9999');
+      if (backEl) backEl.classList.remove('r-misprint-back');
+      if (backType) backType.textContent = 'CERTIFICATE OF AUTHENTICITY';
+      if (proseEl) {
+        proseEl.innerHTML = 'The dice were cast.<br>They landed on <strong id="tcBackRoll">' + roll + '</strong>.<br>A <strong id="tcBackRarity">' + rarityTitle + '</strong> card was sealed.';
+      }
+      // Reset front serial to standard character-edition format (in case previous session was misprint)
+      const serialEl2 = document.getElementById('tcSerial');
+      if (serialEl2) {
+        const charSafe = (charVal || 'SESSION').replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'SESSION';
+        serialEl2.textContent = charSafe + ' #' + cardNum + ' / 9999';
+      }
+    }
   } catch (e) { console.warn('[BACK] certificate fill failed', e); }
 
   // ── Apply rarity visual class ──
@@ -1586,6 +1655,9 @@ async function generateSessionImage(data, story) {
         };
         img.onerror = () => { console.warn('[IMG] onerror — continuing anyway'); done(); };
         img.src = d.url;
+        // Mirror src to CMYK ghosts (only visible if .r-misprint)
+        const _gC = document.getElementById('tcImgGhostCyan'); if (_gC) _gC.src = d.url;
+        const _gR = document.getElementById('tcImgGhostRed');  if (_gR) _gR.src = d.url;
         // Safety cap: don't wait longer than 30s
         setTimeout(done, 30000);
       });
