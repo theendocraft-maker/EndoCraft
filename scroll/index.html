@@ -211,19 +211,56 @@ body {
 .loading-inner { position: relative; z-index: 1; text-align: center; max-width: 420px; display: flex; flex-direction: column; align-items: center; }
 
 .loading-ring {
-  width: 64px; height: 64px;
-  border: 2px solid rgba(232,184,109,0.15);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin 1.2s linear infinite;
+  width: 90px; height: 96px;
+  margin-bottom: 26px;
   position: relative;
-  margin-bottom: 28px;
+  animation: none;
 }
-.loading-ring::before {
-  content: ''; position: absolute; inset: -12px;
-  border: 1px solid rgba(123,108,246,0.15);
-  border-radius: 50%;
-  animation: spin 3s linear infinite reverse;
+.loading-ring svg {
+  width: 100%; height: 100%;
+  animation: d20Tumble 2.6s ease-in-out infinite;
+  transform-origin: center;
+}
+.loading-ring svg path {
+  fill: none;
+  stroke: rgba(232,184,109,0.55);
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 6px rgba(232,184,109,0.28));
+}
+.loading-ring-num {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 32px; font-weight: 900;
+  color: #F2D187;
+  text-shadow: 0 0 14px rgba(232,184,109,0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-ring.landed svg {
+  animation: d20Settle 0.5s cubic-bezier(.4,0,.2,1) forwards;
+}
+.loading-ring.landed svg path {
+  stroke: var(--gold);
+  filter: drop-shadow(0 0 10px rgba(232,184,109,0.5));
+}
+.loading-ring.landed .loading-ring-num {
+  animation: numReveal 0.4s ease 0.2s both;
+}
+@keyframes d20Tumble {
+  0%   { transform: rotate(0deg) translateY(0); }
+  25%  { transform: rotate(90deg) translateY(-4px); }
+  50%  { transform: rotate(200deg) translateY(0); }
+  75%  { transform: rotate(310deg) translateY(-2px); }
+  100% { transform: rotate(360deg) translateY(0); }
+}
+@keyframes d20Settle {
+  from { transform: rotate(var(--last-rot, 0deg)) scale(1.05); }
+  to { transform: rotate(0deg) scale(1); }
+}
+@keyframes numReveal {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .loading-text {
@@ -726,16 +763,37 @@ body {
 #tcFlipWrap > #tcCard{transform:rotateY(180deg) !important;transition:none !important;}
 
 /* CARD BACK */
-#tcBack{border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#0e0818,#080510,#0c0618);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 1px rgba(232,184,109,.15);}
-#tcBack::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(232,184,109,.06),transparent);}
-#tcBack::after{content:"";position:absolute;inset:14px;border-radius:10px;border:1px solid rgba(232,184,109,.12);pointer-events:none;}
-.tc-back-texture{position:absolute;inset:0;background-image:repeating-linear-gradient(60deg,rgba(232,184,109,.012) 0,rgba(232,184,109,.012) 1px,transparent 0,transparent 50%);background-size:20px 20px;}
-.tc-back-logo{width:72px;height:72px;object-fit:contain;position:relative;filter:drop-shadow(0 0 16px rgba(232,184,109,.55)) drop-shadow(0 0 40px rgba(232,184,109,.15));}
-.tc-back-name{font-family:"Cinzel Decorative",serif;font-size:18px;color:rgba(232,184,109,.85);letter-spacing:2px;position:relative;text-shadow:0 0 30px rgba(232,184,109,.3);}
-.tc-back-div{display:flex;align-items:center;gap:10px;position:relative;}
-.tc-back-line{width:32px;height:1px;background:rgba(232,184,109,.2);}
-.tc-back-diamond{width:5px;height:5px;background:rgba(232,184,109,.5);transform:rotate(45deg);}
-.tc-back-tagline{font-family:"Cinzel",serif;font-size:8px;letter-spacing:4px;color:rgba(232,184,109,.32);text-align:center;padding:0 30px;line-height:2;position:relative;}
+#tcBack{border-radius:18px;overflow:hidden;padding:22px 20px;background:radial-gradient(circle at 50% 10%, rgba(232,184,109,0.10) 0%, transparent 40%),radial-gradient(circle at 50% 90%, rgba(232,184,109,0.06) 0%, transparent 40%),linear-gradient(180deg, #0a0703 0%, #1a0f05 50%, #0a0703 100%);display:flex;flex-direction:column;align-items:center;box-shadow:0 24px 60px rgba(0,0,0,.95),0 0 0 1px rgba(232,184,109,.18);}
+#tcBack::before{content:"";position:absolute;inset:12px;border:1px solid rgba(232,184,109,0.2);border-radius:14px;pointer-events:none;z-index:1;}
+#tcBack::after{content:"";position:absolute;inset:16px;border:1px solid rgba(232,184,109,0.08);border-radius:11px;pointer-events:none;z-index:1;}
+.tc-back-texture{display:none;} /* legacy, overridden */
+.tc-back-head{display:flex;flex-direction:column;align-items:center;margin-top:4px;z-index:2;position:relative;}
+.tc-back-logo{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(232,184,109,0.6));margin-bottom:5px;}
+.tc-back-name{font-family:'Cinzel Decorative',serif;font-size:13px;font-weight:700;color:#F2D187;letter-spacing:1px;line-height:1;}
+.tc-back-type{font-family:'Cinzel',serif;font-size:6.5px;letter-spacing:3.5px;color:rgba(232,184,109,0.55);margin-top:4px;}
+.tc-d20-ornament{display:flex;align-items:center;gap:12px;margin:12px 0 10px;z-index:2;position:relative;}
+.tc-d20-ornament-line{width:36px;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,109,0.45));}
+.tc-d20-ornament-line.right{background:linear-gradient(90deg,rgba(232,184,109,0.45),transparent);}
+.tc-d20-ornament-shape{width:24px;height:26px;position:relative;}
+.tc-d20-ornament-shape svg{width:100%;height:100%;}
+.tc-d20-ornament-shape svg path{fill:none;stroke:rgba(232,184,109,0.55);stroke-width:1;}
+.tc-d20-ornament-shape svg path.inner{stroke:rgba(232,184,109,0.25);stroke-width:0.5;}
+.tc-d20-ornament-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:10px;font-weight:900;color:#F2D187;line-height:1;text-shadow:0 0 6px rgba(232,184,109,0.5);}
+.tc-ritual-prose{font-family:'EB Garamond',serif;font-style:italic;font-size:11.5px;text-align:center;line-height:1.55;color:rgba(232,184,109,0.65);margin:0 10px 12px;z-index:2;position:relative;}
+.tc-ritual-prose strong{color:#F2D187;font-style:normal;font-weight:600;letter-spacing:0.5px;}
+.tc-back-div{display:flex;align-items:center;gap:8px;margin-bottom:10px;z-index:2;position:relative;width:70%;justify-content:center;}
+.tc-back-line{flex:1;height:1px;width:auto;background:linear-gradient(90deg,transparent,rgba(232,184,109,0.4),transparent);}
+.tc-back-diamond{width:5px;height:5px;background:rgba(232,184,109,0.6);transform:rotate(45deg);}
+.tc-back-meta{flex:1;width:100%;display:flex;flex-direction:column;gap:6px;z-index:2;position:relative;padding:0 8px;}
+.tc-meta-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+.tc-meta-key{font-family:'Cinzel',serif;font-size:6.5px;letter-spacing:2px;color:rgba(232,184,109,0.55);white-space:nowrap;}
+.tc-meta-value{font-family:'JetBrains Mono','Courier New',monospace;font-size:9px;color:rgba(255,230,160,0.9);text-align:right;letter-spacing:0.3px;font-weight:500;}
+.tc-meta-value.hash{font-size:8px;color:rgba(255,230,160,0.7);}
+.tc-back-seal-row{display:flex;align-items:center;justify-content:center;margin-top:10px;gap:8px;z-index:2;position:relative;}
+.tc-back-seal-symbol{font-family:'Cinzel',serif;font-size:10px;color:rgba(232,184,109,.7);line-height:1;}
+.tc-back-seal-text{font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:rgba(232,184,109,0.5);}
+.tc-back-footer{margin-top:auto;text-align:center;z-index:2;position:relative;padding-top:6px;}
+.tc-back-tagline{font-family:'Cinzel Decorative',serif;font-size:8px;letter-spacing:3px;color:rgba(232,184,109,.45);text-align:center;line-height:1.6;display:block;}
 
 /* ═════════════ RARITY VISUAL VARIANTS ═════════════ */
 /* Reusable overlay containers (hidden by default, shown per rarity) */
@@ -885,9 +943,15 @@ body {
   <!-- LOADING -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-inner">
-      <div class="loading-ring"></div>
-      <div class="loading-text">Writing your chronicles…</div>
-      <div class="loading-sub">A scribe is listening. The dice have rolled.</div>
+      <div class="loading-ring" id="loadingRing">
+        <svg viewBox="0 0 90 96" xmlns="http://www.w3.org/2000/svg">
+          <path d="M45 3 L87 25 L87 72 L45 93 L3 72 L3 25 Z"/>
+          <path d="M45 3 L45 93 M3 25 L87 72 M87 25 L3 72"/>
+        </svg>
+        <div class="loading-ring-num" id="loadingRingNum"></div>
+      </div>
+      <div class="loading-text" id="loadingText">Writing your chronicles…</div>
+      <div class="loading-sub" id="loadingSub">A scribe is listening. The dice have rolled.</div>
       <div class="loading-steps">
         <div class="loading-step active" id="ls1"><span class="step-dot"></span><span class="step-text">Analyzing your session</span></div>
         <div class="loading-step" id="ls2"><span class="step-dot"></span><span class="step-text">Generating summary & NPC log</span></div>
@@ -912,13 +976,52 @@ body {
     <div id="tradingCardWrap" style="display:none;" title="Tap card to flip">
       <div id="tcScene" style="perspective:1200px;margin:0 auto;width:min(300px,85vw);">
       <div id="tcFlipWrap" onclick="tcToggleFlip(event)">
-      <!-- ── CARD BACK (shown initially) ── -->
+      <!-- ── CARD BACK (Certificate of Authenticity) ── -->
       <div id="tcBack">
-        <div class="tc-back-texture"></div>
-        <img class="tc-back-logo" src="https://endocraft.app/IMG_8431.PNG" alt="">
-        <div class="tc-back-name">EndoCraft</div>
-        <div class="tc-back-div"><div class="tc-back-line"></div><div class="tc-back-diamond"></div><div class="tc-back-line"></div></div>
-        <div class="tc-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+        <div class="tc-back-head">
+          <img class="tc-back-logo" src="../IMG_8431.PNG" alt="">
+          <div class="tc-back-name">EndoCraft</div>
+          <div class="tc-back-type">CERTIFICATE OF AUTHENTICITY</div>
+        </div>
+
+        <div class="tc-d20-ornament">
+          <span class="tc-d20-ornament-line"></span>
+          <span class="tc-d20-ornament-shape">
+            <svg viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 1 L23 7 L23 19 L12 25 L1 19 L1 7 Z"/>
+              <path class="inner" d="M12 1 L12 25 M1 7 L23 19 M23 7 L1 19"/>
+            </svg>
+            <span class="tc-d20-ornament-num" id="tcBackRollNum">20</span>
+          </span>
+          <span class="tc-d20-ornament-line right"></span>
+        </div>
+
+        <p class="tc-ritual-prose">The dice were cast.<br>They landed on <strong id="tcBackRoll">20</strong>.<br>A <strong id="tcBackRarity">Legendary</strong> card was sealed.</p>
+
+        <div class="tc-back-div">
+          <span class="tc-back-line"></span>
+          <span class="tc-back-diamond"></span>
+          <span class="tc-back-line"></span>
+        </div>
+
+        <div class="tc-back-meta">
+          <div class="tc-meta-row"><span class="tc-meta-key">Edition</span><span class="tc-meta-value" id="tcBackEdition">I · 2026</span></div>
+          <div class="tc-meta-row"><span class="tc-meta-key">Number</span><span class="tc-meta-value" id="tcBackNumber">—</span></div>
+          <div class="tc-meta-row"><span class="tc-meta-key">Issued</span><span class="tc-meta-value" id="tcBackIssued">—</span></div>
+          <div class="tc-meta-row"><span class="tc-meta-key">Model</span><span class="tc-meta-value" id="tcBackModel">Seedream 4.5</span></div>
+          <div class="tc-meta-row"><span class="tc-meta-key">Seed</span><span class="tc-meta-value hash" id="tcBackSeed">—</span></div>
+          <div class="tc-meta-row"><span class="tc-meta-key">Card ID</span><span class="tc-meta-value hash" id="tcBackCardId">—</span></div>
+        </div>
+
+        <div class="tc-back-seal-row">
+          <span class="tc-back-seal-symbol">✦</span>
+          <span class="tc-back-seal-text">SEALED · IMMUTABLE</span>
+          <span class="tc-back-seal-symbol">✦</span>
+        </div>
+
+        <div class="tc-back-footer">
+          <span class="tc-back-tagline">MAKE EVERY SESSION LEGENDARY</span>
+        </div>
       </div>
       <!-- ── CARD FRONT ── -->
         <div id="tcCard" style="border-radius:18px;overflow:hidden;position:relative;cursor:pointer;width:min(300px,85vw);margin:0 auto;">
@@ -1274,11 +1377,43 @@ function showTradingCard(data) {
   const rc = rarityConfig[rarity] || rarityConfig.rare;
   const pill = document.getElementById('tcPill');
   if (pill) {
-    pill.textContent = rc.label + '  Nat ' + roll;
+    // Front pill — clean, no roll value (roll lives on back certificate)
+    pill.textContent = rc.label;
     pill.style.color = rc.color;
     pill.style.background = rc.bg;
     pill.style.borderColor = rc.border;
   }
+
+  // ── Populate back certificate ──
+  try {
+    const rarityTitle = rarity.charAt(0).toUpperCase() + rarity.slice(1);
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    setText('tcBackRollNum', roll);
+    setText('tcBackRoll', roll);
+    setText('tcBackRarity', rarityTitle);
+
+    // Edition stays static "I · 2026"
+    const nowStamp = Date.now();
+    const cardNum = (nowStamp % 9999).toString().padStart(4, '0');
+    setText('tcBackNumber', '#' + cardNum + ' / 9999');
+
+    const today = new Date().toISOString().split('T')[0];
+    setText('tcBackIssued', today);
+    setText('tcBackModel', 'Seedream 4.5');
+
+    // Pseudo-seed hash (deterministic from session content for now — real seed comes from backend later)
+    const seedSource = (data.session_title || '') + '|' + (data.legendary_moment || '') + '|' + roll;
+    let h = 0;
+    for (let i = 0; i < seedSource.length; i++) { h = ((h << 5) - h) + seedSource.charCodeAt(i); h |= 0; }
+    const seedHex = Math.abs(h).toString(16).padStart(8, '0');
+    setText('tcBackSeed', seedHex.slice(0,4) + '…' + seedHex.slice(-4));
+
+    // Pseudo-card-ID (timestamp + seed) — real UUID comes from Supabase later
+    const cardId = (nowStamp.toString(16) + seedHex).padStart(16,'0');
+    setText('tcBackCardId', '0x' + cardId.slice(0,4) + '…' + cardId.slice(-4));
+  } catch (e) { console.warn('[BACK] certificate fill failed', e); }
+
   // ── Apply rarity visual class ──
   const cardEl = document.getElementById('tcCard');
   if (cardEl) {
@@ -1912,6 +2047,23 @@ Return ONLY the JSON object. No markdown. No explanation.`;
     const data = JSON.parse(raw.replace(/```json|```/g, '').trim());
     data.rarity = d.rarity || 'rare';
     data.visible_roll = d.visible_roll !== undefined ? d.visible_roll : 10;
+
+    // D20 lands: reveal the roll value + swap loading copy to rarity reveal
+    try {
+      const _ring = document.getElementById('loadingRing');
+      const _num = document.getElementById('loadingRingNum');
+      const _lt = document.getElementById('loadingText');
+      const _ls = document.getElementById('loadingSub');
+      if (_ring && _num) {
+        _num.textContent = data.visible_roll;
+        _ring.classList.add('landed');
+      }
+      if (_lt) {
+        const rarityUpper = (data.rarity || 'rare').toUpperCase();
+        _lt.innerHTML = `Rolled <span style="color:var(--gold);">${data.visible_roll}</span> — <em style="font-style:italic;color:var(--gold);">${rarityUpper}</em> sealed.`;
+      }
+      if (_ls) _ls.textContent = 'Painting the scene…';
+    } catch(e) { console.warn('[D20] reveal failed', e); }
 
     showResult('cardSummary', 'bodySummary', data.summary, outs.includes('summary'));
     showResult('cardNpc', 'bodyNpc', data.npc, outs.includes('npc'));

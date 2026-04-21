@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Mockup — NFT-ready Design Target</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg-deep:#050508;
+  --surface:#1a1a24;
+  --surface2:#1f1f2b;
+  --border:rgba(255,255,255,0.08);
+  --text:#f0eff4;
+  --text-muted:rgba(255,255,255,0.5);
+  --text-dim:rgba(255,255,255,0.25);
+  --accent:#7B6CF6;
+  --gold:#E8B86D;
+  --gold-bright:#F2D187;
+  --gold-deep:#B8873E;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;padding:0 0 80px;}
+
+/* Mockup section labels */
+.mock-label{position:sticky;top:0;z-index:200;background:rgba(10,10,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;}
+.mock-label-l{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);}
+.mock-label-r{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);}
+
+.mock-wrap{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative;}
+.mock-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at center, rgba(232,184,109,0.05) 0%, transparent 60%), var(--bg-deep);}
+.mock-content{position:relative;z-index:1;}
+
+.mock-divider{height:60px;background:linear-gradient(180deg,transparent,rgba(232,184,109,0.1),transparent);display:flex;align-items:center;justify-content:center;}
+.mock-divider-text{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;color:var(--text-dim);}
+
+/* ============ CARD (shared front + back styling) ============ */
+.card{
+  position:relative;width:360px;aspect-ratio:3/4;border-radius:20px;overflow:hidden;
+  box-shadow:
+    0 0 0 1.5px rgba(232,184,109,0.55),
+    0 40px 100px rgba(0,0,0,0.95),
+    0 0 80px rgba(232,184,109,0.18);
+  transform-style:preserve-3d;
+  transition:transform .6s cubic-bezier(.23,1.2,.32,1);
+}
+.card.float{animation:cardFloat 6s ease-in-out infinite;}
+@keyframes cardFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+/* ── FRONT ── */
+.card-front{position:absolute;inset:0;}
+.card-img{width:100%;height:100%;object-fit:cover;display:block;}
+.card-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,0.55) 0%,transparent 22%,transparent 48%,rgba(6,3,0,0.68) 70%,rgba(4,2,0,0.97) 92%,rgba(4,2,0,1) 100%);}
+.card-holo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:20px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.6;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}}
+
+.card-front-top{position:absolute;top:0;left:0;right:0;z-index:10;padding:16px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.card-brand{display:flex;align-items:center;gap:8px;}
+.card-brand img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(232,184,109,0.9));}
+.card-brand-text{display:flex;flex-direction:column;line-height:1.2;}
+.card-brand-name{font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:3px;color:rgba(232,184,109,0.8);text-shadow:0 1px 8px #000;}
+.card-brand-sub{font-family:'Cinzel',serif;font-size:6.5px;letter-spacing:2px;color:rgba(255,240,200,0.4);text-shadow:0 1px 6px #000;margin-top:1px;}
+
+.card-pill{background:rgba(10,5,0,0.88);border:1px solid rgba(232,184,109,0.45);color:var(--gold);border-radius:30px;padding:4px 10px;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;backdrop-filter:blur(12px);white-space:nowrap;}
+
+.card-roll{
+  position:absolute;top:16px;right:16px;z-index:11;
+  display:none; /* hidden because we use pill instead — but available */
+}
+
+.card-front-bottom{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:22px 20px;}
+.card-class{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:rgba(232,184,109,0.9);margin-bottom:5px;text-shadow:0 1px 10px #000;}
+.card-name{font-family:'Cinzel Decorative',serif;font-size:30px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:6px;text-shadow:0 2px 20px #000;}
+.card-title{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(255,230,160,0.55);margin-bottom:12px;text-shadow:0 1px 8px #000;line-height:1.3;}
+
+.card-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px;}
+.stat{background:rgba(4,2,0,0.85);border:1px solid rgba(232,184,109,0.18);border-radius:6px;padding:5px 3px;text-align:center;backdrop-filter:blur(6px);}
+.stat-value{font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:var(--gold);line-height:1;display:block;}
+.stat-label{font-family:'Cinzel',serif;font-size:5px;letter-spacing:1.5px;color:rgba(232,184,109,0.55);display:block;margin-top:2px;}
+
+.card-footline{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid rgba(232,184,109,0.1);}
+.card-serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(232,184,109,0.5);}
+.card-d20{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(232,184,109,0.5);display:flex;align-items:center;gap:4px;}
+.card-d20-chip{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border:1px solid rgba(232,184,109,0.4);border-radius:3px;font-size:8px;color:var(--gold);font-weight:700;}
+
+/* ── BACK (NFT-ready certificate) ── */
+.card-back{
+  position:absolute;inset:0;padding:24px;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(232,184,109,0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(232,184,109,0.06) 0%, transparent 40%),
+    linear-gradient(180deg, #0a0703 0%, #1a0f05 50%, #0a0703 100%);
+  display:flex;flex-direction:column;align-items:center;
+  overflow:hidden;
+}
+.card-back::before{
+  content:'';position:absolute;inset:12px;border:1px solid rgba(232,184,109,0.2);border-radius:14px;pointer-events:none;
+}
+.card-back::after{
+  content:'';position:absolute;inset:16px;border:1px solid rgba(232,184,109,0.08);border-radius:11px;pointer-events:none;
+}
+.card-back-header{display:flex;flex-direction:column;align-items:center;margin-bottom:14px;margin-top:8px;z-index:2;}
+.card-back-logo{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(232,184,109,0.6));margin-bottom:8px;}
+.card-back-brand{font-family:'Cinzel Decorative',serif;font-size:15px;font-weight:700;color:var(--gold-bright);letter-spacing:1px;line-height:1;}
+.card-back-type{font-family:'Cinzel',serif;font-size:7px;letter-spacing:4px;color:rgba(232,184,109,0.55);margin-top:3px;}
+
+.card-back-div{display:flex;align-items:center;gap:8px;margin-bottom:14px;z-index:2;width:70%;justify-content:center;}
+.card-back-div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,109,0.45),transparent);}
+.card-back-div-diamond{width:6px;height:6px;background:var(--gold);transform:rotate(45deg);}
+
+.card-back-meta{flex:1;width:100%;display:flex;flex-direction:column;gap:7px;z-index:2;padding:0 6px;}
+.meta-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-family:'JetBrains Mono',monospace;font-size:9px;}
+.meta-key{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(232,184,109,0.55);white-space:nowrap;}
+.meta-value{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,230,160,0.9);text-align:right;letter-spacing:0.3px;font-weight:500;}
+.meta-value.gold-big{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:1.5px;font-weight:700;}
+.meta-value.hash{font-size:8px;color:rgba(255,230,160,0.7);}
+
+.card-back-seal{display:flex;align-items:center;justify-content:center;margin-top:12px;gap:8px;z-index:2;}
+.card-back-seal-symbol{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);line-height:1;}
+.card-back-seal-text{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;color:rgba(232,184,109,0.55);}
+
+.card-back-footer{margin-top:auto;text-align:center;z-index:2;}
+.card-back-tagline{font-family:'Cinzel Decorative',serif;font-size:9px;letter-spacing:3px;color:rgba(232,184,109,0.45);line-height:1.6;}
+.card-back-footnote{font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(232,184,109,0.25);margin-top:6px;}
+
+/* ============ STATE 1: FRONT + BACK SIDE BY SIDE ============ */
+.pair-layout{display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;}
+.pair-card-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;}
+.pair-card-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--text-dim);}
+
+/* ============ STATE 3: COLLECTOR DETAIL VIEW ============ */
+.detail-wrap{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:start;max-width:1000px;}
+.detail-card-col{display:flex;justify-content:center;}
+.detail-info{padding-top:10px;}
+.detail-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;}
+.detail-name{font-family:'Cinzel Decorative',serif;font-size:46px;font-weight:700;line-height:1;margin-bottom:8px;color:var(--text);}
+.detail-class{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;color:var(--text-muted);margin-bottom:14px;}
+.detail-moment{font-family:'EB Garamond',serif;font-style:italic;font-size:18px;color:rgba(232,184,109,0.75);line-height:1.55;max-width:440px;padding-left:14px;border-left:2px solid rgba(232,184,109,0.3);margin-bottom:28px;}
+
+.detail-meta-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:480px;margin-bottom:26px;}
+.detail-meta-cell{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.detail-meta-key{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2.5px;color:var(--text-dim);margin-bottom:6px;}
+.detail-meta-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);font-weight:500;letter-spacing:0.3px;word-break:break-all;}
+.detail-meta-value.gold{color:var(--gold);font-family:'Cinzel',serif;font-size:14px;letter-spacing:1.5px;}
+
+.detail-actions{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.d-btn{padding:11px 20px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;border:none;transition:opacity .2s, border-color .2s;}
+.d-btn.primary{background:var(--accent);color:white;}
+.d-btn.outline{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.d-btn.outline:hover{color:var(--text);border-color:var(--text-dim);}
+.d-btn.primary:hover{opacity:.9;}
+
+.detail-provenance-note{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--text-dim);max-width:480px;line-height:1.6;padding-top:18px;border-top:1px solid var(--border);}
+
+/* Mobile */
+@media (max-width:860px){
+  .pair-layout{gap:32px;}
+  .detail-wrap{grid-template-columns:1fr;gap:32px;}
+  .detail-card-col{order:1;}
+  .detail-info{order:2;}
+  .detail-name{font-size:36px;}
+  .card{width:min(320px,85vw);}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ STATE 1: FRONT (polished) ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ CARD FRONT — POLISHED</span>
+  <span class="mock-label-r">the emotional hook · what gets shared</span>
+</div>
+
+<div class="mock-wrap">
+  <div class="mock-bg"></div>
+  <div class="mock-content">
+
+    <div class="card float">
+      <div class="card-front">
+        <img class="card-img" src="./image-gen-the-strike.png" alt="">
+        <div class="card-ov"></div>
+        <div class="card-holo"></div>
+        <div class="card-front-top">
+          <div class="card-brand">
+            <img src="./IMG_8431.PNG">
+            <div class="card-brand-text">
+              <span class="card-brand-name">EndoCraft</span>
+              <span class="card-brand-sub">Session 14 · Crypt of Ashborne</span>
+            </div>
+          </div>
+          <div class="card-pill">✦ Legendary</div>
+        </div>
+        <div class="card-front-bottom">
+          <div class="card-class">Human Fighter · Lv VII</div>
+          <div class="card-name">Thorne</div>
+          <div class="card-title">The Impossible Strike</div>
+          <div class="card-stats">
+            <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+            <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+            <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+            <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+          </div>
+          <div class="card-footline">
+            <span class="card-serial">THORNE #0217 / 9999</span>
+            <span class="card-d20"><span class="card-d20-chip">20</span> NAT 20</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="mock-divider"><span class="mock-divider-text">↓ FLIP ↓</span></div>
+
+<!-- ============ STATE 2: BACK (NFT-ready certificate) ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ CARD BACK — CERTIFICATE OF AUTHENTICITY</span>
+  <span class="mock-label-r">provenance · seed · model-vintage · edition — NFT-ready</span>
+</div>
+
+<div class="mock-wrap">
+  <div class="mock-bg"></div>
+  <div class="mock-content">
+
+    <div class="card">
+      <div class="card-back">
+        <div class="card-back-header">
+          <img class="card-back-logo" src="./IMG_8431.PNG">
+          <div class="card-back-brand">EndoCraft</div>
+          <div class="card-back-type">CERTIFICATE OF AUTHENTICITY</div>
+        </div>
+        <div class="card-back-div">
+          <span class="card-back-div-line"></span>
+          <span class="card-back-div-diamond"></span>
+          <span class="card-back-div-line"></span>
+        </div>
+        <div class="card-back-meta">
+          <div class="meta-row"><span class="meta-key">Rarity</span><span class="meta-value gold-big">LEGENDARY</span></div>
+          <div class="meta-row"><span class="meta-key">D20 Roll</span><span class="meta-value">NAT 20</span></div>
+          <div class="meta-row"><span class="meta-key">Edition</span><span class="meta-value">I · 2026</span></div>
+          <div class="meta-row"><span class="meta-key">Number</span><span class="meta-value">#0217 / 9999</span></div>
+          <div class="meta-row"><span class="meta-key">Issued</span><span class="meta-value">2026-04-21</span></div>
+          <div class="meta-row"><span class="meta-key">Model</span><span class="meta-value">Seedream 4.5</span></div>
+          <div class="meta-row"><span class="meta-key">Seed</span><span class="meta-value hash">a3f1…b92c</span></div>
+          <div class="meta-row"><span class="meta-key">Card ID</span><span class="meta-value hash">0xbc91…ae08</span></div>
+        </div>
+        <div class="card-back-seal">
+          <span class="card-back-seal-symbol">✦</span>
+          <span class="card-back-seal-text">SEALED · IMMUTABLE</span>
+          <span class="card-back-seal-symbol">✦</span>
+        </div>
+        <div class="card-back-footer">
+          <div class="card-back-tagline">MAKE EVERY<br>SESSION LEGENDARY</div>
+          <div class="card-back-footnote">endocraft.app · theendocraft</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="mock-divider"><span class="mock-divider-text">↓ COLLECTOR VIEW ↓</span></div>
+
+<!-- ============ STATE 3: COLLECTOR DETAIL VIEW ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ COLLECTOR VIEW — /my-cards/{id}</span>
+  <span class="mock-label-r">later: the page for each saved card · shareable · NFT-linkable</span>
+</div>
+
+<div class="mock-wrap" style="padding:60px 24px 100px;">
+  <div class="mock-bg"></div>
+  <div class="mock-content" style="width:100%;">
+
+    <div class="detail-wrap">
+      <div class="detail-card-col">
+        <div class="card">
+          <div class="card-front">
+            <img class="card-img" src="./image-gen-the-strike.png" alt="">
+            <div class="card-ov"></div>
+            <div class="card-holo"></div>
+            <div class="card-front-top">
+              <div class="card-brand">
+                <img src="./IMG_8431.PNG">
+                <div class="card-brand-text">
+                  <span class="card-brand-name">EndoCraft</span>
+                  <span class="card-brand-sub">Session 14 · Crypt of Ashborne</span>
+                </div>
+              </div>
+              <div class="card-pill">✦ Legendary</div>
+            </div>
+            <div class="card-front-bottom">
+              <div class="card-class">Human Fighter · Lv VII</div>
+              <div class="card-name">Thorne</div>
+              <div class="card-title">The Impossible Strike</div>
+              <div class="card-stats">
+                <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+                <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+                <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+                <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+              </div>
+              <div class="card-footline">
+                <span class="card-serial">THORNE #0217 / 9999</span>
+                <span class="card-d20"><span class="card-d20-chip">20</span> NAT 20</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-info">
+        <div class="detail-tag">✦ LEGENDARY · NAT 20</div>
+        <h1 class="detail-name">The Impossible Strike</h1>
+        <div class="detail-class">THORNE · HUMAN FIGHTER · LV VII</div>
+        <p class="detail-moment">"Thorne drove his blade through the beast's heart on a clean nat 20. The party carried the relic out in silence."</p>
+
+        <div class="detail-meta-grid">
+          <div class="detail-meta-cell">
+            <div class="detail-meta-key">RARITY</div>
+            <div class="detail-meta-value gold">LEGENDARY</div>
+          </div>
+          <div class="detail-meta-cell">
+            <div class="detail-meta-key">D20 ROLL</div>
+            <div class="detail-meta-value gold">NAT 20</div>
+          </div>
+          <div class="detail-meta-cell">
+            <div class="detail-meta-key">EDITION · NUMBER</div>
+            <div class="detail-meta-value">I · #0217 / 9999</div>
+          </div>
+          <div class="detail-meta-cell">
+            <div class="detail-meta-key">ISSUED</div>
+            <div class="detail-meta-value">2026-04-21</div>
+          </div>
+          <div class="detail-meta-cell">
+            <div class="detail-meta-key">MODEL VINTAGE</div>
+            <div class="detail-meta-value">Seedream 4.5</div>
+          </div>
+          <div class="detail-meta-cell">
+            <div class="detail-meta-key">SEED</div>
+            <div class="detail-meta-value">a3f1b9c4e82d…b92c</div>
+          </div>
+          <div class="detail-meta-cell" style="grid-column:span 2;">
+            <div class="detail-meta-key">CARD ID</div>
+            <div class="detail-meta-value">0xbc91d420f7c6a8e2…ae08</div>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <button class="d-btn primary">↓ Download PNG</button>
+          <button class="d-btn outline">Copy share link</button>
+          <button class="d-btn outline">View session →</button>
+        </div>
+
+        <p class="detail-provenance-note">This card was sealed on 2026-04-21. The seed, prompt, and model-vintage are immutable — no future version of Session Scroll will produce this exact card again. When Seedream 4.5 is retired, Edition I cards become historically unique artifacts of this model's output.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
