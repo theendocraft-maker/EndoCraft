@@ -211,9 +211,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <div class="login-title">EndoCraft</div>
       <div class="login-sub">✦ ADMIN ACCESS</div>
     </div>
-    <input type="password" class="pw-input" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
-    <button class="pw-btn" onclick="login()">Enter →</button>
-    <div class="pw-err" id="pwErr">Wrong password</div>
+    <input type="email" class="pw-input" id="emailInput" placeholder="admin email" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('pwInput').focus()">
+    <input type="password" class="pw-input" id="pwInput" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    <button class="pw-btn" id="loginBtn" onclick="login()">Enter →</button>
+    <div class="pw-err" id="pwErr"></div>
   </div>
 </div>
 
@@ -336,8 +337,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 <script>
 const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
-const ADMIN_PASSWORD = 'halal';
+const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263'; // publishable key is still needed as apikey header
 
 // State
 let allSubs = [];
@@ -346,33 +346,129 @@ let allSessions = [];
 let subsSourceFilter = 'all';
 let cardsRarityFilter = 'all';
 
-function login(){
-  const pw = document.getElementById('pwInput').value;
-  if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem('ec_admin', 'true');
+function showError(msg){
+  const err = document.getElementById('pwErr');
+  err.textContent = msg;
+  err.classList.add('visible');
+}
+function clearError(){
+  document.getElementById('pwErr').classList.remove('visible');
+}
+
+async function login(){
+  clearError();
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('pwInput').value;
+  if (!email || !password) { showError('Email and password required'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  const origText = btn.textContent;
+  btn.textContent = 'Authenticating…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.access_token) {
+      showError(data.error_description || data.msg || 'Invalid credentials');
+      btn.textContent = origText;
+      btn.disabled = false;
+      return;
+    }
+    // Store tokens
+    localStorage.setItem('ec_admin_token', data.access_token);
+    localStorage.setItem('ec_admin_refresh', data.refresh_token || '');
+    localStorage.setItem('ec_admin_expires', String(Date.now() + (data.expires_in || 3600) * 1000));
+    // Show dashboard
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashboard').classList.add('visible');
+    document.getElementById('pwInput').value = '';
+    btn.textContent = origText;
+    btn.disabled = false;
+    loadData();
+  } catch(e) {
+    console.error('login failed', e);
+    showError('Network error — try again');
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
+}
+
+async function logout(){
+  const token = localStorage.getItem('ec_admin_token');
+  try {
+    if (token) {
+      await fetch(SUPABASE_URL + '/auth/v1/logout', {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+      });
+    }
+  } catch(e) { /* non-fatal */ }
+  localStorage.removeItem('ec_admin_token');
+  localStorage.removeItem('ec_admin_refresh');
+  localStorage.removeItem('ec_admin_expires');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('dashboard').classList.remove('visible');
+}
+
+// Attempt refresh if token is expired
+async function refreshTokenIfNeeded(){
+  const expires = parseInt(localStorage.getItem('ec_admin_expires') || '0', 10);
+  if (!expires || Date.now() < expires - 60000) return; // still valid for >1 min
+  const refresh = localStorage.getItem('ec_admin_refresh');
+  if (!refresh) { logout(); return; }
+  try {
+    const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refresh })
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      localStorage.setItem('ec_admin_token', data.access_token);
+      localStorage.setItem('ec_admin_refresh', data.refresh_token || refresh);
+      localStorage.setItem('ec_admin_expires', String(Date.now() + (data.expires_in || 3600) * 1000));
+    } else {
+      logout();
+    }
+  } catch(e) {
+    logout();
+  }
+}
+
+// Auto-login if we have a valid-looking token
+(async function autoLogin(){
+  const token = localStorage.getItem('ec_admin_token');
+  const expires = parseInt(localStorage.getItem('ec_admin_expires') || '0', 10);
+  if (!token) return;
+  if (expires && Date.now() >= expires) {
+    await refreshTokenIfNeeded();
+  }
+  if (localStorage.getItem('ec_admin_token')) {
     document.getElementById('loginWrap').style.display = 'none';
     document.getElementById('dashboard').classList.add('visible');
     loadData();
-  } else {
-    document.getElementById('pwErr').classList.add('visible');
   }
-}
-function logout(){
-  sessionStorage.removeItem('ec_admin');
-  document.getElementById('loginWrap').style.display = 'flex';
-  document.getElementById('dashboard').classList.remove('visible');
-  document.getElementById('pwInput').value = '';
-}
-if (sessionStorage.getItem('ec_admin') === 'true') {
-  document.getElementById('loginWrap').style.display = 'none';
-  document.getElementById('dashboard').classList.add('visible');
-  loadData();
-}
+})();
 
 async function supabase(table, params = ''){
+  await refreshTokenIfNeeded();
+  const token = localStorage.getItem('ec_admin_token');
+  if (!token) { logout(); return []; }
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + table + params, {
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + token  // user JWT, not publishable key
+    }
   });
+  if (res.status === 401) { logout(); return []; }
   if (!res.ok) return [];
   return res.json();
 }

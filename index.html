@@ -443,25 +443,12 @@ async function subscribe(e) {
   document.getElementById('subSuccess').style.display = 'block';
 }
 
-// Load subscriber count from Supabase and show in hero + CTA
+// Load subscriber count via backend (backend proxies Supabase; keeps subscribers table private)
 (async function loadSocialProof(){
   try {
-    const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
-    const res = await fetch(SUPABASE_URL + '/rest/v1/subscribers?select=email&limit=1', {
-      method: 'GET',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Prefer': 'count=exact',
-        'Range-Unit': 'items',
-        'Range': '0-0'
-      }
-    });
-    const cr = res.headers.get('content-range');
-    if (!cr) return;
-    const total = parseInt(cr.split('/')[1], 10);
-    if (isNaN(total)) return;
+    const res = await fetch('https://endocraft-production.up.railway.app/api/subscriber-count');
+    const data = await res.json();
+    const total = typeof data.count === 'number' ? data.count : 0;
 
     const heroLabel = total < 10 ? 'Early access open' : `${total.toLocaleString()}+ on the list`;
     const ctaLabel = total < 10 ? '✦ Be among the first adventurers' : `✦ Join ${total.toLocaleString()} adventurers already on the list`;
