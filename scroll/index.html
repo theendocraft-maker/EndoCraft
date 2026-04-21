@@ -1751,18 +1751,43 @@ async function generate() {
   const questPart = outs.includes('quest') ? '"quest": Quest tracker. Active: ... / New clues: ... / Open questions: ...' : '';
   const journalPart = outs.includes('journal') ? '"journal": 250-350 word in-character journal entry, atmospheric fantasy prose.' : '';
 
-  const system = `You are an expert D&D chronicler and image prompt engineer.
+  const system = `You are an expert D&D chronicler and image prompt engineer who turns session descriptions into cinematic trading card moments.
+
+CORE PRINCIPLE — every image_prompt must contain three layers:
+1. SCENE: the concrete action and setting the player described.
+2. AUTHENTICITY: imperfect D&D details that make it feel lived-in — dented helmet, blood on cheek, mud-caked boots, torn cloak, mixed emotions (e.g. "exhausted relief" instead of "triumph"), underdog framing ("clearly outmatched but striking anyway"). The unplanned over the heroic.
+3. EMOTIONAL HOOK: name what the viewer should feel — quiet disbelief, stunned recognition, exhausted relief, reluctant hope, anticipation, unspoken bond. Without this line the prompt is just a scene description.
+
+AVOID (known diffusion model failure modes — these consistently produce broken images):
+- Projectiles in flight: arrows, spears, thrown weapons, fireballs mid-air. Instead show the moment BEFORE release (bow drawn, staff raised) OR AFTER (arrow planted, enemy recoiling).
+- Two hands clasping/grasping each other: fingers merge into a mess. Use a single hand + object, or hands NEAR each other but not touching.
+- Hand-to-hand object exchanges (flask passed, dagger handed over): object floats, fingers tangle. Let one character hold it, others watch.
+- Readable text on parchment/paper/scroll: always renders as garbage characters. If a letter or scroll appears, explicitly add "blank weathered parchment with faded illegible ink smudges".
+- Small objects attached to animal bodies (scroll tied to a bird's leg): position is unreliable. Put the object in the beak/mouth or on the ground beside them.
+- More than 3 characters in specific interactions: anatomy breaks on at least one. Keep 1-2 in focus, others as silhouettes in the distance.
+- Exact counts like "exactly 4 warriors": use "a small group", "several", "a handful". Don't commit to numbers.
+- Musical instruments with visible string counts: shown from angles where the detail isn't the focus.
+- Mirrors, reflective water, polished surfaces: won't reflect the actual scene.
+
+PREFER (Seedream 4.5's sweet spot):
+- Single character focus filling ~60% of frame.
+- Strong directional lighting: golden hour, dramatic rim lighting, candlelight from below, volumetric god-rays.
+- Atmospheric particles (dust, embers, smoke, soft fog, floating motes).
+- Aftermath scenes over peak-action moments.
+- Imperfect physical details (blood, grime, scars, torn cloth) — adds authenticity AND hides small anatomy errors.
+
+IMAGE PROMPT STRUCTURE — write in this order:
+- Shot type + character: [dramatic low-angle | epic wide | extreme close-up | dynamic diagonal | atmospheric moody] + [race, gender, class, specific appearance: hair, clothing, weapon, battle damage]
+- Action: what they are doing RIGHT NOW, with authentic imperfection baked in
+- Background: the scene around them, with atmospheric particles
+- Lighting + emotional mood: name both the physical light AND the emotion it frames (e.g. "warm golden backlight piercing smoke, the weight of survival in the air")
+- End with: "${currentImageStyle === 'comic' ? 'comic book illustration, bold ink outlines, vibrant colors, dynamic action lines, Marvel fantasy art, no speech bubbles, no text, no captions' : currentImageStyle === 'photo' ? 'cinematic fantasy, photorealistic, sharp focus, professional photography, 8K resolution, shallow depth of field' : 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'}, vertical portrait, no text, no letters, no watermark, no blur, no deformed hands, no extra limbs"
+
 Return ONLY a valid JSON object with these exact keys:
 
 "session_title": A dramatic 2-4 word title. No punctuation.
 "legendary_moment": The single most epic moment in one sentence, max 8 words.
-"image_prompt": A highly detailed image generation prompt for the most epic moment. Structure it EXACTLY like this:
-  - Start with the character: [race, gender, class, specific appearance: hair, clothing, weapon]
-  - Then the action: [what they are doing RIGHT NOW, specific and visual]
-  - Then the background: [what is happening in the scene around them]
-  - Then lighting and mood: [dramatic, golden, dark etc]
-  - End with: "${currentImageStyle === 'comic' ? 'comic book illustration, bold ink outlines, vibrant colors, dynamic action lines, Marvel fantasy art, no speech bubbles, no text, no captions' : currentImageStyle === 'photo' ? 'photorealistic, cinematic photography, dramatic lighting, 8k hyperdetailed, shallow depth of field' : 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'}, vertical portrait, no text, no letters, no watermark"
-  - IMPORTANT: The character must be the clear focal point, filling 60% of the frame, with the scene visible behind them.
+"image_prompt": Following the structure and rules above. The character must be the clear focal point. Respect what the player described, but translate risky choreography (projectiles, hand-clasps, readable text) into the safer equivalents above.
 ${summaryPart ? '"summary": ' + summaryPart : ''}
 ${npcPart ? '"npc": ' + npcPart : ''}
 ${questPart ? '"quest": ' + questPart : ''}
