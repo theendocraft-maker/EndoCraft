@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Collection — EndoCraft</title>
+<meta name="description" content="Your sealed D&D session cards. A permanent collection of your most legendary moments.">
+<link rel="icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --surface:#1a1a24;
+  --surface2:#1f1f2b;
+  --border:rgba(255,255,255,0.08);
+  --text:#f0eff4;
+  --text-muted:rgba(255,255,255,0.5);
+  --text-dim:rgba(255,255,255,0.25);
+  --accent:#7B6CF6;
+  --gold:#E8B86D;
+  --gold-bright:#F2D187;
+  --red:#E04A3A;
+  --blue:#60A5FA;
+  --purple:#A78BFA;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;line-height:1.55;}
+
+/* Nav */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);text-decoration:none;}
+.nav-logo img{width:26px;height:26px;object-fit:contain;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-link{color:var(--text-muted);text-decoration:none;font-size:13px;font-weight:500;transition:color 0.2s;}
+.nav-link:hover{color:var(--text);}
+.nav-cta{background:var(--accent);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;text-decoration:none;transition:opacity .2s;}
+.nav-cta:hover{opacity:.92;}
+
+/* Hero */
+.hero{padding:60px 32px 40px;max-width:1200px;margin:0 auto;text-align:center;}
+.hero-tag{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:14px;}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:12px;}
+.hero-title em{color:var(--gold);font-style:italic;}
+.hero-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--text-muted);max-width:520px;margin:0 auto 32px;}
+
+/* Stats */
+.stats-row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;padding:22px 32px;max-width:900px;margin:0 auto 40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stat{text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;letter-spacing:-0.02em;}
+.stat-num.gold{color:var(--gold);}
+.stat-num.purple{color:var(--purple);}
+.stat-num.blue{color:var(--blue);}
+.stat-num.red{color:var(--red);}
+.stat-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;color:var(--text-dim);margin-top:6px;text-transform:uppercase;}
+
+/* Grid */
+.grid-wrap{max-width:1200px;margin:0 auto;padding:0 32px 80px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+.card-tile{position:relative;aspect-ratio:3/4;border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .35s, box-shadow .35s;box-shadow:0 20px 50px rgba(0,0,0,.7);}
+.card-tile:hover{transform:translateY(-6px);}
+.card-tile.r-legendary{box-shadow:0 0 0 1.5px rgba(232,184,109,.55),0 20px 50px rgba(0,0,0,.85),0 0 40px rgba(232,184,109,.2);}
+.card-tile.r-legendary:hover{box-shadow:0 0 0 1.5px rgba(232,184,109,.75),0 30px 70px rgba(0,0,0,.85),0 0 70px rgba(232,184,109,.35);}
+.card-tile.r-epic{box-shadow:0 0 0 1.5px rgba(167,139,250,.5),0 20px 50px rgba(0,0,0,.8),0 0 30px rgba(167,139,250,.18);}
+.card-tile.r-rare{box-shadow:0 0 0 1.5px rgba(96,165,250,.45),0 20px 50px rgba(0,0,0,.8),0 0 24px rgba(96,165,250,.15);}
+.card-tile.r-common{box-shadow:0 0 0 1px rgba(255,255,255,.15),0 20px 50px rgba(0,0,0,.8);}
+.card-tile.r-misprint{box-shadow:0 0 0 1.5px rgba(224,74,58,.55),0 20px 50px rgba(0,0,0,.8),0 0 30px rgba(224,74,58,.15);}
+.card-tile img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.card-tile .ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.5) 0%,transparent 22%,transparent 48%,rgba(6,3,0,.7) 72%,rgba(4,2,0,.97) 94%);}
+.card-tile .holo{position:absolute;inset:0;pointer-events:none;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.5;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}}
+.card-tile .top{position:absolute;top:0;left:0;right:0;padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.card-tile .pill{background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.4);color:var(--gold);border-radius:30px;padding:3px 8px;font-family:'Cinzel',serif;font-size:7px;font-weight:700;letter-spacing:1.5px;}
+.card-tile.r-legendary .pill{color:var(--gold);border-color:rgba(232,184,109,.5);}
+.card-tile.r-epic .pill{color:var(--purple);border-color:rgba(167,139,250,.5);}
+.card-tile.r-rare .pill{color:var(--blue);border-color:rgba(96,165,250,.5);}
+.card-tile.r-common .pill{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.3);background:rgba(20,20,30,.85);}
+.card-tile.r-misprint .pill{color:var(--red);border-color:rgba(224,74,58,.5);background:rgba(20,4,4,.85);}
+.card-tile .bottom{position:absolute;bottom:0;left:0;right:0;padding:14px;}
+.card-tile .cls{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(232,184,109,.75);margin-bottom:2px;text-shadow:0 1px 6px #000;}
+.card-tile .name{font-family:'Cinzel Decorative',serif;font-size:22px;color:#fffbf0;line-height:1;text-shadow:0 2px 16px #000;margin-bottom:3px;}
+.card-tile .title{font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:rgba(255,230,160,.55);text-shadow:0 1px 6px #000;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card-tile .serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(232,184,109,.4);text-shadow:0 1px 4px #000;padding-top:5px;border-top:1px solid rgba(232,184,109,.1);}
+
+/* Empty state */
+.empty-state{max-width:520px;margin:80px auto;text-align:center;padding:48px 32px;background:var(--surface);border:1px solid var(--border);border-radius:20px;}
+.empty-icon{font-size:42px;margin-bottom:14px;opacity:.5;}
+.empty-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:10px;}
+.empty-sub{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:24px;}
+.empty-cta{display:inline-block;background:var(--accent);color:white;text-decoration:none;border-radius:10px;padding:13px 26px;font-weight:600;font-size:14px;transition:opacity .2s;}
+.empty-cta:hover{opacity:.9;}
+
+/* Loading */
+.loading{text-align:center;padding:80px 32px;font-family:'EB Garamond',serif;font-style:italic;color:var(--text-dim);font-size:15px;}
+
+/* Lookup form (for users who land here without a slug) */
+.lookup-wrap{max-width:460px;margin:60px auto;padding:32px 28px;background:linear-gradient(135deg,rgba(123,108,246,.08),rgba(232,184,109,.05));border:1px solid rgba(123,108,246,.2);border-radius:18px;text-align:center;}
+.lookup-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--accent);margin-bottom:14px;}
+.lookup-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.01em;margin-bottom:8px;}
+.lookup-sub{font-size:14px;color:var(--text-muted);margin-bottom:22px;line-height:1.55;}
+.lookup-form{display:flex;gap:8px;margin-bottom:12px;}
+.lookup-form input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 16px;font-size:14px;color:white;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.lookup-form input:focus{border-color:var(--accent-border, rgba(123,108,246,.3));}
+.lookup-form button{background:var(--accent);color:white;border:none;border-radius:10px;padding:13px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+.lookup-form button:hover{opacity:.92;}
+.lookup-note{font-size:11px;color:var(--text-dim);line-height:1.6;}
+
+/* Share bar */
+.share-bar{max-width:900px;margin:36px auto 0;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.share-bar-text{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-muted);}
+.share-bar-actions{display:flex;gap:10px;}
+.share-btn{background:transparent;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;}
+.share-btn:hover{border-color:var(--gold);color:var(--gold);}
+.share-btn.primary{background:var(--accent);color:white;border-color:var(--accent);}
+.share-btn.primary:hover{opacity:.92;color:white;}
+
+/* Modal — card detail */
+.modal-bg{display:none;position:fixed;inset:0;z-index:1000;background:rgba(4,2,0,.92);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+.modal-bg.open{display:flex;}
+.modal-inner{background:var(--surface);border:1px solid var(--border);border-radius:18px;max-width:460px;width:100%;padding:28px;position:relative;}
+.modal-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 12px;color:var(--text-muted);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;cursor:pointer;}
+.modal-close:hover{color:var(--text);border-color:var(--border);}
+.modal-img{width:100%;max-width:280px;aspect-ratio:3/4;margin:0 auto 20px;border-radius:14px;overflow:hidden;}
+.modal-img img{width:100%;height:100%;object-fit:cover;object-position:center top;}
+.modal-header{text-align:center;margin-bottom:18px;}
+.modal-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:6px;}
+.modal-name{font-family:'Cinzel Decorative',serif;font-size:26px;color:var(--text);line-height:1;margin-bottom:4px;}
+.modal-class{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dim);margin-bottom:10px;text-transform:uppercase;}
+.modal-moment{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-muted);line-height:1.55;margin-bottom:14px;padding-left:12px;border-left:2px solid rgba(232,184,109,.2);text-align:left;}
+.modal-meta{display:flex;flex-direction:column;gap:7px;padding-top:14px;border-top:1px solid var(--border);}
+.modal-meta-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.modal-meta-key{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
+.modal-meta-value{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);}
+.modal-meta-value.gold{color:var(--gold);}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface);border:1px solid rgba(232,184,109,.35);border-radius:10px;padding:12px 20px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);z-index:1100;opacity:0;pointer-events:none;transition:all .3s ease;}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:40px 32px 48px;text-align:center;color:var(--text-dim);font-size:13px;}
+footer nav{position:static;display:flex;justify-content:center;gap:4px;flex-wrap:wrap;padding:0 0 14px;background:transparent;backdrop-filter:none;border:none;}
+footer a{color:var(--text-muted);text-decoration:none;padding:0 12px;transition:color .2s;}
+footer a:hover{color:var(--text);}
+
+/* Mobile */
+@media (max-width:700px){
+  nav{padding:14px 20px;}
+  .hero{padding:40px 20px 30px;}
+  .hero-title{font-size:28px;}
+  .stats-row{gap:18px;padding:18px 20px;}
+  .stat-num{font-size:22px;}
+  .grid-wrap{padding:0 16px 60px;}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+  .card-tile .name{font-size:18px;}
+  .share-bar{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/IMG_8431.PNG" alt="EndoCraft">
+    EndoCraft.
+  </a>
+  <div class="nav-right">
+    <a href="/scroll/" class="nav-cta">New Session →</a>
+  </div>
+</nav>
+
+<div id="content">
+  <div class="loading">Loading your collection…</div>
+</div>
+
+<footer>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/scroll/">New Session</a>
+    <a href="/roadmap.html">Roadmap</a>
+  </nav>
+  <p>© 2026 EndoCraft · Make every session legendary.</p>
+</footer>
+
+<!-- Card Detail Modal -->
+<div class="modal-bg" id="cardModal" onclick="if(event.target.id==='cardModal')closeModal()">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeModal()">✕ CLOSE</button>
+    <div class="modal-img" id="modalImg"></div>
+    <div class="modal-header">
+      <div class="modal-tag" id="modalTag"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-class" id="modalClass"></div>
+    </div>
+    <p class="modal-moment" id="modalMoment"></p>
+    <div class="modal-meta">
+      <div class="modal-meta-row"><span class="modal-meta-key">Rarity</span><span class="modal-meta-value gold" id="modalRarity"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">D20 Roll</span><span class="modal-meta-value" id="modalRoll"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Number</span><span class="modal-meta-value" id="modalNumber"></span></div>
+      <div class="modal-meta-row"><span class="modal-meta-key">Sealed</span><span class="modal-meta-value" id="modalDate"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✦ LINK COPIED</div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+
+function getSlugFromURL(){
+  // Support both /my-cards/[slug] and /my-cards/?slug=xxx patterns
+  const path = window.location.pathname;
+  const hashMatch = path.match(/\/my-cards\/([a-f0-9]{16})/i);
+  if (hashMatch) return hashMatch[1].toLowerCase();
+  const params = new URLSearchParams(window.location.search);
+  return (params.get('slug') || '').toLowerCase();
+}
+
+function rarityLabel(r){
+  return ({legendary:'✦ LEGENDARY', epic:'★ EPIC', rare:'◆ RARE', common:'◇ COMMON', misprint:'◈ MISPRINT'}[r]) || (r || 'COMMON').toUpperCase();
+}
+
+function fmtDate(iso){
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  } catch(e) { return '—'; }
+}
+
+function esc(str){ return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+let _cardsCache = [];
+
+async function loadCollection(){
+  const slug = getSlugFromURL();
+  const content = document.getElementById('content');
+
+  if (!slug) {
+    renderLookup();
+    return;
+  }
+
+  try {
+    const res = await fetch(API_BASE + '/api/my-cards?slug=' + encodeURIComponent(slug));
+    const data = await res.json();
+    if (!data.ok || !Array.isArray(data.cards) || data.cards.length === 0) {
+      renderEmpty();
+      return;
+    }
+    _cardsCache = data.cards;
+    renderCollection(data.cards);
+  } catch(e) {
+    console.error(e);
+    renderEmpty();
+  }
+}
+
+function renderLookup(){
+  document.getElementById('content').innerHTML = `
+    <div class="lookup-wrap">
+      <div class="lookup-tag">✦ FIND YOUR COLLECTION</div>
+      <h1 class="lookup-title">Your cards, always at hand.</h1>
+      <p class="lookup-sub">Enter the email you used when sealing your card — we'll show you everything you've collected.</p>
+      <div class="lookup-form">
+        <input type="email" id="lookupEmail" placeholder="your@email.com" autocomplete="email">
+        <button onclick="doLookup()">Find →</button>
+      </div>
+      <div class="lookup-note">We don't login you in or send mails from this — just derive a private link to your collection.</div>
+    </div>
+  `;
+}
+
+async function doLookup(){
+  const email = document.getElementById('lookupEmail').value.trim();
+  if (!email || !email.includes('@')) return;
+  try {
+    const res = await fetch(API_BASE + '/api/my-cards/lookup', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (data.slug) {
+      window.location.href = '/my-cards/?slug=' + encodeURIComponent(data.slug);
+    }
+  } catch(e) { console.error(e); }
+}
+
+function renderEmpty(){
+  document.getElementById('content').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🃏</div>
+      <div class="empty-title">No cards here — yet.</div>
+      <div class="empty-sub">Either this link has no cards attached, or your first card is waiting to be sealed. Generate your first session card and we'll build your collection from there.</div>
+      <a href="/scroll/" class="empty-cta">✦ Make your first card</a>
+    </div>
+  `;
+}
+
+function renderCollection(cards){
+  const stats = computeStats(cards);
+  const slug = getSlugFromURL();
+  const shareUrl = window.location.origin + '/my-cards/?slug=' + slug;
+
+  document.getElementById('content').innerHTML = `
+    <div class="hero">
+      <div class="hero-tag">✦ YOUR COLLECTION</div>
+      <h1 class="hero-title">${stats.count === 1 ? 'One sealed <em>moment.</em>' : `${stats.count} sealed <em>moments.</em>`}</h1>
+      <p class="hero-sub">${heroSubtext(stats)}</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">${stats.count}</div><div class="stat-label">Total Cards</div></div>
+      ${stats.legendary ? `<div class="stat"><div class="stat-num gold">${stats.legendary}</div><div class="stat-label">Legendary</div></div>` : ''}
+      ${stats.epic ? `<div class="stat"><div class="stat-num purple">${stats.epic}</div><div class="stat-label">Epic</div></div>` : ''}
+      ${stats.rare ? `<div class="stat"><div class="stat-num blue">${stats.rare}</div><div class="stat-label">Rare</div></div>` : ''}
+      ${stats.misprint ? `<div class="stat"><div class="stat-num red">${stats.misprint}</div><div class="stat-label">Misprint</div></div>` : ''}
+    </div>
+
+    <div class="grid-wrap">
+      <div class="cards-grid">
+        ${cards.map((c, idx) => cardTile(c, idx)).join('')}
+      </div>
+      <div class="share-bar">
+        <span class="share-bar-text">Share your collection with your party —</span>
+        <div class="share-bar-actions">
+          <button class="share-btn" onclick="copyShareLink('${esc(shareUrl)}')">Copy link</button>
+          <a class="share-btn primary" href="/scroll/">+ Add another</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function heroSubtext(stats){
+  if (stats.count === 1) return 'Your first card is here. Each session adds to your collection.';
+  if (stats.legendary) return `Including ${stats.legendary} legendary ${stats.legendary === 1 ? 'moment' : 'moments'} rolled on a nat 20. Your campaign, immortalized.`;
+  return 'Your D&D moments — sealed with a number, tied to this email, yours forever.';
+}
+
+function computeStats(cards){
+  const s = { count: cards.length, legendary: 0, epic: 0, rare: 0, common: 0, misprint: 0 };
+  cards.forEach(c => { if (s[c.rarity] !== undefined) s[c.rarity]++; });
+  return s;
+}
+
+function cardTile(c, idx){
+  const serial = c.rarity === 'misprint' && c.misprint_number
+    ? 'MISPRINT · Nº ' + String(c.misprint_number).padStart(4,'0') + ' / 0300'
+    : '#' + String(c.number || 0).padStart(4,'0') + ' / 9999';
+  const charName = c.character_name || 'Hero';
+  return `
+    <div class="card-tile r-${c.rarity || 'common'}" onclick="openModal(${idx})">
+      ${c.image_url ? `<img src="${esc(c.image_url)}" alt="" loading="lazy">` : `<div style="background:linear-gradient(160deg,#1a0a00,#12080a,#0a0f1a);width:100%;height:100%;"></div>`}
+      <div class="ov"></div>
+      <div class="holo"></div>
+      <div class="top">
+        <span></span>
+        <div class="pill">${rarityLabel(c.rarity)}</div>
+      </div>
+      <div class="bottom">
+        <div class="cls">${esc(c.character_class || '')}</div>
+        <div class="name">${esc(charName)}</div>
+        <div class="title">${esc(c.session_title || '—')}</div>
+        <div class="serial">${serial}</div>
+      </div>
+    </div>
+  `;
+}
+
+function openModal(idx){
+  const c = _cardsCache[idx];
+  if (!c) return;
+  document.getElementById('modalImg').innerHTML = c.image_url ? `<img src="${esc(c.image_url)}" alt="">` : '';
+  document.getElementById('modalTag').textContent = rarityLabel(c.rarity);
+  document.getElementById('modalName').textContent = c.character_name || 'Hero';
+  document.getElementById('modalClass').textContent = c.character_class || '';
+  document.getElementById('modalMoment').textContent = c.legendary_moment ? '"' + c.legendary_moment + '"' : '';
+  document.getElementById('modalRarity').textContent = rarityLabel(c.rarity).replace(/^[✦★◆◇◈]\s*/, '');
+  document.getElementById('modalRoll').textContent = c.visible_roll ? ('Nat ' + c.visible_roll) : '—';
+  document.getElementById('modalNumber').textContent = c.rarity === 'misprint' && c.misprint_number
+    ? 'Nº ' + String(c.misprint_number).padStart(4,'0') + ' / 300'
+    : '#' + String(c.number || 0).padStart(4,'0') + ' / 9999';
+  document.getElementById('modalDate').textContent = fmtDate(c.created_at);
+  document.getElementById('cardModal').classList.add('open');
+}
+
+function closeModal(){ document.getElementById('cardModal').classList.remove('open'); }
+
+function copyShareLink(url){
+  navigator.clipboard.writeText(url).then(() => showToast('✦ LINK COPIED'));
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2000);
+}
+
+loadCollection();
+</script>
+
+</body>
+</html>

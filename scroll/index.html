@@ -904,6 +904,7 @@ body {
     <span class="brand-name">EndoCraft.<span class="brand-sub">Session Scroll</span></span>
   </a>
   <div class="topbar-right">
+    <a href="../my-cards/" class="topbar-link" id="myCardsLink" style="display:none;">My Collection</a>
     <a href="../roadmap.html" class="topbar-link">Roadmap</a>
     <span class="sessions-pill" id="sessionsPill">3 FREE SESSIONS</span>
   </div>
@@ -1999,17 +2000,25 @@ async function saveCard() {
   const _csf = document.getElementById('cardSubForm'); if (_csf) _csf.style.display = 'none';
   const _css = document.getElementById('cardSubSuccess'); if (_css) _css.style.display = 'block';
 
-  // Upgrade success copy with the REAL assigned number (closes the loop emotionally)
+  // Remember the slug for returning users
+  try {
+    if (result && result.card && result.card.owner_slug) {
+      localStorage.setItem('ec_owner_slug', result.card.owner_slug);
+    }
+  } catch(e) { /* non-fatal */ }
+
+  // Upgrade success copy with the REAL assigned number + /my-cards link (closes the loop emotionally)
   try {
     const successTitle = document.getElementById('cardSubSuccessTitle');
     const successSub = document.getElementById('cardSubSuccessSub');
     const serialNow = document.getElementById('tcSerial')?.textContent || '';
     if (successTitle && serialNow) {
-      // Show them their real sealed number
       successTitle.textContent = serialNow + ' is yours.';
     }
     if (successSub) {
-      successSub.innerHTML = 'Sealed on ' + new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) + '. We\'ll notify you when new features drop. <strong style="color:var(--gold);">See the Certificate below ↓</strong>';
+      const slug = (result && result.card && result.card.owner_slug) ? result.card.owner_slug : '';
+      const myCardsLink = slug ? '/my-cards/?slug=' + slug : '/my-cards/';
+      successSub.innerHTML = 'Sealed on ' + new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) + '. <a href="' + myCardsLink + '" style="color:var(--gold);text-decoration:underline;">See your collection →</a>';
     }
   } catch(e) { /* non-fatal */ }
 
@@ -2035,6 +2044,22 @@ async function saveCard() {
 (function initReturningUser(){
   try {
     const email = localStorage.getItem('ec_email');
+    const slug = localStorage.getItem('ec_owner_slug');
+
+    // Show My Collection link in topbar if we know the slug
+    const showMyCards = () => {
+      const link = document.getElementById('myCardsLink');
+      if (link && slug) {
+        link.href = '../my-cards/?slug=' + encodeURIComponent(slug);
+        link.style.display = '';
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', showMyCards);
+    } else {
+      showMyCards();
+    }
+
     if (!email) return;
     // Pre-fill email input when it becomes available
     const fill = () => {
