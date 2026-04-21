@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Info — Current vs Proposed</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;--bg-deep:#050508;--surface:#1a1a24;--border:rgba(255,255,255,.08);
+  --text:#f0eff4;--text-muted:rgba(255,255,255,.5);--text-dim:rgba(255,255,255,.25);
+  --gold:#E8B86D;--gold-bright:#F2D187;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.5;}
+body{padding:0 0 100px;}
+
+.mock-label{position:sticky;top:0;z-index:200;background:rgba(10,10,15,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;}
+.mock-label-l{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);}
+.mock-label-r{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);}
+
+.arena{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;position:relative;}
+.arena-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at center,rgba(232,184,109,.04),transparent 60%),var(--bg-deep);}
+.arena-content{position:relative;z-index:1;}
+
+.compare-row{display:flex;gap:60px;flex-wrap:wrap;justify-content:center;align-items:flex-start;margin-bottom:40px;}
+.compare-col{display:flex;flex-direction:column;align-items:center;gap:20px;max-width:340px;}
+.compare-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-align:center;}
+.compare-label.current{color:#E85555;}
+.compare-label.proposed{color:var(--gold);}
+.compare-note{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--text-muted);text-align:center;line-height:1.55;}
+
+/* ============ CARD ============ */
+.card{position:relative;width:300px;aspect-ratio:3/4;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(232,184,109,.55),0 40px 100px rgba(0,0,0,.95),0 0 60px rgba(232,184,109,.18);animation:cardFloat 6s ease-in-out infinite;}
+@keyframes cardFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+.card-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.card-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.55) 0%,transparent 22%,transparent 48%,rgba(6,3,0,.68) 70%,rgba(4,2,0,.97) 92%,rgba(4,2,0,1) 100%);z-index:5;}
+.card-holo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:20px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.6;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}}
+
+.card-top{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.card-brand{display:flex;align-items:center;gap:7px;}
+.card-brand img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(232,184,109,.9));}
+.card-brand-text{display:flex;flex-direction:column;line-height:1.2;}
+.card-brand-name{font-family:'Cinzel',serif;font-size:7px;font-weight:700;letter-spacing:3px;color:rgba(232,184,109,.8);text-shadow:0 1px 8px #000;}
+.card-brand-sub{font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(255,240,200,.4);text-shadow:0 1px 6px #000;margin-top:1px;}
+.card-pill{background:rgba(10,5,0,.88);border:1px solid rgba(232,184,109,.45);color:var(--gold);border-radius:30px;padding:4px 10px;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;}
+
+.card-bottom{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:18px 18px;}
+.card-class{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;color:rgba(232,184,109,.9);margin-bottom:4px;text-shadow:0 1px 10px #000;}
+.card-name{font-family:'Cinzel Decorative',serif;font-weight:700;color:#fffbf0;line-height:1;text-shadow:0 2px 20px #000;}
+.card-title{font-family:'EB Garamond',serif;font-style:italic;color:rgba(255,230,160,.55);text-shadow:0 1px 8px #000;line-height:1.3;}
+
+/* Current version — session_title big, legendary_moment small italic */
+.card.current .card-name{font-size:20px;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.card.current .card-title{font-size:11px;margin-bottom:10px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
+/* Proposed — character_name big, session_title small italic */
+.card.proposed .card-name{font-size:28px;margin-bottom:5px;}
+.card.proposed .card-title{font-size:12px;margin-bottom:12px;}
+
+.card-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:8px;}
+.stat{background:rgba(4,2,0,.85);border:1px solid rgba(232,184,109,.18);border-radius:5px;padding:4px 2px;text-align:center;backdrop-filter:blur(6px);}
+.stat-value{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--gold);line-height:1;display:block;}
+.stat-label{font-family:'Cinzel',serif;font-size:5px;letter-spacing:1.5px;color:rgba(232,184,109,.55);display:block;margin-top:2px;}
+
+.card-footline{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:6px;border-top:1px solid rgba(232,184,109,.1);}
+.card-serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(232,184,109,.5);}
+
+/* Results-header above card — shows the full legendary_moment as emotional context */
+.results-header{text-align:center;margin-bottom:20px;max-width:360px;}
+.results-header-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:6px;}
+.results-header-h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;line-height:1.2;margin-bottom:6px;}
+.results-header-h1 em{color:var(--gold);font-style:italic;}
+.results-header-quote{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--text-muted);line-height:1.55;}
+
+.divider{height:80px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,transparent,rgba(232,184,109,.08),transparent);}
+.divider-text{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;color:var(--text-dim);}
+
+.explainer{max-width:620px;margin:0 auto;padding:20px 28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.explainer-head{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;}
+.explainer-body{font-size:14px;color:var(--text-muted);line-height:1.7;}
+.explainer-body strong{color:var(--text);font-weight:600;}
+
+/* toggle for stats-on/off */
+.toggle-row{display:flex;gap:10px;margin-top:10px;align-items:center;font-family:'DM Sans';font-size:12px;color:var(--text-muted);}
+.toggle-row label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.toggle-row input{accent-color:var(--gold);}
+</style>
+</head>
+<body>
+
+<!-- ============ SECTION 1: CURRENT vs PROPOSED ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ CARD INFO — CURRENT vs PROPOSED</span>
+  <span class="mock-label-r">what's the BIG name on the card — session_title or character_name?</span>
+</div>
+
+<div class="arena">
+  <div class="arena-bg"></div>
+  <div class="arena-content">
+
+    <div class="compare-row">
+
+      <!-- CURRENT -->
+      <div class="compare-col">
+        <div class="compare-label current">← CURRENT (in production now)</div>
+        <div class="card current">
+          <img class="card-img" src="./image-gen-the-strike.png" alt="">
+          <div class="card-ov"></div>
+          <div class="card-holo"></div>
+          <div class="card-top">
+            <div class="card-brand">
+              <img src="./IMG_8431.PNG">
+              <div class="card-brand-text">
+                <span class="card-brand-name">EndoCraft</span>
+                <span class="card-brand-sub">Session · Apr 21</span>
+              </div>
+            </div>
+            <div class="card-pill">✦ LEGENDARY</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-class">Human Fighter</div>
+            <div class="card-name">The Impossible Strike</div>
+            <div class="card-title">"Thorne drove his blade through the beast's heart on a clean nat 20. The party carried the relic out in silence."</div>
+            <div class="card-stats">
+              <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+              <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+              <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+              <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+            </div>
+            <div class="card-footline">
+              <span class="card-serial">THORNE #0834 / 9999</span>
+            </div>
+          </div>
+        </div>
+        <div class="compare-note">Der <strong>Session-Titel</strong> ist die große Headline. Der <strong>legendary_moment</strong> (ganzer Satz) ist der kleine Italic-Text — quetscht sich auf 2 Zeilen, übergeht die Emotion.</div>
+      </div>
+
+      <!-- PROPOSED -->
+      <div class="compare-col">
+        <div class="compare-label proposed">PROPOSED →</div>
+        <div class="card proposed">
+          <img class="card-img" src="./image-gen-the-strike.png" alt="">
+          <div class="card-ov"></div>
+          <div class="card-holo"></div>
+          <div class="card-top">
+            <div class="card-brand">
+              <img src="./IMG_8431.PNG">
+              <div class="card-brand-text">
+                <span class="card-brand-name">EndoCraft</span>
+                <span class="card-brand-sub">Session · Apr 21</span>
+              </div>
+            </div>
+            <div class="card-pill">✦ LEGENDARY</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-class">Human Fighter · Lv VII</div>
+            <div class="card-name">Thorne</div>
+            <div class="card-title">The Impossible Strike</div>
+            <div class="card-stats">
+              <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+              <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+              <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+              <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+            </div>
+            <div class="card-footline">
+              <span class="card-serial">THORNE #0834 / 9999</span>
+            </div>
+          </div>
+        </div>
+        <div class="compare-note">Der <strong>Charaktername</strong> ist der Held der Karte. Der <strong>Session-Titel</strong> ist sein Moment als kleiner italic Subtitel. Konsistent zur Landing ("Caspian" / "The Flaming Net").</div>
+      </div>
+
+    </div>
+
+    <div class="explainer">
+      <div class="explainer-head">✦ WO BLEIBT DER LEGENDARY_MOMENT?</div>
+      <div class="explainer-body">
+        Der volle Satz (<em>"Thorne drove his blade through the beast's heart on a clean nat 20…"</em>) gehört nicht auf die Karte — er ist zu lang, bricht die visuelle Ruhe und konkurriert mit dem Bild. Er gehört <strong>über die Karte</strong> als Results-Header (wie ein Gallery-Label), und in die <strong>Certificate-Provenance</strong> als zweite Kopie. Damit hat er zwei gute Plätze wo er glänzen kann, ohne die Karte zu verstopfen.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"><span class="divider-text">↓ PROPOSED FULL RESULTS VIEW ↓</span></div>
+
+<!-- ============ SECTION 2: Full results view with header above card ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ FULL RESULTS VIEW — HEADER + CARD</span>
+  <span class="mock-label-r">legendary_moment lives above the card, card stays clean</span>
+</div>
+
+<div class="arena">
+  <div class="arena-bg"></div>
+  <div class="arena-content">
+
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="results-header">
+        <div class="results-header-tag">✦ LEGENDARY · SESSION 14</div>
+        <h1 class="results-header-h1">The <em>Impossible</em> Strike</h1>
+        <p class="results-header-quote">"Thorne drove his blade through the beast's heart on a clean nat 20. The party carried the relic out in silence."</p>
+      </div>
+      <div class="card proposed">
+        <img class="card-img" src="./image-gen-the-strike.png" alt="">
+        <div class="card-ov"></div>
+        <div class="card-holo"></div>
+        <div class="card-top">
+          <div class="card-brand">
+            <img src="./IMG_8431.PNG">
+            <div class="card-brand-text">
+              <span class="card-brand-name">EndoCraft</span>
+              <span class="card-brand-sub">Session · Apr 21</span>
+            </div>
+          </div>
+          <div class="card-pill">✦ LEGENDARY</div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-class">Human Fighter · Lv VII</div>
+          <div class="card-name">Thorne</div>
+          <div class="card-title">The Impossible Strike</div>
+          <div class="card-stats">
+            <div class="stat"><span class="stat-value">⚔</span><span class="stat-label">Fighter</span></div>
+            <div class="stat"><span class="stat-value">VII</span><span class="stat-label">Level</span></div>
+            <div class="stat"><span class="stat-value">✦✦✦</span><span class="stat-label">Power</span></div>
+            <div class="stat"><span class="stat-value">S14</span><span class="stat-label">Session</span></div>
+          </div>
+          <div class="card-footline">
+            <span class="card-serial">THORNE #0834 / 9999</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explainer" style="margin-top:40px;">
+      <div class="explainer-head">✦ DRITTE FRAGE — BRAUCHEN WIR DIE STAT-TILES?</div>
+      <div class="explainer-body">
+        Die 4 Stats (<strong>⚔ Fighter · VII Level · ✦✦✦ Power · S14 Session</strong>) sind gamey und redundant (Class + Level stehen schon oben, Session steht im Brand-Sub). Sie füllen Platz ohne Mehrwert. Ohne sie wird die Karte ruhiger und editorialer. Unten findest du eine Variante <em>ohne</em> Stats.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"><span class="divider-text">↓ MINIMAL VARIANT (NO STATS) ↓</span></div>
+
+<!-- ============ SECTION 3: Minimal without stats ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ MINIMAL — NO STATS TILES</span>
+  <span class="mock-label-r">cleaner editorial — class+name+title+serial, that's it</span>
+</div>
+
+<div class="arena">
+  <div class="arena-bg"></div>
+  <div class="arena-content">
+
+    <div class="compare-row">
+      <div class="compare-col">
+        <div class="compare-label proposed">WITHOUT STATS</div>
+        <div class="card proposed">
+          <img class="card-img" src="./image-gen-the-strike.png" alt="">
+          <div class="card-ov"></div>
+          <div class="card-holo"></div>
+          <div class="card-top">
+            <div class="card-brand">
+              <img src="./IMG_8431.PNG">
+              <div class="card-brand-text">
+                <span class="card-brand-name">EndoCraft</span>
+                <span class="card-brand-sub">Session · Apr 21</span>
+              </div>
+            </div>
+            <div class="card-pill">✦ LEGENDARY</div>
+          </div>
+          <div class="card-bottom">
+            <div class="card-class">Human Fighter · Lv VII</div>
+            <div class="card-name">Thorne</div>
+            <div class="card-title" style="margin-bottom:16px;">The Impossible Strike</div>
+            <div class="card-footline">
+              <span class="card-serial">THORNE #0834 / 9999</span>
+            </div>
+          </div>
+        </div>
+        <div class="compare-note">Stats-Tiles raus, mehr Atem um den Bild-Content herum, die Typografie kriegt Ruhe. Serial bleibt als Provenance-Anker.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

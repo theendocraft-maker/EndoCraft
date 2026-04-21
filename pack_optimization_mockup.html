@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pack Optimization — Freeze, Embers, Rarity Timing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital@0;1&family=Syne:wght@400;600;700;800&family=DM+Sans&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#060100;--surface:#1a1a24;--border:rgba(255,255,255,.08);--text:#f0eff4;--text-muted:rgba(255,255,255,.5);--text-dim:rgba(255,255,255,.25);--gold:#E8B86D;--gold-bright:#F2D187;--accent:#7B6CF6;--misprint:#E04A3A;}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.5;}
+body{padding:0 0 100px;}
+
+.mock-label{position:sticky;top:0;z-index:200;background:rgba(6,1,0,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;}
+.mock-label-l{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);}
+.mock-label-r{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);}
+
+.arena{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;}
+.arena-title{text-align:center;margin-bottom:22px;}
+.arena-title h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;}
+.arena-title h2 em{color:var(--gold);font-style:italic;}
+.arena-title p{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-muted);max-width:480px;margin:0 auto;line-height:1.55;}
+
+.stage{width:min(440px,92vw);height:520px;position:relative;border-radius:20px;background:radial-gradient(ellipse at center,rgba(232,184,109,.04),transparent 70%),#0a0502;border:1px dashed rgba(255,255,255,.06);overflow:hidden;}
+
+.controls{display:flex;gap:10px;margin-top:22px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.btn{padding:10px 20px;border:none;border-radius:8px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.btn.legendary{background:linear-gradient(135deg,#b88c42,#E8B86D);color:#241403;}
+.btn.rare{background:#3b6bc5;}
+.btn.common{background:#4a4a5a;}
+.btn.misprint{background:var(--misprint);}
+.btn:hover{opacity:.92;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
+
+.divider{height:80px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,transparent,rgba(232,184,109,.08),transparent);}
+.divider-text{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;color:var(--text-dim);}
+
+/* ============ PACK ============ */
+.pack{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:140px;height:196px;border-radius:14px;z-index:8;
+  background:linear-gradient(160deg,#0e0818,#080510,#0c0618);
+  box-shadow:inset 0 2px 4px rgba(232,184,109,.18),0 20px 40px rgba(0,0,0,.8),0 0 30px rgba(232,184,109,.12);
+  border:1px solid rgba(232,184,109,.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:8px;
+}
+.pack::after{content:"";position:absolute;inset:8px;border-radius:10px;border:1px solid rgba(232,184,109,.12);pointer-events:none;}
+.pack-logo{width:48px;height:48px;filter:drop-shadow(0 0 10px rgba(232,184,109,.5));background:radial-gradient(circle,rgba(232,184,109,.3),transparent 70%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--gold-bright);z-index:2;}
+.pack-name{font-family:'Cinzel Decorative',serif;font-size:13px;color:rgba(232,184,109,.85);letter-spacing:1px;text-shadow:0 0 20px rgba(232,184,109,.3);z-index:2;}
+.pack-div{display:flex;align-items:center;gap:6px;z-index:2;}
+.pack-div-line{width:18px;height:1px;background:rgba(232,184,109,.25);}
+.pack-div-diamond{width:4px;height:4px;background:rgba(232,184,109,.5);transform:rotate(45deg);}
+.pack-tagline{font-family:'Cinzel',serif;font-size:6px;letter-spacing:3px;color:rgba(232,184,109,.35);text-align:center;line-height:1.8;z-index:2;}
+
+.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:220px;height:280px;border-radius:20px;z-index:7;background:radial-gradient(ellipse,rgba(232,184,109,.25) 0%,transparent 70%);opacity:0;}
+.burst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;z-index:12;background:#fff;opacity:0;}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:15;pointer-events:none;}
+
+/* Embers — slow-falling gold particles after burst */
+.ember{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--gold);box-shadow:0 0 5px rgba(232,184,109,.9);z-index:11;opacity:0;}
+
+/* Spark — radial burst particles */
+.spark{position:absolute;top:50%;left:50%;width:3px;height:3px;background:var(--gold-bright);border-radius:50%;box-shadow:0 0 6px rgba(232,184,109,.9);z-index:11;opacity:0;}
+
+/* Reveal card — appears at end */
+.reveal-card{
+  position:absolute;left:50%;top:50%;
+  width:160px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;
+  transform:translate(-50%,-50%) scale(0.3);
+  opacity:0;z-index:10;
+  box-shadow:0 0 0 1.5px rgba(232,184,109,.55),0 40px 80px rgba(0,0,0,.95);
+  transform-style:preserve-3d;
+  transition:transform .7s cubic-bezier(.23,1.2,.32,1);
+}
+.reveal-card.flipped{transform:translate(-50%,-50%) rotateY(180deg) scale(1);}
+.reveal-card-back,.reveal-card-front{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;overflow:hidden;}
+.reveal-card-back{background:linear-gradient(160deg,#0e0818,#080510,#0c0618);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;transform:translateZ(0.01px);}
+.reveal-card-back-logo{width:40px;height:40px;background:radial-gradient(circle,rgba(232,184,109,.3),transparent 70%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--gold-bright);filter:drop-shadow(0 0 8px rgba(232,184,109,.5));}
+.reveal-card-back-name{font-family:'Cinzel Decorative',serif;font-size:11px;color:rgba(232,184,109,.85);letter-spacing:1px;}
+.reveal-card-back-div{display:flex;gap:5px;align-items:center;}
+.reveal-card-back-div span:nth-child(1),.reveal-card-back-div span:nth-child(3){width:14px;height:1px;background:rgba(232,184,109,.3);}
+.reveal-card-back-div span:nth-child(2){width:4px;height:4px;background:rgba(232,184,109,.5);transform:rotate(45deg);}
+.reveal-card-back-tagline{font-family:'Cinzel',serif;font-size:5px;letter-spacing:2.5px;color:rgba(232,184,109,.35);text-align:center;line-height:1.8;}
+.reveal-card-front{transform:rotateY(180deg) translateZ(0.01px);}
+.reveal-card-front img{width:100%;height:100%;object-fit:cover;}
+.reveal-card-front-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.55) 0%,transparent 22%,transparent 48%,rgba(6,3,0,.68) 70%,rgba(4,2,0,.97) 95%);}
+.reveal-card-front-name{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:'Cinzel Decorative',serif;font-size:18px;color:#fffbf0;text-shadow:0 2px 12px #000;}
+.reveal-card-front-pill{position:absolute;top:10px;right:10px;background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.45);color:var(--gold);border-radius:30px;padding:3px 7px;font-family:'Cinzel',serif;font-size:6px;font-weight:700;letter-spacing:2px;}
+
+/* Rarity reveal text */
+.rarity-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:14;pointer-events:none;opacity:0;}
+.rarity-text .r1{font-family:'Cinzel',serif;font-size:9px;letter-spacing:8px;color:rgba(232,184,109,.55);opacity:0;transform:translateY(10px);}
+.rarity-text .r2{font-family:'Cinzel Decorative',serif;font-size:32px;font-weight:700;color:var(--gold-bright);letter-spacing:5px;text-shadow:0 0 30px rgba(232,184,109,.6);margin:8px 0;opacity:0;transform:translateY(15px);}
+.rarity-text .r3{font-family:'Cinzel',serif;font-size:8px;letter-spacing:6px;color:rgba(232,184,109,.35);opacity:0;transform:translateY(8px);}
+
+/* ===== LEGENDARY ANIMATION ===== */
+.stage.playing.legendary .pack{animation:packChargeL 2.2s ease forwards;}
+.stage.playing.legendary .aura{animation:auraL 2.2s ease forwards;}
+.stage.playing.legendary .burst{animation:burstL 0.4s ease 1.8s forwards;}
+.stage.playing.legendary .flash{animation:flashL 0.3s ease 1.85s forwards;}
+.stage.playing.legendary .spark{animation:sparkL 1s cubic-bezier(.25,.1,.25,1) 1.88s forwards;}
+.stage.playing.legendary .ember{animation:emberFall 3s ease-out 2.2s forwards;}
+.stage.playing.legendary .rarity-text{animation:rarityShow 2.4s ease 2.1s forwards;}
+.stage.playing.legendary .rarity-text .r1,.stage.playing.legendary .rarity-text .r2,.stage.playing.legendary .rarity-text .r3{animation:rarityLine 0.5s ease forwards;}
+.stage.playing.legendary .rarity-text .r1{animation-delay:2.15s;}
+.stage.playing.legendary .rarity-text .r2{animation-delay:2.3s;}
+.stage.playing.legendary .rarity-text .r3{animation-delay:2.45s;}
+.stage.playing.legendary .reveal-card{animation:cardReveal 0.8s cubic-bezier(.22,1.2,.36,1) 3.2s forwards;}
+.stage.playing.legendary .reveal-card{animation-name:cardReveal,cardFlip;animation-duration:0.8s,0.8s;animation-delay:3.2s,4.5s;animation-fill-mode:forwards,forwards;animation-timing-function:cubic-bezier(.22,1.2,.36,1),cubic-bezier(.23,1.2,.32,1);}
+
+/* Packcharge with freeze-frame at 75% */
+@keyframes packChargeL{
+  0%{transform:translate(-50%,-50%) scale(1) rotate(0deg);filter:brightness(1);}
+  20%{transform:translate(-50%,-50%) scale(1.04) rotate(-1deg);filter:brightness(1.1);}
+  45%{transform:translate(-50%,-50%) scale(.97) rotate(1.5deg);filter:brightness(1.3);}
+  72%{transform:translate(-50%,-50%) scale(1.25) rotate(0deg);filter:brightness(2.2);box-shadow:inset 0 2px 8px rgba(255,250,220,.9),0 0 100px rgba(255,220,120,.9);}
+  /* FREEZE FRAME — 72% → 78% frozen at peak charge */
+  78%{transform:translate(-50%,-50%) scale(1.25) rotate(0deg);filter:brightness(2.4);box-shadow:inset 0 2px 8px rgba(255,250,220,.95),0 0 140px rgba(255,240,180,1);}
+  82%{transform:translate(-50%,-50%) scale(0);opacity:0;filter:brightness(5);}
+  100%{transform:translate(-50%,-50%) scale(0);opacity:0;}
+}
+@keyframes auraL{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.6);}
+  45%{opacity:.7;transform:translate(-50%,-50%) scale(1);}
+  72%{opacity:1;transform:translate(-50%,-50%) scale(1.4);}
+  78%{opacity:1;transform:translate(-50%,-50%) scale(1.5);}  /* frozen */
+  82%{opacity:0;transform:translate(-50%,-50%) scale(2.5);}
+  100%{opacity:0;}
+}
+@keyframes burstL{0%{transform:translate(-50%,-50%) scale(1);opacity:0;box-shadow:0 0 0 0 rgba(255,240,180,1);}50%{opacity:1;box-shadow:0 0 0 100px rgba(255,240,180,.5);}100%{transform:translate(-50%,-50%) scale(20);opacity:0;box-shadow:0 0 0 240px rgba(255,240,180,0);}}
+@keyframes flashL{0%{opacity:0;}30%{opacity:0.95;}100%{opacity:0;}}
+@keyframes sparkL{0%{transform:translate(-50%,-50%) scale(0.3);opacity:1;}100%{transform:translate(calc(-50% + var(--dx,60px)),calc(-50% + var(--dy,-60px))) scale(1);opacity:0;}}
+@keyframes emberFall{
+  0%{opacity:0;transform:translate(var(--ex,0),-30px) scale(0.8);}
+  10%{opacity:1;transform:translate(var(--ex,0),-20px) scale(1);}
+  100%{opacity:0;transform:translate(var(--ex,0),200px) scale(0.4);}
+}
+@keyframes rarityShow{0%,100%{opacity:0;}20%,80%{opacity:1;}}
+@keyframes rarityLine{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes cardReveal{
+  0%{transform:translate(-50%,-50%) scale(0.3);opacity:0;filter:blur(16px) brightness(2);}
+  30%{opacity:.6;filter:blur(8px) brightness(1.5);}
+  70%{filter:blur(0) brightness(1);}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:1;filter:blur(0) brightness(1);}
+}
+@keyframes cardFlip{
+  0%{transform:translate(-50%,-50%) scale(1) rotateY(0deg);}
+  100%{transform:translate(-50%,-50%) scale(1) rotateY(180deg);}
+}
+
+/* ===== COMMON ANIMATION (quicker, quieter) ===== */
+.stage.playing.common .pack{animation:packChargeC 1.2s ease forwards;}
+.stage.playing.common .aura{animation:auraC 1.2s ease forwards;}
+.stage.playing.common .burst{animation:burstC 0.25s ease 1.0s forwards;}
+.stage.playing.common .flash{animation:flashC 0.2s ease 1.05s forwards;}
+.stage.playing.common .spark{animation:sparkC 0.6s ease 1.05s forwards;}
+.stage.playing.common .rarity-text{animation:rarityShow 1.2s ease 1.3s forwards;}
+.stage.playing.common .rarity-text .r1{animation:rarityLine 0.3s ease 1.35s forwards;}
+.stage.playing.common .rarity-text .r2{animation:rarityLine 0.3s ease 1.45s forwards;color:rgba(255,255,255,.7);}
+.stage.playing.common .rarity-text .r3{animation:rarityLine 0.3s ease 1.55s forwards;}
+.stage.playing.common .reveal-card{animation:cardReveal 0.6s cubic-bezier(.22,1.2,.36,1) 1.9s forwards, cardFlip 0.6s cubic-bezier(.23,1.2,.32,1) 2.5s forwards;}
+
+@keyframes packChargeC{0%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.08);filter:brightness(1.3);}80%{transform:translate(-50%,-50%) scale(1.12);filter:brightness(1.6);}82%{transform:translate(-50%,-50%) scale(0);opacity:0;}100%{opacity:0;}}
+@keyframes auraC{0%{opacity:0;}50%{opacity:.4;}80%{opacity:.6;}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6);}}
+@keyframes burstC{0%{opacity:0;}50%{opacity:.6;}100%{transform:translate(-50%,-50%) scale(10);opacity:0;}}
+@keyframes flashC{0%,100%{opacity:0;}50%{opacity:.5;}}
+@keyframes sparkC{0%{transform:translate(-50%,-50%) scale(0.3);opacity:.7;}100%{transform:translate(calc(-50% + var(--dx,40px)),calc(-50% + var(--dy,-40px))) scale(.6);opacity:0;}}
+
+/* ===== MISPRINT ANIMATION (chromatic glitch in burst) ===== */
+.stage.playing.misprint .pack{animation:packChargeM 1.8s ease forwards;}
+.stage.playing.misprint .aura{animation:auraM 1.8s ease forwards;}
+.stage.playing.misprint .burst{animation:burstM 0.35s ease 1.4s forwards;}
+.stage.playing.misprint .flash{animation:flashM 0.5s ease 1.45s forwards;}
+.stage.playing.misprint .rarity-text{animation:rarityShow 1.8s ease 1.7s forwards;}
+.stage.playing.misprint .rarity-text .r1{animation:rarityLine 0.4s ease 1.7s forwards;}
+.stage.playing.misprint .rarity-text .r2{animation:misprintFlicker 1.5s steps(1) 1.8s forwards;color:var(--misprint);text-shadow:-2px 0 rgba(74,180,230,.7),2px 0 rgba(224,74,58,.9);}
+.stage.playing.misprint .rarity-text .r3{animation:rarityLine 0.4s ease 2s forwards;}
+.stage.playing.misprint .reveal-card{animation:cardReveal 0.7s cubic-bezier(.22,1.2,.36,1) 2.8s forwards, cardFlip 0.7s cubic-bezier(.23,1.2,.32,1) 3.6s forwards;}
+
+@keyframes packChargeM{0%{transform:translate(-50%,-50%) scale(1);}30%{transform:translate(-50%,-50%) scale(1.05) translateX(-2px);filter:hue-rotate(-20deg);}45%{transform:translate(-50%,-50%) scale(1.03) translateX(2px);filter:hue-rotate(20deg);}65%{transform:translate(-50%,-50%) scale(1.15);}75%{transform:translate(-50%,-50%) scale(0);opacity:0;}100%{opacity:0;}}
+@keyframes auraM{0%{opacity:0;}50%{opacity:.5;background:radial-gradient(ellipse,rgba(224,74,58,.3),transparent 70%);}100%{opacity:0;}}
+@keyframes burstM{0%{opacity:0;}50%{opacity:.7;background:#fff;}100%{transform:translate(-50%,-50%) scale(14);opacity:0;}}
+@keyframes flashM{0%,100%{opacity:0;}30%{opacity:.7;filter:hue-rotate(180deg);}60%{opacity:.4;filter:hue-rotate(0deg);}}
+@keyframes misprintFlicker{0%,10%,20%,30%,40%,50%,60%,70%,80%,90%,100%{opacity:1;transform:translateY(0);}5%{transform:translate(-3px,2px);}15%{transform:translate(2px,-1px);}25%{transform:translate(-1px,0);}35%{transform:translate(0,0);}}
+
+/* Fresh layout: per-arena */
+.arenaL .stage{background:radial-gradient(ellipse at center,rgba(232,184,109,.06),transparent 70%),#0a0502;}
+.arenaC .stage{background:radial-gradient(ellipse at center,rgba(255,255,255,.03),transparent 70%),#0a0a0f;}
+.arenaM .stage{background:radial-gradient(ellipse at center,rgba(224,74,58,.06),transparent 70%),#0a0502;}
+
+/* Scroll-to-next arrow */
+.next-arrow{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text-dim);font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;}
+</style>
+</head>
+<body>
+
+<!-- ============ LEGENDARY (full cinematic) ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ LEGENDARY — FULL CINEMATIC</span>
+  <span class="mock-label-r">charge · freeze-frame · burst · embers · long back-appreciation · auto-flip</span>
+</div>
+
+<div class="arena arenaL">
+  <div class="arena-title">
+    <h2>Legendary <em>— "holy shit"</em></h2>
+    <p>Volle Dramaturgie: Pack lädt auf, friert 300ms ein (Einatmen), explosiver Burst, goldene Glut fällt langsam, 1200ms Back-Appreciation bevor Auto-Flip die Vorderseite enthüllt.</p>
+  </div>
+  <div class="stage legendary" id="stageL">
+    <div class="aura"></div>
+    <div class="pack">
+      <div class="pack-logo">✦</div>
+      <div class="pack-name">EndoCraft</div>
+      <div class="pack-div"><span class="pack-div-line"></span><span class="pack-div-diamond"></span><span class="pack-div-line"></span></div>
+      <div class="pack-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+    </div>
+    <div class="burst"></div>
+    <div class="flash"></div>
+    <!-- 12 sparks -->
+    <div class="spark" style="--dx:80px;--dy:-80px;"></div>
+    <div class="spark" style="--dx:-80px;--dy:-80px;"></div>
+    <div class="spark" style="--dx:80px;--dy:80px;"></div>
+    <div class="spark" style="--dx:-80px;--dy:80px;"></div>
+    <div class="spark" style="--dx:0;--dy:-120px;"></div>
+    <div class="spark" style="--dx:120px;--dy:0;"></div>
+    <div class="spark" style="--dx:0;--dy:120px;"></div>
+    <div class="spark" style="--dx:-120px;--dy:0;"></div>
+    <div class="spark" style="--dx:50px;--dy:-100px;"></div>
+    <div class="spark" style="--dx:-50px;--dy:-100px;"></div>
+    <div class="spark" style="--dx:100px;--dy:50px;"></div>
+    <div class="spark" style="--dx:-100px;--dy:50px;"></div>
+    <!-- 15 embers falling -->
+    <div class="ember" style="left:20%;top:40%;--ex:10px;animation-delay:2.3s !important;"></div>
+    <div class="ember" style="left:35%;top:35%;--ex:-15px;animation-delay:2.4s !important;"></div>
+    <div class="ember" style="left:50%;top:30%;--ex:0;animation-delay:2.25s !important;"></div>
+    <div class="ember" style="left:65%;top:38%;--ex:12px;animation-delay:2.5s !important;"></div>
+    <div class="ember" style="left:80%;top:45%;--ex:-8px;animation-delay:2.35s !important;"></div>
+    <div class="ember" style="left:15%;top:55%;--ex:5px;animation-delay:2.45s !important;"></div>
+    <div class="ember" style="left:42%;top:48%;--ex:-10px;animation-delay:2.55s !important;"></div>
+    <div class="ember" style="left:58%;top:52%;--ex:8px;animation-delay:2.6s !important;"></div>
+    <div class="ember" style="left:75%;top:50%;--ex:-12px;animation-delay:2.35s !important;"></div>
+    <div class="ember" style="left:28%;top:42%;--ex:0;animation-delay:2.7s !important;"></div>
+    <div class="ember" style="left:88%;top:38%;--ex:-6px;animation-delay:2.45s !important;"></div>
+    <div class="ember" style="left:10%;top:48%;--ex:14px;animation-delay:2.55s !important;"></div>
+    <div class="ember" style="left:48%;top:60%;--ex:-4px;animation-delay:2.8s !important;"></div>
+    <div class="ember" style="left:62%;top:45%;--ex:10px;animation-delay:2.4s !important;"></div>
+    <div class="ember" style="left:22%;top:38%;--ex:-18px;animation-delay:2.65s !important;"></div>
+
+    <div class="rarity-text">
+      <div class="r1">SESSION SCROLL</div>
+      <div class="r2">✦ LEGENDARY ✦</div>
+      <div class="r3">NAT 20 · SEALED</div>
+    </div>
+
+    <div class="reveal-card" id="revealCardL">
+      <div class="reveal-card-back">
+        <div class="reveal-card-back-logo">✦</div>
+        <div class="reveal-card-back-name">EndoCraft</div>
+        <div class="reveal-card-back-div"><span></span><span></span><span></span></div>
+        <div class="reveal-card-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+      </div>
+      <div class="reveal-card-front">
+        <img src="./image-gen-the-strike.png" alt="">
+        <div class="reveal-card-front-ov"></div>
+        <div class="reveal-card-front-pill">✦ LEGENDARY</div>
+        <div class="reveal-card-front-name">Thorne</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn legendary" onclick="playArena('stageL','legendary')">▶ Open Legendary</button>
+    <button class="btn btn-ghost" onclick="resetArena('stageL')">↺ Reset</button>
+  </div>
+</div>
+
+<div class="divider"><span class="divider-text">↓</span></div>
+
+<!-- ============ COMMON (quick) ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ COMMON — QUICK REVEAL</span>
+  <span class="mock-label-r">1/3 der Länge · weniger Partikel · keine Embers · zackig</span>
+</div>
+
+<div class="arena arenaC">
+  <div class="arena-title">
+    <h2>Common <em>— zackig</em></h2>
+    <p>Kurze Ladung, kein Freeze-Frame, reduzierter Burst, keine fallenden Embers. Rarity-Text kurz und weiß statt gold. Auto-Flip nach 600ms. Der User spürt "das ist normal, nicht der große Moment".</p>
+  </div>
+  <div class="stage common" id="stageC">
+    <div class="aura"></div>
+    <div class="pack">
+      <div class="pack-logo">✦</div>
+      <div class="pack-name">EndoCraft</div>
+      <div class="pack-div"><span class="pack-div-line"></span><span class="pack-div-diamond"></span><span class="pack-div-line"></span></div>
+      <div class="pack-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+    </div>
+    <div class="burst"></div>
+    <div class="flash"></div>
+    <div class="spark" style="--dx:40px;--dy:-40px;"></div>
+    <div class="spark" style="--dx:-40px;--dy:-40px;"></div>
+    <div class="spark" style="--dx:40px;--dy:40px;"></div>
+    <div class="spark" style="--dx:-40px;--dy:40px;"></div>
+    <div class="rarity-text">
+      <div class="r1">SESSION SCROLL</div>
+      <div class="r2" style="color:rgba(255,255,255,.7);font-size:22px;letter-spacing:3px;">◇ COMMON</div>
+      <div class="r3">ROLL 4</div>
+    </div>
+    <div class="reveal-card" id="revealCardC">
+      <div class="reveal-card-back">
+        <div class="reveal-card-back-logo">✦</div>
+        <div class="reveal-card-back-name">EndoCraft</div>
+        <div class="reveal-card-back-div"><span></span><span></span><span></span></div>
+        <div class="reveal-card-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+      </div>
+      <div class="reveal-card-front">
+        <img src="./campaign-memory-letter.png" alt="">
+        <div class="reveal-card-front-ov"></div>
+        <div class="reveal-card-front-pill" style="border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7);">◇ COMMON</div>
+        <div class="reveal-card-front-name">Thorne</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn common" onclick="playArena('stageC','common')">▶ Open Common</button>
+    <button class="btn btn-ghost" onclick="resetArena('stageC')">↺ Reset</button>
+  </div>
+</div>
+
+<div class="divider"><span class="divider-text">↓</span></div>
+
+<!-- ============ MISPRINT (chromatic glitch in burst) ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ MISPRINT — CHROMATIC GLITCH BURST</span>
+  <span class="mock-label-r">charge mit leichtem hue-shift · flicker im rarity-text · roter tint</span>
+</div>
+
+<div class="arena arenaM">
+  <div class="arena-title">
+    <h2>Misprint <em>— "something's wrong"</em></h2>
+    <p>Pack charge't mit leichtem Chromatic-Wobble (cyan/red Shift). Flash mit Hue-Rotate (180deg = farblich invertiert für 50ms). Rarity-Text "MISPRINT" flackert mit RGB-Split. Subtiler als glitchcore, aber unverkennbar "fehlerhaft".</p>
+  </div>
+  <div class="stage misprint" id="stageM">
+    <div class="aura"></div>
+    <div class="pack">
+      <div class="pack-logo">✦</div>
+      <div class="pack-name">EndoCraft</div>
+      <div class="pack-div"><span class="pack-div-line"></span><span class="pack-div-diamond"></span><span class="pack-div-line"></span></div>
+      <div class="pack-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+    </div>
+    <div class="burst"></div>
+    <div class="flash"></div>
+    <div class="spark" style="--dx:60px;--dy:-60px;"></div>
+    <div class="spark" style="--dx:-60px;--dy:-60px;"></div>
+    <div class="spark" style="--dx:60px;--dy:60px;"></div>
+    <div class="spark" style="--dx:-60px;--dy:60px;"></div>
+    <div class="rarity-text">
+      <div class="r1">SESSION SCROLL</div>
+      <div class="r2" style="font-size:28px;letter-spacing:4px;">◈ MISPRINT</div>
+      <div class="r3">NAT 1 · Nº 32 / 300</div>
+    </div>
+    <div class="reveal-card" id="revealCardM">
+      <div class="reveal-card-back">
+        <div class="reveal-card-back-logo">✦</div>
+        <div class="reveal-card-back-name">EndoCraft</div>
+        <div class="reveal-card-back-div"><span></span><span></span><span></span></div>
+        <div class="reveal-card-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+      </div>
+      <div class="reveal-card-front">
+        <img src="./image-gen-the-strike.png" alt="">
+        <div class="reveal-card-front-ov"></div>
+        <div class="reveal-card-front-pill" style="border-color:rgba(224,74,58,.5);color:var(--misprint);">◈ MISPRINT</div>
+        <div class="reveal-card-front-name">Thorne</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn misprint" onclick="playArena('stageM','misprint')">▶ Open Misprint</button>
+    <button class="btn btn-ghost" onclick="resetArena('stageM')">↺ Reset</button>
+  </div>
+</div>
+
+<script>
+function playArena(id, rarity){
+  const stage = document.getElementById(id);
+  stage.classList.remove('playing');
+  void stage.offsetWidth;
+  stage.classList.add('playing');
+  const card = stage.querySelector('.reveal-card');
+  if (card) card.classList.remove('flipped');
+}
+function resetArena(id){
+  document.getElementById(id).classList.remove('playing');
+}
+</script>
+
+</body>
+</html>

@@ -992,9 +992,15 @@ body {
   <!-- RESULTS -->
   <div class="results-view" id="resultsView">
 
-    <div class="results-header">
-      <span class="results-title">Your Session Card</span>
-      <button class="new-session-btn" onclick="newSession()">← New session</button>
+    <div class="results-header-top">
+      <button class="new-session-btn" onclick="newSession()" style="margin-left:auto;display:block;">← New session</button>
+    </div>
+
+    <!-- Results hero: tag + session_title + legendary_moment quote -->
+    <div class="results-hero" style="text-align:center;margin-bottom:22px;max-width:420px;margin-left:auto;margin-right:auto;">
+      <div id="resultsHeaderTag" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:8px;">✦ LEGENDARY · SESSION</div>
+      <h1 id="resultsHeaderTitle" style="font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,28px);font-weight:800;line-height:1.15;letter-spacing:-0.01em;margin-bottom:8px;">The <em style="color:var(--gold);font-style:italic;">Impossible</em> Strike</h1>
+      <p id="resultsHeaderQuote" style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-muted);line-height:1.6;"></p>
     </div>
 
     <!-- TRADING CARD — PRIMARY OUTPUT -->
@@ -1046,10 +1052,10 @@ body {
             </div>
             <!-- Bottom -->
             <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 14px;">
-              <div id="tcClass" style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;color:rgba(232,184,109,.9);margin-bottom:3px;text-shadow:0 1px 10px #000;"></div>
-              <div id="tcName" style="font-family:'Cinzel Decorative',serif;font-size:18px;font-weight:700;color:#fffbf0;line-height:1.15;margin-bottom:3px;text-shadow:0 2px 20px #000;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></div>
-              <div id="tcMoment" style="font-family:'EB Garamond',serif;font-size:11px;font-style:italic;color:rgba(255,230,160,.55);margin-bottom:8px;text-shadow:0 1px 8px #000;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></div>
-              <div id="tcStats" style="display:flex;gap:4px;margin-bottom:6px;"></div>
+              <div id="tcClass" style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;color:rgba(232,184,109,.9);margin-bottom:4px;text-shadow:0 1px 10px #000;"></div>
+              <div id="tcName" style="font-family:'Cinzel Decorative',serif;font-size:26px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:4px;text-shadow:0 2px 20px #000;"></div>
+              <div id="tcMoment" style="font-family:'EB Garamond',serif;font-size:11px;font-style:italic;color:rgba(255,230,160,.55);margin-bottom:12px;text-shadow:0 1px 8px #000;line-height:1.3;"></div>
+              <div id="tcStats" style="display:none;"></div>
               <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(232,184,109,.15);padding-top:5px;">
                 <span id="tcSerial" style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(232,184,109,.3);">#0001 / 9999</span>
                 <span style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:2px;color:rgba(232,184,109,.2);">EndoCraft</span>
@@ -1397,18 +1403,40 @@ function showTradingCard(data) {
   const _sr = document.getElementById('shareRow'); if (_sr) _sr.style.display = 'flex';
   
   // Fill card data from data object directly
-  const shortTitle = data.session_title || 'Session Recap';
-  const subtitle = data.legendary_moment || 'A moment for the ages';
-  
+  const sessionTitle = data.session_title || 'Session Recap';       // small italic subtitle
+  const legendaryMoment = data.legendary_moment || 'A moment for the ages';  // goes into results-header quote
+
+  // Extract character name + class from story ("My character is Thorne, human fighter, Lv VII…")
   const storyTextForCard = document.getElementById('storyInput')?.value || '';
-  const charMatchCard = storyTextForCard.match(/[Mm]y character is ([^,—]+)/);
+  const charMatchCard = storyTextForCard.match(/[Mm]y character is ([^.\n]+)/);
   const rawCharVal = charMatchCard ? charMatchCard[1].trim() : '';
-  // Only show name, not appearance description
-  const charVal = rawCharVal.split(/[,—\s]+/)[0] || '';
-  document.getElementById('tcClass').textContent = charVal ? charVal.split(',')[1]?.trim() || charVal : '';
-  document.getElementById('tcName').textContent = shortTitle;
-  document.getElementById('tcMoment').textContent = subtitle;
+  // First segment = name, rest = class description
+  const charParts = rawCharVal.split(/[,—]+/).map(s => s.trim());
+  const charName = charParts[0] ? charParts[0].split(/\s+/)[0] : 'Hero';  // first word only as name
+  const charClass = charParts.slice(1).join(' · ').trim();
+
+  document.getElementById('tcClass').textContent = charClass;
+  document.getElementById('tcName').textContent = charName;              // CHARACTER NAME big
+  document.getElementById('tcMoment').textContent = sessionTitle;        // session_title small italic
   document.getElementById('tcCampaign').textContent = 'Session · ' + new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
+
+  // Populate results-header above card (full legendary_moment quote lives here)
+  const rhTag = document.getElementById('resultsHeaderTag');
+  const rhTitle = document.getElementById('resultsHeaderTitle');
+  const rhQuote = document.getElementById('resultsHeaderQuote');
+  const rarityUpper = (data.rarity || 'legendary').toUpperCase();
+  if (rhTag) rhTag.textContent = '✦ ' + rarityUpper + ' · SESSION ' + new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
+  if (rhTitle) {
+    // Make middle word gold-italic if title has 2-4 words
+    const words = sessionTitle.trim().split(/\s+/);
+    if (words.length >= 2 && words.length <= 4) {
+      const mid = Math.floor(words.length / 2);
+      rhTitle.innerHTML = words.map((w,i) => i===mid ? '<em>' + w + '</em>' : w).join(' ');
+    } else {
+      rhTitle.textContent = sessionTitle;
+    }
+  }
+  if (rhQuote) rhQuote.textContent = '"' + legendaryMoment + '"';
   
   // ── RARITY BADGE ──
   const rarityConfig = {
@@ -1481,7 +1509,7 @@ function showTradingCard(data) {
       }
       // Front serial
       const serialEl2 = document.getElementById('tcSerial');
-      const charSafe = (charVal || 'SESSION').replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'SESSION';
+      const charSafe = (charName || 'SESSION').replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'SESSION';
       if (serialEl2) serialEl2.textContent = charSafe + ' #' + cardNum + ' / 9999';
       // Card back serial — just the number, quiet
       if (backSerialEl) backSerialEl.textContent = 'Nº ' + cardNum + ' / 9999';
@@ -2534,35 +2562,93 @@ function onHoldStart(e){
 }
 function onHoldEnd(e){e.preventDefault();holding=false;clearInterval(hapticTimer);hapticTimer=null;touchX=-999;touchY=-999;}
 
+// Rarity-specific cinematic timing
+const RARITY_CINEMATIC = {
+  legendary: { freeze: 340, rarityDelay: 520, cardDelay: 2000, emberCount: 22, emberDelay: 500, flipDelay: 1400 },
+  epic:      { freeze: 260, rarityDelay: 460, cardDelay: 1800, emberCount: 14, emberDelay: 450, flipDelay: 1000 },
+  rare:      { freeze: 200, rarityDelay: 400, cardDelay: 1600, emberCount: 8,  emberDelay: 400, flipDelay: 800  },
+  common:    { freeze: 140, rarityDelay: 340, cardDelay: 1300, emberCount: 0,  emberDelay: 0,   flipDelay: 500  },
+  misprint:  { freeze: 280, rarityDelay: 500, cardDelay: 1800, emberCount: 6,  emberDelay: 500, flipDelay: 1200 }
+};
+window._currentCinematic = RARITY_CINEMATIC.legendary;
+
+// Falling embers — slow golden particles that linger after the burst, hold the moment
+function spawnEmbers(x, y, count){
+  if (!count) return;
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;inset:0;z-index:175;pointer-events:none;overflow:hidden;';
+  document.body.appendChild(container);
+  for (let i = 0; i < count; i++) {
+    const e = document.createElement('div');
+    const sx = x + (Math.random() - 0.5) * 180;
+    const sy = y + (Math.random() - 0.5) * 80;
+    const dx = (Math.random() - 0.5) * 40;
+    const dy = 180 + Math.random() * 220;
+    const size = 1.5 + Math.random() * 2;
+    const duration = 2400 + Math.random() * 1400;
+    const delay = Math.random() * 400;
+    const isGoldBright = Math.random() > 0.6;
+    const color = isGoldBright ? 'rgba(242,209,135,0.95)' : 'rgba(232,184,109,0.75)';
+    e.style.cssText = `position:absolute;left:${sx}px;top:${sy}px;width:${size}px;height:${size}px;border-radius:50%;background:${color};box-shadow:0 0 ${3+size*2}px rgba(232,184,109,.8);opacity:0;transition:opacity .3s ${delay}ms;`;
+    container.appendChild(e);
+    requestAnimationFrame(() => {
+      e.style.opacity = '1';
+      e.animate([
+        { transform: 'translate(0, 0)', opacity: 1 },
+        { transform: `translate(${dx * 0.3}px, ${dy * 0.5}px)`, opacity: 0.9, offset: 0.5 },
+        { transform: `translate(${dx}px, ${dy}px)`, opacity: 0 }
+      ], { duration: duration, delay: delay, easing: 'cubic-bezier(.3,.1,.4,1)', fill: 'forwards' });
+    });
+  }
+  setTimeout(() => container.remove(), 4200);
+}
+
 // Explosion
 function doExplode(){
   clearInterval(hapticTimer);hapticTimer=null;holding=false;
+  const cine = RARITY_CINEMATIC[currentRarity] || RARITY_CINEMATIC.rare;
+  window._currentCinematic = cine;
   const lr=logoEl.getBoundingClientRect(),ex=lr.left+lr.width/2,ey=lr.top+lr.height/2;
   const pr2=packEl.getBoundingClientRect(),cx=pr2.left+pr2.width/2,cy=pr2.top+pr2.height/2;
   const mag=Math.hypot(ex-cx,ey-cy)||1;
-  logoEl.style.transition='transform .12s ease-in,opacity .08s ease .08s';
-  logoEl.style.transform=`translate(${((ex-cx)/mag*100).toFixed(0)}px,${((ey-cy)/mag*100).toFixed(0)}px) scale(2.2) rotate(${(spinAngle+540).toFixed(0)}deg)`;
-  logoEl.style.opacity='0';
-  try{navigator.vibrate&&navigator.vibrate([30,15,60,15,120,20,250]);}catch(_){}
-  setTimeout(()=>{
-    burst(ex,ey,120,15,255,180,40);burst(ex,ey,70,11,255,240,80);burst(ex,ey,40,8,255,100,20);burst(W/2,H/2,30,6,255,220,100);
-    setTimeout(()=>{burst(ex,ey,60,10,255,230,100);burst(W/2,H*.4,35,7,255,200,60);},100);
-    setTimeout(()=>burst(W/2,H/2,40,9,255,255,180),200);
-    screenShake(400);playExplosion();
-    flashEl.style.cssText='position:fixed;inset:0;z-index:200;background:white;opacity:1;pointer-events:none;';
-    setTimeout(()=>{flashEl.style.transition='opacity .45s';flashEl.style.opacity='0';},65);
-    const tintEl=document.getElementById('tint');
-    tintEl.style.transition='none';tintEl.style.background='rgba(232,184,109,.32)';
-    setTimeout(()=>{tintEl.style.transition='background 1.5s ease';tintEl.style.background='rgba(232,184,109,0)';},100);
-    const rDiv=document.createElement('div');rDiv.style.cssText='position:fixed;inset:0;z-index:180;pointer-events:none;overflow:hidden;';document.body.appendChild(rDiv);
-    const frag=document.createDocumentFragment();
-    for(let i=0;i<14;i++){const a=(i/14)*360,l=38+Math.random()*48,c2=Math.random()>.5?'rgba(255,180,40,.55)':'rgba(255,240,130,.4)';const d=document.createElement('div');d.style.cssText=`position:absolute;top:${ey}px;left:${ex}px;width:1.5px;height:${l}vh;transform-origin:0 0;transform:rotate(${a}deg);background:linear-gradient(${c2},transparent);opacity:1;transition:opacity .5s;`;frag.appendChild(d);}
-    rDiv.appendChild(frag);
-    setTimeout(()=>rDiv.querySelectorAll('div').forEach(r=>r.style.opacity='0'),50);setTimeout(()=>rDiv.remove(),650);
-    packEl.style.transition='opacity .18s,transform .22s';packEl.style.opacity='0';packEl.style.transform='scale(1.6)';
-    backdropEl.classList.add('dark');setTimeout(()=>sceneEl.style.display='none',220);
-    setTimeout(showPackRarity,420);setTimeout(showPackCard,1680);
-  },115);
+
+  // ── FREEZE-FRAME PHASE ── peak-charge glow for 200-350ms before logo flies
+  packEl.style.transition=`transform ${cine.freeze}ms cubic-bezier(.4,0,.2,1), filter ${cine.freeze}ms ease`;
+  packEl.style.transform='scale(1.22)';
+  packEl.style.filter='drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 140px rgba(255,240,180,.95)) brightness(2.2)';
+  packRing.style.boxShadow='0 0 0 2px rgba(255,240,180,.9),0 0 120px rgba(255,240,180,1)';
+  try{navigator.vibrate&&navigator.vibrate([8,8,8,8,8,8,8,8]);}catch(_){}
+
+  setTimeout(() => {
+    // End of freeze-frame — NOW the logo flies out
+    logoEl.style.transition='transform .12s ease-in,opacity .08s ease .08s';
+    logoEl.style.transform=`translate(${((ex-cx)/mag*100).toFixed(0)}px,${((ey-cy)/mag*100).toFixed(0)}px) scale(2.2) rotate(${(spinAngle+540).toFixed(0)}deg)`;
+    logoEl.style.opacity='0';
+    try{navigator.vibrate&&navigator.vibrate([30,15,60,15,120,20,250]);}catch(_){}
+    setTimeout(()=>{
+      burst(ex,ey,120,15,232,184,109);burst(ex,ey,70,11,242,209,135);burst(ex,ey,40,8,180,120,40);burst(W/2,H/2,30,6,255,220,100);
+      setTimeout(()=>{burst(ex,ey,60,10,242,209,135);burst(W/2,H*.4,35,7,232,184,109);},100);
+      setTimeout(()=>burst(W/2,H/2,40,9,255,240,180),200);
+      screenShake(400);playExplosion();
+      flashEl.style.cssText='position:fixed;inset:0;z-index:200;background:white;opacity:1;pointer-events:none;';
+      setTimeout(()=>{flashEl.style.transition='opacity .45s';flashEl.style.opacity='0';},65);
+      const tintEl=document.getElementById('tint');
+      tintEl.style.transition='none';tintEl.style.background='rgba(232,184,109,.32)';
+      setTimeout(()=>{tintEl.style.transition='background 1.5s ease';tintEl.style.background='rgba(232,184,109,0)';},100);
+      const rDiv=document.createElement('div');rDiv.style.cssText='position:fixed;inset:0;z-index:180;pointer-events:none;overflow:hidden;';document.body.appendChild(rDiv);
+      const frag=document.createDocumentFragment();
+      for(let i=0;i<14;i++){const a=(i/14)*360,l=38+Math.random()*48,c2=Math.random()>.5?'rgba(232,184,109,.55)':'rgba(242,209,135,.4)';const d=document.createElement('div');d.style.cssText=`position:absolute;top:${ey}px;left:${ex}px;width:1.5px;height:${l}vh;transform-origin:0 0;transform:rotate(${a}deg);background:linear-gradient(${c2},transparent);opacity:1;transition:opacity .5s;`;frag.appendChild(d);}
+      rDiv.appendChild(frag);
+      setTimeout(()=>rDiv.querySelectorAll('div').forEach(r=>r.style.opacity='0'),50);setTimeout(()=>rDiv.remove(),650);
+
+      // Embers — slow golden particles that fall after the flash (rarity-dependent intensity)
+      setTimeout(()=>spawnEmbers(ex, ey, cine.emberCount), cine.emberDelay);
+
+      packEl.style.transition='opacity .18s,transform .22s';packEl.style.opacity='0';packEl.style.transform='scale(1.8)';
+      backdropEl.classList.add('dark');setTimeout(()=>sceneEl.style.display='none',220);
+      setTimeout(showPackRarity, cine.rarityDelay);setTimeout(showPackCard, cine.cardDelay);
+    },115);
+  }, cine.freeze);
 }
 
 function showPackRarity(){
@@ -2597,6 +2683,15 @@ function showPackCard(){
     const tw=document.getElementById('tradingCardWrap');
     if(tw){tw.style.animation='cardRevealIn .7s cubic-bezier(.23,1.3,.32,1) both';}
     window.scrollTo({top:0,behavior:'smooth'});
+
+    // Auto-flip: card appears showing back, pause for appreciation (rarity-dependent), then flip to reveal front
+    const cine = window._currentCinematic || RARITY_CINEMATIC.rare;
+    setTimeout(()=>{
+      const flipWrap=document.getElementById('tcFlipWrap');
+      if(flipWrap && !flipWrap.classList.contains('flipped')){
+        flipWrap.classList.add('flipped');
+      }
+    }, 700 + cine.flipDelay); // 700ms cardRevealIn + rarity-specific back-appreciation
   },700);
 }
 
