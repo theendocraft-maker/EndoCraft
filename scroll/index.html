@@ -1084,15 +1084,19 @@ body {
 
     <!-- DETAILS — collapsible -->
     <!-- Subscribe CTA -->
-    <div id="cardSubscribeCta" style="background:linear-gradient(135deg,rgba(123,108,246,.08),rgba(232,184,109,.05));border:1px solid rgba(123,108,246,.2);border-radius:14px;padding:18px 20px;margin-top:4px;">
-      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:8px;">✦ SAVE YOUR CARD</div>
-      <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Don't lose this moment.</div>
-      <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">Enter your email and we'll send you this card + notify you when full card collections launch.</div>
+    <div id="cardSubscribeCta" style="background:linear-gradient(135deg,rgba(123,108,246,.08),rgba(232,184,109,.05));border:1px solid rgba(123,108,246,.2);border-radius:14px;padding:20px 22px;margin-top:4px;">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:10px;">✦ SEAL YOUR CARD</div>
+      <div id="saveCtaTitle" style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text-primary);margin-bottom:6px;line-height:1.25;letter-spacing:-0.01em;">Keep this moment forever.</div>
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;line-height:1.55;">Your card exists only here until you save it. Drop your email — we'll seal it with a permanent number, link it to your collection, and tell you when Group View, Campaign Memory, and Party Code drop.</div>
       <div style="display:flex;gap:8px;" id="cardSubForm">
         <input type="email" id="cardSubEmail" placeholder="your@email.com" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:13px;color:white;font-family:'DM Sans',sans-serif;outline:none;min-width:0;">
-        <button onclick="saveCard()" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Save card</button>
+        <button onclick="saveCard()" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Seal it</button>
       </div>
-      <div id="cardSubSuccess" style="display:none;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#a78bfa;margin-top:10px;">✦ Card saved. We'll be in touch.</div>
+      <div id="cardSubSuccess" style="display:none;margin-top:14px;padding:12px 14px;background:rgba(232,184,109,.08);border:1px solid rgba(232,184,109,.25);border-radius:10px;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:4px;">✦ SEALED</div>
+        <div id="cardSubSuccessTitle" style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">Your card is yours. Forever.</div>
+        <div id="cardSubSuccessSub" style="font-size:12px;color:var(--text-dim);">We'll notify you when new features drop. Scroll down to see the Certificate.</div>
+      </div>
     </div>
 
     <!-- Provenance / Certificate — expandable block -->
@@ -1419,6 +1423,15 @@ function showTradingCard(data) {
   document.getElementById('tcName').textContent = charName;              // CHARACTER NAME big
   document.getElementById('tcMoment').textContent = sessionTitle;        // session_title small italic
   document.getElementById('tcCampaign').textContent = 'Session · ' + new Date().toLocaleDateString('en', {month:'short', day:'numeric'});
+
+  // Personalize save-card CTA title with character name
+  const saveCtaTitle = document.getElementById('saveCtaTitle');
+  if (saveCtaTitle) {
+    const firstName = charName && charName !== 'Hero' ? charName : null;
+    saveCtaTitle.textContent = firstName
+      ? `Keep ${firstName} forever.`
+      : 'Keep this moment forever.';
+  }
 
   // Populate results-header above card (full legendary_moment quote lives here)
   const rhTag = document.getElementById('resultsHeaderTag');
@@ -1953,12 +1966,66 @@ async function saveCard() {
     }
   } catch(e) { console.warn('[SAVE] save-card failed', e); }
 
-  // Success state
+  // Success state — hide form, show personalized "SEALED" block, auto-open provenance
   const _csf = document.getElementById('cardSubForm'); if (_csf) _csf.style.display = 'none';
   const _css = document.getElementById('cardSubSuccess'); if (_css) _css.style.display = 'block';
+
+  // Upgrade success copy with the REAL assigned number (closes the loop emotionally)
+  try {
+    const successTitle = document.getElementById('cardSubSuccessTitle');
+    const successSub = document.getElementById('cardSubSuccessSub');
+    const serialNow = document.getElementById('tcSerial')?.textContent || '';
+    if (successTitle && serialNow) {
+      // Show them their real sealed number
+      successTitle.textContent = serialNow + ' is yours.';
+    }
+    if (successSub) {
+      successSub.innerHTML = 'Sealed on ' + new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) + '. We\'ll notify you when new features drop. <strong style="color:var(--gold);">See the Certificate below ↓</strong>';
+    }
+  } catch(e) { /* non-fatal */ }
+
+  // Auto-open the Provenance/Certificate block so user sees their permanent identity
+  try {
+    const provContent = document.getElementById('provenanceContent');
+    if (provContent && provContent.style.display === 'none') {
+      toggleProvenance();
+      // Smooth scroll to provenance so user naturally sees the certificate
+      setTimeout(() => {
+        const provBlock = document.getElementById('provenanceBlock');
+        if (provBlock) provBlock.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 300);
+    }
+  } catch(e) { /* non-fatal */ }
+
   localStorage.setItem('ec_email_subscribed', 'true');
+  localStorage.setItem('ec_email', email); // remember for future sessions
   if (btn) { btn.textContent = origBtnText; btn.disabled = false; }
 }
+
+// On page load: pre-fill email for returning users, update copy
+(function initReturningUser(){
+  try {
+    const email = localStorage.getItem('ec_email');
+    if (!email) return;
+    // Pre-fill email input when it becomes available
+    const fill = () => {
+      const input = document.getElementById('cardSubEmail');
+      if (input && !input.value) input.value = email;
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fill);
+    } else {
+      fill();
+    }
+    // Also update the CTA heading to acknowledge returning user
+    document.addEventListener('DOMContentLoaded', () => {
+      const title = document.getElementById('saveCtaTitle');
+      if (title && title.textContent === 'Keep this moment forever.') {
+        title.textContent = 'Save this one to your collection too.';
+      }
+    });
+  } catch(e) { /* private mode / disabled storage */ }
+})();
 
 async function shareSession() {
   const btn = document.querySelector('.share-btn.primary');
