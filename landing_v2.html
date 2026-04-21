@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft — Make Your D&D Sessions Unforgettable</title>
+<meta name="description" content="Describe your D&D session. EndoCraft turns it into cinematic trading cards — for you and your party. Free to try.">
+<link rel="icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --surface:#1a1a24;
+  --text:#f0eff4;
+  --text-dim:rgba(255,255,255,0.5);
+  --text-dimmer:rgba(255,255,255,0.25);
+  --border:rgba(255,255,255,0.08);
+  --accent:#7B6CF6;
+  --gold:#E8B86D;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;line-height:1.6;}
+img{display:block;max-width:100%;}
+
+/* Nav */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);text-decoration:none;}
+.nav-logo img{width:26px;height:26px;object-fit:contain;}
+.nav-right{display:flex;align-items:center;gap:22px;}
+.nav-link{color:var(--text-dim);text-decoration:none;font-size:13px;font-weight:500;transition:color 0.2s;}
+.nav-link:hover{color:var(--text);}
+.nav-cta{background:var(--accent);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:0.3px;transition:opacity .2s;}
+.nav-cta:hover{opacity:.92;}
+
+/* HERO — full-bleed cinematic */
+.hero{position:relative;min-height:calc(100vh - 66px);display:flex;align-items:center;padding:80px 48px;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background-image:url('./hero-aftermath.png');background-size:cover;background-position:center 30%;}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.75) 35%, rgba(10,10,15,0.35) 70%, transparent 100%), linear-gradient(180deg, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.3) 70%, var(--bg) 100%);}
+.hero-grid{position:relative;z-index:1;width:100%;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:center;}
+
+.hero-content{max-width:580px;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(123,108,246,0.12);border:1px solid rgba(123,108,246,0.3);border-radius:20px;padding:6px 14px;font-size:10px;color:#a392f8;letter-spacing:3px;font-family:'Cinzel',serif;margin-bottom:24px;backdrop-filter:blur(8px);}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(40px,5.5vw,72px);font-weight:800;line-height:1.02;margin-bottom:22px;letter-spacing:-0.03em;text-shadow:0 4px 40px rgba(0,0,0,0.7);}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{font-size:clamp(16px,1.5vw,19px);color:rgba(255,255,255,0.8);line-height:1.55;margin-bottom:36px;max-width:520px;text-shadow:0 2px 20px rgba(0,0,0,0.6);}
+.hero-ctas{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:28px;}
+.btn-primary{background:var(--accent);color:white;border:none;border-radius:10px;padding:14px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:0.2px;transition:opacity .2s, transform .1s;}
+.btn-primary:hover{opacity:.92;}
+.btn-primary:active{transform:scale(.98);}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(10px);border-radius:10px;padding:14px 26px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s, border-color .2s;}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25);}
+
+.hero-meta{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:rgba(232,184,109,0.65);}
+.hero-meta-item{display:flex;align-items:center;gap:8px;}
+.hero-meta-item::before{content:'✦';color:rgba(232,184,109,0.4);}
+
+/* Hero card preview (right side) */
+.hero-card-wrap{position:relative;perspective:1500px;display:flex;justify-content:center;align-items:center;min-height:540px;}
+.hero-card{position:relative;width:min(360px,90%);aspect-ratio:3/4;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(232,184,109,0.5), 0 40px 100px rgba(0,0,0,0.95), 0 0 60px rgba(232,184,109,0.15);transform:rotate(4deg);transition:transform .4s cubic-bezier(.23,1.2,.32,1);animation:cardFloat 6s ease-in-out infinite;}
+.hero-card:hover{transform:rotate(0deg) scale(1.02);}
+@keyframes cardFloat{0%,100%{transform:rotate(4deg) translateY(0);}50%{transform:rotate(4deg) translateY(-10px);}}
+.hero-card img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.hero-card-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.5) 0%,transparent 25%,transparent 50%,rgba(6,3,0,.7) 75%,rgba(4,2,0,.98) 95%,rgba(4,2,0,1) 100%);}
+.hero-card-top{position:absolute;top:0;left:0;right:0;z-index:10;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hero-card-brand{display:flex;align-items:center;gap:7px;}
+.hero-card-brand img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(232,184,109,.8));}
+.hero-card-brand span{font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:3px;color:rgba(232,184,109,.8);text-shadow:0 1px 8px #000;}
+.hero-card-pill{background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.4);color:#E8B86D;border-radius:30px;padding:4px 10px;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;backdrop-filter:blur(12px);}
+.hero-card-bottom{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:20px;}
+.hero-card-class{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:rgba(232,184,109,.85);margin-bottom:4px;text-shadow:0 1px 10px #000;}
+.hero-card-name{font-family:'Cinzel Decorative',serif;font-size:30px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:5px;text-shadow:0 2px 20px #000;}
+.hero-card-title{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:rgba(255,230,160,.5);margin-bottom:8px;text-shadow:0 1px 8px #000;}
+.hero-card-serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(232,184,109,.5);}
+.hero-card-holo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:20px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.6;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}100%{background-position:0% 0%;}}
+
+.scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:5;font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.35);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeFloat 2.5s ease-in-out infinite;}
+@keyframes fadeFloat{0%,100%{opacity:0.25;transform:translate(-50%,0);}50%{opacity:0.6;transform:translate(-50%,6px);}}
+
+/* Section base */
+section{padding:110px 32px;}
+.sec-inner{max-width:1100px;margin:0 auto;}
+.sec-tag{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--accent);margin-bottom:18px;}
+.sec-head{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:22px;max-width:720px;}
+.sec-head em{color:var(--gold);font-style:italic;}
+.sec-sub{font-size:16px;color:var(--text-dim);line-height:1.7;max-width:580px;margin-bottom:56px;}
+
+/* "Based on a true story" section */
+.moments-section{background:linear-gradient(180deg, var(--bg) 0%, #0d0a18 50%, var(--bg) 100%);}
+.moments-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
+.moment-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .3s ease, border-color .3s ease;display:flex;flex-direction:column;}
+.moment-card:hover{transform:translateY(-4px);border-color:rgba(232,184,109,0.2);}
+.moment-card-img{aspect-ratio:1/1;overflow:hidden;position:relative;}
+.moment-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+.moment-card:hover .moment-card-img img{transform:scale(1.04);}
+.moment-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(26,26,36,0.9) 100%);pointer-events:none;}
+.moment-card-body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:10px;}
+.moment-card-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);}
+.moment-card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;line-height:1.25;}
+.moment-card-quote{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-dim);line-height:1.5;padding-left:12px;border-left:2px solid rgba(232,184,109,0.2);margin-top:6px;}
+
+/* How it works — 3 steps compact */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px;}
+.how-step{padding:28px 26px;background:var(--surface);border:1px solid var(--border);border-radius:16px;position:relative;transition:border-color .3s;}
+.how-step:hover{border-color:rgba(123,108,246,0.3);}
+.how-step-num{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:3px;margin-bottom:14px;display:block;}
+.how-step h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px;letter-spacing:-0.01em;}
+.how-step p{font-size:14px;color:var(--text-dim);line-height:1.65;}
+
+/* Rarity strip — single row, simplified */
+.rarity-strip{background:linear-gradient(135deg,rgba(123,108,246,0.05),rgba(232,184,109,0.03));border:1px solid var(--border);border-radius:18px;padding:32px 36px;}
+.rarity-strip-head{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dimmer);margin-bottom:18px;}
+.rarity-strip-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
+.rar-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;}
+.rar-symbol{font-family:'Cinzel',serif;font-size:22px;line-height:1;}
+.rar-name{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;font-weight:700;}
+.rar-common .rar-symbol{color:rgba(255,255,255,0.5);}.rar-common .rar-name{color:rgba(255,255,255,0.5);}
+.rar-rare .rar-symbol{color:#60a5fa;}.rar-rare .rar-name{color:#60a5fa;}
+.rar-epic .rar-symbol{color:#a78bfa;}.rar-epic .rar-name{color:#a78bfa;}
+.rar-legend .rar-symbol{color:#E8B86D;}.rar-legend .rar-name{color:#E8B86D;}
+.rar-misp .rar-symbol{color:#f87171;}.rar-misp .rar-name{color:#f87171;}
+.rar-meta{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--text-dimmer);margin-top:2px;}
+.rarity-strip-notes{margin-top:28px;padding-top:24px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:12px;font-size:13.5px;color:var(--text-dim);line-height:1.65;max-width:640px;margin-left:auto;margin-right:auto;text-align:center;}
+.rarity-strip-notes strong{color:var(--text);font-weight:600;}
+.rarity-strip-notes em{color:var(--gold);font-style:normal;}
+
+/* Features grid — tight */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 22px 24px;position:relative;transition:border-color .3s, transform .3s;}
+.feat:hover{border-color:rgba(232,184,109,0.2);transform:translateY(-2px);}
+.feat-link:hover{border-color:rgba(232,184,109,0.45) !important;}
+.feat-icon{font-size:22px;margin-bottom:12px;display:block;}
+.feat h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;}
+.feat p{font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:10px;}
+.feat-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 10px;border-radius:6px;font-family:'Cinzel',serif;}
+.badge-free{background:rgba(123,108,246,0.15);color:var(--accent);}
+.badge-soon{background:rgba(232,184,109,0.12);color:var(--gold);}
+
+/* Final CTA */
+.cta-final{padding:100px 32px 90px;text-align:center;position:relative;overflow:hidden;}
+.cta-final::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:450px;background:radial-gradient(ellipse,rgba(123,108,246,.09) 0%,transparent 70%);pointer-events:none;}
+.cta-inner{position:relative;z-index:1;max-width:580px;margin:0 auto;background:linear-gradient(135deg,rgba(123,108,246,0.08) 0%,rgba(232,184,109,0.05) 100%);border:1px solid rgba(123,108,246,0.25);border-radius:28px;padding:64px 40px;backdrop-filter:blur(16px);}
+.cta-tag{display:inline-block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--accent);margin-bottom:22px;}
+.cta-final h2{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.1;margin-bottom:18px;letter-spacing:-0.02em;}
+.cta-final h2 em{color:var(--gold);font-style:italic;}
+.cta-final-sub{font-size:16px;color:var(--text-dim);line-height:1.6;margin-bottom:34px;}
+.cta-form{display:flex;gap:8px;max-width:440px;margin:0 auto;}
+.cta-form input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:14px 18px;font-size:14px;color:white;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s, background .2s;}
+.cta-form input:focus{border-color:var(--accent);background:rgba(255,255,255,0.08);}
+.cta-form input::placeholder{color:rgba(255,255,255,0.4);}
+.cta-form button{background:var(--accent);color:white;border:none;border-radius:10px;padding:14px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:opacity .2s, transform .1s;}
+.cta-form button:hover{opacity:.92;}
+.cta-form button:active{transform:scale(.98);}
+.cta-note{font-size:12px;color:var(--text-dimmer);margin-top:14px;}
+.cta-proof{display:none;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:rgba(232,184,109,.55);margin-top:18px;}
+.cta-success{display:none;color:#a78bfa;font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;margin-top:20px;}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:42px 32px 48px;text-align:center;color:var(--text-dim);font-size:13px;}
+footer .fnav{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:16px;}
+footer a{color:var(--text-dim);text-decoration:none;padding:0 12px;transition:color .2s;}
+footer a:hover{color:var(--text);}
+.foot-copy{color:var(--text-dimmer);font-size:12px;}
+
+/* Mobile */
+@media (max-width: 860px){
+  nav{padding:14px 20px;}
+  .nav-right{gap:14px;}
+  .nav-link{display:none;}
+  .nav-cta{padding:8px 14px;font-size:12px;}
+
+  .hero{min-height:auto;padding:60px 24px 40px;}
+  .hero-grid{grid-template-columns:1fr;gap:40px;}
+  .hero-content{max-width:100%;text-align:center;margin:0 auto;}
+  .hero-tag{font-size:9px;padding:5px 12px;margin-bottom:20px;letter-spacing:2.5px;}
+  .hero h1{font-size:34px;}
+  .hero-sub{font-size:15px;margin-bottom:26px;margin-left:auto;margin-right:auto;}
+  .hero-ctas{justify-content:center;margin-bottom:22px;}
+  .hero-meta{justify-content:center;gap:14px;font-size:9px;}
+  .hero-card-wrap{min-height:auto;padding:20px 0 0;}
+  .hero-card{width:min(280px,80%);}
+  .hero-card-name{font-size:26px;}
+  .hero-bg::after{background:linear-gradient(180deg, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.7) 60%, var(--bg) 100%);}
+  .scroll-hint{display:none;}
+
+  section{padding:70px 20px;}
+  .sec-head{font-size:26px;}
+  .sec-sub{font-size:14px;margin-bottom:40px;}
+  .rarity-strip{padding:24px 20px;}
+  .rarity-strip-grid{grid-template-columns:repeat(5,1fr);gap:10px;}
+  .rar-name{font-size:8px;letter-spacing:1.5px;}
+  .rar-symbol{font-size:18px;}
+  .cta-final{padding:70px 20px 60px;}
+  .cta-inner{padding:48px 28px;}
+  .cta-form{flex-direction:column;gap:10px;}
+  .cta-form button{padding:13px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="./" class="nav-logo">
+    <img src="./IMG_8431.PNG" alt="EndoCraft">
+    EndoCraft.
+  </a>
+  <div class="nav-right">
+    <a href="./roadmap.html" class="nav-link">Roadmap</a>
+    <a href="./scroll/" class="nav-cta">Try for free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+
+    <div class="hero-content">
+      <div class="hero-tag">✦ D&D Session Companion</div>
+      <h1>Every roll. Every crit. <em>Every goodbye.</em></h1>
+      <p class="hero-sub">Describe what happened at your table — we turn it into a cinematic trading card for you and your party. No transcript. No setup. Just the moment, sealed.</p>
+      <div class="hero-ctas">
+        <a href="./scroll/" class="btn-primary">✦ Try your first session free</a>
+        <a href="./roadmap.html" class="btn-ghost">See what's coming</a>
+      </div>
+      <div class="hero-meta">
+        <span class="hero-meta-item">3 free sessions</span>
+        <span class="hero-meta-item">No signup to try</span>
+        <span class="hero-meta-item" id="heroProof"></span>
+      </div>
+    </div>
+
+    <div class="hero-card-wrap">
+      <div class="hero-card">
+        <img src="./image-gen-the-strike.png" alt="The Impossible Strike — a Legendary card">
+        <div class="hero-card-ov"></div>
+        <div class="hero-card-top">
+          <div class="hero-card-brand">
+            <img src="./IMG_8431.PNG">
+            <span>EndoCraft · Session 14</span>
+          </div>
+          <div class="hero-card-pill">✦ Legendary</div>
+        </div>
+        <div class="hero-card-bottom">
+          <div class="hero-card-class">Human Fighter · Lv VII</div>
+          <div class="hero-card-name">Thorne</div>
+          <div class="hero-card-title">The Impossible Strike</div>
+          <div class="hero-card-serial">Thorne #0217 / 9999</div>
+        </div>
+        <div class="hero-card-holo"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="scroll-hint">scroll ↓</div>
+</section>
+
+<!-- BASED ON A TRUE STORY — 3 real moments -->
+<section class="moments-section">
+  <div class="sec-inner">
+    <span class="sec-tag">✦ Based on a true story</span>
+    <h2 class="sec-head">The moments <em>that made</em><br>your campaign.</h2>
+    <p class="sec-sub">Every card starts with a real session — yours. Drop a few sentences, get a card back. Here's what three D&D tables made:</p>
+
+    <div class="moments-grid">
+      <div class="moment-card">
+        <div class="moment-card-img">
+          <img src="./hero-aftermath.png" alt="A paladin kneels after an impossible battle">
+        </div>
+        <div class="moment-card-body">
+          <div class="moment-card-tag">✦ LEGENDARY</div>
+          <div class="moment-card-title">The Aftermath</div>
+          <div class="moment-card-quote">"We shouldn't have survived that. But there we were — standing in the smoke."</div>
+        </div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-card-img">
+          <img src="./group-view-campfire.png" alt="A fantasy party sitting together after a hard-won victory">
+        </div>
+        <div class="moment-card-body">
+          <div class="moment-card-tag">◆ RARE</div>
+          <div class="moment-card-title">The Bond</div>
+          <div class="moment-card-quote">"First night everyone was quiet by the fire. That's when I knew they were my party."</div>
+        </div>
+      </div>
+      <div class="moment-card">
+        <div class="moment-card-img">
+          <img src="./campaign-memory-letter.png" alt="An adventurer reads a letter, recognition dawning">
+        </div>
+        <div class="moment-card-body">
+          <div class="moment-card-tag">★ EPIC</div>
+          <div class="moment-card-title">The Recognition</div>
+          <div class="moment-card-quote">"I read the letter three times. We'd met him before — six sessions ago. I'd forgotten. The card remembered."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="sec-inner">
+    <span class="sec-tag">✦ How it works</span>
+    <h2 class="sec-head">Three steps. <em>That's it.</em></h2>
+
+    <div class="how-grid">
+      <div class="how-step">
+        <span class="how-step-num">01</span>
+        <h3>Tell the story</h3>
+        <p>3 sentences or 3 pages — whatever you remember. No transcript, no recording needed.</p>
+      </div>
+      <div class="how-step">
+        <span class="how-step-num">02</span>
+        <h3>Your card appears</h3>
+        <p>We generate your session summary, NPC log — and a collectible card of the most epic moment.</p>
+      </div>
+      <div class="how-step">
+        <span class="how-step-num">03</span>
+        <h3>Share with your party</h3>
+        <p>Send the link. Everyone sees their cards. Your campaign archive grows, session by session.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RARITY — single strip -->
+<section style="padding-top:40px;">
+  <div class="sec-inner">
+    <div class="rarity-strip">
+      <div class="rarity-strip-head">✦ RARITY — ROLLED BY A D20, NEVER BOUGHT</div>
+      <div class="rarity-strip-grid">
+        <div class="rar-item rar-misp">
+          <div class="rar-symbol">◈</div>
+          <div class="rar-name">Misprint</div>
+          <div class="rar-meta">NAT 1 · 3%</div>
+        </div>
+        <div class="rar-item rar-common">
+          <div class="rar-symbol">◇</div>
+          <div class="rar-name">Common</div>
+          <div class="rar-meta">2–6 · 17%</div>
+        </div>
+        <div class="rar-item rar-rare">
+          <div class="rar-symbol">◆</div>
+          <div class="rar-name">Rare</div>
+          <div class="rar-meta">7–13 · 35%</div>
+        </div>
+        <div class="rar-item rar-epic">
+          <div class="rar-symbol">★</div>
+          <div class="rar-name">Epic</div>
+          <div class="rar-meta">14–19 · 37%</div>
+        </div>
+        <div class="rar-item rar-legend">
+          <div class="rar-symbol">✦</div>
+          <div class="rar-name">Legendary</div>
+          <div class="rar-meta">NAT 20 · 8%</div>
+        </div>
+      </div>
+      <div class="rarity-strip-notes">
+        <p><strong>Legendary</strong> can't be bought — every rarity gets rolled server-side the moment you submit. No retries, no tricks.</p>
+        <p><em>Misprint is the wild card.</em> A Nat 1 doesn't mean failure — your card still gets its full art. But the frame gets wrapped in CSS glitches: scanlines, RGB splits, inverted text. Rarer than Legendary. Uglier. Strangely coveted — because you can't reroll for one.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <div class="sec-inner">
+    <span class="sec-tag">✦ What you get</span>
+    <h2 class="sec-head">Everything your <em>table needs.</em></h2>
+
+    <div class="feat-grid">
+      <div class="feat">
+        <span class="feat-icon">🃏</span>
+        <h3>Session Cards</h3>
+        <p>Epic moments as collectible cards with AI art, rarity system, and holo effects.</p>
+        <span class="feat-badge badge-free">FREE</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">📖</span>
+        <h3>Session Summary</h3>
+        <p>Key events, turning points, cliffhangers. Short, punchy, shareable.</p>
+        <span class="feat-badge badge-free">FREE</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🎭</span>
+        <h3>NPC Log</h3>
+        <p>Every character your party met — and whether to trust them.</p>
+        <span class="feat-badge badge-free">FREE</span>
+      </div>
+      <a href="./roadmap.html" class="feat feat-link" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;border-color:rgba(232,184,109,0.15);background:linear-gradient(135deg,rgba(232,184,109,.05),rgba(123,108,246,.04));">
+        <span class="feat-icon">✦</span>
+        <h3 style="color:var(--gold);">And more on the way</h3>
+        <p>Campaign Memory · Party Code · Group View · Discord — next drops rolling out soon.</p>
+        <span class="feat-badge" style="background:transparent;color:var(--gold);border:1px solid rgba(232,184,109,.35);font-family:'Cinzel',serif;">SEE ROADMAP →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-final">
+  <div class="cta-inner">
+    <div class="cta-tag">✦ Early Access</div>
+    <h2>Make every session <em>legendary.</em></h2>
+    <p class="cta-final-sub">Try Session Scroll now, or drop your email and we'll tell you when Campaign Memory, Party Code and Discord integration drop.</p>
+
+    <form class="cta-form" id="subForm" onsubmit="subscribe(event)">
+      <input type="email" id="subEmail" placeholder="your@email.com" required>
+      <button type="submit">Join waitlist</button>
+    </form>
+    <p class="cta-note">No spam. Unsubscribe anytime.</p>
+    <div class="cta-proof" id="ctaProof"></div>
+    <div class="cta-success" id="subSuccess">✦ You're on the list. We'll be in touch.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fnav">
+    <a href="./scroll/">Try for free</a>
+    <a href="./roadmap.html">Roadmap</a>
+    <a href="#how">How it works</a>
+  </div>
+  <p class="foot-copy">© 2026 EndoCraft · Everything Your Table Needs.</p>
+</footer>
+
+<script>
+async function subscribe(e) {
+  if (e) e.preventDefault();
+  const email = document.getElementById('subEmail').value;
+  if (!email || !email.includes('@')) return;
+  try {
+    await fetch('https://endocraft-production.up.railway.app/api/subscribe', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, source: 'landing' })
+    });
+  } catch(err) {}
+  document.getElementById('subForm').style.display = 'none';
+  document.getElementById('subSuccess').style.display = 'block';
+}
+
+// Load subscriber count from Supabase and show in hero + CTA
+(async function loadSocialProof(){
+  try {
+    const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_J3aiHIpBxzWY8-Ag24lo-Q_GdpRC263';
+    const res = await fetch(SUPABASE_URL + '/rest/v1/subscribers?select=email&limit=1', {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'count=exact',
+        'Range-Unit': 'items',
+        'Range': '0-0'
+      }
+    });
+    const cr = res.headers.get('content-range');
+    if (!cr) return;
+    const total = parseInt(cr.split('/')[1], 10);
+    if (isNaN(total)) return;
+
+    const heroLabel = total < 10 ? 'Early access open' : `${total.toLocaleString()}+ on the list`;
+    const ctaLabel = total < 10 ? '✦ Be among the first adventurers' : `✦ Join ${total.toLocaleString()} adventurers already on the list`;
+
+    const hp = document.getElementById('heroProof');
+    if (hp) hp.textContent = heroLabel;
+    const cp = document.getElementById('ctaProof');
+    if (cp) { cp.textContent = ctaLabel; cp.style.display = 'block'; }
+  } catch(e) {}
+})();
+</script>
+
+</body>
+</html>
