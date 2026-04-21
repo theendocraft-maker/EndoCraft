@@ -918,7 +918,7 @@ body {
 
     <!-- Step 1: Story -->
     <div class="wizard-step" id="wizStep1">
-      <div class="wizard-step-label"><span class="wdot"></span><span class="wdot empty"></span><span>STEP 1 OF 2 — THE STORY</span></div>
+      <div class="wizard-step-label"><span class="wdot"></span><span>TELL YOUR STORY</span></div>
       <h1 class="step-label">What happened in your <em>session?</em></h1>
       <p class="step-sub">Describe the moment. Add your character. We paint the rest.</p>
       <div class="story-box">
@@ -933,7 +933,7 @@ body {
           </div>
         </div>
       </div>
-      <button class="gen-btn" id="nextBtn" onclick="goToStep2()" style="margin-top:12px;width:100%;">Next — choose your style →</button>
+      <button class="gen-btn" id="nextBtn" onclick="generate()" style="margin-top:12px;width:100%;">Make it legendary ✦</button>
       <div class="input-tease">
         <span class="input-tease-item">Rolled server-side</span>
         <span class="input-tease-item">Rarity decided by a D20</span>
@@ -1070,7 +1070,7 @@ body {
           <div class="rar-scanlines"></div>
           <div class="rar-glitch"></div>
           <div id="tcFoil" style="position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:18px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.03) 0%,rgba(255,160,0,.05) 25%,rgba(0,255,120,.05) 50%,rgba(0,200,255,.05) 75%,rgba(255,0,80,.03) 100%);background-size:200% 200%;animation:tcHolo 6s ease infinite;opacity:.8;"></div>
-          <div id="tcImgWrap" style="position:relative;background:linear-gradient(160deg,#1a0a00,#12080a,#0a0f1a);width:100%;aspect-ratio:3/4;">
+          <div id="tcImgWrap" style="position:absolute;inset:0;background:linear-gradient(160deg,#1a0a00,#12080a,#0a0f1a);overflow:hidden;">
             <img id="tcImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;opacity:0;transition:opacity 0.5s ease;">
             <!-- CMYK chromatic ghosts — invisible by default, shown only when #tcCard.r-misprint -->
             <img id="tcImgGhostCyan" class="tc-misprint-ghost cyan" src="" alt="">
@@ -1571,23 +1571,38 @@ function tcDownload(){
   if (!card) return;
   if (typeof html2canvas === 'undefined') { alert('Download library still loading — try again in a sec.'); return; }
 
-  // Make sure front is facing before screenshot (user probably wants the front)
   const wasFlipped = wrap && wrap.classList.contains('flipped');
   if (!wasFlipped && wrap) wrap.classList.add('flipped');
 
   const doit = () => {
-    html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true, allowTaint: true, logging: false })
-      .then(canvas => {
-        const a = document.createElement('a');
-        a.href = canvas.toDataURL('image/png');
-        const stamp = new Date().toISOString().slice(0,10);
-        a.download = `endocraft-card-${stamp}.png`;
-        a.click();
-      })
-      .catch(err => { console.error('[DL] html2canvas failed:', err); alert('Download fehlgeschlagen: ' + err.message); });
+    // #tcCard has permanent `transform: rotateY(180deg) !important` from the 3D flip system.
+    // html2canvas would capture that as a mirror-image. Temporarily neutralize it with !important.
+    card.style.setProperty('transform', 'none', 'important');
+    card.style.setProperty('backface-visibility', 'visible', 'important');
+
+    // Give the browser one frame to apply the change before capture
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true, allowTaint: true, logging: false })
+        .then(canvas => {
+          // Restore
+          card.style.removeProperty('transform');
+          card.style.removeProperty('backface-visibility');
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          const stamp = new Date().toISOString().slice(0,10);
+          a.download = `endocraft-card-${stamp}.png`;
+          a.click();
+        })
+        .catch(err => {
+          card.style.removeProperty('transform');
+          card.style.removeProperty('backface-visibility');
+          console.error('[DL] html2canvas failed:', err);
+          alert('Download fehlgeschlagen: ' + err.message);
+        });
+    }));
   };
 
-  if (!wasFlipped) setTimeout(doit, 850); // wait for flip to finish
+  if (!wasFlipped) setTimeout(doit, 850);
   else doit();
 }
 
@@ -1816,16 +1831,84 @@ function closeCardModal(e) {
 async function saveCard() {
   const email = document.getElementById('cardSubEmail').value;
   if (!email || !email.includes('@')) return;
+
+  // Button → loading state
+  const btn = document.querySelector('#cardSubForm button');
+  const origBtnText = btn ? btn.textContent : 'Save card';
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+
+  // Build card payload from current DOM state (works for any rarity)
+  const card = {
+    session_title: document.getElementById('tcName')?.textContent || '',
+    legendary_moment: document.getElementById('tcMoment')?.textContent || '',
+    character_name: (document.getElementById('storyInput')?.value || '').match(/[Mm]y character is ([^,—\n]+)/)?.[1]?.trim().split(/[,—]+/)[0] || '',
+    character_class: document.getElementById('tcClass')?.textContent || '',
+    rarity: (document.getElementById('tcCard')?.className.match(/r-(common|rare|epic|legendary|misprint)/) || [])[1] || 'rare',
+    visible_roll: parseInt(document.getElementById('tcBackRoll')?.textContent) || null,
+    image_url: document.getElementById('tcImg')?.src || null,
+    seed_hash: document.getElementById('tcBackSeed')?.textContent || null,
+    source: 'scroll'
+  };
+
   try {
-    await fetch('https://endocraft-production.up.railway.app/api/subscribe', {
+    const res = await fetch('https://endocraft-production.up.railway.app/api/save-card', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ email, source: 'card', session_title: document.getElementById('tcName')?.textContent })
+      body: JSON.stringify({ email, card })
     });
-  } catch(e) {}
+    const result = await res.json();
+    if (result.ok && result.card) {
+      // Server assigned the real numbers — update the card display
+      const num = result.card.number;
+      const misprintNum = result.card.misprint_number;
+      const rarity = result.card.rarity;
+
+      // Update front footline serial with real sequential number
+      const serialEl = document.getElementById('tcSerial');
+      if (serialEl) {
+        if (rarity === 'misprint' && misprintNum) {
+          const mnStr = misprintNum.toString().padStart(4, '0');
+          serialEl.innerHTML = 'MISPRINT · Nº <strong style="color:#F26957;">' + mnStr + ' / 0300</strong>';
+        } else {
+          const charRaw = card.character_name || 'SESSION';
+          const charSafe = charRaw.replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'SESSION';
+          const numStr = num.toString().padStart(4, '0');
+          serialEl.textContent = charSafe + ' #' + numStr + ' / 9999';
+        }
+      }
+
+      // Update back certificate Number row
+      const numEl = document.getElementById('tcBackNumber');
+      if (numEl) {
+        if (rarity === 'misprint' && misprintNum) {
+          numEl.textContent = 'Nº ' + misprintNum.toString().padStart(4, '0') + ' / 0300';
+        } else {
+          numEl.textContent = '#' + num.toString().padStart(4, '0') + ' / 9999';
+        }
+      }
+
+      // Update back Card ID to the real UUID from Supabase
+      const idEl = document.getElementById('tcBackCardId');
+      if (idEl && result.card.id) {
+        const shortId = result.card.id.replace(/-/g, '').slice(0, 8);
+        idEl.textContent = '0x' + shortId.slice(0, 4) + '…' + shortId.slice(-4);
+      }
+
+      // Update back ritual prose for misprint (with real misprint number)
+      if (rarity === 'misprint' && misprintNum) {
+        const proseEl = document.getElementById('tcRitualProse');
+        if (proseEl) {
+          proseEl.innerHTML = 'The dice were cast.<br>They landed on <strong>' + (card.visible_roll || 1) + '</strong>.<br>A <strong class="misprint-red">Misprint</strong> was born —<br>Nº <strong class="misprint-red">' + misprintNum + ' of 300</strong> this year.';
+        }
+      }
+    }
+  } catch(e) { console.warn('[SAVE] save-card failed', e); }
+
+  // Success state
   const _csf = document.getElementById('cardSubForm'); if (_csf) _csf.style.display = 'none';
   const _css = document.getElementById('cardSubSuccess'); if (_css) _css.style.display = 'block';
   localStorage.setItem('ec_email_subscribed', 'true');
+  if (btn) { btn.textContent = origBtnText; btn.disabled = false; }
 }
 
 async function shareSession() {
