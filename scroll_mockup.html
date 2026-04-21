@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll Mockup — Design Target</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --surface:#1a1a24;
+  --surface2:#1f1f2b;
+  --border:rgba(255,255,255,0.08);
+  --border-hover:rgba(255,255,255,0.15);
+  --text:#f0eff4;
+  --text-muted:rgba(255,255,255,0.5);
+  --text-dim:rgba(255,255,255,0.25);
+  --accent:#7B6CF6;
+  --accent-dim:rgba(123,108,246,0.12);
+  --accent-border:rgba(123,108,246,0.3);
+  --gold:#E8B86D;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.6;}
+img{display:block;max-width:100%;}
+
+/* Mockup-specific: section labels so Marco can see which state is which */
+.mock-label{position:sticky;top:0;z-index:200;background:rgba(10,10,15,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:8px 24px;display:flex;align-items:center;justify-content:space-between;}
+.mock-label-l{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);}
+.mock-label-r{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);}
+.mock-screen{min-height:100vh;display:flex;flex-direction:column;position:relative;}
+
+/* ========== TOPBAR (shared) ========== */
+.topbar{padding:16px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.75);backdrop-filter:blur(20px);}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.brand img{width:26px;height:26px;object-fit:contain;}
+.brand-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);letter-spacing:-0.01em;}
+.brand-sub{color:var(--text-muted);font-weight:500;margin-left:6px;font-size:13px;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.topbar-link{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:color .2s;}
+.topbar-link:hover{color:var(--text);}
+.sessions-pill{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:20px;padding:5px 12px;}
+
+/* ========== INPUT STATE ========== */
+.input-main{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px;}
+.input-wrap{width:100%;max-width:720px;}
+.step-indicator{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.step-indicator .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);}
+.step-indicator .dot.empty{background:transparent;border:1px solid var(--text-dim);}
+
+.step-h1{font-family:'Syne',sans-serif;font-size:clamp(32px,4.5vw,48px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.step-h1 em{color:var(--gold);font-style:italic;font-family:'Syne',sans-serif;}
+.step-sub{font-size:15px;color:var(--text-muted);margin-bottom:30px;max-width:540px;line-height:1.6;}
+
+.story-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:border-color .25s, box-shadow .25s;box-shadow:0 10px 40px rgba(0,0,0,0.3);}
+.story-box:focus-within{border-color:var(--accent-border);box-shadow:0 10px 40px rgba(0,0,0,0.3), 0 0 0 3px rgba(123,108,246,0.08);}
+.story-textarea{width:100%;min-height:180px;background:transparent;border:none;outline:none;padding:24px 28px 16px;font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.75;color:var(--text);resize:none;}
+.story-textarea::placeholder{color:var(--text-dim);}
+.story-footer{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);gap:12px;background:rgba(0,0,0,0.15);flex-wrap:wrap;}
+.surprise-btn{display:inline-flex;align-items:center;gap:7px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--accent);background:linear-gradient(135deg,rgba(123,108,246,.15),rgba(232,184,109,.10));border:1px solid var(--accent-border);border-radius:22px;padding:9px 16px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.surprise-btn:hover{border-color:var(--accent);transform:translateY(-1px);}
+.surprise-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;color:var(--text-dim);}
+.gen-btn{flex-shrink:0;padding:13px 26px;background:var(--accent);border:none;border-radius:10px;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s, transform .1s;white-space:nowrap;}
+.gen-btn:hover{opacity:.92;}
+
+.input-tease{margin-top:32px;display:flex;align-items:center;justify-content:center;gap:28px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);flex-wrap:wrap;}
+.input-tease-item{display:flex;align-items:center;gap:8px;}
+.input-tease-item::before{content:'✦';color:rgba(232,184,109,.35);}
+
+/* ========== LOADING STATE ========== */
+.loading-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;position:relative;overflow:hidden;}
+.loading-main::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;height:720px;background:radial-gradient(circle,rgba(123,108,246,0.09) 0%,transparent 60%);pointer-events:none;z-index:0;animation:loadPulse 4s ease infinite;}
+@keyframes loadPulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}}
+.loading-content{position:relative;z-index:1;text-align:center;max-width:420px;}
+
+.loading-ring-wrap{margin-bottom:30px;}
+.loading-ring{width:64px;height:64px;border:2px solid rgba(232,184,109,0.15);border-top-color:var(--gold);border-radius:50%;margin:0 auto;animation:spin 1.2s linear infinite;position:relative;}
+.loading-ring::before{content:'';position:absolute;inset:-12px;border:1px solid rgba(123,108,246,0.15);border-radius:50%;animation:spin 3s linear infinite reverse;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.loading-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:10px;letter-spacing:-0.01em;}
+.loading-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--text-muted);margin-bottom:32px;}
+
+.loading-steps{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:0 auto;}
+.loading-step{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;text-align:left;transition:border-color .3s;}
+.loading-step.done{opacity:0.55;border-color:rgba(76,175,125,0.2);}
+.loading-step.active{border-color:var(--accent-border);background:var(--accent-dim);}
+.loading-step.pending{opacity:0.4;}
+.loading-step-icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.loading-step.done .loading-step-icon{color:#4CAF7D;}
+.loading-step.active .loading-step-icon{color:var(--accent);}
+.loading-step-text{flex:1;font-family:'DM Sans',sans-serif;color:var(--text);}
+
+.loading-tip{margin-top:32px;font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--text-dim);line-height:1.6;max-width:380px;margin-left:auto;margin-right:auto;}
+
+/* ========== RESULTS STATE ========== */
+.results-main{flex:1;padding:48px 24px 80px;display:flex;flex-direction:column;align-items:center;}
+.results-wrap{width:100%;max-width:480px;}
+
+.results-header{text-align:center;margin-bottom:28px;}
+.results-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;}
+.results-h1{font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,30px);font-weight:800;line-height:1.15;letter-spacing:-0.01em;margin-bottom:8px;}
+.results-h1 em{color:var(--gold);font-style:italic;font-family:'Syne',sans-serif;}
+.results-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--text-muted);}
+
+/* Card (simplified mockup — real scroll keeps full holo/sparks) */
+.mock-card{position:relative;width:min(340px,85%);aspect-ratio:3/4;margin:0 auto 18px;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(232,184,109,.5), 0 40px 100px rgba(0,0,0,.95), 0 0 60px rgba(232,184,109,.15);animation:cardBreathe 6s ease-in-out infinite;}
+@keyframes cardBreathe{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.mock-card img{width:100%;height:100%;object-fit:cover;}
+.mock-card-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.5) 0%,transparent 25%,transparent 50%,rgba(6,3,0,.7) 75%,rgba(4,2,0,.98) 95%,rgba(4,2,0,1) 100%);}
+.mock-card-top{position:absolute;top:0;left:0;right:0;z-index:10;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;}
+.mock-card-brand{display:flex;align-items:center;gap:7px;}
+.mock-card-brand img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(232,184,109,.8));}
+.mock-card-brand span{font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:3px;color:rgba(232,184,109,.75);text-shadow:0 1px 8px #000;}
+.mock-card-pill{background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.4);color:#E8B86D;border-radius:30px;padding:4px 10px;font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;}
+.mock-card-bottom{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:20px;}
+.mock-card-class{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:rgba(232,184,109,.85);margin-bottom:4px;text-shadow:0 1px 10px #000;}
+.mock-card-name{font-family:'Cinzel Decorative',serif;font-size:28px;font-weight:700;color:#fffbf0;line-height:1;margin-bottom:4px;text-shadow:0 2px 20px #000;}
+.mock-card-title{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:rgba(255,230,160,.5);margin-bottom:8px;}
+.mock-card-serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(232,184,109,.5);}
+.mock-card-holo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:20px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.6;}
+@keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}}
+
+.card-actions{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:30px;}
+.flip-hint{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--text-dim);}
+.btn-download{background:rgba(232,184,109,.1);color:var(--gold);border:1px solid rgba(232,184,109,.3);border-radius:10px;padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:0.2px;}
+.btn-download:hover{background:rgba(232,184,109,.18);border-color:rgba(232,184,109,.5);}
+
+.share-row{display:flex;gap:10px;margin-bottom:22px;}
+.share-btn{flex:1;padding:12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;text-align:center;border:none;}
+.share-btn.primary{background:var(--accent);color:white;}
+.share-btn.outline{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
+.share-btn.primary:hover{opacity:.92;}
+.share-btn.outline:hover{color:var(--text);border-color:var(--border-hover);}
+
+.email-cta{background:linear-gradient(135deg,rgba(123,108,246,.08),rgba(232,184,109,.05));border:1px solid rgba(123,108,246,.2);border-radius:14px;padding:20px 22px;margin-bottom:12px;}
+.email-cta-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:8px;}
+.email-cta-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.email-cta-sub{font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.55;}
+.email-cta-form{display:flex;gap:8px;}
+.email-cta-form input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:13px;color:white;font-family:'DM Sans',sans-serif;outline:none;min-width:0;}
+.email-cta-form button{background:var(--accent);color:white;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+
+.roadmap-cta{display:block;text-decoration:none;color:inherit;background:linear-gradient(135deg,rgba(232,184,109,.06),rgba(123,108,246,.03));border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:20px;transition:border-color .2s;}
+.roadmap-cta:hover{border-color:rgba(232,184,109,.35);}
+.roadmap-cta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.roadmap-cta-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:6px;}
+.roadmap-cta-title{font-size:14px;font-weight:600;color:var(--text);}
+.roadmap-cta-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.roadmap-cta-arrow{color:var(--gold);font-size:20px;flex-shrink:0;}
+
+.details-toggle{display:flex;align-items:center;gap:10px;padding:14px 0;border-top:1px solid var(--border);font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);cursor:pointer;margin-top:4px;}
+.details-toggle-arrow{transition:transform .25s;}
+.details-open .details-toggle-arrow{transform:rotate(90deg);}
+.details-content{padding-top:8px;display:flex;flex-direction:column;gap:12px;}
+.detail-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.detail-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.detail-card-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--gold);}
+.detail-card-copy{font-size:11px;color:var(--text-dim);background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.detail-card-body{font-size:13px;color:var(--text-muted);line-height:1.7;}
+.detail-card-body p+p{margin-top:10px;}
+
+/* Mockup divider between states */
+.mock-divider{height:80px;background:linear-gradient(180deg,transparent,rgba(232,184,109,0.08),transparent);display:flex;align-items:center;justify-content:center;}
+.mock-divider-text{font-family:'Cinzel',serif;font-size:10px;letter-spacing:4px;color:var(--text-dim);}
+
+/* Mobile */
+@media (max-width:600px){
+  .topbar{padding:14px 16px;}
+  .topbar-link{display:none;}
+  .brand-sub{display:none;}
+  .sessions-pill{font-size:9px;padding:4px 10px;letter-spacing:1.5px;}
+  .input-main{padding:40px 20px;}
+  .loading-main{padding:40px 20px;}
+  .results-main{padding:32px 16px 60px;}
+  .step-h1{font-size:28px;}
+  .story-footer{flex-direction:column;align-items:stretch;}
+  .surprise-btn{width:100%;justify-content:center;}
+  .gen-btn{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ STATE 1: INPUT ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ STATE 1 — INPUT</span>
+  <span class="mock-label-r">what the user sees when they land on /scroll</span>
+</div>
+
+<div class="mock-screen">
+  <div class="topbar">
+    <a class="brand" href="../">
+      <img src="./IMG_8431.PNG" alt="EndoCraft">
+      <span class="brand-name">EndoCraft.<span class="brand-sub">Session Scroll</span></span>
+    </a>
+    <div class="topbar-right">
+      <a href="./roadmap.html" class="topbar-link">Roadmap</a>
+      <span class="sessions-pill">3 FREE SESSIONS</span>
+    </div>
+  </div>
+
+  <div class="input-main">
+    <div class="input-wrap">
+      <div class="step-indicator">
+        <span class="dot"></span>
+        <span class="dot empty"></span>
+        <span>STEP 1 OF 2 — THE STORY</span>
+      </div>
+      <h1 class="step-h1">What happened in your <em>session?</em></h1>
+      <p class="step-sub">Describe the moment. Add your character. We paint the rest. 3 sentences or 3 pages — whatever you remember.</p>
+
+      <div class="story-box">
+        <textarea class="story-textarea" placeholder="What happened? Describe the moment and your character.&#10;&#10;Example: Lyra fires her last arrow into the eye of a black dragon diving at her.&#10;My character: Lyra, wood elf ranger, green cloak, auburn braided hair, longbow."></textarea>
+        <div class="story-footer">
+          <button class="surprise-btn" type="button">
+            🎲 <span style="font-weight:700;">Surprise me</span>
+            <span style="opacity:.55;font-weight:400;">— roll a new scenario</span>
+          </button>
+          <button class="gen-btn" type="button">Continue →</button>
+        </div>
+      </div>
+
+      <div class="input-tease">
+        <span class="input-tease-item">Rolled server-side</span>
+        <span class="input-tease-item">Rarity decided by a D20</span>
+        <span class="input-tease-item">No signup to try</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mock-divider"><span class="mock-divider-text">↓  LOADING  ↓</span></div>
+
+<!-- ============ STATE 2: LOADING ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ STATE 2 — LOADING</span>
+  <span class="mock-label-r">~12–18 seconds while Claude + Seedream work</span>
+</div>
+
+<div class="mock-screen">
+  <div class="topbar">
+    <a class="brand" href="../">
+      <img src="./IMG_8431.PNG" alt="EndoCraft">
+      <span class="brand-name">EndoCraft.<span class="brand-sub">Session Scroll</span></span>
+    </a>
+    <div class="topbar-right">
+      <a href="./roadmap.html" class="topbar-link">Roadmap</a>
+      <span class="sessions-pill">3 FREE SESSIONS</span>
+    </div>
+  </div>
+
+  <div class="loading-main">
+    <div class="loading-content">
+      <div class="loading-ring-wrap">
+        <div class="loading-ring"></div>
+      </div>
+      <div class="loading-title">Forging your card image…</div>
+      <div class="loading-sub">A scribe is listening. The dice have rolled.</div>
+
+      <div class="loading-steps">
+        <div class="loading-step done">
+          <span class="loading-step-icon">✓</span>
+          <span class="loading-step-text">Story received</span>
+        </div>
+        <div class="loading-step done">
+          <span class="loading-step-icon">✓</span>
+          <span class="loading-step-text">D20 rolled · rarity sealed</span>
+        </div>
+        <div class="loading-step active">
+          <span class="loading-step-icon">✦</span>
+          <span class="loading-step-text">Painting the scene…</span>
+        </div>
+        <div class="loading-step pending">
+          <span class="loading-step-icon">◇</span>
+          <span class="loading-step-text">Framing the card</span>
+        </div>
+      </div>
+
+      <div class="loading-tip">
+        Every card is unique. Your seed, your prompt, your model-vintage — sealed the moment you submitted. Future cards can never be identical to this one.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mock-divider"><span class="mock-divider-text">↓  RESULT  ↓</span></div>
+
+<!-- ============ STATE 3: RESULTS ============ -->
+<div class="mock-label">
+  <span class="mock-label-l">✦ STATE 3 — RESULTS</span>
+  <span class="mock-label-r">card revealed · share · save · roadmap · details</span>
+</div>
+
+<div class="mock-screen">
+  <div class="topbar">
+    <a class="brand" href="../">
+      <img src="./IMG_8431.PNG" alt="EndoCraft">
+      <span class="brand-name">EndoCraft.<span class="brand-sub">Session Scroll</span></span>
+    </a>
+    <div class="topbar-right">
+      <a href="./roadmap.html" class="topbar-link">Roadmap</a>
+      <span class="sessions-pill">2 FREE SESSIONS LEFT</span>
+    </div>
+  </div>
+
+  <div class="results-main">
+    <div class="results-wrap">
+
+      <div class="results-header">
+        <div class="results-tag">✦ LEGENDARY · NAT 20</div>
+        <h1 class="results-h1">The <em>Impossible</em> Strike</h1>
+        <p class="results-sub">"Thorne drove his blade through the beast's heart."</p>
+      </div>
+
+      <div class="mock-card">
+        <img src="./image-gen-the-strike.png" alt="Card">
+        <div class="mock-card-ov"></div>
+        <div class="mock-card-top">
+          <div class="mock-card-brand">
+            <img src="./IMG_8431.PNG">
+            <span>EndoCraft · Session 14</span>
+          </div>
+          <div class="mock-card-pill">✦ Legendary</div>
+        </div>
+        <div class="mock-card-bottom">
+          <div class="mock-card-class">Human Fighter · Lv VII</div>
+          <div class="mock-card-name">Thorne</div>
+          <div class="mock-card-title">The Impossible Strike</div>
+          <div class="mock-card-serial">Thorne #0217 / 9999</div>
+        </div>
+        <div class="mock-card-holo"></div>
+      </div>
+
+      <div class="card-actions">
+        <div class="flip-hint">TAP CARD TO FLIP</div>
+        <button class="btn-download">↓ Save card as PNG</button>
+      </div>
+
+      <div class="share-row">
+        <button class="share-btn primary">✦ Share with party</button>
+        <button class="share-btn outline">Copy link</button>
+      </div>
+
+      <div class="email-cta">
+        <div class="email-cta-tag">✦ SAVE TO YOUR COLLECTION</div>
+        <div class="email-cta-title">Don't lose this moment.</div>
+        <div class="email-cta-sub">Enter your email — we'll save this card to your collection and notify you when features like Group View drop.</div>
+        <div class="email-cta-form">
+          <input type="email" placeholder="your@email.com">
+          <button>Save card</button>
+        </div>
+      </div>
+
+      <a class="roadmap-cta" href="./roadmap.html">
+        <div class="roadmap-cta-row">
+          <div>
+            <div class="roadmap-cta-tag">✦ WHAT'S NEXT</div>
+            <div class="roadmap-cta-title">Like this? See what's coming.</div>
+            <div class="roadmap-cta-sub">Group View · Campaign Memory · Party Code · Discord</div>
+          </div>
+          <div class="roadmap-cta-arrow">→</div>
+        </div>
+      </a>
+
+      <div class="details-toggle details-open" onclick="this.classList.toggle('details-open'); this.nextElementSibling.style.display=this.classList.contains('details-open')?'flex':'none';">
+        <span class="details-toggle-arrow">›</span>
+        <span>✦ SESSION DETAILS</span>
+        <span style="opacity:.4;font-size:9px;">(summary · npc log)</span>
+      </div>
+      <div class="details-content">
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <span class="detail-card-label">SESSION SUMMARY</span>
+            <button class="detail-card-copy">Copy</button>
+          </div>
+          <div class="detail-card-body">
+            <p>The party descended into the crypt chasing rumors of the Ashborne relic. Halls were narrow, lit only by torchlight, and Lyra's ranger senses flagged something massive moving ahead.</p>
+            <p>They found it in the final chamber — a dread hound three times the size of any dog, eyes burning. Mara's spells were spent; Aldric's shield was split. Thorne stepped forward alone and drove his blade through the beast's heart on a clean nat 20. The party carried the relic out in silence.</p>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-card-head">
+            <span class="detail-card-label">NPC LOG</span>
+            <button class="detail-card-copy">Copy</button>
+          </div>
+          <div class="detail-card-body">
+            <p><strong style="color:var(--text);">Keeper Veylen</strong> — Old, stooped, blind in one eye. Gave the party the crypt map in exchange for a promise to return it. Seemed afraid of what they'd find.</p>
+            <p><strong style="color:var(--text);">The Dread Hound (deceased)</strong> — Unknown origin. Three times dog-size. Burned eyes. Guarded the Ashborne relic. Slain by Thorne in session 14.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

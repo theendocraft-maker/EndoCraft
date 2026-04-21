@@ -114,11 +114,15 @@ body {
 .story-box {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
-  transition: border-color 0.2s;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
-.story-box:focus-within { border-color: var(--accent-border); }
+.story-box:focus-within {
+  border-color: var(--accent-border);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 0 3px rgba(123,108,246,0.08);
+}
 
 .story-textarea {
   width: 100%; min-height: 200px;
@@ -186,34 +190,87 @@ body {
 .loading-overlay {
   display: none;
   flex-direction: column; align-items: center; justify-content: center;
-  gap: 16px; padding: 40px;
+  gap: 0; padding: 60px 24px;
   animation: fadeIn 0.3s ease both;
+  position: relative; overflow: hidden;
+  width: 100%;
 }
 .loading-overlay.visible { display: flex; }
+.loading-overlay::before {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 720px; height: 720px;
+  background: radial-gradient(circle, rgba(123,108,246,0.09) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+  animation: loadPulse 4s ease infinite;
+}
+@keyframes loadPulse {
+  0%,100% { opacity: .6; transform: translate(-50%,-50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+}
+.loading-inner { position: relative; z-index: 1; text-align: center; max-width: 420px; display: flex; flex-direction: column; align-items: center; }
 
 .loading-ring {
-  width: 40px; height: 40px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
+  width: 64px; height: 64px;
+  border: 2px solid rgba(232,184,109,0.15);
+  border-top-color: var(--gold);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1.2s linear infinite;
+  position: relative;
+  margin-bottom: 28px;
 }
+.loading-ring::before {
+  content: ''; position: absolute; inset: -12px;
+  border: 1px solid rgba(123,108,246,0.15);
+  border-radius: 50%;
+  animation: spin 3s linear infinite reverse;
+}
+
 .loading-text {
-  font-size: 14px; color: var(--text-muted); font-style: italic;
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--text); letter-spacing: -0.01em;
+  margin-bottom: 10px;
 }
+.loading-sub {
+  font-family: 'EB Garamond', serif;
+  font-style: italic; font-size: 15px;
+  color: var(--text-muted); margin-bottom: 32px;
+}
+
 .loading-steps {
-  display: flex; flex-direction: column; gap: 6px; margin-top: 8px;
+  display: flex; flex-direction: column; gap: 10px;
+  max-width: 340px; width: 100%; margin: 0 auto;
 }
 .loading-step {
-  font-size: 12px; color: var(--text-dim);
-  display: flex; align-items: center; gap: 8px;
-  transition: color 0.3s;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px; text-align: left;
+  transition: border-color .3s, opacity .3s, background .3s;
+  opacity: 0.4;
 }
-.loading-step.active { color: var(--accent); }
-.loading-step.done { color: var(--green); }
-.step-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: currentColor; flex-shrink: 0;
+.loading-step.active { border-color: var(--accent-border); background: var(--accent-dim); opacity: 1; }
+.loading-step.done { opacity: 0.55; border-color: rgba(76,175,125,0.2); }
+.loading-step .step-dot {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--text-dim);
+  font-family: 'Cinzel', serif; font-size: 12px;
+  background: transparent;
+}
+.loading-step.done .step-dot::before { content: '✓'; color: #4CAF7D; }
+.loading-step.active .step-dot::before { content: '✦'; color: var(--accent); }
+.loading-step:not(.done):not(.active) .step-dot::before { content: '◇'; color: var(--text-dim); }
+.loading-step .step-text { flex: 1; font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+.loading-tip {
+  margin-top: 32px;
+  font-family: 'EB Garamond', serif; font-style: italic;
+  font-size: 13px; color: var(--text-dim);
+  line-height: 1.6; max-width: 380px;
+  text-align: center;
 }
 
 /* ── RESULTS ── */
@@ -590,9 +647,28 @@ body {
 .tc-modal-close { position: absolute; top: -36px; right: 0; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,.3); cursor: pointer; padding: 8px; }
 
 .wizard-step-label {
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
-  color: var(--text-dim); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px;
+  color: var(--text-dim); margin-bottom: 20px;
 }
+.wizard-step-label .wdot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+}
+.wizard-step-label .wdot.empty {
+  background: transparent; border: 1px solid var(--text-dim);
+}
+.input-tease {
+  margin-top: 24px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 28px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 3px;
+  color: var(--text-dim);
+  flex-wrap: wrap;
+}
+.input-tease-item { display: flex; align-items: center; gap: 8px; }
+.input-tease-item::before { content: '✦'; color: rgba(232,184,109,0.35); }
 .style-card-big {
   display: flex; align-items: center; justify-content: space-between;
   background: var(--surface2); border: 1.5px solid var(--border);
@@ -748,7 +824,7 @@ body {
 
     <!-- Step 1: Story -->
     <div class="wizard-step" id="wizStep1">
-      <div class="wizard-step-label">Step 1 of 2</div>
+      <div class="wizard-step-label"><span class="wdot"></span><span class="wdot empty"></span><span>STEP 1 OF 2 — THE STORY</span></div>
       <h1 class="step-label">What happened in your <em>session?</em></h1>
       <p class="step-sub">Describe the moment. Add your character. We paint the rest.</p>
       <div class="story-box">
@@ -764,11 +840,16 @@ body {
         </div>
       </div>
       <button class="gen-btn" id="nextBtn" onclick="goToStep2()" style="margin-top:12px;width:100%;">Next — choose your style →</button>
+      <div class="input-tease">
+        <span class="input-tease-item">Rolled server-side</span>
+        <span class="input-tease-item">Rarity decided by a D20</span>
+        <span class="input-tease-item">No signup to try</span>
+      </div>
     </div>
 
     <!-- Step 2: Style -->
     <div class="wizard-step" id="wizStep2" style="display:none;">
-      <div class="wizard-step-label">Step 2 of 2</div>
+      <div class="wizard-step-label"><span class="wdot"></span><span class="wdot"></span><span>STEP 2 OF 2 — THE STYLE</span></div>
       <h1 class="step-label">How should it <em>look?</em></h1>
       <p class="step-sub">Pick the art style for your card.</p>
       <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0;">
@@ -803,13 +884,16 @@ body {
 
   <!-- LOADING -->
   <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-ring"></div>
-    <div class="loading-text">Writing your chronicles…</div>
-    <div class="loading-steps">
-      <div class="loading-step active" id="ls1"><span class="step-dot"></span>Analyzing your session</div>
-      <div class="loading-step" id="ls2"><span class="step-dot"></span>Generating summary & NPC log</div>
-      <div class="loading-step" id="ls3" style="display:none;"><span class="step-dot"></span>Generating card image</div>
-      
+    <div class="loading-inner">
+      <div class="loading-ring"></div>
+      <div class="loading-text">Writing your chronicles…</div>
+      <div class="loading-sub">A scribe is listening. The dice have rolled.</div>
+      <div class="loading-steps">
+        <div class="loading-step active" id="ls1"><span class="step-dot"></span><span class="step-text">Analyzing your session</span></div>
+        <div class="loading-step" id="ls2"><span class="step-dot"></span><span class="step-text">Generating summary & NPC log</span></div>
+        <div class="loading-step" id="ls3" style="display:none;"><span class="step-dot"></span><span class="step-text">Painting the scene</span></div>
+      </div>
+      <div class="loading-tip">Every card is unique. Your seed, your prompt, your model-vintage — sealed the moment you submitted. Future cards can never be identical to this one.</div>
     </div>
   </div>
 
