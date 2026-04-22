@@ -109,43 +109,28 @@ html, body {
   100% { opacity: 1;  transform: rotateZ(360deg)  scale(1);   filter: drop-shadow(0 0 80px rgba(232,184,109,.8)) drop-shadow(0 14px 24px rgba(0,0,0,.8)); }
 }
 
-.d20-svg { width: 100%; height: 100%; display: block; }
+/* Photoreal D20 image — fills the wrap, object-contain so nothing crops */
+.d20-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,.75));
+}
 
-/* Landing impact — expanding gold ring shockwave beneath the die */
+/* Landing impact — expanding gold ring shockwave centered on the die */
 .d20-impact {
   position: absolute; top: 50%; left: 50%;
   width: 120px; height: 120px; border-radius: 50%;
   border: 2px solid rgba(232,184,109,.9);
   transform: translate(-50%, -50%) scale(0);
   opacity: 0; pointer-events: none;
+  box-shadow: 0 0 30px rgba(232,184,109,.5);
 }
-.d20-wrap.landed .d20-impact { animation: d20Impact .7s cubic-bezier(.15,.75,.3,1) 1.0s forwards; }
+.d20-wrap.landed .d20-impact { animation: d20Impact .75s cubic-bezier(.15,.75,.3,1) .95s forwards; }
 @keyframes d20Impact {
   0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0; border-width: 4px; }
   8%   { opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; border-width: 1px; }
-}
-
-.d20-number {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 72px; font-weight: 900;
-  color: #F2D187;
-  text-shadow:
-    0 1px 0 rgba(255,240,180,.6),
-    0 -1px 0 rgba(0,0,0,.7),
-    0 0 20px rgba(232,184,109,.95),
-    0 0 50px rgba(232,184,109,.7),
-    0 4px 16px rgba(0,0,0,.95);
-  opacity: 0;
-  letter-spacing: -2px;
-}
-.d20-wrap.landed .d20-number { animation: numberPop .5s cubic-bezier(.2,1.6,.3,1) 1.0s forwards; }
-@keyframes numberPop {
-  0%   { opacity: 0; transform: scale(.4); }
-  55%  { opacity: 1; transform: scale(1.2); text-shadow: 0 1px 0 rgba(255,240,180,.7), 0 -1px 0 rgba(0,0,0,.7), 0 0 60px #FFF4CC, 0 0 120px #E8B86D, 0 4px 16px rgba(0,0,0,.95); }
-  100% { opacity: 1; transform: scale(1); }
+  100% { transform: translate(-50%, -50%) scale(4);   opacity: 0; border-width: 1px; }
 }
 
 /* Hook text — layered pair: "one roll." and "one moment." that swap */
@@ -290,29 +275,15 @@ html, body {
 /* ── BRAND WATERMARK — persistent through all scenes, top-left corner ── */
 .brand-watermark {
   position: absolute; top: 14px; left: 14px; z-index: 30;
-  display: flex; align-items: center; gap: 7px;
   pointer-events: none;
-  opacity: .85;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,.85));
+  opacity: .6;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.8));
 }
 .brand-watermark img {
-  width: 24px; height: 24px; object-fit: contain;
-  filter: drop-shadow(0 0 5px rgba(232,184,109,.6));
+  width: 22px; height: 22px; object-fit: contain;
+  filter: drop-shadow(0 0 5px rgba(232,184,109,.45));
+  display: block;
 }
-.brand-watermark span {
-  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700;
-  letter-spacing: 3px; color: rgba(232,184,109,.85); text-transform: uppercase;
-}
-
-/* CTA logo — subtle brand mark above URL (not dominant) */
-.cta-logo {
-  width: 42px; height: 42px; object-fit: contain;
-  filter: drop-shadow(0 0 14px rgba(232,184,109,.5)) drop-shadow(0 0 32px rgba(232,184,109,.22));
-  margin-bottom: 2px;
-  opacity: 0; transform: scale(.85) translateY(4px);
-  transition: opacity .7s ease, transform .8s cubic-bezier(.23,1.2,.32,1);
-}
-.cta-logo.on { opacity: .95; transform: scale(1) translateY(0); }
 
 /* ── HUD ── */
 .player-hud { position: absolute; top: 12px; right: 12px; z-index: 50; display: flex; gap: 8px; align-items: center; }
@@ -417,76 +388,10 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
       <div class="hook-stage">
         <div id="hookParticles"></div>
         <div class="d20-wrap" id="d20wrap">
-          <svg class="d20-svg" viewBox="-120 -120 240 240">
-            <defs>
-              <!-- Body: deep obsidian with warm undertone -->
-              <radialGradient id="d20Body" cx="38%" cy="32%" r="78%">
-                <stop offset="0%"  stop-color="#3a2a1a"/>
-                <stop offset="45%" stop-color="#1c1024"/>
-                <stop offset="100%" stop-color="#060208"/>
-              </radialGradient>
-              <!-- Top-facing facets catch light -->
-              <linearGradient id="d20TopFacet" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%"  stop-color="rgba(255,230,160,.45)"/>
-                <stop offset="100%" stop-color="rgba(232,184,109,.05)"/>
-              </linearGradient>
-              <!-- Side facets -->
-              <linearGradient id="d20SideFacet" x1="0%" y1="50%" x2="100%" y2="50%">
-                <stop offset="0%"  stop-color="rgba(232,184,109,.22)"/>
-                <stop offset="100%" stop-color="rgba(232,184,109,.02)"/>
-              </linearGradient>
-              <!-- Bottom facets sit in shadow -->
-              <linearGradient id="d20BottomFacet" x1="50%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%"  stop-color="rgba(0,0,0,.2)"/>
-                <stop offset="100%" stop-color="rgba(0,0,0,.75)"/>
-              </linearGradient>
-              <!-- Top rim highlight — razor-thin catch light -->
-              <linearGradient id="d20Rim" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"  stop-color="rgba(255,240,180,.2)"/>
-                <stop offset="50%" stop-color="rgba(255,240,180,.95)"/>
-                <stop offset="100%" stop-color="rgba(255,240,180,.2)"/>
-              </linearGradient>
-            </defs>
-
-            <!-- Floor shadow ellipse — sells the 3D weight -->
-            <ellipse cx="0" cy="108" rx="88" ry="11" fill="rgba(0,0,0,.55)"/>
-            <ellipse cx="0" cy="108" rx="62" ry="7" fill="rgba(232,184,109,.25)"/>
-
-            <!-- Main hexagon body with bold metallic stroke -->
-            <polygon points="0,-100 87,-50 87,50 0,100 -87,50 -87,-50"
-              fill="url(#d20Body)" stroke="rgba(232,184,109,.9)" stroke-width="2.5" stroke-linejoin="round"/>
-
-            <!-- Facet fills — 6 triangles radiating from center, each at different light angle -->
-            <polygon points="0,-100 0,0 87,-50"  fill="url(#d20TopFacet)"/>
-            <polygon points="0,-100 0,0 -87,-50" fill="url(#d20TopFacet)" opacity=".78"/>
-            <polygon points="87,-50 87,50 0,0"   fill="url(#d20SideFacet)"/>
-            <polygon points="-87,-50 -87,50 0,0" fill="url(#d20SideFacet)" opacity=".82" transform="scale(-1,1)"/>
-            <polygon points="0,100 0,0 87,50"    fill="url(#d20BottomFacet)"/>
-            <polygon points="0,100 0,0 -87,50"   fill="url(#d20BottomFacet)" opacity=".92"/>
-
-            <!-- Facet edge lines — thin gold scribes -->
-            <g stroke="rgba(232,184,109,.42)" stroke-width="1" stroke-linecap="round" fill="none">
-              <line x1="0" y1="-100" x2="0" y2="0"/>
-              <line x1="87" y1="-50" x2="0" y2="0"/>
-              <line x1="-87" y1="-50" x2="0" y2="0"/>
-              <line x1="87" y1="50" x2="0" y2="0" opacity=".7"/>
-              <line x1="-87" y1="50" x2="0" y2="0" opacity=".7"/>
-              <line x1="0" y1="100" x2="0" y2="0" opacity=".45"/>
-            </g>
-
-            <!-- Top rim razor highlight — this is what makes it feel metallic -->
-            <polyline points="-87,-50 0,-100 87,-50" fill="none"
-              stroke="url(#d20Rim)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-
-            <!-- Inner gold glow ring (faint) -->
-            <polygon points="0,-90 78,-45 78,45 0,90 -78,45 -78,-45"
-              fill="none" stroke="rgba(232,184,109,.18)" stroke-width="1"/>
-          </svg>
-
+          <!-- Photoreal D20 generated via Seedream — premium-quality hook hero -->
+          <img class="d20-img" id="d20Img" alt="D20">
           <!-- Landing impact shockwave ring -->
           <div class="d20-impact"></div>
-
-          <div class="d20-number">20</div>
         </div>
         <div class="hook-text-wrap">
           <div class="hook-text" id="hookText1">one roll.</div>
@@ -567,7 +472,6 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
     <!-- SCENE 8: CTA -->
     <div class="scene" id="sceneCta">
       <div class="cta-stage">
-        <img class="cta-logo" id="ctaLogo" src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft">
         <div class="cta-url" id="ctaUrl">endocraft.app</div>
         <div class="cta-sub" id="ctaSub">Your session. Your card. <em>Forever.</em></div>
         <div class="cta-brand" id="ctaBrand">✦ Roll. Reveal. Remember.</div>
@@ -579,10 +483,9 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
     <div class="film-grain"></div>
     <div id="sceneFlash"></div>
 
-    <!-- PERSISTENT BRAND WATERMARK (top-left, all scenes) -->
+    <!-- PERSISTENT BRAND WATERMARK (top-left, icon-only, subtle) -->
     <div class="brand-watermark">
-      <img src="https://endocraft.app/IMG_8431.PNG" alt="">
-      <span>EndoCraft</span>
+      <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft">
     </div>
 
     <!-- HUD -->
@@ -642,6 +545,13 @@ function applyStaticOverrides() {
 // SHOT PROMPTS — only 4 unique images needed
 // ═══════════════════════════════════════════════
 const SHOTS = [
+  {
+    slug: 'd20-hero',
+    name: 'D20 (hook icon)',
+    width: 1440, height: 1440,
+    prompt: `Single large D20 twenty-sided dice made of polished dark obsidian with metallic gold numerical engravings, the number 20 prominently displayed and clearly readable on the facing top face, centered on pure pitch black background, dramatic cinematic spotlight casting gold reflections on the metallic edges, gentle gold dust particles floating ethereally around the dice, sharp focus, 8K, premium product photography, metallic sheen, ominous and powerful atmosphere, subtle bottom shadow grounding the dice, no additional text or numbers visible, no watermark, no logos, no background elements`,
+    targetImg: ['d20Img']
+  },
   {
     slug: 'caspian-hero',
     name: 'Caspian Hero Card',
@@ -858,10 +768,9 @@ function buildTimeline() {
 
     // ACT 6: CTA (13–15s)
     { at: 13000, do: () => { show('sceneCta'); } },
-    { at: 13100, do: () => document.getElementById('ctaLogo').classList.add('on') },
-    { at: 13400, do: () => document.getElementById('ctaUrl').classList.add('on') },
-    { at: 13600, do: () => document.getElementById('ctaSub').classList.add('on') },
-    { at: 14000, do: () => document.getElementById('ctaBrand').classList.add('on') },
+    { at: 13200, do: () => document.getElementById('ctaUrl').classList.add('on') },
+    { at: 13500, do: () => document.getElementById('ctaSub').classList.add('on') },
+    { at: 13900, do: () => document.getElementById('ctaBrand').classList.add('on') },
 
     // Loop at 15s
     { at: 15000, do: () => restart() }
@@ -933,7 +842,7 @@ function restartAnim(elId, cls) {
 }
 
 function resetAllTexts() {
-  ['hookText1','hookText2','capEpic','capKiss','capParty','taglineText','ctaLogo','ctaUrl','ctaSub','ctaBrand'].forEach(id => {
+  ['hookText1','hookText2','capEpic','capKiss','capParty','taglineText','ctaUrl','ctaSub','ctaBrand'].forEach(id => {
     const el = document.getElementById(id); if (el) el.classList.remove('on');
   });
   const d20 = document.getElementById('d20wrap'); if (d20) d20.classList.remove('tumble','landed');

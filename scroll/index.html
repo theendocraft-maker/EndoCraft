@@ -1170,11 +1170,6 @@ body {
         <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:4px;">✦ SEALED</div>
         <div id="cardSubSuccessTitle" style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">Your card is yours. Forever.</div>
         <div id="cardSubSuccessSub" style="font-size:12px;color:var(--text-dim);">We'll notify you when new features drop. Scroll down to see the Certificate.</div>
-        <div id="cardShareRow" style="display:none;gap:8px;margin-top:14px;flex-wrap:wrap;">
-          <button id="cardShareCopyBtn" onclick="copyCardShareLink(this)" style="flex:2;min-width:130px;background:rgba(232,184,109,.18);border:1px solid rgba(232,184,109,.5);color:#E8B86D;padding:11px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;">📋 Copy share link</button>
-          <a id="cardShareTwitter" href="#" target="_blank" rel="noopener" style="flex:1;min-width:70px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);padding:11px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;text-align:center;transition:all .15s;">𝕏 Post</a>
-          <a id="cardSharePreview" href="#" target="_blank" rel="noopener" style="flex:1;min-width:70px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);padding:11px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;text-align:center;transition:all .15s;">↗ Preview</a>
-        </div>
       </div>
     </div>
 
@@ -1810,6 +1805,13 @@ async function generateSessionImage(data, story) {
           img.style.opacity = '1';
           const ph = document.getElementById('tcImgPlaceholder');
           if (ph) { ph.style.opacity = '0'; setTimeout(() => ph.style.display='none', 500); }
+          // Pre-save the card anonymously so the share URL is ready BEFORE user clicks anything.
+          // This fixes the "2-click copy" bug on iOS — clipboard.writeText needs a synchronous
+          // user gesture, but if we have to await a fetch first, the gesture context is lost.
+          // With pre-save, the first Share click is instant copy.
+          if (typeof preSaveAnonCard === 'function') {
+            setTimeout(() => preSaveAnonCard(d.url), 600); // small delay so card data has settled
+          }
           done();
         };
         img.onerror = () => { console.warn('[IMG] onerror — continuing anyway'); done(); };
@@ -2042,15 +2044,48 @@ function buildCardPayload() {
   };
 }
 
-// Anon share — saves the card to DB without email, then copies the share URL.
-// If a card has already been saved (anon or committed), just copies again.
-async function shareCard(btn) {
+// Pre-save the card anonymously as soon as the image loads. This happens silently in the
+// background so that by the time the user clicks the Share button, the URL is already cached
+// in window._cardShareUrl and we can do a synchronous clipboard write from the click gesture
+// (required by iOS Safari's clipboard permissions model).
+let _preSaveInFlight = false;
+async function preSaveAnonCard(imageUrl) {
+  if (window._cardShareUrl || window._currentCardId || _preSaveInFlight) return;
+  _preSaveInFlight = true;
+  try {
+    const payload = buildCardPayload();
+    if (imageUrl) payload.image_url = imageUrl;
+    const res = await fetch('https://endocraft-production.up.railway.app/api/save-card', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ card: payload })  // no email → anon save
+    });
+    const data = await res.json();
+    if (data && data.ok && data.card && data.card.id) {
+      window._currentCardId = data.card.id;
+      window._cardShareUrl = 'https://endocraft-production.up.railway.app/c/' + data.card.id;
+      console.log('[SHARE] pre-save ready, URL cached');
+    }
+  } catch (e) {
+    console.warn('[SHARE] pre-save failed (share button will fall back to async flow)', e);
+  } finally {
+    _preSaveInFlight = false;
+  }
+}
+
+// Share button click — synchronous when URL is cached (works on iOS), async fallback otherwise.
+function shareCard(btn) {
   if (!btn) return;
-  // Already shared in this session → just copy the existing URL
+  // Fast path: URL already cached from pre-save → synchronous clipboard write, user gesture preserved
   if (window._cardShareUrl) {
     copyCardShareLink(btn);
     return;
   }
+  // Fallback async path — only hits on first-load race conditions before pre-save finishes
+  shareCardAsync(btn);
+}
+
+async function shareCardAsync(btn) {
   const orig = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Preparing link…';
@@ -2058,7 +2093,7 @@ async function shareCard(btn) {
     const res = await fetch('https://endocraft-production.up.railway.app/api/save-card', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ card: buildCardPayload() })  // no email → anon save
+      body: JSON.stringify({ card: buildCardPayload() })
     });
     const data = await res.json();
     if (!data.ok || !data.card || !data.card.id) throw new Error(data.error || 'save failed');
@@ -2066,8 +2101,7 @@ async function shareCard(btn) {
     window._cardShareUrl = 'https://endocraft-production.up.railway.app/c/' + data.card.id;
     btn.textContent = orig;
     btn.disabled = false;
-    copyCardShareLink(btn);  // performs the actual copy + shows feedback
-    showShareUpsell();        // gentle nudge to seal for collection
+    copyCardShareLink(btn);
   } catch (e) {
     btn.disabled = false;
     btn.textContent = 'Retry share';
@@ -2194,24 +2228,12 @@ async function saveCard() {
     }
   } catch(e) { /* non-fatal */ }
 
-  // Wire up share buttons with the REAL card id — OG-tagged share page lives on Railway
+  // Wire up share state with the REAL card id from the seal response.
+  // The actual share button lives in tcActions (above) — this just keeps its cached URL in sync.
   try {
     if (result && result.card && result.card.id) {
       window._currentCardId = result.card.id;
-      const shareUrl = 'https://endocraft-production.up.railway.app/c/' + result.card.id;
-      window._cardShareUrl = shareUrl;
-      const cardNameNow = document.getElementById('tcName')?.textContent || 'a legendary moment';
-      const momentNow = document.getElementById('tcMoment')?.textContent || '';
-      const tweetText = encodeURIComponent(
-        (momentNow ? '"' + momentNow.slice(0, 120) + '" — ' : '') +
-        cardNameNow + ' · sealed on EndoCraft 🎲'
-      );
-      const tw = document.getElementById('cardShareTwitter');
-      if (tw) tw.href = 'https://twitter.com/intent/tweet?text=' + tweetText + '&url=' + encodeURIComponent(shareUrl);
-      const pv = document.getElementById('cardSharePreview');
-      if (pv) pv.href = shareUrl;
-      const shareRow = document.getElementById('cardShareRow');
-      if (shareRow) shareRow.style.display = 'flex';
+      window._cardShareUrl = 'https://endocraft-production.up.railway.app/c/' + result.card.id;
     }
   } catch(e) { console.warn('[SHARE] wiring failed', e); }
 
