@@ -124,73 +124,89 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
 .misprint-card {
   position: relative;
   width: min(62%, 260px); aspect-ratio: 3/4;
-  border-radius: 14px; overflow: hidden;
-  background: #0a0404;
-  /* Premium misprint aesthetic: thin gold rim (brand signal) + subtle inner red hint + ambient red haze.
-     Feels like "rare collectible with damage printing", NOT like "ERROR badge". */
+  border-radius: 10px; overflow: hidden;
+  background: #0a0604;
+  /* HEIRLOOM AESTHETIC — the card feels like a preserved artifact, not a printed product.
+     Double gold rim (outer warm + inner deep), soft ambient warm glow, deep shadow underneath
+     as if resting on dark velvet. Misprint vibe = rare patina, not printing defect. */
   box-shadow:
-    0 0 0 1px rgba(232,184,109,.45),
-    inset 0 0 0 1px rgba(224,74,58,.22),
-    0 20px 60px rgba(0,0,0,.95),
-    0 0 110px rgba(224,74,58,.18);
+    0 0 0 1px rgba(232,184,109,.55),
+    0 0 0 3px rgba(20,14,8,.95),
+    0 0 0 4px rgba(176,130,70,.35),
+    inset 0 0 0 1px rgba(232,184,109,.18),
+    inset 0 0 40px rgba(40,20,10,.6),
+    0 24px 70px rgba(0,0,0,.96),
+    0 0 120px rgba(232,184,109,.12);
   opacity: 0; transform: scale(.6) rotate(-3deg);
 }
-.misprint-card.snap { animation: cardSnap .45s cubic-bezier(.2,1.4,.3,1) forwards, misprintGlitch 2.4s steps(20) .45s infinite; }
+.misprint-card.snap { animation: cardSnap .45s cubic-bezier(.2,1.4,.3,1) forwards, heirloomShimmer 5s ease-in-out .45s infinite; }
 @keyframes cardSnap {
   0%   { opacity: 0; transform: scale(.6) rotate(-3deg); filter: blur(8px); }
   60%  { opacity: 1; transform: scale(1.08) rotate(1.5deg); filter: blur(0); }
   80%  { transform: scale(.97) rotate(-.5deg); }
   100% { transform: scale(1) rotate(0); }
 }
-/* Jittery CMYK-style glitch — continues through scene lifetime.
-   CRITICAL: every keyframe MUST specify opacity + transform explicitly. Otherwise CSS falls back
-   to the .misprint-card base rule (opacity:0, scale:.6) during gaps, making the card disappear. */
-@keyframes misprintGlitch {
-  0%, 88%, 100% {
-    filter: none;
-    opacity: 1;
-    transform: scale(1) rotate(0deg) translate(0,0);
-  }
-  89% {
-    filter: hue-rotate(10deg) brightness(1.1);
-    opacity: 1;
-    transform: scale(1) rotate(0deg) translate(1px,0);
-  }
-  91% {
-    filter: hue-rotate(-20deg) brightness(.95) saturate(1.2);
-    opacity: 1;
-    transform: scale(1) rotate(0deg) translate(-1px, 1px);
-  }
-  93% {
-    filter: none;
+/* Subtle breathing shimmer — like candlelight on a held relic, slow and organic.
+   Replaces the old CMYK-glitch. Every keyframe must specify opacity+transform explicitly
+   so the animation doesn't fall back to the .misprint-card base (opacity:0, scale:.6). */
+@keyframes heirloomShimmer {
+  0%, 100% {
+    filter: brightness(1) contrast(1);
     opacity: 1;
     transform: scale(1) rotate(0deg);
   }
+  50% {
+    filter: brightness(1.06) contrast(1.02);
+    opacity: 1;
+    transform: scale(1.004) rotate(0deg);
+  }
 }
-.misprint-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.7) contrast(1.1); }
-/* CMYK chromatic ghost layers — duplicated text halos */
+.misprint-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; filter: saturate(.82) contrast(1.06) sepia(.08); }
+/* Warm aged-parchment grain + subtle CMYK ghost (VERY subtle now — just enough to signal misprint without screaming defect) */
 .misprint-card::before {
   content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  mix-blend-mode: screen;
   background:
-    linear-gradient(to bottom, transparent 40%, rgba(0,224,255,.06) 45%, transparent 55%),
-    linear-gradient(to bottom, rgba(255,0,80,.05) 60%, transparent 70%);
+    /* faint chromatic ghost — signal "misprint" softly */
+    linear-gradient(to bottom, transparent 48%, rgba(0,180,220,.025) 50%, transparent 52%),
+    /* parchment warmth wash */
+    radial-gradient(ellipse at center, rgba(232,184,109,.08) 0%, transparent 70%),
+    /* vignette */
+    radial-gradient(ellipse at center, transparent 40%, rgba(20,10,4,.35) 100%);
 }
+/* Aged paper fiber texture using tiny noise-like gradient stack */
 .misprint-card::after {
-  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: linear-gradient(to bottom, rgba(10,4,4,.4) 0%, transparent 35%, transparent 60%, rgba(10,4,4,.95) 100%);
+  content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(14,8,4,.35) 0%, transparent 28%, transparent 58%, rgba(14,8,4,.92) 100%),
+    repeating-linear-gradient(45deg, rgba(255,230,180,.015) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-45deg, rgba(40,20,10,.02) 0 1px, transparent 1px 4px);
 }
 .misprint-pill {
   position: absolute; top: 10px; left: 10px; z-index: 5;
-  background: rgba(10,2,2,.9); border: 1px solid rgba(224,74,58,.6);
-  color: #E04A3A; font-family: 'Cinzel', serif; font-weight: 700;
-  font-size: 9px; letter-spacing: 2px; padding: 4px 10px; border-radius: 20px;
+  background: rgba(20,12,6,.88); border: 1px solid rgba(232,184,109,.5);
+  color: rgba(232,184,109,.95); font-family: 'Cinzel', serif; font-weight: 700;
+  font-size: 8px; letter-spacing: 2.5px; padding: 4px 9px; border-radius: 2px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 3px rgba(0,0,0,.6);
 }
-.misprint-labels { position: absolute; bottom: 14px; left: 0; right: 0; z-index: 5; padding: 0 14px; text-align: left; }
-.ml-class { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 2.5px; color: rgba(224,74,58,.85); margin-bottom: 3px; }
-.ml-name { font-family: 'Cinzel Decorative', serif; font-size: 22px; font-weight: 900; color: #ff8070; line-height: 1; margin-bottom: 4px; text-shadow: 1px 0 rgba(0,224,255,.4), -1px 0 rgba(255,0,80,.4); }
-.ml-title { font-family: 'DM Sans', sans-serif; font-style: italic; font-size: 10px; color: rgba(255,220,200,.55); margin-bottom: 6px; }
-.ml-serial { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: rgba(224,74,58,.8); }
+/* Tiny wax-seal-style mark in the top-right corner — "sealed" artifact signal */
+.misprint-card .seal-mark {
+  position: absolute; top: 10px; right: 10px; z-index: 5;
+  width: 26px; height: 26px;
+  background: radial-gradient(circle, #b84230 20%, #7a2818 70%, #4a1810 100%);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,.7), inset 0 1px 2px rgba(255,180,140,.25), inset 0 -2px 3px rgba(0,0,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 11px;
+  color: rgba(255,220,180,.85);
+  text-shadow: 0 1px 1px rgba(0,0,0,.5);
+}
+.misprint-labels { position: absolute; bottom: 16px; left: 0; right: 0; z-index: 5; padding: 0 16px; text-align: left; }
+.ml-class { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 3px; color: rgba(232,184,109,.85); margin-bottom: 4px; text-transform: uppercase; }
+.ml-name { font-family: 'Cinzel Decorative', serif; font-size: 22px; font-weight: 900; color: rgba(248,228,188,.98); line-height: 1; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,.8), 0 0 18px rgba(232,184,109,.35); letter-spacing: .5px; }
+.ml-title { font-family: 'EB Garamond', 'DM Sans', serif; font-style: italic; font-size: 10px; color: rgba(240,220,190,.75); margin-bottom: 8px; letter-spacing: .3px; }
+.ml-serial { font-family: 'Cinzel', serif; font-size: 7.5px; letter-spacing: 2.5px; color: rgba(232,184,109,.78); text-transform: uppercase; }
+.ml-divider { width: 32px; height: 1px; background: linear-gradient(90deg, rgba(232,184,109,.6), transparent); margin: 0 0 6px; }
 .reveal-text {
   font-family: 'Inter', sans-serif; font-weight: 900;
   font-size: clamp(26px, 7vw, 40px);
@@ -483,12 +499,12 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
   <div class="setup-header">
     <div class="sub">✦ Legendary Cards Series · Folge 1</div>
     <h1>NAT 1.</h1>
-    <div class="spot-title">~15s · 9:16 · raw TikTok format</div>
+    <div class="spot-title">~16s · 9:16 · raw TikTok format</div>
   </div>
   <div class="setup-concept">
     <strong>Concept:</strong> "You Shall Not Pass!" D&D-parody as Folge 1 der Legendary Cards Series. Wizard Lyrin schreit den epischen Gandalf-Moment — bandit sagt "'scuse me" und läuft vorbei. Payoff: es war nur eine 3ft-Holzbrücke über 'nen Bach. Ends with comment-bait CTA: "Drop your most dramatic D&D moment 👇 best one becomes next video's card." — User <strong>folgen weil sie in Folge 2 dabei sein könnten.</strong>
     <br><br>
-    <strong>5-Shot-Storytelling:</strong> Dramatic Pose → Shocked Reaction → Bandit Close-Up → Wide Bridge Reveal (Money Shot) → Card Portrait. Jeder Shot dient einem narrative beat.
+    <strong>5-Shot-Storytelling:</strong> Dramatic Pose → Shocked Reaction → Bandit Close-Up → Wide Bridge Reveal (Money Shot) → <em>Card Art: The Footbridge Incident (preserved memory)</em>. Der letzte Shot IST der Moment selbst — als Heirloom-Artwork auf der Karte konserviert. Das macht den Claim "seal your moment" sichtbar statt nur behauptet.
   </div>
 
   <div class="shot-grid" id="shotGrid"></div>
@@ -565,15 +581,17 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
       <div class="reveal-stage">
         <div class="misprint-card" id="misprintCard">
           <img id="cardImg" alt="">
-          <div class="misprint-pill">⚠ MISPRINT</div>
+          <div class="misprint-pill">MISPRINT · NAT 1</div>
+          <div class="seal-mark" title="Sealed">✦</div>
           <div class="misprint-labels">
             <div class="ml-class" id="mlClass">Half-Elf Wizard · Lv VII</div>
+            <div class="ml-divider"></div>
             <div class="ml-name" id="mlName">Lyrin</div>
             <div class="ml-title" id="mlTitle">The Footbridge Incident</div>
-            <div class="ml-serial" id="mlSerial">Nº 1 of 300 · SEALED</div>
+            <div class="ml-serial" id="mlSerial">Nº 1 of 300 · SEALED FOREVER</div>
           </div>
         </div>
-        <div class="reveal-text" id="revealText">now it's a card.</div>
+        <div class="reveal-text" id="revealText">a moment · preserved.</div>
       </div>
     </div>
 
@@ -685,10 +703,10 @@ const SHOTS = [
     targetImg: ['bridgeImg']
   },
   {
-    slug: 'wizard-card-portrait',
-    name: 'Lyrin — Card Portrait',
+    slug: 'card-art-footbridge-incident',
+    name: '🏛 Card Art — The Footbridge Incident (Preserved Memory)',
     width: 1440, height: 2560,
-    prompt: `Medium shot portrait, framed from head to waist. Character: same 28-year-old female half-elf wizard named Lyrin with identical features for visual continuity — strikingly beautiful in an elegant elven way with high sharp cheekbones and confident graceful bone structure, oval face, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with wavy texture and a single striking silver-white streak running from her left temple all the way down to the tip, ends singed black subtly, pale fair porcelain skin with subtle soot smudge on her left cheek, heterochromia — left eye warm hazel, right eye pale silver-gray — gazing slightly off-camera to the left with weary wisdom and quiet resilience, dark arched eyebrows, full soft lips in subtle mysterious half-smile, small delicate celestial rune tattooed at her left temple just visible past her hair, subtle beauty mark just below her right eye, small silver moon-and-star pendant on thin chain at her throat. Outfit: elegant midnight blue wizard robe with intricate silver celestial embroidery (stars, moons, constellations) tailored form-fitting cut still beautiful despite burned tattered edges at the shoulders and cuffs, thin silver belt, leather-bound spellbook with burned cover visible hanging at her hip. Emotion: contemplative weary dignity, confident mysterious half-smile, survived-something-terrible expression, quietly resilient and magnetic. Environment: standing centered in a dark arcane study chamber, background softly out of focus showing faint glowing silver-blue arcane runes carved into stone walls, warm ember particles gently floating in the air around her in soft bokeh, atmospheric mist. Lighting: flattering warm dramatic fantasy lighting from front-left casting gentle shadow on right side of her face, soft volumetric light rays catching the silver streak in her hair, subtle rim-light defining her silhouette, shallow depth of field, face positioned in upper third of vertical frame, generous empty space below for text overlay, darker vignette along bottom third. Composition: centered, portrait, head-to-waist, no hands in frame, no objects held in hands. cinematic fantasy, photorealistic, 8K, sharp focus on face and upper body, shallow depth of field, magazine-cover quality, no text, no watermark, no deformed hands, no visible hands, no blur`,
+    prompt: `Medium-wide cinematic fantasy scene, vertical portrait composition (3:4 card framing), painterly-photorealistic style with the quiet warmth of a preserved memory — as if this moment was carefully illustrated by a painter years later from a traveler's anecdote. A frozen-in-time comedic tableau on a very small wooden footbridge: On the left, Lyrin — a 28-year-old female half-elf wizard with identical features for visual continuity — strikingly beautiful with oval face and high sharp cheekbones, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with a single silver-white streak from left temple to tip caught mid-motion by wind, pale porcelain skin, heterochromia (left eye warm hazel, right eye pale silver-gray), small celestial rune tattooed at left temple, small silver moon-and-star pendant at throat, midnight blue wizard robe with silver celestial embroidery (stars, moons, constellations), cape flowing — captured mid-"You Shall Not Pass" heroic pose, staff raised high with both hands above her head, feet planted in commanding stance, fierce determined expression, full body visible. Beside her on the right, walking past with complete polite disinterest, Garrick — a 40-year-old human male bandit in worn brown leather armor over stained linen undershirt, salt-and-pepper 4-day stubble, crooked twice-broken nose, small thin scar across left cheek, short dark-brown hair messily swept back, small gold hoop earring — head turned just slightly toward her in a mild courteous nod, hands in his pockets, utterly unbothered, a small everyday person minding his own business. The footbridge itself is deliberately TINY AND MUNDANE — only 3 feet long, built of simple weathered wooden planks with a low rope railing, crossing a peaceful shallow creek no more than a foot deep, clear water flowing gently over smooth round pebbles visible beneath. Environment: mossy sunlit forest path, soft green foliage, dappled golden afternoon light filtering through the tree canopy, gentle atmospheric haze, one or two slow-drifting dandelion seeds suspended in the warm air — peaceful ordinary nature setting, the comedic contrast lies in her theatrical pose versus this completely peaceful scene. Lighting: warm golden-hour backlight from the upper right behind the trees, soft volumetric light rays diffusing through leaves, nostalgic sepia-golden color grade, gentle chiaroscuro, cinematic oil-painting-grade atmospheric light while remaining photorealistic — the image should feel like a treasured memory held up to the light. Composition: vertical portrait 3:4 orientation, both characters fully visible in full-body medium-wide framing in upper 60% of image, footbridge and creek in middle ground, lower 35% of image naturally falls into softer shadow and muted bokeh for card text labels to sit cleanly. Mood: quiet comedy preserved with reverence, a remembered moment turned into heirloom art, bittersweet-warm-funny. cinematic fantasy, photorealistic with painterly warmth, 8K, sharp focus on both characters, shallow depth of field, golden-hour nostalgia, no text, no watermark, no deformed hands, no blur`,
     targetImg: ['cardImg']
   }
 ];
@@ -807,19 +825,21 @@ function buildTimeline() {
     // ACT 5: SELF-AWARE (8.3–10s) — quiet contemplative punchline
     { at: 8300,  do: () => { show('sceneSelfAware'); document.getElementById('awareText').classList.add('on'); } },
 
-    // ACT 6: CARD REVEAL (10–11.8s) — the moment becomes "The Footbridge Incident"
+    // ACT 6: CARD REVEAL (10–12.6s) — the moment becomes "The Footbridge Incident"
+    //   Extended dwell vs earlier cut — heirloom aesthetic needs to breathe.
+    //   Viewer should feel the card is a real artifact being presented, not flashed.
     { at: 10000, do: () => { fireFlash(); show('sceneCardReveal'); const c = document.getElementById('misprintCard'); if (c) { c.classList.remove('snap'); void c.offsetWidth; c.classList.add('snap'); } } },
 
-    // ACT 7: COMMENT BAIT (11.8–14s) — THE FOLLOW-TRIGGER
-    { at: 11800, do: () => { fireFlash(); show('sceneBait'); document.getElementById('baitKicker').classList.add('on'); } },
-    { at: 12100, do: () => document.getElementById('baitTitle').classList.add('on') },
-    { at: 12700, do: () => document.getElementById('baitSub').classList.add('on') },
+    // ACT 7: COMMENT BAIT (12.6–14.8s) — THE FOLLOW-TRIGGER
+    { at: 12600, do: () => { fireFlash(); show('sceneBait'); document.getElementById('baitKicker').classList.add('on'); } },
+    { at: 12900, do: () => document.getElementById('baitTitle').classList.add('on') },
+    { at: 13500, do: () => document.getElementById('baitSub').classList.add('on') },
 
-    // ACT 8: CTA (14–15s)
-    { at: 14000, do: () => { show('sceneCta'); document.getElementById('ctaUrl').classList.add('on'); } },
+    // ACT 8: CTA (14.8–16s)
+    { at: 14800, do: () => { show('sceneCta'); document.getElementById('ctaUrl').classList.add('on'); } },
 
-    // Loop at 15s
-    { at: 15000, do: () => restart() }
+    // Loop at 16s
+    { at: 16000, do: () => restart() }
   ];
 }
 
@@ -857,7 +877,7 @@ function tick() {
   timeline.forEach((entry, i) => {
     if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
   });
-  document.getElementById('progressBar').style.width = Math.min(100, (t / 15000) * 100) + '%';
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 16000) * 100) + '%';
   rafId = requestAnimationFrame(tick);
 }
 
