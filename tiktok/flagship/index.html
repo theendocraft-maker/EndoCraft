@@ -141,6 +141,81 @@ html, body {
 .d20-img:not([src]),
 .d20-img[src=""] { opacity: 0; }
 
+/* ═══════════════ OPENING HAMMER — Hero-Card-as-Hook ═══════════════
+   Replaces the old D20 opening. Uses the caspian-hero image as the opening visual.
+   Extra-dramatic reveal: gold burst explodes outward + card scales in with overshoot +
+   dual holo sweep + pulsing glow. Heavier FX than any later card reveal in the spot. */
+.opening-burst {
+  position: absolute; top: 50%; left: 50%;
+  width: 10px; height: 10px; border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, rgba(255,240,180,.75) 0%, rgba(232,184,109,.35) 40%, transparent 70%);
+  pointer-events: none; opacity: 0;
+}
+#sceneHook.on .opening-burst { animation: openingBurst 1.6s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes openingBurst {
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(50); }
+}
+
+.opening-card {
+  position: relative;
+  width: min(72%, 310px);
+  aspect-ratio: 3/4;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0a0610;
+  opacity: 0;
+  transform: scale(.45) rotate(-4deg);
+  box-shadow:
+    0 0 0 1.5px rgba(232,184,109,.55),
+    0 24px 60px rgba(0,0,0,.95),
+    0 0 100px rgba(232,184,109,.4);
+}
+#sceneHook.on .opening-card {
+  animation:
+    openingCardReveal 1.3s cubic-bezier(.15,1.35,.3,1.02) forwards,
+    openingCardPulse 2.8s ease-in-out 1.3s infinite;
+}
+@keyframes openingCardReveal {
+  0%   { opacity: 0; transform: scale(.45) rotate(-4deg); filter: blur(14px) brightness(.3); }
+  30%  { opacity: 1; filter: blur(6px) brightness(.7); }
+  55%  { transform: scale(1.08) rotate(1.5deg); filter: blur(0) brightness(1.1); }
+  70%  { transform: scale(.96) rotate(-.5deg); }
+  85%  { transform: scale(1.02) rotate(.3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0) brightness(1); }
+}
+@keyframes openingCardPulse {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.55), 0 24px 60px rgba(0,0,0,.95), 0 0 100px rgba(232,184,109,.35); }
+  50%      { box-shadow: 0 0 0 3px rgba(232,184,109,.95), 0 24px 60px rgba(0,0,0,.95), 0 0 200px rgba(232,184,109,.75); }
+}
+.opening-card-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+}
+/* Subtle vignette so edges feel richer */
+.opening-card-glow {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, transparent 55%, rgba(6,3,0,.55) 90%, rgba(4,2,0,.9) 100%);
+}
+/* Holo shimmer — dual-sweep (2 passes over ~2.4s for extra wow) */
+.opening-card-holo {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,245,210,.0) 45%, rgba(255,250,220,.7) 50%, rgba(255,245,210,.0) 55%, transparent 70%);
+  transform: translateX(-130%);
+  mix-blend-mode: screen;
+}
+#sceneHook.on .opening-card-holo { animation: openingHolo 2.4s cubic-bezier(.3,.55,.35,1) .6s 1; }
+@keyframes openingHolo {
+  0%   { transform: translateX(-130%); }
+  45%  { transform: translateX(130%); }
+  55%  { transform: translateX(-130%); }
+  100% { transform: translateX(130%); }
+}
+
 /* Landing impact — expanding gold ring shockwave centered on the die */
 .d20-impact {
   position: absolute; top: 50%; left: 50%;
@@ -347,36 +422,32 @@ html, body {
 
 /* ── FINAL CTA ── */
 .cta-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 0 14px; background: radial-gradient(ellipse at center, #0c0818 0%, #000 80%); }
-/* URL — very conservative sizing + gold-shimmer shine effect on reveal.
-   Cinzel Decorative is wide + letter-spacing hurt. On 393px viewport: 7vw = 27.5px, no letter-spacing
-   → "endocraft.app" fits in ~290px with room to breathe. */
+/* URL — solid gold + brightness-pulse on reveal. Previous gradient-clip-text caused overflow/clipping
+   issues on iOS Safari. This version is reliable, readable, and still has the "shine" via filter pulse. */
 .cta-url {
-  position: relative;
   font-family: 'Cinzel Decorative', serif; font-weight: 900;
-  font-size: clamp(22px, 7vw, 40px);
+  font-size: clamp(20px, 6.5vw, 38px);
   letter-spacing: 0;
-  max-width: 100%; white-space: nowrap; overflow: hidden;
-  /* Gold gradient fill (base + shimmer will sweep through via background-position animation) */
-  background: linear-gradient(90deg,
-    #E8B86D 0%, #E8B86D 35%,
-    #FFF4CC 48%, #FFFFFF 50%, #FFF4CC 52%,
-    #E8B86D 65%, #E8B86D 100%);
-  background-size: 220% 100%;
-  background-position: 0% 0%;
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: transparent;
-  filter: drop-shadow(0 0 28px rgba(232,184,109,.55)) drop-shadow(0 0 60px rgba(232,184,109,.35));
+  color: #E8B86D;
+  text-shadow:
+    0 0 24px rgba(232,184,109,.7),
+    0 0 60px rgba(232,184,109,.35),
+    0 2px 10px rgba(0,0,0,.85);
+  max-width: 95%;
+  white-space: nowrap;
   opacity: 0; transform: translateY(10px);
   transition: opacity .7s ease, transform .8s cubic-bezier(.23,1.3,.32,1);
 }
 .cta-url.on {
   opacity: 1; transform: translateY(0);
-  animation: ctaGoldShine 2.4s cubic-bezier(.3,.6,.3,1) .3s 1;
+  animation: ctaGoldPulse 2.4s ease-out .3s 1;
 }
-@keyframes ctaGoldShine {
-  0%   { background-position: 100% 0%; }
-  60%  { background-position: 0% 0%; }
-  100% { background-position: -100% 0%; }
+/* Gold-pulse: brightness + glow-intensity sweeps up then settles. Reads as "gold shine" without needing
+   background-clip tricks that break on some browsers. */
+@keyframes ctaGoldPulse {
+  0%   { filter: brightness(1) drop-shadow(0 0 8px rgba(232,184,109,.5)); }
+  35%  { filter: brightness(1.35) drop-shadow(0 0 28px rgba(255,230,160,.95)); }
+  100% { filter: brightness(1) drop-shadow(0 0 12px rgba(232,184,109,.55)); }
 }
 .cta-sub { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(15px, 4.4vw, 22px); color: rgba(255,245,220,.85); max-width: 90%; line-height: 1.3; opacity: 0; transform: translateY(8px); transition: opacity .5s ease .2s, transform .6s cubic-bezier(.23,1.3,.32,1) .2s; padding: 0 8px; }
 .cta-sub.on { opacity: 1; transform: translateY(0); }
@@ -498,11 +569,14 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
     <div class="scene" id="sceneHook">
       <div class="hook-stage">
         <div id="hookParticles"></div>
-        <div class="d20-wrap" id="d20wrap">
-          <!-- Photoreal D20 generated via Seedream — premium-quality hook hero -->
-          <img class="d20-img" id="d20Img" alt="D20">
-          <!-- Landing impact shockwave ring -->
-          <div class="d20-impact"></div>
+        <!-- OPENING HAMMER — the hero card itself IS the hook. No D20. Most dramatic visual the spot has,
+             delivered in frame 1 — max stopping power for the TikTok scroll. Uses same caspian-hero image
+             as the later payoff scene, so it's one generation cost but double narrative impact. -->
+        <div class="opening-burst" id="openingBurst"></div>
+        <div class="opening-card" id="openingCard">
+          <img class="opening-card-img" id="openingCardImg" alt="">
+          <div class="opening-card-glow"></div>
+          <div class="opening-card-holo"></div>
         </div>
         <div class="hook-text-wrap">
           <div class="hook-text" id="hookText1">one roll.</div>
@@ -661,19 +735,15 @@ function applyStaticOverrides() {
 // SHOT PROMPTS — only 4 unique images needed
 // ═══════════════════════════════════════════════
 const SHOTS = [
-  {
-    slug: 'd20-hero',
-    name: 'D20 (hook icon)',
-    width: 2048, height: 2048,
-    prompt: `Extreme close-up of a single large D20 twenty-sided dice resting on a worn wooden tavern table, polished dark obsidian material with gold numerical engravings, the number 20 clearly displayed on the top facing face, warm candlelight illuminating the scene from the side casting dramatic gold reflections on the metallic edges, atmospheric firelit tavern interior softly blurred in the background with bokeh, hanging oil lanterns visible as warm light orbs out of focus, ambient gold dust particles floating around, cinematic fantasy product shot, photorealistic 8K, sharp focus on the dice, shallow depth of field, premium metallic sheen, warm cinematic color grade matching a cozy fantasy tavern mood, no additional numbers or text visible anywhere, no watermark, no logos, no characters, no hands`,
-    targetImg: ['d20Img']
-  },
+  // NOTE: d20-hero shot removed — the Opening Hammer now uses caspian-hero as the opening visual.
+  // One less image to generate. If you ever want to re-enable a D20 opening, restore the shot here
+  // and swap the #openingCard markup back to the .d20-wrap version.
   {
     slug: 'caspian-hero',
     name: 'Caspian Hero Card',
     width: 1440, height: 2560,
     prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot framed from head to waist, face positioned in upper third of frame, centered composition, generous empty space below, darker vignette on bottom, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
-    targetImg: ['heroCardImg']
+    targetImg: ['heroCardImg', 'openingCardImg']
   },
   {
     slug: 'caspian-epic',
@@ -864,11 +934,10 @@ async function downloadOne(slug) {
 // ═══════════════════════════════════════════════════════════════════════════
 function buildTimeline() {
   return [
-    // ─── ACT 1: HOOK (0–3.2s) — D20 cinematic entry, two hook lines ───
-    // D20 appears near full-size immediately (no tiny-zoom), with atmospheric fade-in + breathe.
-    { at: 0,     do: () => { show('sceneHook'); spawnHookParticles(); triggerD20(); } },
-    { at: 1200,  do: () => { document.getElementById('d20wrap').classList.add('landed'); } },
-    { at: 600,   do: () => { document.getElementById('hookText1').classList.add('on'); } },
+    // ─── ACT 1: OPENING HAMMER (0–3.2s) — Hero-Card explodes into frame ───
+    // No D20. The card itself IS the hook. Gold burst + scale-overshoot + holo-sweep in frame 1.
+    { at: 0,     do: () => { show('sceneHook'); spawnHookParticles(); } },
+    { at: 700,   do: () => { document.getElementById('hookText1').classList.add('on'); } },
     { at: 2000,  do: () => { document.getElementById('hookText1').classList.remove('on'); document.getElementById('hookText2').classList.add('on'); } },
 
     // ─── ACT 2: MONTAGE (3.2–6.6s) — 3 photo beats ~1.1s visibility each (was .65s) ───
@@ -955,7 +1024,15 @@ function tick() {
 
 // Scene helpers
 function hideAllScenes() { document.querySelectorAll('.scene').forEach(el => el.classList.remove('on')); }
-function show(id) { hideAllScenes(); const el = document.getElementById(id); if (el) el.classList.add('on'); }
+function show(id) {
+  hideAllScenes();
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Force reflow between class removal (via hideAllScenes) and re-add, so CSS animations
+  // inside this scene restart cleanly on loop iterations.
+  void el.offsetWidth;
+  el.classList.add('on');
+}
 
 // Fire a brief cinematic white-gold flash overlay — use on rapid cuts
 function fireSceneFlash() {
@@ -974,7 +1051,6 @@ function resetAllTexts() {
   ['hookText1','hookText2','capEpic','capKiss','capParty','taglineText','ctaUrl','ctaSub','ctaBrand'].forEach(id => {
     const el = document.getElementById(id); if (el) el.classList.remove('on');
   });
-  const d20 = document.getElementById('d20wrap'); if (d20) d20.classList.remove('tumble','landed');
   const hero = document.getElementById('heroCard'); if (hero) hero.classList.remove('enter','swept');
   const hp = document.getElementById('hookParticles'); if (hp) hp.innerHTML = '';
   const tp = document.getElementById('taglineParticles'); if (tp) tp.innerHTML = '';
