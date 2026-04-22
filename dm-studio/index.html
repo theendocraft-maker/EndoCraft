@@ -3,291 +3,421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft DM Studio — AI Co-DM</title>
-<meta name="description" content="Your AI co-DM. Chat with a partner who knows your entire campaign, generates scene art, and remembers every session.">
-<link rel="icon" href="/favicon.ico">
+<title>EndoCraft DM Studio — Your AI Co-DM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
-<!-- Plausible -->
 <script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
-<script>
-  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-  plausible.init()
-</script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
+
+/* ═══════ PARCHMENT / BOOK THEME ═══════ */
 :root{
-  --bg:#0a0a0f;
-  --bg2:#111118;
-  --surface:#1a1a24;
-  --surface-2:#22222e;
-  --text:#f0eff4;
-  --text-dim:rgba(255,255,255,0.5);
-  --text-dimmer:rgba(255,255,255,0.25);
-  --border:rgba(255,255,255,0.08);
-  --border-strong:rgba(255,255,255,0.14);
-  --accent:#7B6CF6;
-  --accent-dim:rgba(123,108,246,0.15);
-  --gold:#E8B86D;
-  --gold-dim:rgba(232,184,109,0.15);
-  --crimson:#E04A3A;
+  --bg:#f5ecd9;
+  --bg2:#ede2c4;
+  --surface:#fbf6e6;
+  --surface-2:#f0e6cf;
+  --text:#2a1e12;
+  --text-dim:rgba(42,30,18,0.62);
+  --text-dimmer:rgba(42,30,18,0.35);
+  --border:rgba(91,61,24,0.16);
+  --border-strong:rgba(91,61,24,0.28);
+  --accent:#6c5de4;
+  --accent-dim:rgba(108,93,228,0.12);
+  --gold:#a47626;
+  --gold-dim:rgba(164,118,38,0.15);
+  --gold-br:#c89340;
+  --crimson:#8B1A1A;
+  --crimson-dim:rgba(139,26,26,0.1);
+  --forest:#3a6b3a;
+  --ink:#1f1509;
+  --shadow-sm:0 1px 3px rgba(91,61,24,0.08);
+  --shadow-md:0 4px 14px rgba(91,61,24,0.12);
+  --shadow-lg:0 10px 40px rgba(91,61,24,0.18);
 }
+
 html,body{height:100%;overflow:hidden;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.55;display:flex;flex-direction:column;}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse at top left, rgba(164,118,38,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(91,61,24,0.06) 0%, transparent 55%);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;line-height:1.55;
+  display:flex;flex-direction:column;
+}
 
 /* ═══════ TOP BAR ═══════ */
 .topbar{
-  height:56px;flex-shrink:0;
-  display:flex;align-items:center;padding:0 22px;gap:18px;
-  background:rgba(10,10,15,0.75);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);z-index:10;
+  height:60px;flex-shrink:0;display:flex;align-items:center;padding:0 22px;gap:16px;
+  background:rgba(245,236,217,0.92);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);z-index:20;
 }
-.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);text-decoration:none;}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--ink);text-decoration:none;}
 .logo img{width:26px;height:26px;object-fit:contain;}
-.logo .sub{color:var(--text-dim);font-weight:400;font-size:13px;margin-left:6px;}
-.topbar-sep{width:1px;height:22px;background:var(--border);flex-shrink:0;}
+.logo .sub{color:var(--text-dim);font-weight:400;font-size:13px;margin-left:4px;}
+.topbar-sep{width:1px;height:24px;background:var(--border);flex-shrink:0;}
 
 .campaign-pill{
-  display:flex;align-items:center;gap:10px;
-  background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
-  padding:6px 12px 6px 14px;cursor:pointer;transition:border-color .2s;
+  display:flex;align-items:center;gap:10px;padding:6px 14px 6px 14px;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border-strong);cursor:pointer;transition:border-color .15s;
 }
-.campaign-pill:hover{border-color:rgba(232,184,109,.35);}
-.campaign-pill .dot{width:8px;height:8px;border-radius:50%;background:#4A8A4A;flex-shrink:0;box-shadow:0 0 8px rgba(74,138,74,.6);}
+.campaign-pill:hover{border-color:rgba(164,118,38,0.55);}
+.campaign-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--forest);box-shadow:0 0 6px rgba(58,107,58,0.5);}
 .campaign-pill-name{font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:1.8px;color:var(--gold);text-transform:uppercase;}
-.campaign-pill-meta{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-dim);font-style:italic;}
+.campaign-pill-meta{font-size:11px;color:var(--text-dim);font-style:italic;}
 
-.topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
-.btn-top{
-  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
-  padding:7px 14px;border-radius:8px;
-  background:rgba(255,255,255,0.04);border:1px solid var(--border-strong);color:var(--text-dim);
-  cursor:pointer;transition:all .15s;white-space:nowrap;
+/* Tab nav */
+.tabnav{display:flex;gap:4px;margin-left:8px;}
+.tab{
+  padding:8px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:.1px;
+  color:var(--text-dim);cursor:pointer;border-radius:9px;user-select:none;
+  display:flex;align-items:center;gap:7px;transition:all .15s;
 }
-.btn-top:hover{background:rgba(255,255,255,0.08);color:var(--text);}
+.tab:hover{color:var(--text);background:rgba(91,61,24,0.06);}
+.tab.active{color:var(--ink);background:var(--accent-dim);box-shadow:inset 0 0 0 1px rgba(108,93,228,0.3);}
+.tab .ico{font-size:15px;}
+
+.topbar-right{margin-left:auto;display:flex;gap:6px;align-items:center;}
+.btn-top{
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 13px;border-radius:8px;
+  background:transparent;border:1px solid var(--border-strong);color:var(--text);cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+}
+.btn-top:hover{background:var(--surface);border-color:var(--gold);}
 .btn-top.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-.btn-top.primary:hover{opacity:.92;background:var(--accent);}
+.btn-top.primary:hover{opacity:.92;}
 
-/* ═══════ MAIN LAYOUT ═══════ */
-.shell{flex:1;display:flex;min-height:0;}
+/* ═══════ VIEW SYSTEM ═══════ */
+.shell{flex:1;display:flex;min-height:0;overflow:hidden;}
+.view{flex:1;display:none;min-width:0;overflow:hidden;}
+.view.active{display:flex;}
 
-/* ═══════ LEFT SIDEBAR ═══════ */
-.sidebar{
-  width:260px;flex-shrink:0;
-  background:var(--bg2);border-right:1px solid var(--border);
+/* ═══════ LEFT PANELS (shared) ═══════ */
+.lpanel{
+  width:260px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);
   display:flex;flex-direction:column;overflow:hidden;
 }
-.sb-section{padding:16px 16px 8px;}
-.sb-label{
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;
-  color:var(--text-dimmer);text-transform:uppercase;margin-bottom:10px;
+.lp-header{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;}
+.lp-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--text-dimmer);text-transform:uppercase;}
+.lp-add{
+  background:var(--surface);border:1px solid var(--border-strong);color:var(--text);font-size:11px;
+  padding:4px 9px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;
+  transition:all .15s;
 }
+.lp-add:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.lp-body{flex:1;overflow-y:auto;padding:0 8px 16px;}
 
-.new-chat-btn{
-  width:100%;background:var(--accent);color:white;border:none;
-  padding:11px 14px;border-radius:10px;font-family:'DM Sans',sans-serif;
-  font-size:13px;font-weight:600;letter-spacing:.2px;cursor:pointer;
-  display:flex;align-items:center;gap:8px;justify-content:center;
-  transition:opacity .2s;
+/* Tree */
+.tree-group{margin-bottom:4px;}
+.tree-group-label{
+  padding:6px 10px;font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:.08em;
+  color:var(--gold);cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none;
+  border-radius:6px;
 }
-.new-chat-btn:hover{opacity:.92;}
-.new-chat-btn .icon{font-size:15px;}
-
-.thread-list{flex:1;overflow-y:auto;padding:4px 8px 16px;}
-.thread{
-  padding:9px 12px;border-radius:8px;cursor:pointer;
-  color:var(--text-dim);font-size:13px;
-  display:flex;align-items:center;gap:8px;
-  transition:background .15s, color .15s;
-  user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.tree-group-label:hover{background:rgba(91,61,24,0.05);}
+.tree-group-label .arrow{font-size:9px;color:var(--text-dim);transition:.2s;display:inline-block;}
+.tree-group.collapsed .arrow{transform:rotate(-90deg);}
+.tree-group.collapsed .tree-item{display:none;}
+.tree-item{
+  padding:6px 10px 6px 22px;font-size:13px;cursor:pointer;color:var(--text);border-left:2px solid transparent;
+  border-radius:0 6px 6px 0;display:flex;align-items:center;gap:7px;line-height:1.25;user-select:none;
+  transition:all .1s;
 }
-.thread:hover{background:rgba(255,255,255,0.04);color:var(--text);}
-.thread.active{background:var(--accent-dim);color:var(--text);border-left:2px solid var(--accent);padding-left:10px;}
-.thread-time{margin-left:auto;font-size:10px;color:var(--text-dimmer);flex-shrink:0;}
+.tree-item:hover{background:rgba(91,61,24,0.06);}
+.tree-item.active{background:var(--accent-dim);border-left-color:var(--accent);color:var(--ink);font-weight:500;}
+.tree-item .dot{width:5px;height:5px;border-radius:50%;background:var(--text-dimmer);flex-shrink:0;}
+.tree-item.active .dot{background:var(--accent);}
+.tree-item.done .dot{background:var(--forest);}
+.tree-item.warn .dot{background:var(--gold-br);}
 
-.sb-party{padding:14px 16px;border-top:1px solid var(--border);}
-.party-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.lp-footer{border-top:1px solid var(--border);padding:12px 16px;}
+.sb-label-sm{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dimmer);margin-bottom:8px;text-transform:uppercase;}
+.party-chips{display:flex;flex-wrap:wrap;gap:5px;}
 .party-chip{
-  background:var(--surface);border:1px solid var(--border-strong);border-radius:7px;
-  padding:4px 9px;font-size:11px;color:var(--text);
-  font-family:'DM Sans',sans-serif;font-weight:500;
-  cursor:pointer;transition:border-color .15s, color .15s;
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:6px;padding:3px 8px;
+  font-size:11px;color:var(--text);font-weight:500;cursor:pointer;transition:all .1s;
 }
-.party-chip:hover{border-color:rgba(232,184,109,.4);color:var(--gold);}
+.party-chip:hover{border-color:var(--gold);color:var(--gold);}
 
-.sb-location{padding:12px 16px;border-top:1px solid var(--border);cursor:pointer;transition:background .15s;position:relative;}
-.sb-location:hover{background:rgba(255,255,255,0.03);}
-.sb-loc-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;color:var(--gold);margin-bottom:4px;}
-.sb-loc-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.25;}
-.sb-loc-meta{font-size:11px;color:var(--text-dim);font-style:italic;margin-top:3px;}
-.sb-loc .chev{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-dimmer);font-size:12px;}
+/* ═══════ PREP VIEW ═══════ */
+.prep-center{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--bg);}
+.prep-head{padding:18px 26px 12px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;display:flex;align-items:flex-start;gap:18px;}
+.prep-head-main{flex:1;min-width:0;}
+.prep-head-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--gold);margin-bottom:5px;}
+.prep-head-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-0.02em;line-height:1.15;}
+.prep-head-name[contenteditable]:focus{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.prep-head-meta{font-size:12px;color:var(--text-dim);font-style:italic;margin-top:3px;}
+.prep-head-meta[contenteditable]:focus{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px;}
+.prep-head-actions{display:flex;gap:6px;}
 
-/* Location-picker dropdown (appears inside sidebar) */
-.loc-picker{
-  position:absolute;inset:100% 8px auto 8px;z-index:20;
-  background:var(--surface-2);border:1px solid var(--border-strong);border-radius:12px;
-  padding:6px;max-height:400px;overflow-y:auto;
-  box-shadow:0 20px 60px rgba(0,0,0,.85);
-  display:none;
-}
-.loc-picker.open{display:block;}
-.loc-group-title{padding:7px 10px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;}
-.loc-item{padding:8px 10px;border-radius:7px;font-size:13px;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .1s, color .1s;}
-.loc-item:hover{background:rgba(255,255,255,.05);color:var(--text);}
-.loc-item.active{background:var(--accent-dim);color:var(--text);}
-.loc-item .status{width:5px;height:5px;border-radius:50%;flex-shrink:0;background:var(--text-dimmer);}
-.loc-item.done .status{background:#4A8A4A;}
-.loc-item.warn .status{background:var(--gold);}
-.loc-item.active .status{background:var(--accent);}
+.prep-scroll{flex:1;overflow-y:auto;padding:22px 26px 40px;}
+.prep-grid{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:20px;}
 
-/* ═══════ CHAT AREA ═══════ */
-.chat-col{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg);position:relative;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.card-h{padding:11px 16px;border-bottom:1px solid var(--border);background:var(--surface-2);display:flex;align-items:center;gap:10px;}
+.card-h-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;flex:1;}
+.card-h-ico{font-size:14px;}
+.card-h-action{font-size:11px;background:transparent;border:1px solid var(--border-strong);color:var(--text-dim);padding:3px 9px;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .1s;}
+.card-h-action:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.card-b{padding:14px 16px;}
 
-.chat-scroll{
-  flex:1;overflow-y:auto;padding:40px 0 20px;
-  scroll-behavior:smooth;
+.field{margin-bottom:12px;}
+.field:last-child{margin-bottom:0;}
+.field-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.8px;color:var(--text-dim);margin-bottom:5px;text-transform:uppercase;font-weight:700;}
+.field-in,.field-ta{
+  width:100%;background:var(--bg);border:1px solid var(--border-strong);border-radius:8px;
+  padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);line-height:1.55;
+  outline:none;transition:border-color .15s, box-shadow .15s;resize:vertical;
 }
-.chat-inner{max-width:760px;margin:0 auto;padding:0 28px;display:flex;flex-direction:column;gap:28px;}
+.field-ta{min-height:72px;}
+.field-ta.tall{min-height:120px;}
+.field-ta.read-aloud-style{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;background:var(--crimson-dim);border-left:3px solid var(--crimson);border-radius:0 8px 8px 0;}
+.field-in:focus,.field-ta:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 
-.msg{display:flex;gap:14px;align-items:flex-start;}
-.msg-avatar{
-  width:30px;height:30px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Cinzel',serif;font-weight:700;font-size:11px;letter-spacing:.5px;
-  margin-top:2px;
-}
-.msg-user .msg-avatar{background:var(--surface);border:1px solid var(--border-strong);color:var(--text-dim);}
-.msg-ai .msg-avatar{background:linear-gradient(135deg,var(--accent) 0%,#9A88FA 100%);color:#fff;box-shadow:0 0 16px rgba(123,108,246,.25);}
-.msg-body{flex:1;min-width:0;}
-.msg-role{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dimmer);text-transform:uppercase;margin-bottom:6px;}
-.msg-ai .msg-role{color:var(--gold);}
-.msg-content{font-size:14.5px;line-height:1.68;color:var(--text);}
-.msg-content p{margin-bottom:10px;}
-.msg-content p:last-child{margin-bottom:0;}
-.msg-content strong{color:var(--gold);font-weight:600;}
-.msg-content em{color:var(--text-dim);font-style:italic;}
-.msg-content ul,.msg-content ol{margin:8px 0 10px 20px;}
-.msg-content li{margin-bottom:4px;}
-.msg-content code{background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:13px;font-family:'JetBrains Mono',monospace;color:var(--gold);}
-.msg-content blockquote{border-left:3px solid var(--accent);padding:4px 14px;margin:10px 0;color:var(--text-dim);font-style:italic;font-family:'EB Garamond',serif;font-size:15.5px;background:rgba(123,108,246,0.04);}
+.list-item{background:var(--bg);border:1px solid var(--border-strong);border-radius:8px;padding:10px 12px;margin-bottom:8px;position:relative;}
+.list-item:last-child{margin-bottom:0;}
+.list-item-head{display:flex;gap:8px;margin-bottom:7px;align-items:center;}
+.list-item-head input{flex:1;background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);padding:2px 0;}
+.list-item-head .prob{background:var(--gold-dim);color:var(--gold);padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;border:none;font-family:'Cinzel',serif;letter-spacing:1px;cursor:pointer;}
+.list-item-body{width:100%;background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);line-height:1.5;resize:vertical;min-height:40px;}
+.list-item-remove{position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--text-dimmer);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:all .1s;}
+.list-item-remove:hover{background:var(--crimson);color:#fff;}
 
-/* Read-aloud block rendered from [READ_ALOUD: ...] */
-.read-aloud-embed{
-  background:rgba(224,74,58,0.06);border:1px solid rgba(224,74,58,0.22);
-  border-left:3px solid var(--crimson);border-radius:0 8px 8px 0;
-  padding:14px 18px;margin:14px 0;
-  font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;
-  color:rgba(255,245,230,0.92);line-height:1.6;
-}
-.read-aloud-embed-label{
-  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--crimson);
-  font-style:normal;margin-bottom:6px;text-transform:uppercase;
-}
+.dialog-item{background:var(--bg);border:1px solid var(--border-strong);border-left:2px solid var(--crimson);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:8px;}
+.dialog-item-speaker{background:transparent;border:none;outline:none;font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--crimson);width:100%;margin-bottom:4px;padding:2px 0;}
+.dialog-item-text{width:100%;background:transparent;border:none;outline:none;font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text);line-height:1.5;resize:vertical;min-height:36px;}
 
-/* Image embed rendered from [GENERATE_IMAGE: ...] */
-.img-embed{
-  margin:14px 0;border-radius:14px;overflow:hidden;
-  background:var(--surface);border:1px solid var(--border-strong);
-  position:relative;
-}
-.img-embed img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;}
-.img-embed-caption{
-  padding:10px 14px;font-size:12px;color:var(--text-dim);font-style:italic;
-  display:flex;justify-content:space-between;align-items:center;gap:10px;
-  border-top:1px solid var(--border);
-}
-.img-embed-caption-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.img-embed-actions{display:flex;gap:4px;flex-shrink:0;}
-.img-embed-action{font-size:10px;padding:4px 9px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid var(--border-strong);color:var(--text-dim);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
-.img-embed-action:hover{color:var(--gold);border-color:rgba(232,184,109,.3);}
-.img-embed-loading{
-  aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;
-  background:linear-gradient(135deg,#111118 0%,#1a1a24 100%);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;
-}
-.spinner{width:26px;height:26px;border:2px solid rgba(232,184,109,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
+.add-row{background:transparent;border:1px dashed var(--border-strong);color:var(--text-dim);width:100%;padding:8px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;margin-top:6px;transition:all .1s;}
+.add-row:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+
+/* Prep right panel — image + chat */
+.prep-right{width:380px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.prep-right-head{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.prep-right-tabs{display:flex;gap:2px;flex:1;}
+.prep-rt-tab{padding:6px 12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;border-radius:7px;transition:all .1s;}
+.prep-rt-tab:hover{color:var(--text);}
+.prep-rt-tab.active{background:var(--accent-dim);color:var(--ink);}
+.prep-right-body{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.prep-right-pane{flex:1;overflow-y:auto;padding:16px;display:none;}
+.prep-right-pane.active{display:flex;flex-direction:column;}
+
+.scene-img{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--surface-2);border:1px solid var(--border-strong);margin-bottom:12px;position:relative;}
+.scene-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-img-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-dim);font-size:12px;font-style:italic;}
+.scene-img-placeholder .ico{font-size:24px;opacity:.45;}
+.scene-img .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:rgba(245,236,217,0.85);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);}
+.spinner{width:22px;height:22px;border:2px solid rgba(164,118,38,0.25);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+.scene-img-actions{display:flex;gap:6px;margin-bottom:10px;}
+.scene-img-actions .btn-top{flex:1;font-size:11px;padding:6px 10px;}
 
-/* Empty state */
-.empty-state{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:60px 20px;text-align:center;gap:22px;
-  max-width:580px;margin:40px auto 0;
-}
-.empty-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(232,184,109,0.1);border:1px solid rgba(232,184,109,0.3);border-radius:20px;padding:7px 16px;font-size:10px;color:var(--gold);letter-spacing:3px;font-family:'Cinzel',serif;}
-.empty-state h1{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;line-height:1.05;letter-spacing:-0.02em;}
-.empty-state h1 em{color:var(--gold);font-style:italic;}
-.empty-state-sub{color:var(--text-dim);font-size:15px;line-height:1.65;max-width:460px;}
-.suggestion-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:520px;margin-top:8px;}
-.suggestion{
-  background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:14px 16px;cursor:pointer;text-align:left;transition:border-color .2s, transform .15s;
-  font-family:'DM Sans',sans-serif;color:var(--text);font-size:13px;line-height:1.4;
-}
-.suggestion:hover{border-color:rgba(123,108,246,.4);transform:translateY(-1px);}
-.suggestion-kicker{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:5px;}
+.field-imgprompt{min-height:80px;font-size:12px;font-family:'JetBrains Mono',monospace;}
 
-/* ═══════ INPUT AREA ═══════ */
-.input-wrap{flex-shrink:0;padding:14px 28px 22px;background:linear-gradient(to bottom, transparent 0%, var(--bg) 30%);}
-.input-inner{max-width:760px;margin:0 auto;}
-.input-box{
-  display:flex;gap:10px;align-items:flex-end;
-  background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;
-  padding:10px 12px 10px 16px;
-  transition:border-color .2s, box-shadow .2s;
-}
-.input-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-dim);}
-.chat-input{
-  flex:1;background:transparent;border:none;outline:none;resize:none;
-  font-family:'DM Sans',sans-serif;font-size:14.5px;color:var(--text);
-  line-height:1.5;max-height:200px;padding:7px 0;
-}
-.chat-input::placeholder{color:var(--text-dimmer);}
-.send-btn{
-  background:var(--accent);color:#fff;border:none;border-radius:9px;
-  padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
-  cursor:pointer;transition:opacity .2s, transform .1s;flex-shrink:0;
-  display:flex;align-items:center;gap:6px;
-}
-.send-btn:hover{opacity:.92;}
-.send-btn:active{transform:scale(.96);}
-.send-btn:disabled{opacity:.35;cursor:not-allowed;}
-.input-hint{margin-top:8px;font-size:11px;color:var(--text-dimmer);text-align:center;}
-.input-hint kbd{background:var(--surface);border:1px solid var(--border-strong);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);}
+/* ═══════ CHAT COMPONENT (shared across views) ═══════ */
+.chat-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.chat-scroll{flex:1;overflow-y:auto;padding:10px 4px 4px;display:flex;flex-direction:column;gap:14px;}
+.chat-empty{padding:20px 10px;text-align:center;color:var(--text-dim);font-size:12px;font-style:italic;line-height:1.6;}
+.chat-empty strong{display:block;color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;margin-bottom:8px;font-style:normal;font-weight:700;}
 
-/* Toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface-2);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:100;font-family:'DM Sans',sans-serif;opacity:0;transition:opacity .3s;pointer-events:none;}
-.toast.show{opacity:1;}
-.toast.error{border-color:var(--crimson);color:#ff8070;}
+.chat-msg{display:flex;gap:10px;align-items:flex-start;}
+.chat-msg-av{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:10px;margin-top:1px;}
+.chat-msg.user .chat-msg-av{background:var(--surface);border:1px solid var(--border-strong);color:var(--text-dim);}
+.chat-msg.ai .chat-msg-av{background:linear-gradient(135deg,var(--accent) 0%,#9488f4 100%);color:#fff;box-shadow:0 2px 8px rgba(108,93,228,0.3);}
+.chat-msg-body{flex:1;min-width:0;font-size:13.5px;line-height:1.6;}
+.chat-msg-role{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.8px;color:var(--text-dimmer);margin-bottom:4px;text-transform:uppercase;}
+.chat-msg.ai .chat-msg-role{color:var(--gold);}
+.chat-msg-content p{margin-bottom:8px;}
+.chat-msg-content p:last-child{margin-bottom:0;}
+.chat-msg-content strong{color:var(--gold);font-weight:700;}
+.chat-msg-content em{color:var(--text-dim);font-style:italic;}
+.chat-msg-content ul,.chat-msg-content ol{margin:6px 0 8px 18px;}
+.chat-msg-content li{margin-bottom:3px;}
+.chat-msg-content code{background:var(--surface);padding:1px 5px;border-radius:4px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--gold);border:1px solid var(--border);}
 
-/* Scrollbars */
-::-webkit-scrollbar{width:8px;height:8px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:4px;}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.15);}
+.read-aloud-embed{
+  background:var(--crimson-dim);border:1px solid rgba(139,26,26,0.25);border-left:3px solid var(--crimson);
+  border-radius:0 8px 8px 0;padding:11px 14px;margin:10px 0;
+  font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink);line-height:1.6;
+}
+.read-aloud-embed-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--crimson);font-style:normal;margin-bottom:5px;text-transform:uppercase;font-weight:700;}
 
-/* Typing indicator */
-.typing{display:flex;gap:4px;align-items:center;padding:6px 0;}
+.img-embed{margin:10px 0;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border-strong);}
+.img-embed img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;}
+.img-embed .cap{padding:8px 12px;font-size:11px;color:var(--text-dim);font-style:italic;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--border);}
+.img-embed .cap-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.img-embed .cap-actions{display:flex;gap:3px;flex-shrink:0;}
+.img-embed-action{font-size:10px;padding:3px 8px;border-radius:5px;background:var(--bg);border:1px solid var(--border-strong);color:var(--text-dim);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .1s;text-decoration:none;display:inline-block;}
+.img-embed-action:hover{color:var(--gold);border-color:var(--gold);}
+.img-loading{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:linear-gradient(135deg,var(--surface) 0%,var(--surface-2) 100%);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;}
+
+.typing{display:flex;gap:4px;align-items:center;padding:4px 0;}
 .typing span{width:6px;height:6px;background:var(--gold);border-radius:50%;opacity:.4;animation:typingBounce 1.2s ease-in-out infinite;}
 .typing span:nth-child(2){animation-delay:.15s;}
 .typing span:nth-child(3){animation-delay:.3s;}
 @keyframes typingBounce{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
 
+.chat-input-wrap{flex-shrink:0;padding:10px;border-top:1px solid var(--border);background:var(--bg2);}
+.chat-input-box{
+  display:flex;gap:6px;align-items:flex-end;background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:10px;padding:6px 6px 6px 12px;transition:border-color .15s, box-shadow .15s;
+}
+.chat-input-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.chat-input{flex:1;background:transparent;border:none;outline:none;resize:none;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);line-height:1.45;max-height:120px;padding:6px 0;}
+.chat-input::placeholder{color:var(--text-dimmer);}
+.chat-send-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.chat-send-btn:hover{opacity:.92;}
+.chat-send-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ═══════ SESSION LIVE VIEW ═══════ */
+.session-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--bg);}
+.session-strip{
+  padding:12px 22px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;
+  align-items:center;gap:16px;flex-shrink:0;
+}
+.session-strip-loc{flex:1;min-width:0;}
+.session-strip-loc-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2.5px;color:var(--gold);margin-bottom:2px;}
+.session-strip-loc-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-0.01em;}
+.session-strip-loc-meta{font-size:11px;color:var(--text-dim);font-style:italic;}
+.initiative{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.init-chip{background:var(--bg2);border:1px solid var(--border-strong);border-radius:8px;padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:8px;cursor:move;min-width:70px;transition:all .15s;}
+.init-chip.turn{background:var(--accent-dim);border-color:var(--accent);box-shadow:0 0 0 2px rgba(108,93,228,0.2);}
+.init-chip.down{opacity:.4;text-decoration:line-through;}
+.init-chip .name{font-weight:600;flex:1;}
+.init-chip .hp{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);}
+.init-chip input{width:40px;background:transparent;border:none;outline:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;}
+
+.session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
+
+.session-read-pane{flex:1;overflow-y:auto;padding:24px 32px;min-width:0;}
+.session-read-aloud{
+  background:var(--surface);border:1px solid var(--border-strong);border-left:4px solid var(--crimson);
+  border-radius:0 14px 14px 0;padding:24px 28px;margin-bottom:20px;
+  font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink);line-height:1.65;
+  box-shadow:var(--shadow-md);
+}
+.session-read-aloud.empty{background:var(--bg2);color:var(--text-dim);font-style:italic;border-left-color:var(--border-strong);}
+.session-read-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);margin-bottom:10px;font-style:normal;font-weight:700;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.session-read-label::before{content:'';width:22px;height:1.5px;background:var(--crimson);}
+
+.session-quickgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.sq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.sq-card-h{padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:7px;}
+.sq-card-b{padding:11px 14px;font-size:13px;line-height:1.55;}
+.sq-dialog{padding:8px 0;border-bottom:1px dashed var(--border);}
+.sq-dialog:last-child{border-bottom:none;}
+.sq-dialog-sp{font-family:'Cinzel',serif;font-size:9px;color:var(--crimson);font-weight:700;letter-spacing:.05em;margin-bottom:3px;}
+.sq-dialog-tx{font-family:'EB Garamond',serif;font-style:italic;font-size:13.5px;color:var(--ink);line-height:1.5;}
+.sq-scen{padding:8px 0;border-bottom:1px dashed var(--border);}
+.sq-scen:last-child{border-bottom:none;}
+.sq-scen-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.sq-scen-t{font-weight:600;font-size:13px;color:var(--ink);}
+.sq-scen-p{font-size:10px;background:var(--gold-dim);color:var(--gold);padding:1px 7px;border-radius:10px;font-family:'Cinzel',serif;letter-spacing:1px;}
+.sq-scen-b{font-size:12.5px;color:var(--text);line-height:1.5;}
+.sq-stat{margin-bottom:10px;}
+.sq-stat:last-child{margin-bottom:0;}
+.sq-stat-n{font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.sq-stat-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0;border-bottom:1px dotted var(--border);}
+.sq-stat-row:last-child{border-bottom:none;}
+.sq-stat-row span:first-child{color:var(--text-dim);}
+.sq-stat-row span:last-child{color:var(--text);font-weight:500;}
+
+/* Session right panel — scene image + music + chat */
+.session-right{width:360px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.session-rt-head{padding:12px 14px 8px;border-bottom:1px solid var(--border);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
+.session-rt-scene{padding:14px;border-bottom:1px solid var(--border);}
+.session-rt-music{padding:10px 14px;border-bottom:1px solid var(--border);max-height:160px;overflow-y:auto;}
+.music-item{padding:6px 10px;display:flex;gap:9px;align-items:center;cursor:pointer;border-radius:6px;transition:background .1s;}
+.music-item:hover{background:var(--surface);}
+.music-disc{width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.music-info{flex:1;min-width:0;}
+.music-title{font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.music-sub{font-size:10px;color:var(--text-dim);font-style:italic;}
+.music-play{color:var(--text-dimmer);font-size:12px;}
+.music-item:hover .music-play{color:var(--gold);}
+.session-rt-chat{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.session-rt-chat-head{padding:10px 14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
+
+/* Empty session */
+.session-empty{padding:60px 28px;text-align:center;color:var(--text-dim);}
+.session-empty h2{font-family:'Syne',sans-serif;font-size:24px;color:var(--ink);margin-bottom:10px;font-weight:800;}
+.session-empty em{color:var(--gold);font-style:italic;}
+.session-empty p{max-width:440px;margin:0 auto 24px;font-size:14px;line-height:1.65;}
+
+/* ═══════ CHARACTERS VIEW ═══════ */
+.char-list{flex:1;overflow-y:auto;padding:6px 8px 16px;}
+.char-filter{display:flex;gap:4px;padding:6px 10px 10px;}
+.char-filter button{flex:1;padding:5px 10px;background:transparent;border:1px solid var(--border-strong);color:var(--text-dim);font-size:11px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .1s;}
+.char-filter button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+.char-row{padding:9px 12px;border-radius:8px;cursor:pointer;display:flex;gap:10px;align-items:center;transition:background .1s;border-left:2px solid transparent;}
+.char-row:hover{background:rgba(91,61,24,0.06);}
+.char-row.active{background:var(--accent-dim);border-left-color:var(--accent);}
+.char-row-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--surface-2);border:1px solid var(--border-strong);overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--text-dim);}
+.char-row-av img{width:100%;height:100%;object-fit:cover;display:block;}
+.char-row-info{flex:1;min-width:0;}
+.char-row-n{font-weight:600;font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.char-row-m{font-size:11px;color:var(--text-dim);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.char-row-tag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;padding:2px 6px;border-radius:3px;font-weight:700;}
+.char-row-tag.pc{background:var(--accent-dim);color:var(--accent);}
+.char-row-tag.npc{background:var(--gold-dim);color:var(--gold);}
+
+.char-editor{flex:1;background:var(--bg);overflow-y:auto;padding:26px 32px 40px;min-width:0;}
+.char-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center;color:var(--text-dim);}
+.char-empty-state h2{font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;}
+.char-empty-state em{color:var(--gold);font-style:italic;}
+.char-empty-state p{max-width:420px;font-size:13px;line-height:1.6;margin-bottom:20px;}
+
+.char-form{max-width:680px;margin:0 auto;}
+.char-form-head{display:flex;gap:20px;align-items:flex-start;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.char-portrait{width:140px;height:140px;border-radius:14px;background:var(--surface);border:1px solid var(--border-strong);overflow:hidden;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);}
+.char-portrait img{width:100%;height:100%;object-fit:cover;}
+.char-portrait .empty{color:var(--text-dimmer);font-size:11px;text-align:center;padding:20px;font-style:italic;}
+.char-portrait .loading{position:absolute;inset:0;background:rgba(251,246,230,0.9);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;}
+.char-portrait-actions{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.char-portrait-btn{background:var(--surface);border:1px solid var(--border-strong);padding:6px 10px;border-radius:7px;font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text);cursor:pointer;transition:all .1s;text-align:center;display:block;}
+.char-portrait-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+.char-form-body{flex:1;min-width:0;}
+.char-form-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+.char-form-tag .badge{padding:2px 7px;border-radius:4px;font-size:9px;}
+.char-form-tag .badge.pc{background:var(--accent-dim);color:var(--accent);}
+.char-form-tag .badge.npc{background:var(--gold-dim);color:var(--gold);}
+.char-form-name{width:100%;background:transparent;border:none;outline:none;font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-0.02em;padding:2px 0;margin-bottom:6px;}
+.char-form-name:focus{border-bottom:2px solid var(--accent);}
+.char-form-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:18px;}
+.stat-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;}
+.stat-block-l{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:4px;font-weight:700;}
+.stat-block-v{width:100%;background:transparent;border:none;outline:none;text-align:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--ink);padding:2px 0;}
+.stat-block-v:focus{color:var(--accent);}
+
+.char-form .card{margin-bottom:14px;}
+.char-delete{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);text-align:right;}
+.char-delete button{background:transparent;border:1px solid var(--crimson);color:var(--crimson);padding:7px 16px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .1s;}
+.char-delete button:hover{background:var(--crimson);color:#fff;}
+
+/* ═══════ MODALS & TOAST ═══════ */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-lg);font-weight:500;}
+.toast.show{opacity:1;}
+.toast.error{border-color:var(--crimson);color:var(--crimson);background:#fef2e4;}
+
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(91,61,24,0.2);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(91,61,24,0.35);}
+
 /* Mobile */
-@media (max-width:820px){
-  .sidebar{width:72px;}
-  .sidebar .sb-label,.sidebar .thread,.sidebar .sb-party,.sidebar .sb-loc-name,.sidebar .sb-loc-meta{display:none;}
-  .sidebar .new-chat-btn{padding:10px;font-size:0;}
-  .sidebar .new-chat-btn .icon{font-size:18px;}
-  .sidebar .sb-location{padding:12px 8px;}
-  .sb-loc-tag{font-size:9px;text-align:center;}
-  .chat-inner{padding:0 16px;}
-  .input-wrap{padding:12px 16px 18px;}
-  .suggestion-grid{grid-template-columns:1fr;}
-  .empty-state h1{font-size:30px;}
+@media (max-width:900px){
+  .tabnav .tab span:not(.ico){display:none;}
   .campaign-pill-meta{display:none;}
+  .lpanel{width:180px;}
+  .prep-right,.session-right{display:none;}
 }
 </style>
 </head>
@@ -295,91 +425,192 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <a href="/" class="logo"><img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">EndoCraft <span class="sub">DM Studio</span></a>
+  <a href="/" class="logo">
+    <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
+    EndoCraft <span class="sub">DM Studio</span>
+  </a>
   <div class="topbar-sep"></div>
-  <div class="campaign-pill" id="campaignPill" onclick="toggleLocPicker()">
+  <div class="campaign-pill">
     <div class="dot"></div>
     <div>
       <div class="campaign-pill-name" id="campName">Curse of Strahd</div>
       <div class="campaign-pill-meta" id="campMeta">Session 14 · Level 5–6</div>
     </div>
   </div>
+  <div class="tabnav">
+    <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
+    <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
+    <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
+  </div>
   <div class="topbar-right">
     <button class="btn-top" onclick="exportPDF()">📄 PDF</button>
-    <button class="btn-top" onclick="exportSession()">💾 Export</button>
+    <button class="btn-top" onclick="exportJSON()">💾 Export</button>
   </div>
 </div>
 
-<!-- MAIN SHELL -->
+<!-- SHELL -->
 <div class="shell">
 
-  <!-- LEFT SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sb-section">
-      <button class="new-chat-btn" onclick="newThread()">
-        <span class="icon">＋</span><span>Neue Unterhaltung</span>
-      </button>
-    </div>
-
-    <div class="sb-section" style="padding-top:4px;padding-bottom:4px;">
-      <div class="sb-label">Unterhaltungen</div>
-    </div>
-    <div class="thread-list" id="threadList"></div>
-
-    <!-- Current location card with dropdown picker -->
-    <div class="sb-location" onclick="toggleLocPicker()">
-      <div class="sb-loc-tag">AKTUELLE SZENE</div>
-      <div class="sb-loc-name" id="sbLocName">—</div>
-      <div class="sb-loc-meta" id="sbLocMeta"></div>
-      <span class="chev">⌄</span>
-      <div class="loc-picker" id="locPicker" onclick="event.stopPropagation()"></div>
-    </div>
-
-    <div class="sb-party">
-      <div class="sb-label">Party</div>
-      <div class="party-chips" id="partyChips"></div>
-    </div>
-  </aside>
-
-  <!-- CHAT COLUMN -->
-  <div class="chat-col">
-    <div class="chat-scroll" id="chatScroll">
-      <div class="chat-inner" id="chatInner"></div>
-    </div>
-
-    <div class="input-wrap">
-      <div class="input-inner">
-        <div class="input-box">
-          <textarea class="chat-input" id="chatInput" rows="1" placeholder="Frag deinen Co-DM..." onkeydown="handleKey(event)" oninput="autoGrow(this)"></textarea>
-          <button class="send-btn" id="sendBtn" onclick="sendMsg()">
-            <span>Senden</span>
-            <span>↵</span>
-          </button>
-        </div>
-        <div class="input-hint"><kbd>Enter</kbd> senden · <kbd>Shift+Enter</kbd> Zeilenumbruch · KI kennt die gesamte Kampagne</div>
+  <!-- ═══════ VIEW: PREPARATION ═══════ -->
+  <div class="view active" id="view-prep">
+    <aside class="lpanel">
+      <div class="lp-header">
+        <span class="lp-title">Kampagnen-Struktur</span>
+        <button class="lp-add" onclick="addLocation()">+ Ort</button>
       </div>
-    </div>
+      <div class="lp-body" id="prepTree"></div>
+      <div class="lp-footer">
+        <div class="sb-label-sm">Party</div>
+        <div class="party-chips" id="prepPartyChips"></div>
+      </div>
+    </aside>
+
+    <main class="prep-center">
+      <div class="prep-head">
+        <div class="prep-head-main">
+          <div class="prep-head-tag" id="prepHeadTag">STANDORT · VORBEREITUNG</div>
+          <div class="prep-head-name" id="prepName" contenteditable="true" onblur="updateLocField('name', this.innerText)">—</div>
+          <div class="prep-head-meta" id="prepMeta" contenteditable="true" onblur="updateLocField('meta', this.innerText)"></div>
+        </div>
+        <div class="prep-head-actions">
+          <button class="btn-top" onclick="markLocStatus('done')">✓ Abgeschlossen</button>
+          <button class="btn-top" onclick="markLocStatus('active')">● Aktuell</button>
+        </div>
+      </div>
+
+      <div class="prep-scroll">
+        <div class="prep-grid" id="prepBody"></div>
+      </div>
+    </main>
+
+    <aside class="prep-right">
+      <div class="prep-right-head">
+        <div class="prep-right-tabs">
+          <div class="prep-rt-tab active" data-rt="image" onclick="switchPrepRT('image')">🖼️ Szenen-Bild</div>
+          <div class="prep-rt-tab" data-rt="chat" onclick="switchPrepRT('chat')">✦ Co-DM Chat</div>
+        </div>
+      </div>
+      <div class="prep-right-body">
+        <div class="prep-right-pane active" data-rt="image">
+          <div class="scene-img" id="prepSceneImg">
+            <div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Szenen-Bild</span></div>
+          </div>
+          <div class="scene-img-actions">
+            <button class="btn-top primary" onclick="generateSceneImage()">⚡ Generieren</button>
+            <button class="btn-top" onclick="copySceneUrl()">📋 URL</button>
+          </div>
+          <div class="field">
+            <div class="field-lbl">Prompt (wird für Generation benutzt)</div>
+            <textarea class="field-ta field-imgprompt" id="prepImgPrompt" placeholder="Dark fantasy scene, atmospheric lighting..." onblur="updateLocField('imagePrompt', this.value)"></textarea>
+          </div>
+        </div>
+        <div class="prep-right-pane" data-rt="chat">
+          <div class="chat-panel" data-chat-host="prep">
+            <div class="chat-scroll"></div>
+            <div class="chat-input-wrap">
+              <div class="chat-input-box">
+                <textarea class="chat-input" rows="1" placeholder="Frag deinen Co-DM..."></textarea>
+                <button class="chat-send-btn">Senden</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ═══════ VIEW: SESSION LIVE ═══════ -->
+  <div class="view" id="view-session">
+    <aside class="lpanel">
+      <div class="lp-header">
+        <span class="lp-title">Schnell-Navigation</span>
+      </div>
+      <div class="lp-body" id="sessionTree"></div>
+      <div class="lp-footer">
+        <div class="sb-label-sm">Party</div>
+        <div class="party-chips" id="sessionPartyChips"></div>
+      </div>
+    </aside>
+
+    <main class="session-main">
+      <div class="session-strip">
+        <div class="session-strip-loc">
+          <div class="session-strip-loc-tag" id="sessLocTag">LIVE · AKTUELLE SZENE</div>
+          <div class="session-strip-loc-name" id="sessLocName">—</div>
+          <div class="session-strip-loc-meta" id="sessLocMeta"></div>
+        </div>
+        <div class="initiative" id="initiative"></div>
+        <button class="btn-top" onclick="nextTurn()">▸ Nächster Zug</button>
+      </div>
+      <div class="session-body">
+        <div class="session-read-pane" id="sessReadPane"></div>
+        <aside class="session-right">
+          <div class="session-rt-head">Szenen-Bild</div>
+          <div class="session-rt-scene">
+            <div class="scene-img" id="sessSceneImg">
+              <div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Bild</span></div>
+            </div>
+            <div class="scene-img-actions">
+              <button class="btn-top primary" style="flex:1;" onclick="generateSceneImage()">⚡ Generieren</button>
+              <button class="btn-top" onclick="copySceneUrl()">📋</button>
+            </div>
+          </div>
+          <div class="session-rt-head">Musik</div>
+          <div class="session-rt-music" id="sessMusic"></div>
+          <div class="session-rt-chat">
+            <div class="session-rt-chat-head">Co-DM · Improvise mit mir</div>
+            <div class="chat-panel" data-chat-host="session">
+              <div class="chat-scroll"></div>
+              <div class="chat-input-wrap">
+                <div class="chat-input-box">
+                  <textarea class="chat-input" rows="1" placeholder="Schnelle Frage..."></textarea>
+                  <button class="chat-send-btn">↵</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════ VIEW: CHARACTERS ═══════ -->
+  <div class="view" id="view-chars">
+    <aside class="lpanel">
+      <div class="lp-header">
+        <span class="lp-title">Charaktere</span>
+        <button class="lp-add" onclick="newCharacter()">+ Neu</button>
+      </div>
+      <div class="char-filter" id="charFilter">
+        <button class="active" data-f="all" onclick="filterChars('all')">Alle</button>
+        <button data-f="pc" onclick="filterChars('pc')">Spieler</button>
+        <button data-f="npc" onclick="filterChars('npc')">NPCs</button>
+      </div>
+      <div class="char-list" id="charList"></div>
+    </aside>
+
+    <main class="char-editor" id="charEditor"></main>
   </div>
 
 </div>
 
+<input type="file" id="portraitUploadInput" accept="image/*" style="display:none" onchange="handlePortraitUpload(event)">
 <div class="toast" id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// EndoCraft DM Studio — Chat-First AI Co-DM
-// Phase 1 MVP — Private für Marcos Curse of Strahd Tisch
+// EndoCraft DM Studio v3 — Tabbed (Prep / Session / Chars), Parchment Theme
 // ═══════════════════════════════════════════════════════════════════════════
 
 const API_BASE = 'https://endocraft-production.up.railway.app';
-const STORAGE_KEY = 'ec_dmstudio_v2';
+const STORAGE_KEY = 'ec_dmstudio_v3';
 
-// ═══════════ CAMPAIGN DATA ═══════════
-const CAMPAIGN = {
+// ═══════════ DEFAULT CAMPAIGN DATA ═══════════
+const DEFAULT_CAMPAIGN = {
   id: 'cos',
   name: 'Curse of Strahd',
   session: { number: 14, title: 'Orden des Silvanus', level: '5–6' },
-  party: ['Larrymäus (Kleriker)', 'Akseth (Druide)', 'Gattok', 'Telro'],
+  party: ['Larrymäus', 'Akseth', 'Gattok', 'Telro'],
   tree: [
     { id: 'wow', label: 'Wizard of Wines', locations: [
       { id: 'w4', name: 'W4 Loading Dock', status: 'done' },
@@ -403,13 +634,16 @@ const CAMPAIGN = {
     ]}
   ],
   locations: {
-    'w14': { name: 'W14 — Wine Cellar', meta: 'Wizard of Wines · Keller · Cliffhanger aktiv',
-      readAloud: 'Der Keller riecht nach altem Wein und Erde. Überall Fässer — manche zerbrochen, ihr Inhalt längst versickert. In der Luft liegt etwas Süßliches, fast Betäubendes. Eine einzelne Fackel brennt am Ende des Ganges. Aus dem Dunkel löst sich eine Gestalt. Groß. Schlank. In dunkle Rüstung gekleidet. Rahadin.',
+    'w14': {
+      name: 'W14 — Wine Cellar',
+      meta: 'Wizard of Wines · Keller · Cliffhanger aktiv',
+      imagePrompt: 'Dark Gothic D&D wine cellar, long stone corridor with wooden wine barrels stacked along walls, some broken with dark red wine stains, single torch at far end casting flickering shadows, dust particles floating, cinematic chiaroscuro, Ravenloft Barovian aesthetic, photorealistic, 8K, no text, no watermark',
+      readAloud: 'Der Keller riecht nach altem Wein und Erde. Überall Fässer — manche zerbrochen, ihr Inhalt längst versickert. In der Luft liegt etwas Süßliches, fast Betäubendes. Eine einzelne Fackel brennt am Ende des Ganges.\n\nAus dem Dunkel löst sich eine Gestalt. Groß. Schlank. In dunkle Rüstung gekleidet.\n\nRahadin.',
       dmNote: 'Rahadin ist Strahds Kammerherr — CR 10, loyal bis zum Tod. Er ist nicht hier um zu kämpfen, sondern um den Fey Gem zu finden. Er weiß wer die Party ist. Er unterschätzt sie trotzdem.',
       scenarios: [
         { title: 'Kampf gegen Rahadin', probability: 'Wahrscheinlich', body: 'Rahadin kämpft defensiv — flieht statt zu sterben. Deathly Choir bei <50% HP. Ziel: Teleportationskreis in W15.' },
-        { title: 'Verfolgung durch Teleportationskreis', probability: 'Möglich', body: '→ Szenario A: Dinner with Strahd. Alle Unterlagen vorbereitet.' },
-        { title: 'Verhandlung', probability: 'Unwahrscheinlich', body: 'Rahadin verhandelt nicht, aber lässt leben wenn Weg freigegeben wird — aus Verachtung.' }
+        { title: 'Verfolgung durch Teleportationskreis', probability: 'Möglich', body: '→ Szenario A: Dinner with Strahd.' },
+        { title: 'Verhandlung', probability: 'Unwahrscheinlich', body: 'Rahadin verhandelt nicht, aber lässt leben wenn Weg freigegeben wird.' }
       ],
       dialogs: [
         { speaker: 'RAHADIN — Konfrontation', text: '„Ihr seid hartnäckiger als erwartet. Das ändert nichts."' },
@@ -417,231 +651,837 @@ const CAMPAIGN = {
         { speaker: 'RAHADIN — Flucht', text: '„Mein Herr wird von euch hören."' }
       ],
       statblocks: [{ name: 'Rahadin', rows: [['CR','10'],['HP','135'],['AC','18'],['Speed','35 ft'],['Deathly Choir','DC 16 WIS · 3d6 psychic · frightened']] }],
-      history: 'Session 13 endete mit blutigen Spuren in den Keller. Party: Larrymäus (Kleriker, mittlere WIS → Deathly Choir gefährlich), Akseth (Druide, Wildshape eingeschränkt wegen Raumenge), Gattok, Telro.',
+      music: [
+        { icon: '🎵', title: 'Castle Ravenloft Theme', sub: 'Sword Coast Soundscapes' },
+        { icon: '🥁', title: 'Dark Encounter', sub: 'Bardify · D&D Ambience' },
+        { icon: '🌫️', title: 'Mist & Shadows', sub: 'Tabletop Audio' }
+      ],
+      history: 'Session 13 endete mit blutigen Spuren in den Keller.',
       log: ''
     },
-    'w15': { name: 'W15 — Teleportationskreis', meta: 'Wizard of Wines · Geheimkammer · Rahadin Fluchtpunkt',
-      readAloud: 'Hinter einem verschobenen Fassregal — ein uralter Teleportationskreis. Die Runen pulsieren in silbrig-blauem Licht. Etwas Kaltes steigt aus dem Kreis auf. Hier ist Rahadin verschwunden.',
-      dmNote: 'Kreis führt direkt nach Castle Ravenloft (Empfangshalle). Strahd erwartet die Party — er weiß Bescheid durch Rahadin. DC 18 Arcana zum Deaktivieren.',
-      scenarios: [
-        { title: 'Party betritt Kreis', probability: 'Wahrscheinlich', body: '→ Szenario A: Dinner with Strahd.' },
-        { title: 'Party zerstört Kreis', probability: 'Möglich', body: 'DC 18 Arcana. Fluchtweg versperrt, Rahadin verloren, Strahd gewarnt.' },
-        { title: 'Party verzögert', probability: 'Unwahrscheinlich', body: 'Kreis deaktiviert sich nach 1h. Direkte Konfrontation verloren.' }
-      ],
-      dialogs: [], statblocks: [{ name: 'Teleportationskreis', rows: [['Typ','Arcane permanent'],['Ziel','Castle Ravenloft'],['Disable DC','18 Arcana']] }],
-      history: '', log: ''
-    },
-    'rahadin': { name: 'Rahadin Encounter', meta: 'NPC · Strahds Kammerherr · CR 10',
-      readAloud: '',
-      dmNote: 'Dusk-Elf, Jahrhunderte alt, gefallener Mentor Strahds. Spricht wenig, tötet effizient. Deathly Choir (DC 16 WIS, 3d6 psychic + frightened) ist sein Schlüsselangriff. Larrymäus mit mittlerer WIS ist verwundbar.',
-      scenarios: [],
-      dialogs: [
-        { speaker: 'RAHADIN — Erste Konfrontation', text: '„Ihr seid hartnäckiger als erwartet. Das ändert nichts."' },
-        { speaker: 'RAHADIN — Scheinangebot', text: '„Geht zurück. Spart euch selbst die Schande einer sinnlosen Auseinandersetzung."' },
-        { speaker: 'RAHADIN — Zu Larrymäus', text: '„Ein Priester, der glaubt sein Licht leuchte hier unten. Niedlich."' },
-        { speaker: 'RAHADIN — Unterlegen', text: '„Mein Herr wird von euch hören."' }
-      ],
-      statblocks: [{ name: 'Rahadin', rows: [['CR','10'],['HP','135 (18d8+54)'],['AC','18'],['Speed','35 ft'],['STR','15 (+2)'],['DEX','20 (+5)'],['WIS','16 (+3)'],['Deathly Choir (1/day)','DC 16 WIS · 3d6 psychic · frightened 1min'],['Multiattack','2x scimitar + Choir'],['Scimitar','+9 · 1d6+5 slashing + 2d6 necrotic']] }],
-      history: 'Party hat erstmals im Tagebuch des Fürsten (Session 8) von Rahadin gehört. Jetzt erste direkte Begegnung.',
-      log: ''
-    },
-    'w4': { name: 'W4 — Loading Dock', meta: 'Wizard of Wines · Verladebereich · abgeschlossen',
-      readAloud: '', dmNote: 'Session 13. Party hat 2x Giant Spiders hier erledigt. Gattok trug Wunde davon, später infiziert.',
-      scenarios: [], dialogs: [], statblocks: [], history: '', log: '' },
-    'w9': { name: 'W9 — Fermentation Vats', meta: 'Wizard of Wines · abgeschlossen',
-      readAloud: '', dmNote: 'Session 13. Gärkammer geklärt.', scenarios: [], dialogs: [], statblocks: [], history: '', log: '' },
-    'druid': { name: 'Druid Naturalist', meta: 'NPC · bereits getroffen',
-      readAloud: '', dmNote: 'Session 13 NPC. Hat Party Infos über Yester Hill gegeben.', scenarios: [], dialogs: [], statblocks: [], history: '', log: '' },
-    'ravenloft-dinner': { name: 'Dinner with Strahd', meta: 'Castle Ravenloft · Empfangshalle',
-      readAloud: 'Ihr steht in einer gewaltigen Halle. Kerzen flackern. Der Tisch ist gedeckt. An seiner Spitze steht ein leerer, schwarzer Stuhl. Hinter euch schließt sich eine Tür die ihr nicht habt öffnen sehen.',
-      dmNote: 'Szenario A kickoff. Strahd erscheint nach 2-3 Minuten durch die hintere Tür. Er kennt jeden in der Party beim Namen.',
-      scenarios: [], dialogs: [], statblocks: [], history: '', log: '' },
-    'weingut-verteidigung': { name: 'Weingut-Verteidigung', meta: 'Alternatives Szenario B',
-      readAloud: '', dmNote: 'Alternative falls Party NICHT durch Teleportationskreis geht. Verteidigung gegen Strahds Spinnenwellen.',
-      scenarios: [], dialogs: [], statblocks: [], history: '', log: '' },
-    'yester-approach': { name: 'Der Aufstieg zu Yester Hill', meta: 'Yester Hill · Annäherung',
-      readAloud: '', dmNote: 'Zukünftige Location — Gulthias Tree muss zerstört werden.', scenarios: [], dialogs: [], statblocks: [], history: '', log: '' },
-    'vallaki-blue-water': { name: 'Blue Water Inn', meta: 'Vallaki · Safe hub',
-      readAloud: '', dmNote: 'Rumours, Ismark-Treffen, rest.', scenarios: [], dialogs: [], statblocks: [], history: '', log: '' }
+    'w15': { name: 'W15 — Teleportationskreis', meta: 'Rahadin Fluchtpunkt', imagePrompt: 'Ancient arcane teleportation circle carved in stone floor, glowing silver-blue runes, magical energy pulsing, dark gothic wine cellar background, silver mist rising, cinematic moody lighting, photorealistic, 8K, no text',
+      readAloud: 'Hinter einem verschobenen Fassregal — ein uralter Teleportationskreis. Die Runen pulsieren in silbrig-blauem Licht.',
+      dmNote: 'Führt nach Castle Ravenloft (Empfangshalle). DC 18 Arcana zum Deaktivieren.',
+      scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'rahadin': { name: 'Rahadin Encounter', meta: 'NPC · CR 10',
+      imagePrompt: '', readAloud: '',
+      dmNote: 'Dusk-Elf, Jahrhunderte alt. Deathly Choir DC 16 WIS. Larrymäus mit mittlerer WIS verwundbar.',
+      scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'w4': { name: 'W4 — Loading Dock', meta: 'abgeschlossen', imagePrompt: '', readAloud: '', dmNote: 'Session 13. 2x Giant Spiders erledigt.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'w9': { name: 'W9 — Fermentation Vats', meta: 'abgeschlossen', imagePrompt: '', readAloud: '', dmNote: 'Session 13.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'druid': { name: 'Druid Naturalist', meta: 'NPC · bereits getroffen', imagePrompt: '', readAloud: '', dmNote: 'Session 13. Infos über Yester Hill gegeben.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'ravenloft-dinner': { name: 'Dinner with Strahd', meta: 'Castle Ravenloft',
+      imagePrompt: 'Castle Ravenloft grand dining hall, massive oak table with silver candelabras and crystal glasses of red wine, tall Gothic windows with stormy sky, roaring fireplace, ornate red velvet tapestries, Gothic horror atmosphere, cinematic lighting, photorealistic, 8K, no text',
+      readAloud: 'Ihr steht in einer gewaltigen Halle. Kerzen flackern. Der Tisch ist gedeckt.',
+      dmNote: 'Strahd erscheint nach 2-3 Minuten. Kennt jeden beim Namen.',
+      scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'weingut-verteidigung': { name: 'Weingut-Verteidigung', meta: 'Szenario B', imagePrompt: '', readAloud: '', dmNote: 'Falls Party nicht durch Kreis. Verteidigung gegen Spinnenwellen.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'yester-approach': { name: 'Der Aufstieg zu Yester Hill', meta: 'Yester Hill', imagePrompt: '', readAloud: '', dmNote: 'Gulthias Tree muss zerstört werden.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+    'vallaki-blue-water': { name: 'Blue Water Inn', meta: 'Vallaki · Safe hub', imagePrompt: '', readAloud: '', dmNote: 'Rumours, Ismark, rest.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
   }
 };
 
+const DEFAULT_CHARACTERS = [
+  { id: 'larrymaeus', type: 'pc', name: 'Larrymäus', race: 'Human', class: 'Kleriker', level: 5, hp: 38, maxHp: 38, ac: 16,
+    stats: { str: 12, dex: 10, con: 14, int: 11, wis: 15, cha: 13 }, portraitUrl: '', portraitSource: '',
+    backstory: 'Priester des Silvanus, hat sein Kloster verlassen um Strahd aufzuspüren.',
+    personality: 'Ruhig, besonnen, aber stur. Kein Verhandlungsgeschick.',
+    notes: 'Mittlere WIS (15) → Deathly-Choir DC 16 ist ein echtes Risiko.',
+    initiative: 14 },
+  { id: 'akseth', type: 'pc', name: 'Akseth', race: 'Half-Elf', class: 'Druide', level: 5, hp: 34, maxHp: 34, ac: 14,
+    stats: { str: 10, dex: 14, con: 13, int: 12, wis: 16, cha: 11 }, portraitUrl: '', portraitSource: '',
+    backstory: 'Circle of the Moon Druide aus dem Svalich Woods.',
+    personality: 'Neugierig, impulsiv, vertraut auf Tierinstinkte.',
+    notes: 'Wildshape-Möglichkeiten limitiert in engen Räumen (Keller!).',
+    initiative: 16 },
+  { id: 'gattok', type: 'pc', name: 'Gattok', race: 'Half-Orc', class: 'Barbar', level: 6, hp: 62, maxHp: 62, ac: 14,
+    stats: { str: 17, dex: 13, con: 16, int: 9, wis: 11, cha: 10 }, portraitUrl: '', portraitSource: '',
+    backstory: 'Stammeskrieger, in Barovia gestrandet.',
+    personality: 'Direkt, loyal, ungeduldig. Rennt oft zuerst rein.',
+    notes: 'Wunde aus W4 — Infection-Risk. DC 12 CON am Morgen.',
+    initiative: 13 },
+  { id: 'telro', type: 'pc', name: 'Telro', race: 'Halfling', class: 'Schurke', level: 5, hp: 32, maxHp: 32, ac: 15,
+    stats: { str: 9, dex: 18, con: 12, int: 13, wis: 12, cha: 14 }, portraitUrl: '', portraitSource: '',
+    backstory: 'Langfinger aus Vallaki, kennt die Stadt wie seine Westentasche.',
+    personality: 'Vorsichtig, humorvoll, auf eigenen Vorteil bedacht aber loyal zur Party.',
+    notes: '',
+    initiative: 18 },
+  { id: 'rahadin', type: 'npc', name: 'Rahadin', race: 'Dusk Elf', class: 'Kammerherr', level: 10, hp: 135, maxHp: 135, ac: 18,
+    stats: { str: 15, dex: 20, con: 16, int: 14, wis: 16, cha: 12 },
+    portraitUrl: '', portraitSource: '',
+    backstory: 'Dusk-Elf, Jahrhunderte alt, gefallener Mentor Strahds. Loyal bis zum Tod.',
+    personality: 'Kalt, verachtend gegenüber "niederen" Rassen. Spricht wenig, tötet effizient.',
+    notes: 'CR 10. Deathly Choir DC 16 WIS (3d6 psychic + frightened 1min). Scimitar +9, 1d6+5 slashing + 2d6 necrotic.',
+    initiative: 15,
+    imagePrompt: 'Medium-close portrait of Rahadin, Strahd\'s chamberlain, tall slender elven humanoid with pale ashen-grey skin, long white-silver hair, sharp angular features with high cheekbones, haunted dark eyes with contempt, dark studded leather armor with ancient Dusk-Elf motifs, crimson cloak with faded gold trim, cold disdainful expression, torchlight dramatic shadows, gothic wine cellar background, cinematic chiaroscuro, Ravenloft aesthetic, photorealistic, 8K, sharp focus, no text, no deformed hands' },
+  { id: 'strahd', type: 'npc', name: 'Strahd von Zarovich', race: 'Vampire', class: 'Archmage/Warrior', level: 15, hp: 200, maxHp: 200, ac: 16,
+    stats: { str: 18, dex: 18, con: 18, int: 20, wis: 15, cha: 18 },
+    portraitUrl: '', portraitSource: '',
+    backstory: 'Dark Lord of Barovia. Vampire, seit Jahrhunderten ans Land gefesselt.',
+    personality: 'Charmant aber unendlich grausam. Spielt mit Opfern wie eine Katze mit Mäusen.',
+    notes: 'Erscheint in Dinner with Strahd. Kennt jeden Partymitglied beim Namen durch Rahadins Spione.',
+    initiative: 18,
+    imagePrompt: 'Portrait of Strahd von Zarovich, tall pale aristocratic vampire with sharp widow\'s peak hairline and piercing red eyes, high cheekbones, cold amused half-smile revealing subtle fangs, formal Victorian-era dark crimson velvet coat with gold trim, raven black hair swept back, ornate silver amulet, castle Ravenloft candlelit dining hall background, moody chiaroscuro lighting, Gothic horror aesthetic, cinematic photorealistic, 8K, no text, no deformed hands' }
+];
+
 // ═══════════ STATE ═══════════
 let state = loadState();
-if (!state.threads) state.threads = [];  // [{id, title, messages, currentLocationId, updated}]
-if (!state.activeThreadId) state.activeThreadId = null;
+if (!state.campaign) state.campaign = DEFAULT_CAMPAIGN;
+if (!state.characters) state.characters = DEFAULT_CHARACTERS;
 if (!state.currentLocationId) state.currentLocationId = 'w14';
+if (!state.currentCharId) state.currentCharId = null;
+if (!state.images) state.images = {};
+if (!state.threads) state.threads = {};  // keyed by 'prep' or 'session'
+if (!state.initiative) state.initiative = [];  // [{id, hp, down}]
+if (!state.charFilter) state.charFilter = 'all';
+if (!state.currentView) state.currentView = 'prep';
 
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
 function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn(e); } }
 
-function activeThread() {
-  return state.threads.find(t => t.id === state.activeThreadId) || null;
-}
-function newThread() {
-  const id = 't_' + Date.now().toString(36);
-  const t = { id, title: 'Neue Unterhaltung', messages: [], currentLocationId: state.currentLocationId, updated: Date.now() };
-  state.threads.unshift(t);
-  state.activeThreadId = id;
-  saveState();
-  renderThreads(); renderChat();
-  plausibleTrack('DMStudio · New Thread');
-  setTimeout(() => document.getElementById('chatInput').focus(), 50);
+function campaign() { return state.campaign; }
+function currentLoc() { return campaign().locations[state.currentLocationId]; }
+function currentChar() { return state.characters.find(c => c.id === state.currentCharId) || null; }
+
+// ═══════════ TOP BAR + VIEW SWITCH ═══════════
+function switchView(view) {
+  state.currentView = view; saveState();
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  if (view === 'prep') renderPrep();
+  if (view === 'session') renderSession();
+  if (view === 'chars') renderChars();
+  plausibleTrack('DMStudio · View', { view });
 }
 
-// ═══════════ RENDER ═══════════
 function renderCampaignMeta() {
-  document.getElementById('campName').textContent = CAMPAIGN.name;
-  document.getElementById('campMeta').textContent = `Session ${CAMPAIGN.session.number} · Level ${CAMPAIGN.session.level}`;
+  document.getElementById('campName').textContent = campaign().name;
+  const s = campaign().session;
+  document.getElementById('campMeta').textContent = `Session ${s.number} · Level ${s.level}`;
 }
 
-function renderParty() {
-  document.getElementById('partyChips').innerHTML = CAMPAIGN.party.map(p => {
-    const short = p.split(' ')[0];
-    return `<div class="party-chip" title="${escapeHtml(p)}">${escapeHtml(short)}</div>`;
-  }).join('');
+// ═══════════ PREP VIEW ═══════════
+function renderPrep() {
+  renderPrepTree();
+  renderPartyChips('prepPartyChips');
+  renderPrepLocation();
 }
 
-function renderCurrentLocation() {
-  const loc = CAMPAIGN.locations[state.currentLocationId];
-  document.getElementById('sbLocName').textContent = loc ? loc.name : '—';
-  document.getElementById('sbLocMeta').textContent = loc ? loc.meta : '';
-}
-
-function renderLocPicker() {
-  const host = document.getElementById('locPicker');
-  host.innerHTML = CAMPAIGN.tree.map(group => `
-    <div class="loc-group-title">${escapeHtml(group.label)}</div>
-    ${group.locations.map(l => `
-      <div class="loc-item ${l.status === 'done' ? 'done' : ''} ${l.status === 'warn' ? 'warn' : ''} ${state.currentLocationId === l.id ? 'active' : ''}"
-           onclick="selectLocation('${l.id}')">
-        <span class="status"></span>${escapeHtml(l.name)}
+function renderPrepTree() {
+  const host = document.getElementById('prepTree');
+  host.innerHTML = campaign().tree.map(g => `
+    <div class="tree-group" data-g="${g.id}">
+      <div class="tree-group-label" onclick="toggleGroup('${g.id}')">
+        <span class="arrow">▼</span>${escapeHtml(g.label)}
       </div>
-    `).join('')}
+      ${g.locations.map(l => `
+        <div class="tree-item ${l.status || ''} ${state.currentLocationId === l.id ? 'active' : ''}" onclick="selectLocation('${l.id}')">
+          <span class="dot"></span>${escapeHtml(l.name)}
+        </div>
+      `).join('')}
+    </div>
   `).join('');
 }
 
-function toggleLocPicker(e) {
-  const picker = document.getElementById('locPicker');
-  picker.classList.toggle('open');
-  if (picker.classList.contains('open')) {
-    renderLocPicker();
-    const close = (ev) => { if (!picker.contains(ev.target) && !ev.target.closest('.sb-location') && !ev.target.closest('.campaign-pill')) { picker.classList.remove('open'); document.removeEventListener('click', close); } };
-    setTimeout(() => document.addEventListener('click', close), 0);
-  }
+function renderPartyChips(hostId) {
+  const host = document.getElementById(hostId);
+  host.innerHTML = state.characters.filter(c => c.type === 'pc').map(c =>
+    `<div class="party-chip" title="${escapeHtml(c.race + ' ' + c.class)}" onclick="openChar('${c.id}')">${escapeHtml(c.name)}</div>`
+  ).join('');
+}
+
+function renderPrepLocation() {
+  const loc = currentLoc();
+  if (!loc) { document.getElementById('prepBody').innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text-dim);">Kein Standort ausgewählt.</div>'; return; }
+
+  document.getElementById('prepName').textContent = loc.name;
+  document.getElementById('prepMeta').textContent = loc.meta || '';
+  document.getElementById('prepImgPrompt').value = loc.imagePrompt || '';
+
+  const body = document.getElementById('prepBody');
+  body.innerHTML = `
+    <div class="card">
+      <div class="card-h"><span class="card-h-ico">📖</span><span class="card-h-title">Vorlese-Text</span><button class="card-h-action" onclick="askAIRewrite('readAloud')">✦ KI verbessern</button></div>
+      <div class="card-b">
+        <textarea class="field-ta tall read-aloud-style" placeholder="Der Ort, was die Party sieht und hört..." onblur="updateLocField('readAloud', this.value)">${escapeHtml(loc.readAloud || '')}</textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="card-h-ico">📋</span><span class="card-h-title">DM-Notiz</span><button class="card-h-action" onclick="askAIGenerate('dmNote')">✦ KI generieren</button></div>
+      <div class="card-b">
+        <textarea class="field-ta" placeholder="Context nur für dich — Taktiken, Motive, Twists..." onblur="updateLocField('dmNote', this.value)">${escapeHtml(loc.dmNote || '')}</textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="card-h-ico">⚔️</span><span class="card-h-title">Mögliche Szenarien</span></div>
+      <div class="card-b">
+        ${(loc.scenarios || []).map((s, i) => `
+          <div class="list-item" data-idx="${i}">
+            <div class="list-item-head">
+              <input value="${escapeAttr(s.title)}" placeholder="Szenario-Titel" onblur="updateScenario(${i}, 'title', this.value)">
+              <button class="prob" onclick="cycleProb(${i})">${escapeHtml(s.probability || 'Möglich')}</button>
+              <button class="list-item-remove" onclick="removeScenario(${i})">×</button>
+            </div>
+            <textarea class="list-item-body" placeholder="Was passiert — wie reagieren die Beteiligten?" onblur="updateScenario(${i}, 'body', this.value)">${escapeHtml(s.body || '')}</textarea>
+          </div>
+        `).join('')}
+        <button class="add-row" onclick="addScenario()">+ Szenario hinzufügen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="card-h-ico">💬</span><span class="card-h-title">Dialoge / NPC-Zeilen</span></div>
+      <div class="card-b">
+        ${(loc.dialogs || []).map((d, i) => `
+          <div class="dialog-item">
+            <input class="dialog-item-speaker" value="${escapeAttr(d.speaker)}" placeholder="NPC — Trigger" onblur="updateDialog(${i}, 'speaker', this.value)">
+            <textarea class="dialog-item-text" placeholder="Was sagt der NPC?" onblur="updateDialog(${i}, 'text', this.value)">${escapeHtml(d.text || '')}</textarea>
+            <button class="list-item-remove" onclick="removeDialog(${i})">×</button>
+          </div>
+        `).join('')}
+        <button class="add-row" onclick="addDialog()">+ Dialog hinzufügen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="card-h-ico">🗡️</span><span class="card-h-title">Statblöcke (Referenz)</span></div>
+      <div class="card-b" style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+        Statblöcke werden in <strong style="color:var(--gold);">Charaktere</strong> angelegt und verwaltet (Bar oben: <em>Charaktere</em>-Tab). Dort kannst du NPCs mit Porträt anlegen.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="card-h-ico">📜</span><span class="card-h-title">Geschichte / Kontext</span></div>
+      <div class="card-b">
+        <textarea class="field-ta" placeholder="Was ist vorher passiert? Warum ist die Party hier?" onblur="updateLocField('history', this.value)">${escapeHtml(loc.history || '')}</textarea>
+      </div>
+    </div>
+  `;
+
+  renderPrepSceneImage();
+}
+
+function renderPrepSceneImage() {
+  const host = document.getElementById('prepSceneImg');
+  const url = state.images[state.currentLocationId];
+  host.innerHTML = url
+    ? `<img src="${escapeAttr(url)}" alt="Scene"><div class="scene-img-placeholder" style="display:none"></div>`
+    : `<div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Szenen-Bild</span></div>`;
+}
+
+function switchPrepRT(tab) {
+  document.querySelectorAll('.prep-rt-tab').forEach(t => t.classList.toggle('active', t.dataset.rt === tab));
+  document.querySelectorAll('.prep-right-pane').forEach(p => p.classList.toggle('active', p.dataset.rt === tab));
 }
 
 function selectLocation(id) {
-  state.currentLocationId = id;
-  const at = activeThread();
-  if (at) { at.currentLocationId = id; at.updated = Date.now(); }
-  saveState();
-  renderCurrentLocation();
-  document.getElementById('locPicker').classList.remove('open');
-  toast('Standort: ' + CAMPAIGN.locations[id]?.name);
+  state.currentLocationId = id; saveState();
+  renderPrepTree();
+  renderPrepLocation();
+  if (state.currentView === 'session') renderSession();
   plausibleTrack('DMStudio · Location', { location: id });
 }
 
-function renderThreads() {
-  const host = document.getElementById('threadList');
-  if (!state.threads.length) {
-    host.innerHTML = '<div style="padding:20px 14px;font-size:12px;color:var(--text-dimmer);font-style:italic;">Noch keine Unterhaltungen. Neue starten ↑</div>';
+function toggleGroup(id) {
+  const el = document.querySelector(`.tree-group[data-g="${id}"]`);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function addLocation() {
+  const name = prompt('Name für neuen Standort:'); if (!name) return;
+  const group = campaign().tree[0];  // default add to first group
+  const id = 'loc_' + Date.now().toString(36);
+  group.locations.push({ id, name, status: 'pending' });
+  campaign().locations[id] = { name, meta: '', imagePrompt: '', readAloud: '', dmNote: '', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' };
+  state.currentLocationId = id; saveState();
+  renderPrep();
+}
+
+function markLocStatus(status) {
+  const loc = findTreeLoc(state.currentLocationId); if (!loc) return;
+  loc.status = status; saveState();
+  renderPrepTree();
+  toast(`Status: ${status === 'done' ? 'Abgeschlossen' : 'Aktuell'}`);
+}
+
+function findTreeLoc(id) {
+  for (const g of campaign().tree) for (const l of g.locations) if (l.id === id) return l;
+  return null;
+}
+
+function updateLocField(field, value) {
+  const loc = currentLoc(); if (!loc) return;
+  loc[field] = value;
+  if (field === 'name') {
+    const treeLoc = findTreeLoc(state.currentLocationId); if (treeLoc) treeLoc.name = value;
+    renderPrepTree();
+  }
+  saveState();
+}
+
+function updateScenario(i, field, value) {
+  const loc = currentLoc(); if (!loc?.scenarios?.[i]) return;
+  loc.scenarios[i][field] = value; saveState();
+}
+function cycleProb(i) {
+  const loc = currentLoc(); if (!loc?.scenarios?.[i]) return;
+  const probs = ['Wahrscheinlich', 'Möglich', 'Unwahrscheinlich'];
+  const cur = loc.scenarios[i].probability || 'Möglich';
+  const next = probs[(probs.indexOf(cur) + 1) % probs.length];
+  loc.scenarios[i].probability = next; saveState(); renderPrepLocation();
+}
+function addScenario() {
+  const loc = currentLoc(); if (!loc) return;
+  loc.scenarios = loc.scenarios || [];
+  loc.scenarios.push({ title: '', probability: 'Möglich', body: '' });
+  saveState(); renderPrepLocation();
+}
+function removeScenario(i) {
+  const loc = currentLoc(); if (!loc?.scenarios) return;
+  loc.scenarios.splice(i, 1); saveState(); renderPrepLocation();
+}
+
+function updateDialog(i, field, value) {
+  const loc = currentLoc(); if (!loc?.dialogs?.[i]) return;
+  loc.dialogs[i][field] = value; saveState();
+}
+function addDialog() {
+  const loc = currentLoc(); if (!loc) return;
+  loc.dialogs = loc.dialogs || [];
+  loc.dialogs.push({ speaker: '', text: '' });
+  saveState(); renderPrepLocation();
+}
+function removeDialog(i) {
+  const loc = currentLoc(); if (!loc?.dialogs) return;
+  loc.dialogs.splice(i, 1); saveState(); renderPrepLocation();
+}
+
+async function generateSceneImage() {
+  const loc = currentLoc();
+  if (!loc?.imagePrompt) { toast('Kein Prompt hinterlegt', true); return; }
+  const hostIds = ['prepSceneImg', 'sessSceneImg'];
+  hostIds.forEach(id => {
+    const h = document.getElementById(id); if (!h) return;
+    h.innerHTML = `<div class="loading"><div class="spinner"></div><span>SEEDREAM RENDERT</span></div>`;
+  });
+  try {
+    const resp = await fetch(`${API_BASE}/api/image`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: loc.imagePrompt, model: 'bytedance/seedream-4-5', width: 1920, height: 1080 })
+    });
+    const data = await resp.json();
+    const url = extractImageUrl(data);
+    if (!url) throw new Error(data?.error ? JSON.stringify(data.error) : 'keine URL');
+    state.images[state.currentLocationId] = url; saveState();
+    renderPrepSceneImage();
+    renderSessSceneImage();
+    toast('Bild generiert');
+    plausibleTrack('DMStudio · Image Generated', { location: state.currentLocationId });
+  } catch (err) {
+    toast('Fehler: ' + err.message, true);
+    renderPrepSceneImage(); renderSessSceneImage();
+  }
+}
+
+async function copySceneUrl() {
+  const url = state.images[state.currentLocationId];
+  if (!url) { toast('Kein Bild', true); return; }
+  try { await navigator.clipboard.writeText(url); toast('URL kopiert'); }
+  catch (e) { toast('Copy fehlgeschlagen', true); }
+}
+
+function askAIRewrite(field) {
+  const loc = currentLoc(); if (!loc) return;
+  const current = loc[field] || '';
+  const prompt = current
+    ? `Verbessere diesen ${field === 'readAloud' ? 'Vorlese-Text' : 'Text'} für den Standort "${loc.name}". Mach ihn atmosphärischer und spannender. Antworte nur mit dem fertigen Text:\n\n${current}`
+    : `Schreibe einen ${field === 'readAloud' ? 'Vorlese-Text' : 'DM-Notiz-Text'} für den Standort "${loc.name}" (${loc.meta || 'kein context'}). Halte es atmospherisch und knapp.`;
+  switchPrepRT('chat');
+  const input = document.querySelector('[data-chat-host="prep"] .chat-input');
+  input.value = prompt; input.focus(); sendChatFrom('prep');
+}
+function askAIGenerate(field) { askAIRewrite(field); }
+
+// ═══════════ SESSION LIVE VIEW ═══════════
+function renderSession() {
+  renderSessionTree();
+  renderPartyChips('sessionPartyChips');
+  renderSessionLocation();
+  renderInitiative();
+}
+
+function renderSessionTree() {
+  const host = document.getElementById('sessionTree');
+  host.innerHTML = campaign().tree.map(g => `
+    <div class="tree-group" data-g="sess-${g.id}">
+      <div class="tree-group-label" onclick="document.querySelector('[data-g=\\'sess-${g.id}\\']').classList.toggle('collapsed')">
+        <span class="arrow">▼</span>${escapeHtml(g.label)}
+      </div>
+      ${g.locations.map(l => `
+        <div class="tree-item ${l.status || ''} ${state.currentLocationId === l.id ? 'active' : ''}" onclick="selectLocation('${l.id}')">
+          <span class="dot"></span>${escapeHtml(l.name)}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function renderSessionLocation() {
+  const loc = currentLoc();
+  if (!loc) { document.getElementById('sessReadPane').innerHTML = '<div class="session-empty"><h2>Kein <em>Standort</em></h2><p>Wähl einen Standort links.</p></div>'; return; }
+
+  document.getElementById('sessLocName').textContent = loc.name;
+  document.getElementById('sessLocMeta').textContent = loc.meta || '';
+
+  const host = document.getElementById('sessReadPane');
+  host.innerHTML = `
+    ${loc.readAloud
+      ? `<div class="session-read-aloud">
+          <div class="session-read-label">Vorlesen</div>
+          ${loc.readAloud.split('\n\n').filter(x => x.trim()).map(p => `<p>${escapeHtml(p)}</p>`).join('')}
+        </div>`
+      : `<div class="session-read-aloud empty">
+          <div class="session-read-label">Vorlesen</div>
+          <p>Kein Vorlese-Text hinterlegt — im <strong>Vorbereitung</strong>-Tab editieren.</p>
+        </div>`}
+
+    <div class="session-quickgrid">
+      <div class="sq-card">
+        <div class="sq-card-h"><span>⚔️</span><span>Mögliche Szenarien</span></div>
+        <div class="sq-card-b">
+          ${(loc.scenarios || []).length
+            ? loc.scenarios.map(s => `
+              <div class="sq-scen">
+                <div class="sq-scen-h"><span class="sq-scen-t">${escapeHtml(s.title)}</span><span class="sq-scen-p">${escapeHtml(s.probability || 'Möglich')}</span></div>
+                <div class="sq-scen-b">${escapeHtml(s.body || '')}</div>
+              </div>`).join('')
+            : '<em style="color:var(--text-dim);">Keine Szenarien.</em>'}
+        </div>
+      </div>
+
+      <div class="sq-card">
+        <div class="sq-card-h"><span>💬</span><span>Dialoge</span></div>
+        <div class="sq-card-b">
+          ${(loc.dialogs || []).length
+            ? loc.dialogs.map(d => `
+              <div class="sq-dialog">
+                <div class="sq-dialog-sp">${escapeHtml(d.speaker)}</div>
+                <div class="sq-dialog-tx">${escapeHtml(d.text)}</div>
+              </div>`).join('')
+            : '<em style="color:var(--text-dim);">Keine Dialoge.</em>'}
+        </div>
+      </div>
+    </div>
+
+    ${loc.dmNote ? `
+      <div class="sq-card" style="margin-bottom:18px;">
+        <div class="sq-card-h"><span>📋</span><span>DM-Notiz</span></div>
+        <div class="sq-card-b" style="font-style:italic;color:var(--text-dim);">${escapeHtml(loc.dmNote)}</div>
+      </div>` : ''}
+
+    ${renderLocRelatedStats(loc)}
+  `;
+
+  renderSessSceneImage();
+  renderSessMusic(loc);
+}
+
+function renderLocRelatedStats(loc) {
+  // Show NPC statblocks for characters tagged relevant to this location
+  // Simple heuristic: if location name/dmNote mentions character name, show their stats
+  const relevantNpcs = state.characters.filter(c => {
+    if (c.type !== 'npc') return false;
+    const ln = (loc.name + ' ' + (loc.dmNote || '') + ' ' + (loc.meta || '')).toLowerCase();
+    return ln.includes(c.name.toLowerCase().split(' ')[0]);
+  });
+  if (!relevantNpcs.length) return '';
+  return `
+    <div class="sq-card">
+      <div class="sq-card-h"><span>🗡️</span><span>Relevante Stats</span></div>
+      <div class="sq-card-b">
+        ${relevantNpcs.map(c => `
+          <div class="sq-stat">
+            <div class="sq-stat-n">${escapeHtml(c.name)}</div>
+            <div class="sq-stat-row"><span>HP / AC</span><span>${c.hp}/${c.maxHp} · AC ${c.ac}</span></div>
+            <div class="sq-stat-row"><span>CR / Init</span><span>${c.level} · ${c.initiative || '—'}</span></div>
+            ${c.notes ? `<div class="sq-stat-row"><span>Notes</span><span>${escapeHtml(c.notes.slice(0, 70))}${c.notes.length > 70 ? '…' : ''}</span></div>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderSessSceneImage() {
+  const host = document.getElementById('sessSceneImg');
+  if (!host) return;
+  const url = state.images[state.currentLocationId];
+  host.innerHTML = url
+    ? `<img src="${escapeAttr(url)}" alt="Scene">`
+    : `<div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Bild</span></div>`;
+}
+
+function renderSessMusic(loc) {
+  const host = document.getElementById('sessMusic');
+  const music = loc.music || [];
+  host.innerHTML = music.length
+    ? music.map(m => `
+      <div class="music-item">
+        <div class="music-disc">${m.icon || '🎵'}</div>
+        <div class="music-info">
+          <div class="music-title">${escapeHtml(m.title)}</div>
+          <div class="music-sub">${escapeHtml(m.sub || '')}</div>
+        </div>
+        <div class="music-play">▶</div>
+      </div>`).join('')
+    : '<div style="padding:6px 10px;font-size:11px;color:var(--text-dim);font-style:italic;">Keine Musik-Empfehlungen für diese Szene.</div>';
+}
+
+function renderInitiative() {
+  const host = document.getElementById('initiative');
+  if (!state.initiative.length) {
+    host.innerHTML = '<button class="btn-top" onclick="rollInitiative()">⚡ Initiative würfeln</button>';
     return;
   }
-  const sorted = [...state.threads].sort((a, b) => b.updated - a.updated);
-  host.innerHTML = sorted.map(t => `
-    <div class="thread ${state.activeThreadId === t.id ? 'active' : ''}" onclick="openThread('${t.id}')" title="${escapeHtml(t.title)}">
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(t.title)}</span>
-    </div>`).join('');
+  host.innerHTML = state.initiative.map((e, i) => {
+    const c = state.characters.find(x => x.id === e.id);
+    if (!c) return '';
+    return `
+      <div class="init-chip ${e.turn ? 'turn' : ''} ${e.down ? 'down' : ''}" onclick="toggleDown(${i})">
+        <span class="name">${escapeHtml(c.name.split(' ')[0])}</span>
+        <input value="${e.hp}" onblur="updateInitHP(${i}, this.value)" onclick="event.stopPropagation()">
+      </div>
+    `;
+  }).join('') + '<button class="btn-top" onclick="clearInitiative()" style="font-size:10px;padding:5px 8px;">✕</button>';
 }
 
-function openThread(id) {
-  state.activeThreadId = id;
-  const t = activeThread();
-  if (t?.currentLocationId) state.currentLocationId = t.currentLocationId;
-  saveState();
-  renderThreads(); renderCurrentLocation(); renderChat();
+function rollInitiative() {
+  const locNpcs = state.characters.filter(c => {
+    if (c.type !== 'npc') return false;
+    const loc = currentLoc(); if (!loc) return false;
+    const ln = (loc.name + ' ' + (loc.dmNote || '')).toLowerCase();
+    return ln.includes(c.name.toLowerCase().split(' ')[0]);
+  });
+  const pcs = state.characters.filter(c => c.type === 'pc');
+  const combined = [...pcs, ...locNpcs].map(c => ({
+    id: c.id,
+    init: (c.initiative || Math.ceil(Math.random() * 20 + (c.stats?.dex ? Math.floor((c.stats.dex - 10) / 2) : 0))),
+    hp: c.hp, down: false, turn: false
+  }));
+  combined.sort((a, b) => b.init - a.init);
+  if (combined.length) combined[0].turn = true;
+  state.initiative = combined; saveState(); renderInitiative();
+}
+function nextTurn() {
+  if (!state.initiative.length) { rollInitiative(); return; }
+  const curIdx = state.initiative.findIndex(e => e.turn);
+  state.initiative.forEach(e => e.turn = false);
+  let next = (curIdx + 1) % state.initiative.length;
+  while (state.initiative[next].down && next !== curIdx) next = (next + 1) % state.initiative.length;
+  state.initiative[next].turn = true;
+  saveState(); renderInitiative();
+}
+function toggleDown(i) { state.initiative[i].down = !state.initiative[i].down; saveState(); renderInitiative(); }
+function updateInitHP(i, val) { state.initiative[i].hp = parseInt(val) || 0; saveState(); }
+function clearInitiative() { state.initiative = []; saveState(); renderInitiative(); }
+
+// ═══════════ CHARACTERS VIEW ═══════════
+function renderChars() {
+  renderCharList();
+  renderCharEditor();
 }
 
-function renderChat() {
-  const host = document.getElementById('chatInner');
-  const t = activeThread();
+function filterChars(f) {
+  state.charFilter = f; saveState();
+  document.querySelectorAll('#charFilter button').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+  renderCharList();
+}
 
-  if (!t || !t.messages.length) {
+function renderCharList() {
+  const host = document.getElementById('charList');
+  const filtered = state.characters.filter(c => state.charFilter === 'all' || c.type === state.charFilter);
+  if (!filtered.length) { host.innerHTML = '<div style="padding:20px 14px;color:var(--text-dim);font-size:12px;font-style:italic;">Keine Charaktere.</div>'; return; }
+  const grouped = { pc: [], npc: [] };
+  filtered.forEach(c => grouped[c.type].push(c));
+  host.innerHTML = `
+    ${grouped.pc.length ? `<div class="tree-group-label" style="cursor:default;">Spieler (${grouped.pc.length})</div>` : ''}
+    ${grouped.pc.map(c => charRowHTML(c)).join('')}
+    ${grouped.npc.length ? `<div class="tree-group-label" style="cursor:default;margin-top:10px;">NPCs (${grouped.npc.length})</div>` : ''}
+    ${grouped.npc.map(c => charRowHTML(c)).join('')}
+  `;
+}
+
+function charRowHTML(c) {
+  const active = state.currentCharId === c.id;
+  const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  return `
+    <div class="char-row ${active ? 'active' : ''}" onclick="openChar('${c.id}')">
+      <div class="char-row-av">${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : initials}</div>
+      <div class="char-row-info">
+        <div class="char-row-n">${escapeHtml(c.name)}</div>
+        <div class="char-row-m">${escapeHtml(c.race)} · ${escapeHtml(c.class)}</div>
+      </div>
+      <span class="char-row-tag ${c.type}">${c.type.toUpperCase()}</span>
+    </div>
+  `;
+}
+
+function openChar(id) {
+  state.currentCharId = id; saveState();
+  if (state.currentView !== 'chars') switchView('chars');
+  else { renderCharList(); renderCharEditor(); }
+}
+
+function newCharacter() {
+  const type = confirm('Spieler-Charakter? (OK = Spieler, Abbrechen = NPC)') ? 'pc' : 'npc';
+  const name = prompt(`Name für neuen ${type === 'pc' ? 'Charakter' : 'NPC'}:`); if (!name) return;
+  const id = 'c_' + Date.now().toString(36);
+  const c = {
+    id, type, name, race: '', class: '', level: 1, hp: 10, maxHp: 10, ac: 10,
+    stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+    portraitUrl: '', portraitSource: '', backstory: '', personality: '', notes: '', initiative: 10
+  };
+  if (type === 'npc') c.imagePrompt = '';
+  state.characters.push(c);
+  state.currentCharId = id; saveState();
+  renderChars();
+}
+
+function renderCharEditor() {
+  const host = document.getElementById('charEditor');
+  const c = currentChar();
+  if (!c) {
     host.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-tag">✦ AI CO-DM</div>
-        <h1>Dein <em>Co-DM</em> kennt die ganze Kampagne.</h1>
-        <div class="empty-state-sub">Frag nach NPC-Reaktionen, generier Vorlese-Texte, plan Szenen, erzeug Atmosphären-Bilder — dein Partner kennt jede Entscheidung, jeden Ort, jede Session.</div>
-        <div class="suggestion-grid">
-          <div class="suggestion" onclick="useSuggestion('Was würde Rahadin tun wenn die Party versucht zu verhandeln?')">
-            <div class="suggestion-kicker">NPC-LOGIC</div>
-            Was würde Rahadin tun wenn die Party versucht zu verhandeln?
-          </div>
-          <div class="suggestion" onclick="useSuggestion('Schreib mir einen Vorlese-Text für den Moment wenn die Party den Keller betritt.')">
-            <div class="suggestion-kicker">READ-ALOUD</div>
-            Schreib einen Vorlese-Text für den Keller-Eintritt.
-          </div>
-          <div class="suggestion" onclick="useSuggestion('Generier ein Szenen-Bild für den Wine Cellar.')">
-            <div class="suggestion-kicker">IMAGE-GEN</div>
-            Generier ein Szenen-Bild für den Wine Cellar.
-          </div>
-          <div class="suggestion" onclick="useSuggestion('Was sind die besten Konsequenzen wenn Larrymäus vom Deathly Choir getroffen wird?')">
-            <div class="suggestion-kicker">MECHANICS</div>
-            Konsequenzen wenn Larrymäus vom Deathly Choir getroffen wird?
-          </div>
-        </div>
+      <div class="char-empty-state">
+        <h2>Wähl einen <em>Charakter</em></h2>
+        <p>Der Charakter-Builder verwaltet Spieler-Charaktere und NPCs. Spieler können Fotos hochladen, NPCs können AI-Portraits generieren. Die Daten fließen direkt in den Co-DM-Context.</p>
       </div>`;
     return;
   }
+  host.innerHTML = `
+    <div class="char-form">
+      <div class="char-form-head">
+        <div>
+          <div class="char-portrait" id="charPortrait">
+            ${c.portraitUrl
+              ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">`
+              : `<div class="empty">Kein Portrait</div>`}
+          </div>
+          <div class="char-portrait-actions">
+            ${c.type === 'pc'
+              ? `<button class="char-portrait-btn" onclick="triggerPortraitUpload()">📸 Foto hochladen</button>
+                 ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}`
+              : `<button class="char-portrait-btn" onclick="generateCharPortrait()">⚡ Portrait generieren</button>
+                 <button class="char-portrait-btn" onclick="triggerPortraitUpload()">Foto hochladen</button>
+                 ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}`}
+          </div>
+        </div>
+        <div class="char-form-body">
+          <div class="char-form-tag">
+            <span class="badge ${c.type}">${c.type.toUpperCase()}</span>
+            ${c.type === 'pc' ? 'SPIELER-CHARAKTER' : 'NICHT-SPIELER-CHARAKTER'}
+          </div>
+          <input class="char-form-name" value="${escapeAttr(c.name)}" placeholder="Name" onblur="updateCharField('name', this.value)">
+          <div class="char-form-row">
+            <div class="field">
+              <div class="field-lbl">Rasse</div>
+              <input class="field-in" value="${escapeAttr(c.race || '')}" onblur="updateCharField('race', this.value)">
+            </div>
+            <div class="field">
+              <div class="field-lbl">${c.type === 'pc' ? 'Klasse' : 'Rolle'}</div>
+              <input class="field-in" value="${escapeAttr(c.class || '')}" onblur="updateCharField('class', this.value)">
+            </div>
+            <div class="field">
+              <div class="field-lbl">${c.type === 'pc' ? 'Level' : 'CR'}</div>
+              <input class="field-in" type="number" value="${c.level || 1}" onblur="updateCharField('level', parseInt(this.value) || 1)">
+            </div>
+          </div>
+        </div>
+      </div>
 
-  host.innerHTML = t.messages.map(m => renderMsg(m)).join('');
-  // Rehydrate embedded images that were persisted
-  document.querySelectorAll('[data-img-persisted]').forEach(el => {
-    const url = el.getAttribute('data-img-persisted');
-    el.innerHTML = `<img src="${escapeAttr(url)}" alt="Generated scene"><div class="img-embed-caption"><span class="img-embed-caption-text">${escapeHtml(el.dataset.caption || 'Generated scene')}</span><span class="img-embed-actions"><button class="img-embed-action" onclick="copyText('${escapeAttr(url)}')">URL kopieren</button><a class="img-embed-action" href="${escapeAttr(url)}" target="_blank">Öffnen</a></span></div>`;
-  });
-  scrollToBottom();
+      <div class="card">
+        <div class="card-h"><span class="card-h-ico">❤️</span><span class="card-h-title">Combat Stats</span></div>
+        <div class="card-b">
+          <div class="char-form-row">
+            <div class="field"><div class="field-lbl">HP</div><input class="field-in" type="number" value="${c.hp}" onblur="updateCharField('hp', parseInt(this.value) || 0)"></div>
+            <div class="field"><div class="field-lbl">Max HP</div><input class="field-in" type="number" value="${c.maxHp}" onblur="updateCharField('maxHp', parseInt(this.value) || 0)"></div>
+            <div class="field"><div class="field-lbl">AC</div><input class="field-in" type="number" value="${c.ac}" onblur="updateCharField('ac', parseInt(this.value) || 10)"></div>
+          </div>
+          <div class="stats-grid" style="margin-top:12px;">
+            ${['str','dex','con','int','wis','cha'].map(s => `
+              <div class="stat-block">
+                <div class="stat-block-l">${s.toUpperCase()}</div>
+                <input class="stat-block-v" type="number" value="${c.stats[s]}" onblur="updateCharStat('${s}', parseInt(this.value) || 10)">
+              </div>
+            `).join('')}
+          </div>
+          <div class="field" style="margin-top:12px;">
+            <div class="field-lbl">Initiative (Fix — 0 = würfeln)</div>
+            <input class="field-in" type="number" value="${c.initiative || 0}" onblur="updateCharField('initiative', parseInt(this.value) || 0)" style="max-width:100px;">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><span class="card-h-ico">📖</span><span class="card-h-title">Hintergrund</span></div>
+        <div class="card-b">
+          <div class="field">
+            <div class="field-lbl">Backstory</div>
+            <textarea class="field-ta" onblur="updateCharField('backstory', this.value)">${escapeHtml(c.backstory || '')}</textarea>
+          </div>
+          <div class="field">
+            <div class="field-lbl">Persönlichkeit</div>
+            <textarea class="field-ta" onblur="updateCharField('personality', this.value)">${escapeHtml(c.personality || '')}</textarea>
+          </div>
+          <div class="field">
+            <div class="field-lbl">DM-Notizen (privat)</div>
+            <textarea class="field-ta" placeholder="Taktiken, Motive, Twists..." onblur="updateCharField('notes', this.value)">${escapeHtml(c.notes || '')}</textarea>
+          </div>
+        </div>
+      </div>
+
+      ${c.type === 'npc' ? `
+        <div class="card">
+          <div class="card-h"><span class="card-h-ico">🎨</span><span class="card-h-title">Portrait-Prompt (für AI-Generation)</span></div>
+          <div class="card-b">
+            <textarea class="field-ta field-imgprompt" placeholder="Medium portrait, fantasy character, ..." onblur="updateCharField('imagePrompt', this.value)">${escapeHtml(c.imagePrompt || '')}</textarea>
+          </div>
+        </div>` : ''}
+
+      <div class="char-delete">
+        <button onclick="deleteChar()">Charakter löschen</button>
+      </div>
+    </div>
+  `;
 }
 
-function renderMsg(m) {
-  if (m.role === 'user') {
-    return `<div class="msg msg-user">
-      <div class="msg-avatar">DM</div>
-      <div class="msg-body">
-        <div class="msg-role">DM</div>
-        <div class="msg-content">${escapeHtml(m.content).replace(/\n/g, '<br>')}</div>
-      </div>
-    </div>`;
+function updateCharField(field, value) {
+  const c = currentChar(); if (!c) return;
+  c[field] = value; saveState();
+  if (field === 'name' || field === 'race' || field === 'class') renderCharList();
+}
+function updateCharStat(stat, value) {
+  const c = currentChar(); if (!c) return;
+  c.stats[stat] = value; saveState();
+}
+function deleteChar() {
+  if (!confirm('Wirklich löschen?')) return;
+  state.characters = state.characters.filter(c => c.id !== state.currentCharId);
+  state.currentCharId = null; saveState(); renderChars();
+}
+
+function triggerPortraitUpload() { document.getElementById('portraitUploadInput').click(); }
+function handlePortraitUpload(e) {
+  const file = e.target.files?.[0]; if (!file) return;
+  const c = currentChar(); if (!c) return;
+  if (file.size > 2 * 1024 * 1024) { toast('Max 2 MB bitte (für localStorage-Speicherung)', true); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    c.portraitUrl = reader.result;  // base64
+    c.portraitSource = 'upload';
+    saveState(); renderCharEditor(); renderCharList(); renderPartyChips('prepPartyChips'); renderPartyChips('sessionPartyChips');
+    toast('Portrait hochgeladen');
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+async function generateCharPortrait() {
+  const c = currentChar(); if (!c) return;
+  if (!c.imagePrompt) {
+    const auto = `Medium portrait of ${c.name}, a ${c.race} ${c.class}, fantasy character, cinematic moody lighting, dark fantasy aesthetic, photorealistic, 8K, sharp focus, no text, no watermark, no deformed hands`;
+    if (!confirm(`Kein Portrait-Prompt vorhanden. Default verwenden?\n\n${auto}`)) return;
+    c.imagePrompt = auto; saveState();
   }
-  const rendered = renderAssistantContent(m);
-  return `<div class="msg msg-ai">
-    <div class="msg-avatar">EC</div>
-    <div class="msg-body">
-      <div class="msg-role">Co-DM</div>
-      <div class="msg-content">${rendered}</div>
+  const portraitEl = document.getElementById('charPortrait');
+  portraitEl.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+  try {
+    const resp = await fetch(`${API_BASE}/api/image`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: c.imagePrompt, model: 'bytedance/seedream-4-5', width: 1024, height: 1024 })
+    });
+    const data = await resp.json();
+    const url = extractImageUrl(data);
+    if (!url) throw new Error('Generation failed');
+    c.portraitUrl = url; c.portraitSource = 'ai-gen'; saveState();
+    renderCharEditor(); renderCharList();
+    toast('Portrait generiert');
+  } catch (err) {
+    toast('Fehler: ' + err.message, true); renderCharEditor();
+  }
+}
+function removePortrait() {
+  const c = currentChar(); if (!c) return;
+  c.portraitUrl = ''; c.portraitSource = ''; saveState();
+  renderCharEditor(); renderCharList();
+}
+
+// ═══════════ CHAT (shared between prep and session right-panels) ═══════════
+document.querySelectorAll('.chat-panel').forEach(panel => {
+  const host = panel.dataset.chatHost;
+  const input = panel.querySelector('.chat-input');
+  const btn = panel.querySelector('.chat-send-btn');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatFrom(host); }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(120, input.scrollHeight) + 'px';
+  });
+  btn.addEventListener('click', () => sendChatFrom(host));
+});
+
+function chatThread(host) {
+  if (!state.threads[host]) state.threads[host] = { messages: [] };
+  return state.threads[host];
+}
+function renderChat(host) {
+  const panel = document.querySelector(`[data-chat-host="${host}"]`);
+  if (!panel) return;
+  const scroll = panel.querySelector('.chat-scroll');
+  const t = chatThread(host);
+  if (!t.messages.length) {
+    scroll.innerHTML = `
+      <div class="chat-empty">
+        <strong>CO-DM · ${host === 'prep' ? 'Vorbereitung' : 'Improvise'}</strong>
+        ${host === 'prep'
+          ? 'Lass mich Vorlese-Texte schreiben, Szenarien ausbauen, NPC-Reaktionen planen, Atmosphären-Bilder generieren.'
+          : 'Schnelle Improvisation während der Session. Was passiert wenn…?'}
+      </div>`;
+    return;
+  }
+  scroll.innerHTML = t.messages.map(m => renderMsg(m)).join('');
+  requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
+}
+function renderMsg(m) {
+  const role = m.role === 'assistant' ? 'ai' : 'user';
+  const av = role === 'ai' ? 'EC' : 'DM';
+  const label = role === 'ai' ? 'Co-DM' : 'DM';
+  const content = m.typing
+    ? `<div class="typing"><span></span><span></span><span></span></div>`
+    : renderAIContent(m);
+  return `<div class="chat-msg ${role}">
+    <div class="chat-msg-av">${av}</div>
+    <div class="chat-msg-body">
+      <div class="chat-msg-role">${label}</div>
+      <div class="chat-msg-content">${content}</div>
     </div>
   </div>`;
 }
-
-function renderAssistantContent(m) {
-  if (m.typing) return `<div class="typing"><span></span><span></span><span></span></div>`;
+function renderAIContent(m) {
   let content = m.content || '';
-  // Extract [READ_ALOUD: ...] blocks
-  content = content.replace(/\[READ_ALOUD:\s*([\s\S]+?)\]/g, (_, text) =>
-    `<div class="read-aloud-embed"><div class="read-aloud-embed-label">VORLESEN</div>${mdInline(text.trim())}</div>`);
-  // Extract [GENERATE_IMAGE: prompt] — replace with image placeholder/embedded image
+  if (m.role === 'user') return escapeHtml(content).replace(/\n/g, '<br>');
+  content = content.replace(/\[READ_ALOUD:\s*([\s\S]+?)\]/g, (_, t) =>
+    `<div class="read-aloud-embed"><div class="read-aloud-embed-label">Vorlesen</div>${mdInline(t.trim())}</div>`);
   content = content.replace(/\[GENERATE_IMAGE:\s*([\s\S]+?)\]/g, (_, prompt) => {
     const cached = m.images?.[prompt.trim()];
     if (cached) {
-      return `<div class="img-embed"><img src="${escapeAttr(cached)}" alt="Scene"><div class="img-embed-caption"><span class="img-embed-caption-text">${escapeHtml(prompt.trim().slice(0, 80))}</span><span class="img-embed-actions"><button class="img-embed-action" onclick="copyText('${escapeAttr(cached)}')">URL</button><a class="img-embed-action" href="${escapeAttr(cached)}" target="_blank">↗</a></span></div></div>`;
+      return `<div class="img-embed"><img src="${escapeAttr(cached)}"><div class="cap"><span class="cap-text">${escapeHtml(prompt.trim().slice(0, 80))}</span><span class="cap-actions"><button class="img-embed-action" onclick="copyText('${escapeAttr(cached)}')">URL</button><a class="img-embed-action" href="${escapeAttr(cached)}" target="_blank">↗</a></span></div></div>`;
     }
-    return `<div class="img-embed" data-generate-prompt="${escapeAttr(prompt.trim())}" data-msg-id="${m.id}"><div class="img-embed-loading"><div class="spinner"></div><span>Generiert…</span></div></div>`;
+    return `<div class="img-embed" data-gen-prompt="${escapeAttr(prompt.trim())}" data-msg-id="${m.id}"><div class="img-loading"><div class="spinner"></div><span>Generiert…</span></div></div>`;
   });
   return mdBlock(content);
 }
-
-// Very small Markdown subset: paragraphs, **bold**, *italic*, `code`, > blockquote, - lists
 function mdInline(s) {
   return escapeHtml(s)
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
@@ -649,128 +1489,73 @@ function mdInline(s) {
     .replace(/`([^`]+)`/g, '<code>$1</code>');
 }
 function mdBlock(s) {
-  // Preserve already-rendered HTML blocks (read-aloud, img-embed)
-  // Process paragraphs only outside those blocks
   const parts = s.split(/(<div class="(?:read-aloud-embed|img-embed)[\s\S]*?<\/div>)/g);
   return parts.map(part => {
     if (part.startsWith('<div class="read-aloud-embed') || part.startsWith('<div class="img-embed')) return part;
-    // Turn blank-line separated paragraphs
-    const paragraphs = part.trim().split(/\n{2,}/).filter(Boolean);
-    return paragraphs.map(p => {
+    return part.trim().split(/\n{2,}/).filter(Boolean).map(p => {
       p = p.trim();
-      // blockquote
-      if (/^>\s/.test(p)) return `<blockquote>${mdInline(p.replace(/^>\s*/gm, ''))}</blockquote>`;
-      // Unordered list
       if (/^[-*]\s/.test(p)) {
-        const items = p.split(/\n/).filter(Boolean).map(line => `<li>${mdInline(line.replace(/^[-*]\s*/, ''))}</li>`).join('');
-        return `<ul>${items}</ul>`;
+        return '<ul>' + p.split(/\n/).filter(Boolean).map(line => `<li>${mdInline(line.replace(/^[-*]\s*/, ''))}</li>`).join('') + '</ul>';
       }
-      // Ordered list
       if (/^\d+\.\s/.test(p)) {
-        const items = p.split(/\n/).filter(Boolean).map(line => `<li>${mdInline(line.replace(/^\d+\.\s*/, ''))}</li>`).join('');
-        return `<ol>${items}</ol>`;
+        return '<ol>' + p.split(/\n/).filter(Boolean).map(line => `<li>${mdInline(line.replace(/^\d+\.\s*/, ''))}</li>`).join('') + '</ol>';
       }
       return `<p>${mdInline(p).replace(/\n/g, '<br>')}</p>`;
     }).join('');
   }).join('');
 }
 
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function escapeAttr(s) { return escapeHtml(s); }
-
-function scrollToBottom() {
-  const el = document.getElementById('chatScroll');
-  requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
-}
-
-// ═══════════ SEND FLOW ═══════════
-async function sendMsg() {
-  const input = document.getElementById('chatInput');
+async function sendChatFrom(host) {
+  const panel = document.querySelector(`[data-chat-host="${host}"]`);
+  const input = panel.querySelector('.chat-input');
   const text = input.value.trim(); if (!text) return;
-
-  // Ensure we have an active thread
-  if (!state.activeThreadId) newThread();
-  const t = activeThread(); if (!t) return;
-
-  // First message → set title
-  if (!t.messages.length) t.title = text.slice(0, 60);
-
+  const t = chatThread(host);
   t.messages.push({ id: 'm_' + Date.now().toString(36), role: 'user', content: text });
-  t.updated = Date.now();
-  input.value = ''; autoGrow(input);
-
-  // Placeholder for AI response (typing indicator)
-  const aiMsgId = 'm_' + Date.now().toString(36) + '_ai';
-  t.messages.push({ id: aiMsgId, role: 'assistant', content: '', typing: true });
-  saveState(); renderThreads(); renderChat();
+  input.value = ''; input.style.height = 'auto';
+  const aiId = 'm_' + (Date.now() + 1).toString(36);
+  t.messages.push({ id: aiId, role: 'assistant', content: '', typing: true });
+  saveState(); renderChat(host);
 
   try {
-    const apiMessages = t.messages
-      .filter(m => !m.typing)
-      .map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }));
-
+    const apiMessages = t.messages.filter(m => !m.typing).map(m => ({ role: m.role, content: m.content }));
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        campaign: { ...CAMPAIGN, currentLocationId: state.currentLocationId },
+        campaign: { ...campaign(), currentLocationId: state.currentLocationId, party: state.characters.filter(c => c.type === 'pc').map(c => `${c.name} (${c.race} ${c.class}, Lv ${c.level})`), characters: state.characters },
         messages: apiMessages
       })
     });
     const data = await resp.json();
-
     let content = '';
-    if (data.content && Array.isArray(data.content)) {
-      content = data.content.map(c => c.type === 'text' ? c.text : '').join('\n\n').trim();
-    } else if (typeof data.content === 'string') {
-      content = data.content;
-    }
-    if (!content) content = '(Keine Antwort erhalten' + (data.error ? `: ${JSON.stringify(data.error).slice(0, 200)}` : '') + ')';
+    if (Array.isArray(data.content)) content = data.content.map(c => c.type === 'text' ? c.text : '').join('\n\n').trim();
+    else if (typeof data.content === 'string') content = data.content;
+    if (!content) content = '(Keine Antwort' + (data.error ? ': ' + JSON.stringify(data.error).slice(0, 150) : '') + ')';
+    const aiMsg = t.messages.find(m => m.id === aiId);
+    if (aiMsg) { aiMsg.content = content; aiMsg.typing = false; aiMsg.images = {}; }
+    saveState(); renderChat(host);
 
-    // Replace typing message with real content
-    const aiMsg = t.messages.find(m => m.id === aiMsgId);
-    if (aiMsg) { aiMsg.content = content; aiMsg.typing = false; aiMsg.images = aiMsg.images || {}; }
-    t.updated = Date.now();
-    saveState(); renderThreads(); renderChat();
-
-    // Auto-generate images for any [GENERATE_IMAGE] tags in the response
     const imgPrompts = [...content.matchAll(/\[GENERATE_IMAGE:\s*([\s\S]+?)\]/g)].map(m => m[1].trim());
-    for (const prompt of imgPrompts) {
-      generateEmbeddedImage(aiMsgId, prompt);
-    }
-
-    plausibleTrack('DMStudio · Message Sent', { location: state.currentLocationId });
+    for (const p of imgPrompts) generateEmbeddedImage(host, aiId, p);
   } catch (err) {
-    console.error(err);
-    const aiMsg = t.messages.find(m => m.id === aiMsgId);
-    if (aiMsg) { aiMsg.content = '❌ Fehler: ' + err.message; aiMsg.typing = false; }
-    saveState(); renderChat();
-    toast('Chat-Fehler: ' + err.message, true);
+    const aiMsg = t.messages.find(m => m.id === aiId);
+    if (aiMsg) { aiMsg.content = '❌ ' + err.message; aiMsg.typing = false; }
+    saveState(); renderChat(host);
   }
 }
 
-async function generateEmbeddedImage(msgId, prompt) {
+async function generateEmbeddedImage(host, msgId, prompt) {
   try {
     const resp = await fetch(`${API_BASE}/api/image`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt + ', cinematic fantasy, photorealistic, 8K, atmospheric, no text, no watermark', model: 'bytedance/seedream-4-5', width: 1920, height: 1080 })
+      body: JSON.stringify({ prompt: prompt + ', cinematic fantasy, photorealistic, 8K, no text', model: 'bytedance/seedream-4-5', width: 1920, height: 1080 })
     });
     const data = await resp.json();
-    const url = extractImageUrl(data);
-    if (!url) throw new Error(data?.error ? JSON.stringify(data.error) : 'no url');
-
-    // Find the message and attach image
-    const t = activeThread(); if (!t) return;
+    const url = extractImageUrl(data); if (!url) throw new Error('no url');
+    const t = chatThread(host);
     const msg = t.messages.find(m => m.id === msgId); if (!msg) return;
-    msg.images = msg.images || {};
-    msg.images[prompt] = url;
-    saveState(); renderChat();
-  } catch (err) {
-    console.error('[image gen]', err);
-    // Find the loading placeholder and show an error state
-    const placeholder = document.querySelector(`[data-generate-prompt="${escapeAttr(prompt)}"]`);
-    if (placeholder) placeholder.innerHTML = `<div class="img-embed-loading" style="color:var(--crimson);">Bild-Gen fehlgeschlagen</div>`;
-  }
+    msg.images = msg.images || {}; msg.images[prompt] = url;
+    saveState(); renderChat(host);
+  } catch (err) { console.error(err); }
 }
 
 function extractImageUrl(d) {
@@ -787,59 +1572,29 @@ function extractImageUrl(d) {
 }
 
 // ═══════════ HELPERS ═══════════
-function useSuggestion(text) {
-  const input = document.getElementById('chatInput');
-  input.value = text; autoGrow(input); input.focus();
-  sendMsg();
-}
-
-function autoGrow(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(200, el.scrollHeight) + 'px';
-  document.getElementById('sendBtn').disabled = !el.value.trim();
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMsg();
-  }
-}
-
-async function copyText(t) {
-  try { await navigator.clipboard.writeText(t); toast('In Zwischenablage'); }
-  catch (e) { toast('Konnte nicht kopieren', true); }
-}
-
-function exportPDF() { toast('PDF-Gen via Playwright · kommt in Phase 1b'); }
-function exportSession() {
-  const t = activeThread(); if (!t) { toast('Kein Thread offen', true); return; }
-  const blob = new Blob([JSON.stringify({ campaign: CAMPAIGN.id, thread: t, exported: new Date().toISOString() }, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `dm-studio-${t.id}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  toast('Export gestartet');
-}
-
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
+async function copyText(t) { try { await navigator.clipboard.writeText(t); toast('Kopiert'); } catch (e) { toast('Fehler', true); } }
 function toast(msg, isError) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.toggle('error', !!isError); t.classList.add('show');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
-
-function plausibleTrack(event, props) {
-  try { window.plausible && window.plausible(event, { props: props || {} }); } catch (e) {}
+function plausibleTrack(event, props) { try { window.plausible?.(event, { props: props || {} }); } catch (e) {} }
+function exportPDF() { toast('PDF-Gen kommt in Phase 1b'); }
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `dm-studio-${campaign().id}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Export');
 }
 
 // ═══════════ INIT ═══════════
 renderCampaignMeta();
-renderParty();
-renderCurrentLocation();
-renderThreads();
-renderChat();
-document.getElementById('chatInput').focus();
+switchView(state.currentView || 'prep');
+renderChat('prep'); renderChat('session');
 </script>
 </body>
 </html>
