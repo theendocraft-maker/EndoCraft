@@ -1150,12 +1150,6 @@ body {
         <span style="animation:pulse 1.5s ease infinite;display:inline-block;">✦ Generating your card image…</span>
       </div>
 
-    <!-- Share buttons -->
-    <div class="share-row" id="shareRow" style="display:none;">
-      <button class="share-btn primary" onclick="shareSession()">✦ Share with party</button>
-      <button class="share-btn outline" onclick="copyShareLink()">Copy link</button>
-    </div>
-
     <!-- DETAILS — collapsible -->
     <!-- Subscribe CTA -->
     <div id="cardSubscribeCta" style="background:linear-gradient(135deg,rgba(123,108,246,.08),rgba(232,184,109,.05));border:1px solid rgba(123,108,246,.2);border-radius:14px;padding:20px 22px;margin-top:4px;">
@@ -1339,12 +1333,6 @@ body {
         </div>
       </div>
     </div>
-    <div class="share-row" id="shareRow" style="display:none;">
-      <button class="share-btn primary" onclick="shareSession()">✦ Share with party</button>
-      <button class="share-btn outline" onclick="copyShareLink()">Copy link</button>
-    </div>
-    <div class="share-link-box" id="shareLinkBox" onclick="copyShareLink()">Generating link…</div>
-
 
 
 
@@ -1412,8 +1400,7 @@ function buildSessionCard(data, story) {
   }
   
   document.getElementById('sessionCardWrap').classList.add('visible');
-  const sr = document.getElementById('shareRow'); if(sr) sr.style.display='flex';
-  
+
   return {
     session_title: title,
     summary: summary,
@@ -1478,8 +1465,7 @@ function showTradingCard(data) {
   if (!wrap) return;
   wrap.style.display = 'block';
   wrap.scrollIntoView({behavior:'smooth', block:'start'});
-  const _sr = document.getElementById('shareRow'); if (_sr) _sr.style.display = 'flex';
-  
+
   // Fill card data from data object directly
   const sessionTitle = data.session_title || 'Session Recap';       // small italic subtitle
   const legendaryMoment = data.legendary_moment || 'A moment for the ages';  // goes into results-header quote
