@@ -891,11 +891,66 @@ const TIKTOK_SPOTS = [
     ]
   },
   {
+    id: 'spotnat1',
+    name: 'NAT 1.',
+    status: 'built',
+    duration: 11,
+    shotCount: 2,
+    theme: 'Series-Start · Raw TikTok · Participation',
+    subtitle: 'Drop your nat 1 → next video',
+    url: '../tiktok/spot-nat1/',
+    sections: [
+      {
+        title: 'Hook (0–2s)',
+        fields: [
+          { key: 'hookText', label: 'Hook text', at: 0, defaultValue: 'I rolled a <span class="nat1">NAT 1</span><br>in front of my entire party.', hint: '<span class="nat1">...</span> wird rot + pulst' }
+        ]
+      },
+      {
+        title: 'Reaction (2–3.5s)',
+        fields: [
+          { key: 'reactionText', label: 'Reaction text (over shocked image)', at: 2000, defaultValue: 'They will <span class="never">never</span> let it go.', hint: '<span class="never">...</span> wird rot' }
+        ]
+      },
+      {
+        title: 'Card Reveal (3.5–5.5s)',
+        fields: [
+          { key: 'revealText', label: 'Reveal text', at: 3500, defaultValue: 'So we made it a card.' },
+          { key: 'mlClass', label: 'Card class/level', defaultValue: 'Harengon Bard · Lv VI' },
+          { key: 'mlName', label: 'Card character name', defaultValue: 'Caspian' },
+          { key: 'mlTitle', label: 'Card moment title', defaultValue: 'The Unwanted Kiss' },
+          { key: 'mlSerial', label: 'Card serial', defaultValue: 'Nº 1 of 300 · SEALED' }
+        ]
+      },
+      {
+        title: 'Serial close-up (5.5–7s)',
+        fields: [
+          { key: 'serialBig', label: 'Big serial number', at: 5500, defaultValue: 'Nº 1/300' },
+          { key: 'serialText', label: 'Serial tagline', at: 6100, defaultValue: 'The <span class="red">rarer the fail</span><br>the rarer the card.' }
+        ]
+      },
+      {
+        title: 'Comment-Bait (7–9.5s) — THE FOLLOW TRIGGER',
+        fields: [
+          { key: 'baitTitle', label: 'Bait headline', at: 7000, defaultValue: 'Drop your Nat 1 story' },
+          { key: 'baitSub', label: 'Bait subline', at: 7800, defaultValue: "Best one becomes <strong>next video's card.</strong>" }
+        ]
+      },
+      {
+        title: 'CTA (9.5–11s)',
+        fields: [
+          { key: 'ctaUrl', label: 'URL', at: 9500, defaultValue: 'endocraft.app' },
+          { key: 'ctaTagline', label: 'CTA tagline', defaultValue: 'Seal your moment. Free.' }
+        ]
+      }
+    ]
+  },
+  {
     id: 'spot2',
-    name: 'The Misprint',
+    name: 'The Misprint (Flagship-style)',
     status: 'planned',
-    theme: 'FOMO / Curiosity',
-    subtitle: 'Nat 1 · Rare pull'
+    theme: 'FOMO / Curiosity · alte Cinematic-Pipeline',
+    subtitle: 'Nat 1 · Rare pull — abgelöst durch Raw-Format NAT 1.'
   },
   {
     id: 'spot3',

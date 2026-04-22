@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>EndoCraft — Spot Nat1 · Legendary Cards Series</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Cinzel+Decorative:wght@900&family=Cinzel:wght@700&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; overflow: hidden; width: 100%; height: 100%; -webkit-tap-highlight-color: transparent; }
+
+/* ═══════════ SETUP ═══════════ */
+#setup {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; flex-direction: column; padding: 28px 24px; gap: 20px;
+  background: linear-gradient(180deg, #0c0a1a 0%, #060308 100%);
+  overflow-y: auto;
+}
+#setup.hidden { display: none; }
+.setup-header { text-align: center; padding: 10px 0 6px; }
+.setup-header h1 { font-family: 'Cinzel Decorative', serif; font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #E04A3A; margin-bottom: 6px; }
+.setup-header .sub { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,.4); text-transform: uppercase; }
+.setup-header .spot-title { font-family: 'DM Sans', sans-serif; font-size: 14px; color: rgba(255,255,255,.55); margin-top: 10px; }
+.setup-concept { max-width: 580px; margin: 0 auto; padding: 16px 20px; background: rgba(224,74,58,.05); border: 1px solid rgba(224,74,58,.2); border-radius: 12px; font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.6; }
+.setup-concept strong { color: #E04A3A; font-weight: 600; }
+
+.shot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; max-width: 700px; margin: 0 auto; width: 100%; }
+.shot { background: rgba(255,255,255,.03); border: 1px solid rgba(224,74,58,.2); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; min-height: 250px; }
+.shot.loaded { border-color: rgba(76,175,125,.35); }
+.shot.gen { border-color: rgba(123,108,246,.5); animation: shotPulse 1.6s ease infinite; }
+.shot.error { border-color: rgba(224,74,58,.5); }
+@keyframes shotPulse { 0%,100% { border-color: rgba(123,108,246,.3); } 50% { border-color: rgba(123,108,246,.8); } }
+.shot-thumb { width: 100%; aspect-ratio: 9/16; border-radius: 8px; background: linear-gradient(135deg, #1a1428, #0a060f); overflow: hidden; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.25); }
+.shot-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot-thumb .gen-spinner { width: 26px; height: 26px; border: 2px solid rgba(123,108,246,.25); border-top-color: #7B6CF6; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.shot-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: #E04A3A; text-transform: uppercase; }
+.shot-prompt { font-size: 10px; color: rgba(255,255,255,.45); line-height: 1.4; max-height: 36px; overflow: hidden; }
+.shot-btn { background: rgba(123,108,246,.15); border: 1px solid rgba(123,108,246,.4); color: #a392f8; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+.shot-btn.primary { background: #7B6CF6; color: #fff; border-color: #7B6CF6; }
+.setup-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 20px 0 10px; }
+.big-btn { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; padding: 14px 28px; border-radius: 30px; border: 1px solid rgba(224,74,58,.5); background: rgba(224,74,58,.1); color: #E04A3A; cursor: pointer; text-transform: uppercase; }
+.big-btn.play { background: linear-gradient(135deg, #E04A3A, #b8392c); color: #fff; border-color: #E04A3A; font-weight: 700; box-shadow: 0 0 30px rgba(224,74,58,.4); }
+.big-btn.play:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+.big-btn.ghost { background: transparent; border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.5); }
+.setup-note { text-align: center; font-size: 11px; color: rgba(255,255,255,.4); max-width: 500px; margin: 0 auto; line-height: 1.6; }
+.setup-note kbd { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 4px; padding: 1px 6px; font-size: 10px; font-family: monospace; }
+#cost-meter { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.35); text-align: center; }
+
+/* ═══════════ PLAYER ═══════════ */
+#player { position: fixed; inset: 0; z-index: 20; display: none; background: #000; overflow: hidden; }
+#player.visible { display: flex; align-items: center; justify-content: center; }
+/* 9:16 stage centered, fits both mobile + desktop */
+#stage {
+  position: relative;
+  width: min(100vw, calc(100vh * 9 / 16));
+  height: min(100vh, calc(100vw * 16 / 9));
+  width: min(100vw, calc(100dvh * 9 / 16));
+  height: min(100dvh, calc(100vw * 16 / 9));
+  max-width: 100vw; max-height: 100dvh;
+  background: #000; overflow: hidden;
+}
+
+/* Scenes — HARD CUTS (no crossfade). Each scene snaps in/out instantly for meme-pace feel. */
+.scene { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; }
+.scene.on { display: flex; }
+
+/* Scene 1: HOOK — pure black + impact text */
+.hook-stage { padding: 40px 24px; text-align: center; }
+.hook-text {
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(32px, 8vw, 48px);
+  line-height: 1.05; letter-spacing: -.02em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,.95);
+}
+.hook-text .nat1 { color: #E04A3A; font-style: italic; display: inline-block; animation: nat1Pulse 1.5s ease-in-out infinite; }
+@keyframes nat1Pulse {
+  0%,100% { text-shadow: 0 0 20px rgba(224,74,58,.6); transform: scale(1); }
+  50%     { text-shadow: 0 0 40px rgba(224,74,58,1); transform: scale(1.04); }
+}
+/* Ambient red particles during hook — subtle unease */
+.hook-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.hook-particles .hp { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(224,74,58,.5); box-shadow: 0 0 4px rgba(224,74,58,.4); opacity: 0; }
+
+/* Scene 2: REACTION — image + text overlay */
+.reaction-stage { position: absolute; inset: 0; overflow: hidden; }
+.reaction-img { width: 100%; height: 100%; object-fit: cover; }
+.reaction-img.shake { animation: reactionShake .8s cubic-bezier(.2,.8,.2,1); }
+@keyframes reactionShake {
+  0%,100% { transform: scale(1.05); }
+  20% { transform: scale(1.08) translateX(-4px); }
+  40% { transform: scale(1.08) translateX(4px); }
+  60% { transform: scale(1.07) translateX(-2px); }
+  80% { transform: scale(1.06) translateX(2px); }
+}
+.reaction-ov {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.5) 0%, transparent 30%, transparent 60%, rgba(0,0,0,.85) 100%);
+}
+.reaction-text {
+  position: absolute; left: 0; right: 0; bottom: 14%;
+  text-align: center; padding: 0 24px;
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(28px, 7.5vw, 44px);
+  line-height: 1.05; color: #fff;
+  text-shadow: 0 3px 16px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,.8);
+  letter-spacing: -.02em;
+}
+.reaction-text .never { color: #E04A3A; font-style: italic; }
+
+/* Scene 3: CARD REVEAL — misprint-styled card snaps in with glitch */
+.reveal-stage { position: absolute; inset: 0; background: radial-gradient(ellipse at center, #1a0808 0%, #000 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 40px 24px; }
+.misprint-card {
+  position: relative;
+  width: min(62%, 260px); aspect-ratio: 3/4;
+  border-radius: 14px; overflow: hidden;
+  background: #0a0404;
+  box-shadow: 0 0 0 2px rgba(224,74,58,.7), 0 20px 60px rgba(0,0,0,.95), 0 0 80px rgba(224,74,58,.4);
+  opacity: 0; transform: scale(.6) rotate(-3deg);
+}
+.misprint-card.snap { animation: cardSnap .45s cubic-bezier(.2,1.4,.3,1) forwards, misprintGlitch 2.4s steps(20) .45s infinite; }
+@keyframes cardSnap {
+  0%   { opacity: 0; transform: scale(.6) rotate(-3deg); filter: blur(8px); }
+  60%  { opacity: 1; transform: scale(1.08) rotate(1.5deg); filter: blur(0); }
+  80%  { transform: scale(.97) rotate(-.5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+/* Jittery CMYK-style glitch — continues through scene lifetime */
+@keyframes misprintGlitch {
+  0%, 88%, 100% { filter: none; }
+  89% { filter: hue-rotate(10deg) brightness(1.1); transform: scale(1) translate(1px,0); }
+  91% { filter: hue-rotate(-20deg) brightness(.95) saturate(1.2); transform: scale(1) translate(-1px, 1px); }
+  93% { filter: none; transform: scale(1); }
+}
+.misprint-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.7) contrast(1.1); }
+/* CMYK chromatic ghost layers — duplicated text halos */
+.misprint-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  mix-blend-mode: screen;
+  background:
+    linear-gradient(to bottom, transparent 40%, rgba(0,224,255,.06) 45%, transparent 55%),
+    linear-gradient(to bottom, rgba(255,0,80,.05) 60%, transparent 70%);
+}
+.misprint-card::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(10,4,4,.4) 0%, transparent 35%, transparent 60%, rgba(10,4,4,.95) 100%);
+}
+.misprint-pill {
+  position: absolute; top: 10px; left: 10px; z-index: 5;
+  background: rgba(10,2,2,.9); border: 1px solid rgba(224,74,58,.6);
+  color: #E04A3A; font-family: 'Cinzel', serif; font-weight: 700;
+  font-size: 9px; letter-spacing: 2px; padding: 4px 10px; border-radius: 20px;
+}
+.misprint-labels { position: absolute; bottom: 14px; left: 0; right: 0; z-index: 5; padding: 0 14px; text-align: left; }
+.ml-class { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 2.5px; color: rgba(224,74,58,.85); margin-bottom: 3px; }
+.ml-name { font-family: 'Cinzel Decorative', serif; font-size: 22px; font-weight: 900; color: #ff8070; line-height: 1; margin-bottom: 4px; text-shadow: 1px 0 rgba(0,224,255,.4), -1px 0 rgba(255,0,80,.4); }
+.ml-title { font-family: 'DM Sans', sans-serif; font-style: italic; font-size: 10px; color: rgba(255,220,200,.55); margin-bottom: 6px; }
+.ml-serial { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: rgba(224,74,58,.8); }
+.reveal-text {
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(26px, 7vw, 40px);
+  color: #fff; letter-spacing: -.01em; line-height: 1.05; text-align: center;
+  text-shadow: 0 2px 12px rgba(0,0,0,.95);
+}
+
+/* Scene 4: SERIAL CLOSE-UP — huge number + tagline */
+.serial-stage { background: radial-gradient(ellipse at center, #1a0808 0%, #000 80%); padding: 40px 30px; gap: 30px; text-align: center; }
+.serial-big {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: clamp(72px, 18vw, 120px);
+  color: #E04A3A; line-height: 1; letter-spacing: -.02em;
+  text-shadow: 2px 0 rgba(0,224,255,.3), -2px 0 rgba(255,240,0,.3), 0 0 50px rgba(224,74,58,.6);
+  transform: scale(.3); opacity: 0;
+}
+.serial-big.pop { animation: serialPop .55s cubic-bezier(.2,1.6,.3,1.1) forwards; }
+@keyframes serialPop {
+  0%   { transform: scale(.3); opacity: 0; }
+  70%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.serial-text {
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(22px, 5.5vw, 32px);
+  color: #fff; line-height: 1.15; letter-spacing: -.01em;
+  max-width: 90%;
+  opacity: 0; transform: translateY(14px);
+}
+.serial-text.on { animation: serialTextIn .6s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes serialTextIn { to { opacity: 1; transform: translateY(0); } }
+.serial-text .red { color: #E04A3A; }
+
+/* Scene 5: COMMENT BAIT — big text + pulsing arrow */
+.bait-stage { background: #000; padding: 40px 30px; gap: 18px; text-align: center; }
+.bait-title {
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(30px, 8vw, 46px);
+  color: #fff; line-height: 1.05; letter-spacing: -.02em;
+  opacity: 0; transform: translateY(14px);
+}
+.bait-title.on { animation: baitIn .5s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes baitIn { to { opacity: 1; transform: translateY(0); } }
+.bait-arrow {
+  font-size: clamp(50px, 14vw, 80px); line-height: 1;
+  display: inline-block;
+  animation: arrowBounce 1s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(224,74,58,.6));
+}
+@keyframes arrowBounce {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(10px); }
+}
+.bait-sub {
+  font-family: 'DM Sans', sans-serif; font-weight: 700;
+  font-size: clamp(16px, 4.4vw, 22px);
+  color: rgba(224,74,58,.9); line-height: 1.3; letter-spacing: 0;
+  max-width: 85%;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.2,.8,.3,1);
+}
+.bait-sub.on { opacity: 1; transform: translateY(0); }
+.bait-sub strong { color: #fff; }
+
+/* Scene 6: CTA — quick gold flash + URL */
+.cta-stage { background: #000; padding: 40px 20px; gap: 12px; text-align: center; }
+.cta-url {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: clamp(24px, 7.5vw, 42px);
+  color: #E8B86D;
+  text-shadow: 0 0 30px rgba(232,184,109,.8), 0 0 60px rgba(232,184,109,.4);
+  white-space: nowrap;
+  opacity: 0; transform: scale(.85);
+}
+.cta-url.on { animation: ctaSnap .5s cubic-bezier(.2,1.3,.3,1) forwards; }
+@keyframes ctaSnap { 0% { opacity: 0; transform: scale(.85); } 100% { opacity: 1; transform: scale(1); } }
+.cta-tagline {
+  font-family: 'DM Sans', sans-serif; font-weight: 500;
+  font-size: clamp(12px, 3.2vw, 15px);
+  color: rgba(255,255,255,.6); margin-top: 4px;
+}
+
+/* Quick white-flash transition element — reused between scenes for impact cuts */
+#flashFx {
+  position: absolute; inset: 0; z-index: 100;
+  background: #fff; opacity: 0; pointer-events: none;
+}
+#flashFx.fire { animation: flashFire .22s ease-out; }
+@keyframes flashFire {
+  0% { opacity: 0; }
+  25% { opacity: .85; }
+  100% { opacity: 0; }
+}
+
+/* Top-left watermark (small, subtle) */
+.brand-watermark { position: absolute; top: 12px; left: 12px; z-index: 30; pointer-events: none; opacity: .55; filter: drop-shadow(0 2px 6px rgba(0,0,0,.9)); }
+.brand-watermark img { width: 22px; height: 22px; object-fit: contain; display: block; }
+
+/* HUD */
+.player-hud { position: absolute; top: 12px; right: 12px; z-index: 50; display: flex; gap: 8px; }
+.hud-btn { background: rgba(0,0,0,.6); color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: 6px 14px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; cursor: pointer; backdrop-filter: blur(10px); text-transform: uppercase; }
+.player-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,.08); z-index: 40; }
+.player-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #E04A3A, #ff8070); transition: width .1s linear; }
+body.recording .player-hud, body.recording .player-progress { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SETUP ═══════════ -->
+<div id="setup">
+  <div class="setup-header">
+    <div class="sub">✦ Legendary Cards Series · Folge 1</div>
+    <h1>NAT 1.</h1>
+    <div class="spot-title">~11s · 9:16 · raw TikTok format</div>
+  </div>
+  <div class="setup-concept">
+    <strong>Concept:</strong> Participation-first TikTok. Opens with universal D&D pain ("I rolled a Nat 1"), payoff in 3s with card reveal, ends with comment-bait CTA: "Drop your Nat 1 story 👇 best one becomes next video's card." — User <strong>folgen weil sie in Folge 2 dabei sein könnten.</strong>
+    <br><br>
+    <strong>Serie-Template:</strong> Gleiches Format, andere Themen (Nat 20, Worst DM Call, Character Death, etc.). Pro Folge User-Comments → Content-Pipeline.
+  </div>
+
+  <div class="shot-grid" id="shotGrid"></div>
+  <div id="cost-meter">Est. cost: €<span id="costTotal">0.08</span> for 2 images · €0.04 per re-roll</div>
+  <div class="setup-actions">
+    <button class="big-btn ghost" onclick="clearCache()">↻ Clear cache</button>
+    <button class="big-btn" id="genAllBtn" onclick="generateAll()">⚡ Generate all missing</button>
+    <button class="big-btn play" id="playBtn" onclick="startPlayback()" disabled>▶ Play spot</button>
+  </div>
+  <div class="setup-note">
+    <kbd>F</kbd> fullscreen · <kbd>R</kbd> hide HUD · <kbd>ESC</kbd> exit. Mobile: deploy → Safari → Add to Home Screen → screen-record from Control Center for clean capture.
+  </div>
+</div>
+
+<!-- ═══════════ PLAYER ═══════════ -->
+<div id="player">
+  <div id="stage">
+
+    <!-- SCENE 1: HOOK (0–2s) -->
+    <div class="scene" id="sceneHook">
+      <div class="hook-stage">
+        <div class="hook-particles" id="hookParticles"></div>
+        <div class="hook-text" id="hookText">I rolled a <span class="nat1">NAT 1</span><br>in front of my entire party.</div>
+      </div>
+    </div>
+
+    <!-- SCENE 2: REACTION (2–3.5s) -->
+    <div class="scene" id="sceneReaction">
+      <div class="reaction-stage">
+        <img class="reaction-img" id="reactionImg" alt="">
+        <div class="reaction-ov"></div>
+        <div class="reaction-text" id="reactionText">They will <span class="never">never</span> let it go.</div>
+      </div>
+    </div>
+
+    <!-- SCENE 3: CARD REVEAL (3.5–5.5s) -->
+    <div class="scene" id="sceneCardReveal">
+      <div class="reveal-stage">
+        <div class="misprint-card" id="misprintCard">
+          <img id="cardImg" alt="">
+          <div class="misprint-pill">⚠ MISPRINT</div>
+          <div class="misprint-labels">
+            <div class="ml-class" id="mlClass">Harengon Bard · Lv VI</div>
+            <div class="ml-name" id="mlName">Caspian</div>
+            <div class="ml-title" id="mlTitle">The Unwanted Kiss</div>
+            <div class="ml-serial" id="mlSerial">Nº 1 of 300 · SEALED</div>
+          </div>
+        </div>
+        <div class="reveal-text" id="revealText">So we made it a card.</div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: SERIAL CLOSE-UP (5.5–7s) -->
+    <div class="scene" id="sceneSerial">
+      <div class="serial-stage">
+        <div class="serial-big" id="serialBig">Nº 1/300</div>
+        <div class="serial-text" id="serialText">The <span class="red">rarer the fail</span><br>the rarer the card.</div>
+      </div>
+    </div>
+
+    <!-- SCENE 5: COMMENT BAIT (7–9.5s) -->
+    <div class="scene" id="sceneBait">
+      <div class="bait-stage">
+        <div class="bait-title" id="baitTitle">Drop your Nat 1 story</div>
+        <div class="bait-arrow">👇</div>
+        <div class="bait-sub" id="baitSub">Best one becomes <strong>next video's card.</strong></div>
+      </div>
+    </div>
+
+    <!-- SCENE 6: CTA (9.5–11s) -->
+    <div class="scene" id="sceneCta">
+      <div class="cta-stage">
+        <div class="cta-url" id="ctaUrl">endocraft.app</div>
+        <div class="cta-tagline" id="ctaTagline">Seal your moment. Free.</div>
+      </div>
+    </div>
+
+    <!-- Transitions + watermark + HUD -->
+    <div id="flashFx"></div>
+    <div class="brand-watermark"><img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft"></div>
+    <div class="player-hud">
+      <button class="hud-btn" onclick="toggleRecording()" id="recBtn">Clean</button>
+      <button class="hud-btn" onclick="stopPlayback()">✕ Exit</button>
+    </div>
+    <div class="player-progress"><div class="player-progress-bar" id="progressBar"></div></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// SPOT-NAT1 — Raw TikTok format, Legendary Cards Series · Folge 1
+// Template-clone-friendly. Edit SHOTS prompts + TIMELINE below to spin new series episodes.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const STORAGE_KEY = 'ec_tiktok_spot_nat1_images_v1';
+const STORAGE_AGE_WARN_HOURS = 6;
+
+// Overrides via /admin/ TikTok panel can re-write all texts
+const OVERRIDES = (() => { try { return JSON.parse(localStorage.getItem('ec_tiktok_overrides_spotnat1') || '{}'); } catch(e) { return {}; } })();
+function ov(key, def) { return (OVERRIDES[key] !== undefined && OVERRIDES[key] !== null) ? OVERRIDES[key] : def; }
+function applyStaticOverrides() {
+  const map = {
+    '#hookText':      'hookText',
+    '#reactionText':  'reactionText',
+    '#mlClass':       'mlClass',
+    '#mlName':        'mlName',
+    '#mlTitle':       'mlTitle',
+    '#mlSerial':      'mlSerial',
+    '#revealText':    'revealText',
+    '#serialBig':     'serialBig',
+    '#serialText':    'serialText',
+    '#baitTitle':     'baitTitle',
+    '#baitSub':       'baitSub',
+    '#ctaUrl':        'ctaUrl',
+    '#ctaTagline':    'ctaTagline'
+  };
+  for (const sel in map) {
+    const key = map[sel];
+    if (OVERRIDES[key] !== undefined) {
+      document.querySelectorAll(sel).forEach(el => { el.innerHTML = OVERRIDES[key]; });
+    }
+  }
+}
+
+// ═══════════ SHOTS — 2 images, reuse cached if possible ═══════════
+// Uses Caspian + Kiss scene from the existing Spot 1 / Flagship visual world.
+// The card gets misprint-styled in CSS (red glitch) — no separate Misprint-version needed.
+const SHOTS = [
+  {
+    slug: 'reaction-shocked',
+    name: 'Shocked Reaction',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard with warm brown fur and large expressive eyes wide in shocked horror, tattered elegant forest green coat with gold trim, ancient hag leaning in close with sinister warm smile, grey matted hair, glowing amber eyes, dramatic emotional moment, dim tavern interior with warm candlelight, cinematic fantasy, photorealistic, extreme emotional intensity, shallow depth of field, 8K, sharp focus, no text, no watermark, no instruments, no lute`,
+    targetImg: ['reactionImg']
+  },
+  {
+    slug: 'misprint-card-face',
+    name: 'Card Face (Caspian portrait)',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot framed from head to waist, face positioned in upper third of frame, centered composition, generous empty space below, darker vignette on bottom, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
+    targetImg: ['cardImg']
+  }
+];
+
+// ═══════════ CACHE ═══════════
+function loadCache() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; } }
+function saveCache(c) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {} }
+function clearCache() {
+  if (!confirm('Delete all cached images?')) return;
+  localStorage.removeItem(STORAGE_KEY); renderShotGrid();
+}
+
+function extractImageUrl(d) {
+  if (!d) return null;
+  if (typeof d === 'string' && /^https?:\/\//.test(d)) return d;
+  if (typeof d.url === 'string') return d.url;
+  if (d.url && typeof d.url === 'object') return extractImageUrl(d.url);
+  if (typeof d.image_url === 'string') return d.image_url;
+  if (Array.isArray(d.images) && d.images[0]) return extractImageUrl(d.images[0]);
+  if (Array.isArray(d.data) && d.data[0]) return extractImageUrl(d.data[0]);
+  if (Array.isArray(d.output) && d.output[0]) return extractImageUrl(d.output[0]);
+  if (typeof d.output === 'string') return d.output;
+  return null;
+}
+async function generateShot(shot) {
+  const body = { prompt: shot.prompt, model: 'bytedance/seedream-4-5', width: shot.width, height: shot.height };
+  const resp = await fetch(`${API_BASE}/api/image`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await resp.json();
+  console.log(`[gen:${shot.slug}]`, data);
+  const url = extractImageUrl(data);
+  if (!url || typeof url !== 'string') {
+    const errStr = data?.error ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error)) : 'no url';
+    throw new Error(errStr.slice(0, 400));
+  }
+  return url;
+}
+async function generateOne(slug) {
+  const shot = SHOTS.find(s => s.slug === slug); if (!shot) return;
+  const card = document.querySelector(`.shot[data-slug="${slug}"]`); if (!card) return;
+  card.classList.remove('loaded','error'); card.classList.add('gen');
+  const thumb = card.querySelector('.shot-thumb');
+  thumb.innerHTML = '<div class="gen-spinner"></div>';
+  try {
+    const url = await generateShot(shot);
+    const cache = loadCache(); cache[slug] = { url, ts: Date.now() }; saveCache(cache);
+    card.classList.remove('gen'); card.classList.add('loaded');
+    thumb.innerHTML = `<img src="${url}">`;
+    applyCacheToDOM(); updatePlayButtonState();
+  } catch (err) {
+    card.classList.remove('gen'); card.classList.add('error');
+    thumb.innerHTML = `<div style="color:#E04A3A;padding:8px;font-size:9px;font-family:monospace;">${String(err.message).replace(/[<>]/g,'')}</div>`;
+  }
+}
+async function generateAll() {
+  const cache = loadCache();
+  const missing = SHOTS.filter(s => !cache[s.slug]);
+  if (missing.length === 0) { alert('All images already cached.'); return; }
+  document.getElementById('genAllBtn').disabled = true;
+  for (const s of missing) await generateOne(s.slug);
+  document.getElementById('genAllBtn').disabled = false;
+}
+
+// ═══════════ UI ═══════════
+function renderShotGrid() {
+  const grid = document.getElementById('shotGrid');
+  const cache = loadCache();
+  Object.keys(cache).forEach(k => { const c = cache[k]; if (!c || typeof c.url !== 'string' || !/^https?:\/\//.test(c.url)) delete cache[k]; });
+  saveCache(cache);
+  grid.innerHTML = SHOTS.map(s => {
+    const c = cache[s.slug];
+    return `
+      <div class="shot ${c ? 'loaded' : ''}" data-slug="${s.slug}">
+        <div class="shot-thumb">${c ? `<img src="${c.url}">` : s.name.toUpperCase()}</div>
+        <div class="shot-name">${s.name}</div>
+        <div class="shot-prompt">${s.prompt.slice(0, 90)}…</div>
+        <button class="shot-btn ${c ? '' : 'primary'}" onclick="generateOne('${s.slug}')">${c ? 'Re-roll' : 'Generate'}</button>
+      </div>`;
+  }).join('');
+  applyCacheToDOM(); updatePlayButtonState();
+}
+function applyCacheToDOM() {
+  const cache = loadCache();
+  SHOTS.forEach(s => {
+    const c = cache[s.slug]; if (!c || !/^https?:\/\//.test(c.url || '')) return;
+    s.targetImg.forEach(id => { const el = document.getElementById(id); if (el) el.src = c.url; });
+  });
+}
+function updatePlayButtonState() {
+  const cache = loadCache();
+  document.getElementById('playBtn').disabled = !SHOTS.every(s => cache[s.slug]);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TIMELINE — 11 seconds, meme-pace hard cuts
+// ═══════════════════════════════════════════════════════════════════════════
+function buildTimeline() {
+  return [
+    // ACT 1: HOOK (0–2s)
+    { at: 0,    do: () => { show('sceneHook'); spawnHookParticles(); } },
+
+    // ACT 2: REACTION (2–3.5s) — hard flash cut to shocked face
+    { at: 2000, do: () => { fireFlash(); show('sceneReaction'); const img = document.getElementById('reactionImg'); if (img) { img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake'); } } },
+
+    // ACT 3: CARD REVEAL (3.5–5.5s) — flash + misprint card snaps in
+    { at: 3500, do: () => { fireFlash(); show('sceneCardReveal'); const c = document.getElementById('misprintCard'); if (c) { c.classList.remove('snap'); void c.offsetWidth; c.classList.add('snap'); } } },
+
+    // ACT 4: SERIAL (5.5–7s) — flash + big number pops
+    { at: 5500, do: () => { fireFlash(); show('sceneSerial'); const sb = document.getElementById('serialBig'); if (sb) { sb.classList.remove('pop'); void sb.offsetWidth; sb.classList.add('pop'); } } },
+    { at: 6100, do: () => document.getElementById('serialText').classList.add('on') },
+
+    // ACT 5: COMMENT BAIT (7–9.5s) — "Drop your story 👇"
+    { at: 7000, do: () => { fireFlash(); show('sceneBait'); document.getElementById('baitTitle').classList.add('on'); } },
+    { at: 7800, do: () => document.getElementById('baitSub').classList.add('on') },
+
+    // ACT 6: CTA (9.5–11s)
+    { at: 9500, do: () => { show('sceneCta'); document.getElementById('ctaUrl').classList.add('on'); } },
+
+    // Loop at 11s
+    { at: 11000, do: () => restart() }
+  ];
+}
+
+let rafId = null, timelineStart = 0, firedFlags = [], timeline = [];
+
+function startPlayback() {
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } catch(e) {}
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('player').classList.add('visible');
+  timeline = buildTimeline();
+  firedFlags = timeline.map(() => false);
+  timelineStart = performance.now();
+  hideAllScenes(); resetAllTexts();
+  tick();
+}
+function stopPlayback() {
+  cancelAnimationFrame(rafId); rafId = null;
+  document.getElementById('player').classList.remove('visible');
+  document.getElementById('setup').classList.remove('hidden');
+  document.body.classList.remove('recording');
+  try { if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); } catch(e) {}
+}
+function restart() {
+  timelineStart = performance.now();
+  firedFlags = timeline.map(() => false);
+  hideAllScenes(); resetAllTexts();
+}
+function tick() {
+  const now = performance.now();
+  const t = now - timelineStart;
+  timeline.forEach((entry, i) => {
+    if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
+  });
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 11000) * 100) + '%';
+  rafId = requestAnimationFrame(tick);
+}
+
+// Helpers
+function hideAllScenes() { document.querySelectorAll('.scene').forEach(el => el.classList.remove('on')); }
+function show(id) { hideAllScenes(); const el = document.getElementById(id); if (!el) return; void el.offsetWidth; el.classList.add('on'); }
+function resetAllTexts() {
+  ['serialText','baitTitle','baitSub','ctaUrl'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('on'); });
+  const sb = document.getElementById('serialBig'); if (sb) sb.classList.remove('pop');
+  const mc = document.getElementById('misprintCard'); if (mc) mc.classList.remove('snap');
+  const rImg = document.getElementById('reactionImg'); if (rImg) rImg.classList.remove('shake');
+  const hp = document.getElementById('hookParticles'); if (hp) hp.innerHTML = '';
+}
+function fireFlash() {
+  const f = document.getElementById('flashFx'); if (!f) return;
+  f.classList.remove('fire'); void f.offsetWidth; f.classList.add('fire');
+}
+function spawnHookParticles() {
+  const host = document.getElementById('hookParticles'); if (!host) return;
+  host.innerHTML = '';
+  const rect = host.getBoundingClientRect();
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div'); p.className = 'hp';
+    const x = Math.random() * rect.width;
+    const y = rect.height + Math.random() * 80;
+    const endY = -60 - Math.random() * 180;
+    const delay = Math.random() * 1.5;
+    const dur = 3 + Math.random() * 2;
+    p.style.cssText = `left:${x}px; top:${y}px; opacity:0; transition: transform ${dur}s linear ${delay}s, opacity ${dur}s ease ${delay}s;`;
+    host.appendChild(p);
+    requestAnimationFrame(() => { p.style.transform = `translateY(${endY - y}px)`; p.style.opacity = '.6'; });
+  }
+}
+
+// HUD
+function toggleRecording() {
+  document.body.classList.toggle('recording');
+  const on = document.body.classList.contains('recording');
+  const btn = document.getElementById('recBtn'); if (btn) btn.textContent = on ? 'HUD' : 'Clean';
+}
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('player').classList.contains('visible')) return;
+  if (e.key === 'Escape') stopPlayback();
+  else if (e.key.toLowerCase() === 'r') toggleRecording();
+  else if (e.key.toLowerCase() === 'f') {
+    try { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); } catch(_) {}
+  }
+});
+
+// INIT
+applyStaticOverrides();
+renderShotGrid();
+if (Object.keys(OVERRIDES).length > 0) {
+  const h = document.querySelector('.setup-header .sub');
+  if (h) h.innerHTML += ' <span style="color:#E04A3A;margin-left:10px;">✎ using edits from /admin</span>';
+}
+</script>
+</body>
+</html>

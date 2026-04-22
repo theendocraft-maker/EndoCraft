@@ -313,8 +313,14 @@ Hashtags: `#dnd #dndtiktok #dungeonsanddragons #ttrpg #dndcommunity #tabletop #r
 ## 12. OFFENE TODOS
 
 - [ ] Caspian Pixar Profilbild generieren und auf TikTok setzen
-- [ ] Reddit Post (warten bis Share-Link funktioniert)
-- [ ] Superstonk Post (warten bis NFT-Layer ready)
+- [ ] ~~Reddit Post (warten bis Share-Link funktioniert)~~ — **Direct Self-Promo in D&D-Subs verboten (verifiziert). Stattdessen:**
+  - Show-&-Tell ohne Link (Screenshot + Story, Link nur in Comments auf Nachfrage)
+  - UGC-Strategie (echte User posten ihre Karten → organic)
+  - Founder-Journey-Posts in r/tabletopgamedesign / r/indiegaming erlaubt
+  - r/DungeonsAndDragons offener als r/DnD
+- [ ] **Superstonk Post** — PARKEN für Phase 4 (NFT-Launch). Marco hat 10k+ Karma dort = Gold-Standard-Credibility. NICHT vorher verbrennen. MiCA EU-Window 2025-26 timen.
+- [ ] Product Hunt Launch als Reddit-Ersatz für Tool-Discovery
+- [ ] D&D YouTube-Creator-Outreach (Ginny Di, Matt Colville, XP to Level 3)
 - [ ] Gerald → verschoben auf DM Vorlagen Feature (später)
 - [ ] Mobile komplett testen
 
