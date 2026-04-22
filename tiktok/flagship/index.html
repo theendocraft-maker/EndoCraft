@@ -109,13 +109,30 @@ html, body {
   100% { opacity: 1;  transform: rotateZ(360deg)  scale(1);   filter: drop-shadow(0 0 80px rgba(232,184,109,.8)) drop-shadow(0 14px 24px rgba(0,0,0,.8)); }
 }
 
-/* Photoreal D20 image — fills the wrap, object-contain so nothing crops */
+/* CSS-only fallback — shown if the generated D20 image hasn't arrived yet. Stylish gold "20" behind the img. */
+.d20-wrap::before {
+  content: '20';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 130px; font-weight: 900;
+  color: rgba(232,184,109,.4);
+  text-shadow: 0 0 40px rgba(232,184,109,.35), 0 4px 16px rgba(0,0,0,.85);
+  pointer-events: none;
+  letter-spacing: -3px;
+}
+
+/* Photoreal D20 image — fills the wrap, object-contain so nothing crops, overlays the fallback */
 .d20-img {
+  position: relative;
   width: 100%; height: 100%;
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 12px 24px rgba(0,0,0,.75));
 }
+/* Hide broken/empty img icon on browsers that would otherwise show it */
+.d20-img:not([src]),
+.d20-img[src=""] { opacity: 0; }
 
 /* Landing impact — expanding gold ring shockwave centered on the die */
 .d20-impact {
@@ -548,8 +565,8 @@ const SHOTS = [
   {
     slug: 'd20-hero',
     name: 'D20 (hook icon)',
-    width: 1440, height: 1440,
-    prompt: `Single large D20 twenty-sided dice made of polished dark obsidian with metallic gold numerical engravings, the number 20 prominently displayed and clearly readable on the facing top face, centered on pure pitch black background, dramatic cinematic spotlight casting gold reflections on the metallic edges, gentle gold dust particles floating ethereally around the dice, sharp focus, 8K, premium product photography, metallic sheen, ominous and powerful atmosphere, subtle bottom shadow grounding the dice, no additional text or numbers visible, no watermark, no logos, no background elements`,
+    width: 2048, height: 2048,
+    prompt: `Single large D20 twenty-sided icosahedron dice floating in empty space, polished dark obsidian material with metallic gold edges and gold-inlaid numerical engravings, the number 20 prominently displayed and clearly readable on the facing top face, centered composition on pure pitch black background, dramatic cinematic key light from above-left casting sharp reflections on the metallic edges, gentle warm gold dust particles floating ethereally around the dice, subtle soft shadow beneath grounding the dice, sharp focus, 8K, premium product photography, ominous and powerful atmosphere, no additional numbers or text visible anywhere, no watermark, no logos, no background props`,
     targetImg: ['d20Img']
   },
   {
