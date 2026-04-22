@@ -208,10 +208,12 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
 .ml-serial { font-family: 'Cinzel', serif; font-size: 7.5px; letter-spacing: 2.5px; color: rgba(232,184,109,.78); text-transform: uppercase; }
 .ml-divider { width: 32px; height: 1px; background: linear-gradient(90deg, rgba(232,184,109,.6), transparent); margin: 0 0 6px; }
 .reveal-text {
-  font-family: 'Inter', sans-serif; font-weight: 900;
-  font-size: clamp(26px, 7vw, 40px);
-  color: #fff; letter-spacing: -.01em; line-height: 1.05; text-align: center;
-  text-shadow: 0 2px 12px rgba(0,0,0,.95);
+  font-family: 'EB Garamond', serif; font-style: italic; font-weight: 500;
+  font-size: clamp(18px, 4.8vw, 26px);
+  color: rgba(240,220,190,.85); letter-spacing: .5px; line-height: 1.05; text-align: center;
+  text-shadow: 0 2px 10px rgba(0,0,0,.95), 0 0 20px rgba(232,184,109,.15);
+  opacity: 0;
+  transition: opacity .8s ease;
 }
 
 /* ═══════ SCENE 1: DRAMATIC HOOK — "YOU SHALL NOT PASS!" ═══════ */
@@ -224,12 +226,17 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   text-align: center; padding: 0 24px;
-  font-family: 'Cinzel Decorative', serif; font-weight: 900;
-  font-size: clamp(38px, 10.5vw, 62px);
-  color: #fff; line-height: .95; letter-spacing: -.005em;
-  text-shadow: 0 0 40px rgba(232,184,109,.45), 0 4px 20px rgba(0,0,0,1), 0 0 80px rgba(0,0,0,.8);
-  text-transform: uppercase;
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(34px, 9vw, 54px);
+  color: #fff; line-height: 1.0; letter-spacing: -.02em;
+  text-shadow: 0 4px 20px rgba(0,0,0,1), 0 0 60px rgba(0,0,0,.85);
   opacity: 0; transform: scale(.92);
+}
+.drama-text em {
+  color: #E8B86D; font-style: italic; font-weight: 900;
+  font-family: 'Cinzel Decorative', serif;
+  text-shadow: 0 0 40px rgba(232,184,109,.7), 0 4px 14px rgba(0,0,0,.95);
+  display: inline-block; padding-top: 4px;
 }
 .scene.on .drama-text { animation: dramaTextIn .45s cubic-bezier(.2,1.4,.3,1) .15s forwards; }
 @keyframes dramaTextIn { to { opacity: 1; transform: scale(1); } }
@@ -292,10 +299,11 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
 /* ═══════ SCENE 4: BRIDGE REVEAL — THE MONEY SHOT, full-screen wide establishing ═══════ */
 .bridge-stage { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 12px; text-align: center; padding: 0 28px 48px; }
 .bridge-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.82) contrast(1.05); transform: scale(1.15); }
-.scene.on .bridge-img { animation: bridgeZoomOut 2.3s cubic-bezier(.2,.6,.2,1) forwards; }
+.scene.on .bridge-img { animation: bridgeZoomOut .9s cubic-bezier(.25,.8,.3,1) forwards; }
 /* The comedy: we zoom OUT to reveal how small/mundane the bridge actually is.
+   Tight 0.9s so the reveal completes within the 1s beat.
    Starts slightly zoomed in (feels dramatic) → pulls back to show the full tiny bridge. */
-@keyframes bridgeZoomOut { 0% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes bridgeZoomOut { 0% { transform: scale(1.2); } 100% { transform: scale(1); } }
 .bridge-ov {
   position: absolute; inset: 0; pointer-events: none;
   background:
@@ -450,8 +458,29 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
   50%     { filter: brightness(1.25) drop-shadow(0 0 20px rgba(232,184,109,.8)); }
 }
 
-/* Scene 6: CTA — quick gold flash + URL */
-.cta-stage { background: #000; padding: 40px 20px; gap: 12px; text-align: center; }
+/* BEAT 6: CTA + BAIT MERGED — follow-trigger line + URL + drop-prompt */
+.cta-stage { background: radial-gradient(ellipse at center, #140a0a 0%, #000 80%); padding: 40px 20px; gap: 14px; text-align: center; position: relative; }
+.cta-stage::before {
+  content: '';
+  position: absolute; inset: 18px;
+  border: 1.5px solid rgba(232,184,109,.22);
+  border-radius: 14px;
+  pointer-events: none;
+  animation: ctaFramePulse 1.8s ease-in-out infinite;
+}
+@keyframes ctaFramePulse {
+  0%,100% { border-color: rgba(232,184,109,.18); }
+  50%     { border-color: rgba(232,184,109,.5); }
+}
+.cta-kicker {
+  font-family: 'Cinzel', serif; font-weight: 700;
+  font-size: clamp(11px, 3vw, 14px);
+  letter-spacing: 4px; color: rgba(232,184,109,.85);
+  text-transform: uppercase;
+  opacity: 0; transform: translateY(8px);
+}
+.cta-kicker.on { animation: ctaFadeUp .4s ease forwards; }
+@keyframes ctaFadeUp { to { opacity: 1; transform: translateY(0); } }
 .cta-url {
   font-family: 'Cinzel Decorative', serif; font-weight: 900;
   font-size: clamp(24px, 7.5vw, 42px);
@@ -460,13 +489,15 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
   white-space: nowrap;
   opacity: 0; transform: scale(.85);
 }
-.cta-url.on { animation: ctaSnap .5s cubic-bezier(.2,1.3,.3,1) forwards; }
+.cta-url.on { animation: ctaSnap .5s cubic-bezier(.2,1.3,.3,1) .1s forwards; }
 @keyframes ctaSnap { 0% { opacity: 0; transform: scale(.85); } 100% { opacity: 1; transform: scale(1); } }
 .cta-tagline {
   font-family: 'DM Sans', sans-serif; font-weight: 500;
-  font-size: clamp(12px, 3.2vw, 15px);
-  color: rgba(255,255,255,.6); margin-top: 4px;
+  font-size: clamp(13px, 3.5vw, 17px);
+  color: rgba(255,255,255,.75); margin-top: 2px;
+  opacity: 0; transform: translateY(6px);
 }
+.cta-tagline.on { animation: ctaFadeUp .4s ease .25s forwards; }
 
 /* Quick white-flash transition element — reused between scenes for impact cuts */
 #flashFx {
@@ -499,12 +530,12 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
   <div class="setup-header">
     <div class="sub">✦ Legendary Cards Series · Folge 1</div>
     <h1>NAT 1.</h1>
-    <div class="spot-title">~16s · 9:16 · raw TikTok format</div>
+    <div class="spot-title">~10s · 9:16 · meme-pace · card-forward</div>
   </div>
   <div class="setup-concept">
-    <strong>Concept:</strong> "You Shall Not Pass!" D&D-parody as Folge 1 der Legendary Cards Series. Wizard Lyrin schreit den epischen Gandalf-Moment — bandit sagt "'scuse me" und läuft vorbei. Payoff: es war nur eine 3ft-Holzbrücke über 'nen Bach. Ends with comment-bait CTA: "Drop your most dramatic D&D moment 👇 best one becomes next video's card." — User <strong>folgen weil sie in Folge 2 dabei sein könnten.</strong>
+    <strong>Concept (v2 · card-forward):</strong> 10s POV-Parody von "I wanted to be Gandalf." → Nat 1 → Bandit "'scuse me" → 3-foot footbridge reveal → <strong>Card Hero-Moment 3.5s (35% der Spot-Zeit)</strong> → CTA mit Follow-Bait. Card ist der Held, nicht Nebendarsteller.
     <br><br>
-    <strong>5-Shot-Storytelling:</strong> Dramatic Pose → Shocked Reaction → Bandit Close-Up → Wide Bridge Reveal (Money Shot) → <em>Card Art: The Footbridge Incident (preserved memory)</em>. Der letzte Shot IST der Moment selbst — als Heirloom-Artwork auf der Karte konserviert. Das macht den Claim "seal your moment" sichtbar statt nur behauptet.
+    <strong>6-Beat Meme-Pace:</strong> Gandalf-POV (1.5s) · Nat 1 (1s) · Bandit (1.5s) · Bridge (1s) · <em>Card (3.5s)</em> · CTA (1.5s). Keine Füll-Sätze, keine Reflektions-Texte — die Karte selbst ist der emotionale Payoff.
   </div>
 
   <div class="shot-grid" id="shotGrid"></div>
@@ -523,60 +554,49 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
 <div id="player">
   <div id="stage">
 
-    <!-- SCENE 1: DRAMATIC HOOK — Lyrin pose + "YOU SHALL NOT PASS!" (0–1.8s) -->
+    <!-- v2 MEME-PACE: 6 beats, 10s, card as hero (35% of spot time) -->
+
+    <!-- BEAT 1: GANDALF POV (0–1.5s) — Lyrin drama pose + POV-framing -->
     <div class="scene" id="sceneDrama">
       <div class="drama-stage">
         <img class="drama-img" id="dramaImg" alt="">
         <div class="drama-vignette"></div>
-        <div class="drama-text">"YOU SHALL<br>NOT PASS!"</div>
+        <div class="drama-text">I wanted to be<br><em>Gandalf.</em></div>
       </div>
     </div>
 
-    <!-- SCENE 2: THE ROLL — intimidate → NAT 1 (1.8–3s) -->
+    <!-- BEAT 2: NAT 1 (1.5–2.5s) — shock face + the word -->
     <div class="scene" id="sceneRoll">
       <div class="reaction-stage">
         <img class="reaction-img" id="reactionImg" alt="">
         <div class="reaction-ov"></div>
-        <div class="roll-text" id="rollText1">intimidate check.</div>
         <div class="roll-text big" id="rollText2"><span class="nat1">NAT 1.</span></div>
       </div>
     </div>
 
-    <!-- SCENE 3: BANDIT beats — bandit close-up + text overlays (3–6s) -->
+    <!-- BEAT 3: BANDIT (2.5–4s) — one line, deadpan -->
     <div class="scene" id="sceneBandit">
       <div class="bandit-stage">
         <img class="bandit-img" id="banditImg" alt="">
         <div class="bandit-ov"></div>
         <div class="bandit-text-group">
-          <div class="bandit-text" id="banditText1">the bandit said</div>
           <div class="bandit-quote" id="banditText2">"'scuse me."</div>
-          <div class="bandit-text small" id="banditText3">stepped around me.</div>
-          <div class="bandit-text small" id="banditText4">continued walking.</div>
         </div>
       </div>
     </div>
 
-    <!-- SCENE 4: THE REVEAL — THE MONEY SHOT, wide footbridge shot (6–8.3s) -->
+    <!-- BEAT 4: BRIDGE REVEAL (4–5s) — wide money shot + reveal line -->
     <div class="scene" id="sceneBridge">
       <div class="bridge-stage">
         <img class="bridge-img" id="bridgeImg" alt="">
         <div class="bridge-ov"></div>
         <div class="bridge-text-group">
-          <div class="bridge-label" id="bridgeLabel">we were on a</div>
-          <div class="bridge-title" id="bridgeTitle">3-foot footbridge.</div>
-          <div class="bridge-subtitle" id="bridgeSub">over a creek.</div>
+          <div class="bridge-title" id="bridgeTitle">on a 3-foot bridge.</div>
         </div>
       </div>
     </div>
 
-    <!-- SCENE 5: SELF-AWARENESS (8.3–10s) -->
-    <div class="scene" id="sceneSelfAware">
-      <div class="aware-stage">
-        <div class="aware-text" id="awareText">i had it built up<br>in my head.</div>
-      </div>
-    </div>
-
-    <!-- SCENE 6: CARD REVEAL (10–12.6s) — flagship premium presentation. No misprint framing; clean heirloom artifact. -->
+    <!-- BEAT 5: CARD REVEAL (5–8.5s) — HERO MOMENT · 3.5s dwell · 35% of spot -->
     <div class="scene" id="sceneCardReveal">
       <div class="reveal-stage">
         <div class="misprint-card" id="misprintCard">
@@ -590,25 +610,16 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
             <div class="ml-serial" id="mlSerial">One of One · SEALED FOREVER</div>
           </div>
         </div>
-        <div class="reveal-text" id="revealText">your moment · preserved.</div>
+        <div class="reveal-text" id="revealText">your moment, preserved.</div>
       </div>
     </div>
 
-    <!-- SCENE 7: COMMENT BAIT — adapted for overreaction theme -->
-    <div class="scene" id="sceneBait">
-      <div class="bait-stage">
-        <div class="bait-kicker" id="baitKicker">✦ YOUR TURN</div>
-        <div class="bait-title" id="baitTitle">What's <span class="highlight">YOUR</span> most dramatic D&D moment?</div>
-        <div class="bait-arrow">👇</div>
-        <div class="bait-sub" id="baitSub">Top reply becomes <span class="payoff">next video's card.</span></div>
-      </div>
-    </div>
-
-    <!-- SCENE 8: CTA -->
+    <!-- BEAT 6: CTA + BAIT MERGED (8.5–10s) -->
     <div class="scene" id="sceneCta">
       <div class="cta-stage">
+        <div class="cta-kicker" id="ctaKicker">✦ TOP REPLY BECOMES NEXT CARD</div>
         <div class="cta-url" id="ctaUrl">endocraft.app</div>
-        <div class="cta-tagline" id="ctaTagline">Seal your moment. Free.</div>
+        <div class="cta-tagline" id="ctaTagline">drop your worst roll ↓</div>
       </div>
     </div>
 
@@ -637,26 +648,20 @@ const STORAGE_AGE_WARN_HOURS = 6;
 const OVERRIDES = (() => { try { return JSON.parse(localStorage.getItem('ec_tiktok_overrides_spotnat1') || '{}'); } catch(e) { return {}; } })();
 function ov(key, def) { return (OVERRIDES[key] !== undefined && OVERRIDES[key] !== null) ? OVERRIDES[key] : def; }
 function applyStaticOverrides() {
+  // v2 meme-pace — 6 beats, consolidated text fields. Older keys (rollText1, banditText1/3/4,
+  // bridgeLabel, bridgeSub, awareText, baitTitle, baitSub) still safe to pass — missing
+  // selectors silently no-op below, so admin panel payloads from either schema work.
   const map = {
     '#sceneDrama .drama-text': 'dramaText',
-    '#rollText1':      'rollText1',
     '#rollText2':      'rollText2',
-    '#banditText1':    'banditText1',
     '#banditText2':    'banditText2',
-    '#banditText3':    'banditText3',
-    '#banditText4':    'banditText4',
-    '#bridgeLabel':    'bridgeLabel',
     '#bridgeTitle':    'bridgeTitle',
-    '#bridgeSub':      'bridgeSub',
-    '#awareText':      'awareText',
     '#mlClass':        'mlClass',
     '#mlName':         'mlName',
     '#mlTitle':        'mlTitle',
     '#mlSerial':       'mlSerial',
     '#revealText':     'revealText',
-    '#baitKicker':     'baitKicker',
-    '#baitTitle':      'baitTitle',
-    '#baitSub':        'baitSub',
+    '#ctaKicker':      'ctaKicker',
     '#ctaUrl':         'ctaUrl',
     '#ctaTagline':     'ctaTagline'
   };
@@ -799,46 +804,35 @@ function updatePlayButtonState() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// TIMELINE — 11 seconds, meme-pace hard cuts
+// TIMELINE v2 — 10 seconds, 6 beats, meme-pace. Card = 35% of total time.
 // ═══════════════════════════════════════════════════════════════════════════
 function buildTimeline() {
   return [
-    // ACT 1: DRAMATIC HOOK (0–1.8s) — "YOU SHALL NOT PASS!" with epic pose
+    // BEAT 1: GANDALF POV (0–1.5s) — opens with Lyrin drama pose + POV hook
     { at: 0,     do: () => { show('sceneDrama'); } },
 
-    // ACT 2: THE ROLL (1.8–3s) — intimidate check → NAT 1 on shocked face
-    { at: 1800,  do: () => { fireFlash(); show('sceneRoll'); const img = document.getElementById('reactionImg'); if (img) { img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake'); } document.getElementById('rollText1').classList.add('on'); } },
-    { at: 2300,  do: () => document.getElementById('rollText2').classList.add('on') },
+    // BEAT 2: NAT 1 (1.5–2.5s) — shock face + the word
+    //   Hard cut with flash + shake. One second, one word. Meme pace.
+    { at: 1500,  do: () => { fireFlash(); show('sceneRoll'); const img = document.getElementById('reactionImg'); if (img) { img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake'); } document.getElementById('rollText2').classList.add('on'); } },
 
-    // ACT 3: BANDIT BEATS (3–6s) — bandit said 'scuse me / stepped around / continued walking
-    { at: 3000,  do: () => { fireFlash(); show('sceneBandit'); document.getElementById('banditText1').classList.add('on'); } },
-    { at: 3500,  do: () => document.getElementById('banditText2').classList.add('on') },
-    { at: 4400,  do: () => document.getElementById('banditText3').classList.add('on') },
-    { at: 5200,  do: () => document.getElementById('banditText4').classList.add('on') },
+    // BEAT 3: BANDIT (2.5–4s) — single deadpan line, no exposition
+    { at: 2500,  do: () => { fireFlash(); show('sceneBandit'); document.getElementById('banditText2').classList.add('on'); } },
 
-    // ACT 4: BRIDGE REVEAL (6–8.3s) — punchline reveal of the mundane setting
-    { at: 6000,  do: () => { fireFlash(); show('sceneBridge'); document.getElementById('bridgeLabel').classList.add('on'); } },
-    { at: 6400,  do: () => document.getElementById('bridgeTitle').classList.add('on') },
-    { at: 7300,  do: () => document.getElementById('bridgeSub').classList.add('on') },
+    // BEAT 4: BRIDGE REVEAL (4–5s) — the visual punchline does the work
+    //   No flash here — feels like a gentle zoom-out reveal, not a jump cut.
+    { at: 4000,  do: () => { show('sceneBridge'); document.getElementById('bridgeTitle').classList.add('on'); } },
 
-    // ACT 5: SELF-AWARE (8.3–10s) — quiet contemplative punchline
-    { at: 8300,  do: () => { show('sceneSelfAware'); document.getElementById('awareText').classList.add('on'); } },
+    // BEAT 5: CARD REVEAL (5–8.5s) — 3.5s HERO MOMENT · 35% of total spot
+    //   Card snaps in at 5s. Reveal text holds back until 7s so the card gets
+    //   2s of pure solo presence before the caption frames it.
+    { at: 5000,  do: () => { fireFlash(); show('sceneCardReveal'); const c = document.getElementById('misprintCard'); if (c) { c.classList.remove('snap'); void c.offsetWidth; c.classList.add('snap'); } } },
+    { at: 7000,  do: () => { const r = document.getElementById('revealText'); if (r) r.style.opacity = '1'; } },
 
-    // ACT 6: CARD REVEAL (10–12.6s) — the moment becomes "The Footbridge Incident"
-    //   Extended dwell vs earlier cut — heirloom aesthetic needs to breathe.
-    //   Viewer should feel the card is a real artifact being presented, not flashed.
-    { at: 10000, do: () => { fireFlash(); show('sceneCardReveal'); const c = document.getElementById('misprintCard'); if (c) { c.classList.remove('snap'); void c.offsetWidth; c.classList.add('snap'); } } },
+    // BEAT 6: CTA + BAIT MERGED (8.5–10s) — follow-trigger + URL in one scene
+    { at: 8500,  do: () => { fireFlash(); show('sceneCta'); document.getElementById('ctaKicker').classList.add('on'); document.getElementById('ctaUrl').classList.add('on'); document.getElementById('ctaTagline').classList.add('on'); } },
 
-    // ACT 7: COMMENT BAIT (12.6–14.8s) — THE FOLLOW-TRIGGER
-    { at: 12600, do: () => { fireFlash(); show('sceneBait'); document.getElementById('baitKicker').classList.add('on'); } },
-    { at: 12900, do: () => document.getElementById('baitTitle').classList.add('on') },
-    { at: 13500, do: () => document.getElementById('baitSub').classList.add('on') },
-
-    // ACT 8: CTA (14.8–16s)
-    { at: 14800, do: () => { show('sceneCta'); document.getElementById('ctaUrl').classList.add('on'); } },
-
-    // Loop at 16s
-    { at: 16000, do: () => restart() }
+    // Loop at 10s
+    { at: 10000, do: () => restart() }
   ];
 }
 
@@ -876,7 +870,7 @@ function tick() {
   timeline.forEach((entry, i) => {
     if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
   });
-  document.getElementById('progressBar').style.width = Math.min(100, (t / 16000) * 100) + '%';
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 10000) * 100) + '%';
   rafId = requestAnimationFrame(tick);
 }
 
@@ -884,11 +878,12 @@ function tick() {
 function hideAllScenes() { document.querySelectorAll('.scene').forEach(el => el.classList.remove('on')); }
 function show(id) { hideAllScenes(); const el = document.getElementById(id); if (!el) return; void el.offsetWidth; el.classList.add('on'); }
 function resetAllTexts() {
-  ['rollText1','rollText2','banditText1','banditText2','banditText3','banditText4','bridgeLabel','bridgeTitle','bridgeSub','awareText','baitKicker','baitTitle','baitSub','ctaUrl'].forEach(id => {
+  ['rollText2','banditText2','bridgeTitle','ctaKicker','ctaUrl','ctaTagline'].forEach(id => {
     const el = document.getElementById(id); if (el) el.classList.remove('on');
   });
   const mc = document.getElementById('misprintCard'); if (mc) mc.classList.remove('snap');
   const rImg = document.getElementById('reactionImg'); if (rImg) rImg.classList.remove('shake');
+  const r = document.getElementById('revealText'); if (r) r.style.opacity = '0';
 }
 function fireFlash() {
   const f = document.getElementById('flashFx'); if (!f) return;
