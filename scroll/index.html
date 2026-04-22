@@ -803,12 +803,16 @@ body {
 #tcFlipFloat > #tcBack,#tcFlipFloat > #tcCard{
   position:absolute !important;inset:0;width:100% !important;height:100% !important;margin:0 !important;
   -webkit-backface-visibility:hidden !important;backface-visibility:hidden !important;
-  -webkit-transform-style:preserve-3d;transform-style:preserve-3d;
-  isolation:isolate;
+  /* NO transform-style:preserve-3d on faces — it disables backface-visibility in Chrome/Safari */
+  /* NO isolation:isolate either — it creates a new stacking context that breaks the 3D chain */
+  will-change:transform,opacity;
 }
-/* Bigger translateZ separation (.6px vs .01px) kills the edge-on backface bleed on iOS + Android */
-#tcFlipFloat > #tcBack{transform:translateZ(.6px) !important;}
-#tcFlipFloat > #tcCard{transform:rotateY(180deg) translateZ(.6px) !important;transition:none !important;}
+/* Translate-Z separation kills z-fighting. Back pushed forward, card pushed backward (then flipped). */
+#tcFlipFloat > #tcBack{transform:translateZ(1px) !important;opacity:1;transition:opacity 0ms linear .4s;}
+#tcFlipFloat > #tcCard{transform:rotateY(180deg) translateZ(1px) !important;opacity:0;transition:opacity 0ms linear .5s;}
+/* Belt-and-suspenders: even if a browser ignores backface-visibility during the rotation, the opacity snap hides the wrong face at ~50% of the .95s flip. Outgoing face hides at 400ms, incoming shows at 500ms — clean hard cut at the edge-on moment. */
+#tcFlipWrap.flipped #tcFlipFloat > #tcBack{opacity:0;transition:opacity 0ms linear .4s;}
+#tcFlipWrap.flipped #tcFlipFloat > #tcCard{opacity:1;transition:opacity 0ms linear .5s;}
 
 /* CARD BACK */
 /* Card Back — clean + iconic (certificate lives separately now) */
