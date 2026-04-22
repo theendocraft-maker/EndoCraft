@@ -99,16 +99,21 @@ html, body {
   filter: drop-shadow(0 0 30px rgba(232,184,109,.25)) drop-shadow(0 14px 24px rgba(0,0,0,.8));
 }
 .d20-wrap.tumble {
-  animation: d20Entry 1.05s cubic-bezier(.2,.75,.25,1) forwards;
+  animation: d20Entry 1.3s cubic-bezier(.25,.7,.3,1) forwards, d20Breathe 5s ease-in-out 1.3s infinite;
 }
-/* No rotation — photograph has its own perspective, rotating makes it look like a spinning sticker.
-   Instead: dramatic zoom-in from depth with motion blur, subtle overshoot-bump for weight. */
+/* Opening frame is directly BEAUTIFUL — no tiny-zoom-in. D20 starts near full-size with ambient
+   brightness lift + blur clear + subtle scale bump. Feels like revealing an object already in place,
+   not flying in from far away. After entry, a gentle breathe keeps it alive. */
 @keyframes d20Entry {
-  0%   { opacity: 0;  transform: scale(.22);  filter: drop-shadow(0 0 10px rgba(232,184,109,.15)) blur(14px); }
-  30%  { opacity: 1;                                                                                          }
-  60%  { opacity: 1;  transform: scale(1.08); filter: drop-shadow(0 0 60px rgba(232,184,109,.65)) blur(0);    }
-  80%  { opacity: 1;  transform: scale(.96);  filter: drop-shadow(0 0 70px rgba(232,184,109,.72));            }
-  100% { opacity: 1;  transform: scale(1);    filter: drop-shadow(0 0 80px rgba(232,184,109,.8)) drop-shadow(0 14px 24px rgba(0,0,0,.8)); }
+  0%   { opacity: 0; transform: scale(.9);  filter: drop-shadow(0 0 15px rgba(232,184,109,.2)) blur(10px) brightness(.4); }
+  30%  { opacity: 1; transform: scale(.98); filter: drop-shadow(0 0 40px rgba(232,184,109,.5)) blur(2px) brightness(.85); }
+  70%  { opacity: 1; transform: scale(1.02);filter: drop-shadow(0 0 70px rgba(232,184,109,.75)) blur(0) brightness(1.05);}
+  100% { opacity: 1; transform: scale(1);   filter: drop-shadow(0 0 80px rgba(232,184,109,.8)) drop-shadow(0 14px 24px rgba(0,0,0,.8)) brightness(1); }
+}
+/* Subtle breathing so the opening frame isn't frozen — light pulses like candle flicker */
+@keyframes d20Breathe {
+  0%, 100% { filter: drop-shadow(0 0 80px rgba(232,184,109,.7)) drop-shadow(0 14px 24px rgba(0,0,0,.8)) brightness(1); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 95px rgba(232,184,109,.85)) drop-shadow(0 14px 24px rgba(0,0,0,.8)) brightness(1.04); transform: scale(1.008); }
 }
 
 /* CSS-only fallback — shown if the generated D20 image hasn't arrived yet. Stylish gold "20" behind the img. */
@@ -191,14 +196,39 @@ html, body {
 .tagline-text {
   font-family: 'EB Garamond', serif; font-style: italic;
   font-size: clamp(20px, 7vw, 30px); color: rgba(255,255,255,.95);
-  text-align: center; padding: 0 28px; line-height: 1.3;
+  text-align: center; padding: 0 28px; line-height: 1.5;
   text-shadow: 0 0 28px rgba(232,184,109,.35);
   max-width: 92%;
-  opacity: 0; transform: translateY(10px);
-  transition: opacity .6s ease, transform .8s cubic-bezier(.23,1.3,.32,1);
 }
-.tagline-text.on { opacity: 1; transform: translateY(0); }
 .tagline-text em { color: #E8B86D; font-weight: 500; }
+/* Word-by-word reveal — each span fades in with slight upward push, staggered via data-delay */
+.tagline-text .tw {
+  display: inline-block;
+  opacity: 0; transform: translateY(14px);
+  filter: blur(6px);
+  transition: opacity .9s cubic-bezier(.2,.7,.25,1), transform 1s cubic-bezier(.23,1.3,.32,1), filter .9s ease;
+}
+.tagline-text.on .tw { opacity: 1; transform: translateY(0); filter: blur(0); }
+/* Staggered reveal — each line enters ~600ms after the previous (read-pace) */
+.tagline-text.on .tw:nth-of-type(1) { transition-delay: 0ms, 0ms, 0ms; }
+.tagline-text.on .tw:nth-of-type(2) { transition-delay: 650ms, 650ms, 650ms; }
+.tagline-text.on .tw:nth-of-type(3) { transition-delay: 1400ms, 1400ms, 1400ms; }
+
+/* Tagline scene — subtle camera-push-in effect on whole frame via scale of the stage backdrop.
+   Plus ambient floating particles that rise slowly through the dark void. */
+#sceneTagline.on .tagline-stage { animation: taglinePushIn 3.2s ease-out forwards; }
+@keyframes taglinePushIn {
+  from { transform: scale(1); }
+  to   { transform: scale(1.05); }
+}
+.tagline-particles {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.tagline-particles .tp {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: rgba(232,184,109,.7); box-shadow: 0 0 6px rgba(232,184,109,.5);
+  opacity: 0;
+}
 
 /* ── PACK REVEAL MINI-SEQUENCE ── */
 .pack-stage {
@@ -217,11 +247,19 @@ html, body {
 .pack-hex svg { width: 100%; height: 100%; display: block; }
 .pack-logo-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel Decorative', serif; font-size: 40px; color: #E8B86D; filter: drop-shadow(0 0 12px rgba(232,184,109,.8)); animation: packSpin 3s linear infinite; }
 @keyframes packSpin { to { transform: rotate(360deg); } }
-.pack-hex.charging { animation: packEnter .45s cubic-bezier(.23,1.3,.32,1) forwards, packCharge 1.1s ease-in .4s forwards; }
+/* Pack charge — aggressive ramping glow + micro-tremor via keyframe translate noise.
+   Feels like the pack is straining to contain the energy about to burst. Emit ember particles via JS. */
+.pack-hex.charging {
+  animation: packEnter .45s cubic-bezier(.23,1.3,.32,1) forwards, packCharge 1.3s ease-in .4s forwards;
+}
 @keyframes packCharge {
-  0% { transform: scale(1); filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 40px rgba(232,184,109,.3)); }
-  70% { transform: scale(1.12); filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 120px rgba(255,240,180,.9)) brightness(1.7); }
-  100% { transform: scale(1.22); filter: drop-shadow(0 0 180px rgba(255,240,180,1)) brightness(2.4); }
+  0%   { transform: scale(1)    translate(0,0);        filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 40px rgba(232,184,109,.3)) brightness(1); }
+  20%  { transform: scale(1.04) translate(-1.5px,1px);filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 70px rgba(232,184,109,.55)) brightness(1.2); }
+  35%  { transform: scale(1.07) translate(2px,-1px);  filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 100px rgba(232,184,109,.75)) brightness(1.45); }
+  50%  { transform: scale(1.11) translate(-2px,-1.5px);filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 130px rgba(255,230,160,.9)) brightness(1.75); }
+  65%  { transform: scale(1.15) translate(1.5px,2px); filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 170px rgba(255,240,180,1)) brightness(2.05); }
+  80%  { transform: scale(1.19) translate(-1px,-1px); filter: drop-shadow(0 0 200px rgba(255,240,180,1)) brightness(2.35); }
+  100% { transform: scale(1.25) translate(0,0);       filter: drop-shadow(0 0 240px rgba(255,255,200,1)) brightness(2.8); }
 }
 .pack-hex.explode { animation: packExplode .4s ease-out forwards; }
 @keyframes packExplode { to { transform: scale(3); opacity: 0; filter: drop-shadow(0 0 200px rgba(255,240,180,1)) brightness(3); } }
@@ -263,11 +301,36 @@ html, body {
 /* ── HERO CARD PAYOFF ── */
 .hero-card-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at center, #1a1028 0%, #080410 70%, #000 100%); }
 .hero-card { position: relative; width: 72%; max-width: 320px; aspect-ratio: 3/4; border-radius: 18px; overflow: hidden; box-shadow: 0 0 0 1.5px rgba(232,184,109,.5), 0 20px 60px rgba(0,0,0,.95), 0 0 80px rgba(232,184,109,.3); background: #0a0610; transform: scale(.8); opacity: 0; }
-.hero-card.enter { animation: heroEnter .8s cubic-bezier(.23,1.2,.32,1) forwards, heroPulse 2.2s ease-in-out infinite 1s; }
-@keyframes heroEnter { 0% { transform: scale(.7) rotate(-2deg); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+/* Entry choreography: card lands with scale overshoot + micro-shake settle + pulsing glow. More gravitas than pure fade. */
+.hero-card.enter { animation: heroEnter 1.0s cubic-bezier(.18,1.25,.28,1.02) forwards, heroPulse 2.4s ease-in-out infinite 1s; }
+@keyframes heroEnter {
+  0%   { transform: scale(.65) rotate(-3deg); opacity: 0; filter: blur(8px); }
+  45%  { opacity: 1; filter: blur(0); }
+  60%  { transform: scale(1.05) rotate(1deg); }
+  72%  { transform: scale(.98) rotate(-.5deg); }
+  84%  { transform: scale(1.01) rotate(.2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
+}
 @keyframes heroPulse {
-  0%, 100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.5), 0 20px 60px rgba(0,0,0,.95), 0 0 60px rgba(232,184,109,.25); }
-  50% { box-shadow: 0 0 0 2px rgba(232,184,109,.8), 0 20px 60px rgba(0,0,0,.95), 0 0 130px rgba(232,184,109,.55); }
+  0%, 100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.55), 0 20px 60px rgba(0,0,0,.95), 0 0 80px rgba(232,184,109,.3); }
+  50%      { box-shadow: 0 0 0 2.5px rgba(232,184,109,.9), 0 20px 60px rgba(0,0,0,.95), 0 0 160px rgba(232,184,109,.65); }
+}
+
+/* HOLO-SWEEP — diagonal light band that sweeps across the card on reveal. Reads as "foil shine"
+   like on premium trading cards. Fires once via .swept class, ~1.2s duration. */
+.hero-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,240,180,.0) 45%, rgba(255,245,210,.55) 50%, rgba(255,240,180,.0) 55%, transparent 70%);
+  transform: translateX(-120%);
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.hero-card.swept::before { animation: heroHoloSweep 1.4s cubic-bezier(.3,.6,.3,1) forwards; }
+@keyframes heroHoloSweep {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
 }
 .hero-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
 .hero-card-ov { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(6,3,0,.45) 0%, transparent 25%, transparent 55%, rgba(6,3,0,.75) 78%, rgba(4,2,0,.98) 100%); }
@@ -284,9 +347,37 @@ html, body {
 
 /* ── FINAL CTA ── */
 .cta-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 0 14px; background: radial-gradient(ellipse at center, #0c0818 0%, #000 80%); }
-/* URL — very conservative sizing. Cinzel Decorative is wide + letter-spacing hurt. On 393px viewport: 7vw = 27.5px, no letter-spacing → "endocraft.app" fits in ~290px with room to breathe. */
-.cta-url { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: clamp(22px, 7vw, 40px); color: #E8B86D; letter-spacing: 0; text-shadow: 0 0 60px rgba(232,184,109,.7), 0 0 30px rgba(232,184,109,.5); opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .7s cubic-bezier(.23,1.3,.32,1); max-width: 100%; white-space: nowrap; overflow: visible; }
-.cta-url.on { opacity: 1; transform: translateY(0); }
+/* URL — very conservative sizing + gold-shimmer shine effect on reveal.
+   Cinzel Decorative is wide + letter-spacing hurt. On 393px viewport: 7vw = 27.5px, no letter-spacing
+   → "endocraft.app" fits in ~290px with room to breathe. */
+.cta-url {
+  position: relative;
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: clamp(22px, 7vw, 40px);
+  letter-spacing: 0;
+  max-width: 100%; white-space: nowrap; overflow: hidden;
+  /* Gold gradient fill (base + shimmer will sweep through via background-position animation) */
+  background: linear-gradient(90deg,
+    #E8B86D 0%, #E8B86D 35%,
+    #FFF4CC 48%, #FFFFFF 50%, #FFF4CC 52%,
+    #E8B86D 65%, #E8B86D 100%);
+  background-size: 220% 100%;
+  background-position: 0% 0%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 28px rgba(232,184,109,.55)) drop-shadow(0 0 60px rgba(232,184,109,.35));
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .7s ease, transform .8s cubic-bezier(.23,1.3,.32,1);
+}
+.cta-url.on {
+  opacity: 1; transform: translateY(0);
+  animation: ctaGoldShine 2.4s cubic-bezier(.3,.6,.3,1) .3s 1;
+}
+@keyframes ctaGoldShine {
+  0%   { background-position: 100% 0%; }
+  60%  { background-position: 0% 0%; }
+  100% { background-position: -100% 0%; }
+}
 .cta-sub { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(15px, 4.4vw, 22px); color: rgba(255,245,220,.85); max-width: 90%; line-height: 1.3; opacity: 0; transform: translateY(8px); transition: opacity .5s ease .2s, transform .6s cubic-bezier(.23,1.3,.32,1) .2s; padding: 0 8px; }
 .cta-sub.on { opacity: 1; transform: translateY(0); }
 .cta-brand { position: absolute; bottom: 6%; left: 0; right: 0; text-align: center; font-family: 'Cinzel', serif; font-size: clamp(8px, 2.2vw, 10px); letter-spacing: clamp(2px, 1vw, 5px); color: rgba(232,184,109,.4); text-transform: uppercase; opacity: 0; transition: opacity .5s ease .6s; padding: 0 16px; }
@@ -437,7 +528,12 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
     <!-- SCENE 5: TAGLINE -->
     <div class="scene" id="sceneTagline">
       <div class="tagline-stage">
-        <div class="tagline-text" id="taglineText">Some moments<br>are too <em>legendary</em><br>to forget.</div>
+        <div class="tagline-text" id="taglineText">
+          <span class="tw" data-delay="0">Some moments</span><br>
+          <span class="tw" data-delay="600">are too <em>legendary</em></span><br>
+          <span class="tw" data-delay="1300">to forget.</span>
+        </div>
+        <div class="tagline-particles" id="taglineParticles"></div>
       </div>
     </div>
 
@@ -755,45 +851,58 @@ async function downloadOne(slug) {
 // ═══════════════════════════════════════════════
 // TIMELINE — 15s flagship spot
 // ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// TIMELINE — edit here to reshape the spot. All timings in ms from playback start.
+// Scene transitions are automatic crossfades (.35s). Text overlays extend per-act
+// to give viewers enough read-time without rushing.
+//
+// To reuse this file as template for a new spot: clone this whole folder, then:
+//   1. Replace SHOTS prompts + reroll images
+//   2. Edit OVERRIDES (or use /admin/ TikTok panel) for all visible text
+//   3. Adjust timings below to match your narrative pace
+//   4. Change STORAGE_KEY + overrides-key names to prevent cache collision
+// ═══════════════════════════════════════════════════════════════════════════
 function buildTimeline() {
   return [
-    // ACT 1: HOOK (0–2.8s)
+    // ─── ACT 1: HOOK (0–3.2s) — D20 cinematic entry, two hook lines ───
+    // D20 appears near full-size immediately (no tiny-zoom), with atmospheric fade-in + breathe.
     { at: 0,     do: () => { show('sceneHook'); spawnHookParticles(); triggerD20(); } },
-    { at: 1100,  do: () => { document.getElementById('d20wrap').classList.add('landed'); } },
-    { at: 1500,  do: () => { document.getElementById('hookText1').classList.add('on'); } },
-    { at: 2200,  do: () => { document.getElementById('hookText1').classList.remove('on'); document.getElementById('hookText2').classList.add('on'); } },
+    { at: 1200,  do: () => { document.getElementById('d20wrap').classList.add('landed'); } },
+    { at: 600,   do: () => { document.getElementById('hookText1').classList.add('on'); } },
+    { at: 2000,  do: () => { document.getElementById('hookText1').classList.remove('on'); document.getElementById('hookText2').classList.add('on'); } },
 
-    // ACT 2: MONTAGE (2.8–5.2s) — 3 beats @ 800ms with flash cuts
-    { at: 2800,  do: () => { fireSceneFlash(); show('sceneEpic'); } },
-    { at: 2950,  do: () => showCaption('capEpic') },
-    { at: 3600,  do: () => { fireSceneFlash(); show('sceneKiss'); hideCaption('capEpic'); } },
-    { at: 3750,  do: () => showCaption('capKiss') },
-    { at: 4400,  do: () => { fireSceneFlash(); show('sceneParty'); hideCaption('capKiss'); } },
-    { at: 4550,  do: () => showCaption('capParty') },
+    // ─── ACT 2: MONTAGE (3.2–6.6s) — 3 photo beats ~1.1s visibility each (was .65s) ───
+    { at: 3200,  do: () => { fireSceneFlash(); show('sceneEpic'); } },
+    { at: 3350,  do: () => showCaption('capEpic') },
+    { at: 4300,  do: () => { fireSceneFlash(); show('sceneKiss'); hideCaption('capEpic'); } },
+    { at: 4450,  do: () => showCaption('capKiss') },
+    { at: 5400,  do: () => { fireSceneFlash(); show('sceneParty'); hideCaption('capKiss'); } },
+    { at: 5550,  do: () => showCaption('capParty') },
 
-    // ACT 3: TAGLINE (5.2–7.5s)
-    { at: 5200,  do: () => { show('sceneTagline'); hideCaption('capParty'); } },
-    { at: 5500,  do: () => document.getElementById('taglineText').classList.add('on') },
-    { at: 7300,  do: () => document.getElementById('taglineText').classList.remove('on') },
+    // ─── ACT 3: TAGLINE (6.6–10.5s) — word-by-word reveal + particles + push-in. Full read ~2s. ───
+    { at: 6600,  do: () => { show('sceneTagline'); hideCaption('capParty'); spawnTaglineParticles(); } },
+    { at: 6900,  do: () => document.getElementById('taglineText').classList.add('on') },
+    { at: 10300, do: () => document.getElementById('taglineText').classList.remove('on') },
 
-    // ACT 4: PRODUCT (7.6–11s) — pack reveal
-    { at: 7600,  do: () => { show('scenePack'); resetPackState(); enterPack(); } },
-    { at: 8200,  do: () => chargePack() },
-    { at: 9300,  do: () => explodePack() },
-    { at: 9600,  do: () => showRarity() },
-    { at: 10700, do: () => hideRarity() },
+    // ─── ACT 4: PACK REVEAL (10.5–13.7s) — intensified charge + shockwave explosion ───
+    { at: 10500, do: () => { show('scenePack'); resetPackState(); enterPack(); } },
+    { at: 11100, do: () => { chargePack(); spawnPackEmbers(); } },
+    { at: 12400, do: () => explodePack() },
+    { at: 12700, do: () => showRarity() },
+    { at: 13800, do: () => hideRarity() },
 
-    // ACT 5: HERO CARD PAYOFF (11–13s) — flash on reveal for cinematic bridge from pack explosion
-    { at: 11000, do: () => { fireSceneFlash(); show('sceneHero'); restartAnim('heroCard', 'enter'); } },
+    // ─── ACT 5: HERO CARD PAYOFF (14–16.5s) — flash + holo-sweep over card ───
+    { at: 14100, do: () => { fireSceneFlash(); show('sceneHero'); restartAnim('heroCard', 'enter'); } },
+    { at: 14700, do: () => { const c = document.getElementById('heroCard'); if (c) { c.classList.remove('swept'); void c.offsetWidth; c.classList.add('swept'); } } },
 
-    // ACT 6: CTA (13–15s)
-    { at: 13000, do: () => { show('sceneCta'); } },
-    { at: 13200, do: () => document.getElementById('ctaUrl').classList.add('on') },
-    { at: 13500, do: () => document.getElementById('ctaSub').classList.add('on') },
-    { at: 13900, do: () => document.getElementById('ctaBrand').classList.add('on') },
+    // ─── ACT 6: CTA (16.5–19s) — URL with gold-shimmer, subtitle, brand line ───
+    { at: 16500, do: () => { show('sceneCta'); } },
+    { at: 16700, do: () => document.getElementById('ctaUrl').classList.add('on') },
+    { at: 17100, do: () => document.getElementById('ctaSub').classList.add('on') },
+    { at: 17500, do: () => document.getElementById('ctaBrand').classList.add('on') },
 
-    // Loop at 15s
-    { at: 15000, do: () => restart() }
+    // Loop at 19s — bit longer than 15s, but all pacing now comfortable to read/see
+    { at: 19000, do: () => restart() }
   ];
 }
 
@@ -840,7 +949,7 @@ function tick() {
   timeline.forEach((entry, i) => {
     if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
   });
-  document.getElementById('progressBar').style.width = Math.min(100, (t / 15000) * 100) + '%';
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 19000) * 100) + '%';
   rafId = requestAnimationFrame(tick);
 }
 
@@ -866,7 +975,11 @@ function resetAllTexts() {
     const el = document.getElementById(id); if (el) el.classList.remove('on');
   });
   const d20 = document.getElementById('d20wrap'); if (d20) d20.classList.remove('tumble','landed');
-  document.getElementById('hookParticles').innerHTML = '';
+  const hero = document.getElementById('heroCard'); if (hero) hero.classList.remove('enter','swept');
+  const hp = document.getElementById('hookParticles'); if (hp) hp.innerHTML = '';
+  const tp = document.getElementById('taglineParticles'); if (tp) tp.innerHTML = '';
+  // Drop leftover pack embers / sparks between loops
+  document.querySelectorAll('.pack-stage .spark').forEach(s => s.remove());
 }
 
 function showCaption(id) { const el = document.getElementById(id); if (el) el.classList.add('on'); }
@@ -964,6 +1077,72 @@ function spawnBurstSparks() {
       s.style.opacity = '0';
     });
     setTimeout(() => s.remove(), 1000);
+  }
+}
+
+// Pack embers — small gold particles that rise from around the pack during charge phase.
+// Visual: like the pack is heating up and spitting sparks. Staggered over ~1.1s.
+function spawnPackEmbers() {
+  const stage = document.querySelector('#scenePack .pack-stage');
+  if (!stage) return;
+  const rect = stage.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2 + 40; // emit from just below pack center
+  const count = 24;
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const e = document.createElement('div');
+      e.className = 'spark';
+      const ang = -Math.PI/2 + (Math.random() - .5) * 1.2; // mostly upward
+      const dist = 80 + Math.random() * 180;
+      const size = 2 + Math.random() * 3;
+      const color = Math.random() > .4 ? '#E8B86D' : '#FFC877';
+      const xOffset = (Math.random() - .5) * 100;
+      e.style.cssText = `
+        left: ${cx + xOffset}px; top: ${cy}px;
+        width: ${size}px; height: ${size}px;
+        background: ${color};
+        box-shadow: 0 0 ${6 + Math.random()*6}px ${color};
+        opacity: 0;
+        transform: translate(-50%, -50%);
+        transition: transform 1.2s cubic-bezier(.3,.6,.3,1), opacity 1.2s ease-out;
+      `;
+      stage.appendChild(e);
+      requestAnimationFrame(() => {
+        e.style.opacity = '.9';
+        e.style.transform = `translate(calc(-50% + ${Math.cos(ang)*dist}px), calc(-50% + ${Math.sin(ang)*dist}px))`;
+      });
+      setTimeout(() => { e.style.opacity = '0'; }, 800);
+      setTimeout(() => e.remove(), 1400);
+    }, i * 45);
+  }
+}
+
+// Tagline particles — slowly rising gold dust in the tagline scene for mystical atmosphere.
+function spawnTaglineParticles() {
+  const host = document.getElementById('taglineParticles');
+  if (!host) return;
+  host.innerHTML = '';
+  const rect = host.getBoundingClientRect();
+  const count = 20;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'tp';
+    const x = Math.random() * rect.width;
+    const y = rect.height + Math.random() * 80;
+    const endY = -80 - Math.random() * 200;
+    const delay = Math.random() * 2;
+    const dur = 5 + Math.random() * 3;
+    p.style.cssText = `
+      left: ${x}px; top: ${y}px;
+      opacity: 0;
+      transition: transform ${dur}s linear ${delay}s, opacity ${dur}s ease-out ${delay}s;
+    `;
+    host.appendChild(p);
+    requestAnimationFrame(() => {
+      p.style.transform = `translateY(${endY - y}px)`;
+      p.style.opacity = '.7';
+    });
   }
 }
 

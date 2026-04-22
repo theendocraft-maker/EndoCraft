@@ -68,11 +68,22 @@ body { background: #06030a; color: #e8e8f0; font-family: "DM Sans", sans-serif; 
   <div style="font-size:14px;color:rgba(255,255,255,.4);">Loading session card…</div>
 </div>
 
-<div class="state-box" id="errorState" style="display:none;">
-  <div style="font-size:32px;margin-bottom:12px;">🎲</div>
-  <div style="font-size:14px;color:rgba(255,255,255,.4);">This session card doesn't exist.</div>
-  <a href="https://endocraft.app/scroll" style="display:inline-block;margin-top:16px;color:#7B6CF6;font-size:14px;">Create your own →</a>
+<div class="state-box" id="errorState" style="display:none;text-align:center;padding:40px 24px;">
+  <div style="font-size:36px;margin-bottom:16px;">🎲</div>
+  <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:#E8B86D;text-transform:uppercase;margin-bottom:10px;">✦ Legacy share link</div>
+  <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:18px;color:rgba(255,255,255,.75);line-height:1.4;max-width:420px;margin:0 auto 18px;">This is our old share format. The session behind this link is no longer accessible — but you can seal a new moment in seconds.</div>
+  <a href="https://endocraft.app/scroll" style="display:inline-block;margin-top:8px;background:linear-gradient(135deg,#E8B86D,#d9a85a);color:#1a0f03;padding:12px 26px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;text-decoration:none;">✦ Create a new card</a>
 </div>
+<script>
+  // Auto-redirect to /scroll/ after 5 seconds — so stale links don't just trap people
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      if (document.getElementById('errorState').style.display !== 'none') {
+        window.location.href = 'https://endocraft.app/scroll/';
+      }
+    }, 5000);
+  }
+</script>
 
 <div id="cardWrap" style="display:none;flex-direction:column;align-items:center;width:100%;">
   <div id="tcScene">

@@ -4,6 +4,12 @@ const crypto = require('crypto');
 const app = express();
 const { rollRarity, buildRarityPromptModifier } = require('./rarity');
 
+// Optional: sharp for image transcoding (WebP → JPEG so WhatsApp / Slack / Messenger render previews).
+// If not installed, /img/:id falls back to passthrough and large/WebP images may not preview on WhatsApp.
+let sharp;
+try { sharp = require('sharp'); }
+catch (e) { console.warn('[img proxy] sharp not installed — WhatsApp link previews may fail for WebP images. Run: npm install sharp'); }
+
 // Deterministic slug from email — 16 hex chars of sha256(lowercase trimmed email)
 // Same algorithm as the SQL backfill, so existing + new cards match
 function emailToSlug(email){
@@ -366,7 +372,6 @@ app.get('/img/:id', async (req, res) => {
   const card = await fetchCardById(id);
   const src = card && (card.image_url || card.image_url_temp);
   if (!src) {
-    // Fallback: redirect to the static EndoCraft logo so previews never 404
     return res.redirect(302, 'https://endocraft.app/IMG_8431.PNG');
   }
   try {
@@ -375,9 +380,26 @@ app.get('/img/:id', async (req, res) => {
       console.warn('img proxy upstream status:', imgRes.status, 'for', src);
       return res.redirect(302, 'https://endocraft.app/IMG_8431.PNG');
     }
-    const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
-    const buf = Buffer.from(await imgRes.arrayBuffer());
-    res.setHeader('Content-Type', contentType);
+    const upstreamType = imgRes.headers.get('content-type') || 'image/jpeg';
+    let buf = Buffer.from(await imgRes.arrayBuffer());
+    let outType = upstreamType;
+
+    // If sharp is available, transcode to JPEG at 1200px max — guarantees WhatsApp/Slack/Messenger compat.
+    // WebP is the killer here: AIML/Seedream often returns WebP, which WhatsApp cannot render in previews.
+    if (sharp) {
+      try {
+        buf = await sharp(buf)
+          .rotate() // respect EXIF orientation
+          .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 85, progressive: true, mozjpeg: true })
+          .toBuffer();
+        outType = 'image/jpeg';
+      } catch (sharpErr) {
+        console.warn('[img proxy] sharp transform failed, passing upstream bytes through:', sharpErr.message);
+      }
+    }
+
+    res.setHeader('Content-Type', outType);
     res.setHeader('Cache-Control', 'public, max-age=2592000, immutable'); // 30 days
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.send(buf);
@@ -394,14 +416,18 @@ function escapeHtml(s) {
 }
 
 function renderCardSharePage(card) {
-  const title = card.session_title || 'A legendary moment';
+  // Data-model note: in our schema `session_title` actually holds the character name (what's
+  // displayed as the big card name, e.g. "Lyra", "Caspian"). `legendary_moment` holds the moment
+  // title (e.g. "The Dragon's Eye"). `character_name` is an optional extracted field that may be
+  // null. We prefer session_title for display because it's always populated from #tcName.
+  const charName = card.session_title || card.character_name || 'Hero';
   const moment = card.legendary_moment || '';
-  const charName = card.character_name || 'Hero';
   const charClass = card.character_class || '';
   const rarity = (card.rarity || 'rare').toLowerCase();
   const rarityUpper = rarity.charAt(0).toUpperCase() + rarity.slice(1);
   const num = card.number ? String(card.number).padStart(4, '0') : '0000';
   const serial = `${charName} #${num} / 9999`;
+  const title = moment || 'A legendary moment';
   // Display image — direct from AIML (what the user sees when viewing the page)
   const imgUrl = card.image_url || 'https://endocraft.app/IMG_8431.PNG';
   // OG image — routed through our proxy so link previews have a stable, cacheable, correctly-typed URL
@@ -409,11 +435,13 @@ function renderCardSharePage(card) {
   const ogImgUrl = `https://endocraft-production.up.railway.app/img/${card.id}`;
   const dateStr = card.created_at ? new Date(card.created_at).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
 
-  // OG description — short, punchy, works in Twitter/Discord/WhatsApp previews
+  // OG description — short, punchy, works in Twitter/Discord/WhatsApp previews.
+  // Title = "Character · Moment" (e.g. "Lyra · The Dragon's Eye"). Description adds metadata
+  // (class, rarity, serial) without repeating the moment — keeps preview info-dense.
   const ogTitle = `${charName} · ${title}`;
-  const ogDesc = moment
-    ? `"${moment.slice(0, 155)}${moment.length > 155 ? '…' : ''}" — ${rarityUpper} · Sealed on EndoCraft`
-    : `${rarityUpper} · Sealed moment · ${dateStr}`;
+  const ogDesc = charClass
+    ? `${charClass} · ${rarityUpper} moment · Sealed on EndoCraft`
+    : `${rarityUpper} moment · Nº ${num} · Sealed on EndoCraft`;
 
   const shareUrl = `https://endocraft-production.up.railway.app/c/${card.id}`;
 
