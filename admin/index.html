@@ -199,6 +199,47 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
   .cards-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
   .card-tile-name{font-size:15px;}
 }
+
+/* ─── TIKTOK SPOT STUDIO ─── */
+.spot-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 14px; transition: border-color .15s; }
+.spot-card:hover { border-color: var(--border-hover); }
+.spot-card.planned { opacity: .58; }
+.spot-card.planned:hover { border-color: var(--border); }
+.spot-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.spot-card-name { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 4px; letter-spacing: -0.01em; }
+.spot-card-sub { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+.spot-status-badge { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.spot-status-badge.live { background: rgba(76,175,125,.12); color: #4CAF7D; border: 1px solid rgba(76,175,125,.3); }
+.spot-status-badge.planned { background: rgba(148,163,184,.08); color: #94A3B8; border: 1px solid rgba(148,163,184,.2); }
+.spot-card-body { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+.spot-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.sc-btn {
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  padding: 9px 16px; border-radius: 8px; font-size: 12px; font-family: 'DM Sans', sans-serif;
+  font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block;
+  transition: all .15s;
+}
+.sc-btn:hover { border-color: var(--border-hover); background: var(--surface); transform: translateY(-1px); }
+.sc-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+.sc-btn.primary:hover { opacity: .92; background: var(--accent); }
+.sc-btn.ghost { background: transparent; color: var(--text-dim); }
+.sc-btn.ghost:hover { color: var(--text); }
+.spot-editor { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); animation: editorOpen .3s ease; }
+@keyframes editorOpen { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.spot-editor-section { margin-bottom: 20px; }
+.spot-editor-section-title { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(232,184,109,.15); }
+.spot-field { margin-bottom: 12px; }
+.spot-field label { display: block; font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--text-dim); margin-bottom: 5px; }
+.spot-field label .at-hint { color: var(--gold); font-family: 'Cinzel', serif; letter-spacing: 1.5px; font-size: 9px; margin-left: 8px; }
+.spot-field textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; line-height: 1.45; resize: vertical; min-height: 40px; transition: border-color .15s;
+}
+.spot-field textarea:focus { outline: none; border-color: var(--accent); }
+.spot-field .hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; font-style: italic; }
+.spot-editor-actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.spot-save-status { font-size: 12px; transition: color .2s; }
 </style>
 </head>
 <body>
@@ -275,6 +316,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <button class="tab active" data-tab="subs" onclick="switchTab('subs')">Subscribers <span class="tab-count" id="tabSubsCount">—</span></button>
       <button class="tab" data-tab="cards" onclick="switchTab('cards')">Cards <span class="tab-count" id="tabCardsCount">—</span></button>
       <button class="tab" data-tab="sessions" onclick="switchTab('sessions')">Sessions <span class="tab-count" id="tabSessionsCount">—</span></button>
+      <button class="tab" data-tab="tiktok" onclick="switchTab('tiktok')">TikTok <span class="tab-count" id="tabTiktokCount">3</span></button>
     </div>
 
     <!-- Subscribers Panel -->
@@ -310,6 +352,15 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <input type="text" class="search-input" placeholder="Search session title…" id="sessionsSearch" oninput="renderSessions()">
       </div>
       <div class="data-table sessions-table" id="sessionsList"><div class="loading-row">Loading…</div></div>
+    </div>
+
+    <!-- ═══════════ TIKTOK PANEL ═══════════ -->
+    <div class="tab-panel" id="panelTiktok">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:18px;">
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:6px;">✦ TIKTOK SPOT STUDIO</div>
+        <div style="color:var(--text-dim);font-size:13px;line-height:1.55;">Open a spot in a new tab, edit text overlays live, and re-roll any shot. Changes you save here override the defaults in the spot page via localStorage — no redeploy needed for copy tweaks. For image re-generation use the spot page's own shot grid.</div>
+      </div>
+      <div id="tiktokSpotsList"></div>
     </div>
 
   </div>
@@ -488,6 +539,7 @@ async function loadData(){
     renderSubs();
     renderCards();
     renderSessions();
+    renderTiktokSpots();
   } catch(e) {
     console.error('loadData failed', e);
   }
@@ -716,6 +768,194 @@ function fmtDate(iso){
     return d.toLocaleDateString('en-GB');
   } catch(e) { return '—'; }
 }
+
+// ═══════════════════════════════════════════════
+// TIKTOK SPOT STUDIO
+// ═══════════════════════════════════════════════
+
+// The spot page reads overrides from localStorage under these keys
+// and patches timeline event texts + card HTML values before playback.
+// Keep the `key` strings in sync with tiktok/spot1/index.html.
+
+const TIKTOK_SPOTS = [
+  {
+    id: 'spot1',
+    name: 'The Kiss',
+    status: 'built',
+    duration: 22,
+    shotCount: 6,
+    theme: 'Humor / Cringe',
+    subtitle: 'Caspian × Grimhilda',
+    url: '../tiktok/spot1/',
+    sections: [
+      {
+        title: 'Story beats',
+        fields: [
+          { key: 'hookText', label: 'Hook — bottom overlay', at: 600, defaultValue: 'That moment your party<br>will <em>never</em> let you forget 💀', hint: '<em>...</em> turns gold on that word' },
+          { key: 'plot1', label: 'Plot beat 1 — center', at: 2500, defaultValue: 'She approached.' },
+          { key: 'plot2', label: 'Plot beat 2 — center (gold)', at: 3900, defaultValue: 'Natural 2.' },
+          { key: 'story1', label: 'Story line 1 — bottom', at: 5500, defaultValue: 'She kissed him anyway.' },
+          { key: 'story2', label: 'Story line 2 — bottom', at: 7300, defaultValue: "My party hasn't stopped laughing since." }
+        ]
+      },
+      {
+        title: 'Pack reveal',
+        fields: [
+          { key: 'rarityTop', label: 'Rarity top label', at: 12900, defaultValue: 'Session Scroll' },
+          { key: 'rarityTitle', label: 'Rarity title', at: 12900, defaultValue: '✦ LEGENDARY ✦' },
+          { key: 'rarityTagline', label: 'Rarity tagline', at: 12900, defaultValue: 'Some moments are too legendary to forget.' }
+        ]
+      },
+      {
+        title: 'Final card (hero + post-reveal)',
+        fields: [
+          { key: 'cardBrand', label: 'Brand line (top of card)', defaultValue: '✦ EndoCraft · Session 14' },
+          { key: 'cardRarityPill', label: 'Rarity pill', defaultValue: '✦ Legendary' },
+          { key: 'cardClass', label: 'Class/level line', defaultValue: 'Harengon Bard · Lv VI' },
+          { key: 'cardName', label: 'Character name', defaultValue: 'Caspian' },
+          { key: 'cardTitle', label: 'Moment title', defaultValue: 'The Unwanted Kiss' },
+          { key: 'cardSerial', label: 'Serial number', defaultValue: 'Caspian #0042 / 9999' }
+        ]
+      },
+      {
+        title: 'CTA (end)',
+        fields: [
+          { key: 'ctaSub', label: 'CTA sub — top', at: 18200, defaultValue: 'Roll. Reveal. Remember.' },
+          { key: 'ctaLine1', label: 'CTA headline', at: 18200, defaultValue: 'Turn your moment <em>into a card.</em>' },
+          { key: 'ctaUrl', label: 'CTA URL', at: 18200, defaultValue: 'endocraft.app' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'spot2',
+    name: 'The Misprint',
+    status: 'planned',
+    theme: 'FOMO / Curiosity',
+    subtitle: 'Nat 1 · Rare pull'
+  },
+  {
+    id: 'spot3',
+    name: 'The Concept',
+    status: 'planned',
+    theme: 'Product',
+    subtitle: 'Your moment, forever'
+  }
+];
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function getOverride(spotId, key, def) {
+  try {
+    const o = JSON.parse(localStorage.getItem('ec_tiktok_overrides_' + spotId) || '{}');
+    return o[key] !== undefined ? o[key] : def;
+  } catch(e) { return def; }
+}
+
+function hasAnyOverride(spotId) {
+  try {
+    const o = JSON.parse(localStorage.getItem('ec_tiktok_overrides_' + spotId) || '{}');
+    return Object.keys(o).length > 0;
+  } catch(e) { return false; }
+}
+
+function renderTiktokSpots() {
+  const list = document.getElementById('tiktokSpotsList');
+  if (!list) return;
+  list.innerHTML = TIKTOK_SPOTS.map(s => {
+    if (s.status === 'planned') {
+      return `
+        <div class="spot-card planned">
+          <div class="spot-card-head">
+            <div>
+              <div class="spot-card-name">${s.name}</div>
+              <div class="spot-card-sub">${s.theme} · ${s.subtitle}</div>
+            </div>
+            <span class="spot-status-badge planned">Planned</span>
+          </div>
+          <div class="spot-card-body">
+            Not built yet — per Master, ${s.id === 'spot2' ? 'this one opens with the Misprint card sitting center-screen with glitch FX, plays Nat 1 as the hero beat, caption "I pulled the rarest card."' : 'no story framing — card appears, rolls in, reveals rarity, CTA. The product-first spot.'}
+          </div>
+        </div>
+      `;
+    }
+    const hasOverrides = hasAnyOverride(s.id);
+    return `
+      <div class="spot-card" data-spot="${s.id}">
+        <div class="spot-card-head">
+          <div>
+            <div class="spot-card-name">${s.name} ${hasOverrides ? '<span style="font-size:10px;color:var(--gold);font-family:\'Cinzel\',serif;letter-spacing:2px;margin-left:8px;">✎ EDITED</span>' : ''}</div>
+            <div class="spot-card-sub">${s.theme} · ${s.subtitle} · ${s.duration}s · ${s.shotCount} shots</div>
+          </div>
+          <span class="spot-status-badge live">Built</span>
+        </div>
+        <div class="spot-card-actions">
+          <a href="${s.url}" target="_blank" class="sc-btn primary">▶ Open & record</a>
+          <button class="sc-btn" onclick="toggleSpotEditor('${s.id}')">✎ Edit texts</button>
+          <button class="sc-btn ghost" onclick="resetSpotOverrides('${s.id}')" ${hasOverrides ? '' : 'disabled style="opacity:.4;"'}>↻ Reset to default</button>
+        </div>
+        <div class="spot-editor" id="editor_${s.id}" style="display:none;">
+          ${s.sections.map(section => `
+            <div class="spot-editor-section">
+              <div class="spot-editor-section-title">${section.title}</div>
+              ${section.fields.map(f => `
+                <div class="spot-field">
+                  <label>${f.label}${f.at !== undefined ? `<span class="at-hint">@ ${(f.at/1000).toFixed(1)}s</span>` : ''}</label>
+                  <textarea data-spot="${s.id}" data-key="${f.key}" rows="${(getOverride(s.id, f.key, f.defaultValue) || '').length > 60 ? 2 : 1}">${escapeHtml(getOverride(s.id, f.key, f.defaultValue))}</textarea>
+                  ${f.hint ? `<div class="hint">${f.hint}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+          <div class="spot-editor-actions">
+            <button class="sc-btn primary" onclick="saveSpotOverrides('${s.id}')">Save changes</button>
+            <a href="${s.url}" target="_blank" class="sc-btn">Open to preview</a>
+            <span class="spot-save-status" id="saveStatus_${s.id}"></span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleSpotEditor(spotId) {
+  const el = document.getElementById('editor_' + spotId);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveSpotOverrides(spotId) {
+  const overrides = {};
+  document.querySelectorAll('textarea[data-spot="' + spotId + '"]').forEach(ta => {
+    overrides[ta.dataset.key] = ta.value;
+  });
+  localStorage.setItem('ec_tiktok_overrides_' + spotId, JSON.stringify(overrides));
+  const s = document.getElementById('saveStatus_' + spotId);
+  if (s) {
+    s.textContent = '✓ Saved — reload spot page to apply';
+    s.style.color = 'var(--gold)';
+    setTimeout(() => { s.textContent = ''; }, 5000);
+  }
+  // Refresh card header so the "EDITED" badge shows
+  const card = document.querySelector('.spot-card[data-spot="' + spotId + '"]');
+  if (card) {
+    const nameEl = card.querySelector('.spot-card-name');
+    if (nameEl && !nameEl.innerHTML.includes('EDITED')) {
+      nameEl.innerHTML += ' <span style="font-size:10px;color:var(--gold);font-family:\'Cinzel\',serif;letter-spacing:2px;margin-left:8px;">✎ EDITED</span>';
+    }
+  }
+}
+
+function resetSpotOverrides(spotId) {
+  if (!confirm('Reset all text overrides for this spot? The spot will use the defaults again.')) return;
+  localStorage.removeItem('ec_tiktok_overrides_' + spotId);
+  renderTiktokSpots();
+}
+
+// Render immediately if Tiktok tab is directly opened via URL hash
+if (location.hash === '#tiktok') { setTimeout(() => switchTab('tiktok'), 100); }
 </script>
 </body>
 </html>

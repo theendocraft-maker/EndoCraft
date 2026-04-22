@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>EndoCraft — Spot 1 "The Kiss"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital@0;1&family=Syne:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #000;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════
+   SETUP SCREEN — manage images, trigger playback
+   ═══════════════════════════════════════════════ */
+#setup {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  padding: 28px 24px; gap: 20px;
+  background: linear-gradient(180deg, #0c0a1a 0%, #060308 100%);
+  overflow-y: auto;
+}
+#setup.hidden { display: none; }
+
+.setup-header { text-align: center; padding: 10px 0 6px; }
+.setup-header h1 { font-family: 'Cinzel Decorative', serif; font-size: 22px; font-weight: 900; letter-spacing: 1.5px; color: #E8B86D; margin-bottom: 6px; }
+.setup-header .sub { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,.4); text-transform: uppercase; }
+.setup-header .spot-title { font-family: 'EB Garamond', serif; font-size: 16px; font-style: italic; color: rgba(232,184,109,.65); margin-top: 10px; }
+
+.shot-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;
+  max-width: 900px; margin: 0 auto; width: 100%;
+}
+.shot {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(232,184,109,.15);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative;
+  min-height: 250px;
+}
+.shot.loaded { border-color: rgba(76,175,125,.35); }
+.shot.gen { border-color: rgba(123,108,246,.5); animation: shotPulse 1.6s ease infinite; }
+.shot.error { border-color: rgba(224,74,58,.5); }
+@keyframes shotPulse { 0%,100% { border-color: rgba(123,108,246,.3); } 50% { border-color: rgba(123,108,246,.8); } }
+
+.shot-thumb {
+  width: 100%; aspect-ratio: 9/16; border-radius: 8px;
+  background: linear-gradient(135deg, #1a1428, #0a060f); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.25);
+  position: relative;
+}
+.shot-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot-thumb .gen-spinner {
+  width: 26px; height: 26px; border: 2px solid rgba(123,108,246,.25); border-top-color: #7B6CF6;
+  border-radius: 50%; animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.shot-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: #E8B86D; text-transform: uppercase; }
+.shot-prompt { font-size: 10px; color: rgba(255,255,255,.45); line-height: 1.4; max-height: 36px; overflow: hidden; }
+.shot-btn {
+  background: rgba(123,108,246,.15); border: 1px solid rgba(123,108,246,.4);
+  color: #a392f8; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+  border-radius: 6px; padding: 6px 10px; cursor: pointer; transition: all .2s;
+}
+.shot-btn:hover { background: rgba(123,108,246,.28); }
+.shot-btn:disabled { opacity: .5; cursor: not-allowed; }
+.shot-btn.primary { background: #7B6CF6; color: #fff; border-color: #7B6CF6; }
+
+.setup-actions {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  padding: 20px 0 10px;
+}
+.big-btn {
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  padding: 14px 28px; border-radius: 30px; border: 1px solid rgba(232,184,109,.5);
+  background: rgba(232,184,109,.1); color: #E8B86D; cursor: pointer;
+  text-transform: uppercase; transition: all .2s;
+}
+.big-btn:hover { background: rgba(232,184,109,.22); transform: translateY(-1px); }
+.big-btn.play { background: linear-gradient(135deg, #E8B86D, #d9a85a); color: #1a0f03; border-color: #E8B86D; font-weight: 700; box-shadow: 0 0 30px rgba(232,184,109,.4); }
+.big-btn.play:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
+.big-btn.ghost { background: transparent; border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.5); }
+
+.setup-note {
+  text-align: center; font-size: 11px; color: rgba(255,255,255,.4);
+  max-width: 500px; margin: 0 auto; line-height: 1.6;
+}
+.setup-note kbd {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 4px; padding: 1px 6px; font-size: 10px; font-family: monospace;
+}
+
+#cost-meter { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.35); text-align: center; }
+
+/* ═══════════════════════════════════════════════
+   SPOT PLAYBACK — 9:16 full viewport
+   ═══════════════════════════════════════════════ */
+#player {
+  position: fixed; inset: 0; z-index: 20;
+  display: none;
+  background: #000;
+  overflow: hidden;
+}
+#player.visible { display: block; }
+
+#stage {
+  position: absolute; inset: 0;
+  aspect-ratio: 9/16;
+  max-height: 100vh; max-width: 100vw;
+  margin: 0 auto;
+  background: #000;
+  overflow: hidden;
+  left: 50%; transform: translateX(-50%);
+}
+
+/* Scene layers — stacked, one visible at a time */
+.scene {
+  position: absolute; inset: 0;
+  opacity: 0; visibility: hidden;
+  transition: opacity .4s ease, visibility .4s;
+}
+.scene.on { opacity: 1; visibility: visible; }
+.scene img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+/* Vignette applied to all photo scenes */
+.scene.photo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(0,0,0,.45) 0%, transparent 22%, transparent 60%,
+    rgba(0,0,0,.55) 85%, rgba(0,0,0,.9) 100%);
+}
+
+/* KEN BURNS — slow push-in on each photo scene for subtle motion */
+.scene.photo.on img { animation: kenBurns 6s ease-out forwards; transform-origin: center 40%; }
+@keyframes kenBurns {
+  from { transform: scale(1.0); }
+  to { transform: scale(1.08); }
+}
+
+/* ── TEXT OVERLAYS ── */
+.overlay {
+  position: absolute; left: 0; right: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .45s ease, transform .55s cubic-bezier(.23,1.3,.32,1);
+  z-index: 5;
+  text-align: center;
+}
+.overlay.on { opacity: 1; transform: translateY(0); }
+
+.overlay-top { top: 8%; }
+.overlay-mid { top: 50%; transform: translateY(calc(-50% + 12px)); }
+.overlay-mid.on { transform: translateY(-50%); }
+.overlay-bot { bottom: 18%; transform: translateY(12px); }
+.overlay-bot.on { transform: translateY(0); }
+
+.hook-text {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(22px, 4.8vh, 34px); color: #fff;
+  line-height: 1.15; padding: 0 28px;
+  text-shadow: 0 3px 14px rgba(0,0,0,.85), 0 0 30px rgba(0,0,0,.6);
+  letter-spacing: -.01em;
+}
+.hook-text em { color: #E8B86D; font-style: normal; }
+
+.plot-beat {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: clamp(28px, 6vh, 46px);
+  color: #fff;
+  padding: 0 28px;
+  text-shadow: 0 0 40px rgba(232,184,109,.45), 0 4px 18px rgba(0,0,0,.95);
+  letter-spacing: -.005em;
+  line-height: 1;
+}
+.plot-beat.gold { color: #E8B86D; }
+.plot-beat.small { font-size: clamp(20px, 4vh, 30px); font-family: 'Syne', sans-serif; font-weight: 700; }
+
+.story-line {
+  font-family: 'EB Garamond', serif; font-style: italic;
+  font-size: clamp(17px, 2.6vh, 22px); color: rgba(255,245,220,.95);
+  padding: 0 34px; line-height: 1.3;
+  text-shadow: 0 2px 12px rgba(0,0,0,.92);
+}
+
+/* ── HERO CARD INTRO (first 2s) + FINAL CARD (pack reveal end) ── */
+.hero-card-wrap {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #1a1028 0%, #080410 70%, #000 100%);
+}
+.hero-card {
+  position: relative;
+  width: 70%; max-width: 310px;
+  aspect-ratio: 3/4;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1.5px rgba(232,184,109,.5),
+    0 20px 60px rgba(0,0,0,.95),
+    0 0 80px rgba(232,184,109,.3);
+  animation: heroPulse 2.2s ease-in-out infinite;
+  background: #0a0610;
+}
+@keyframes heroPulse {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.5), 0 20px 60px rgba(0,0,0,.95), 0 0 60px rgba(232,184,109,.22); }
+  50% { box-shadow: 0 0 0 2px rgba(232,184,109,.8), 0 20px 60px rgba(0,0,0,.95), 0 0 120px rgba(232,184,109,.5); }
+}
+.hero-card.zoom-in { animation: heroZoomIn .9s cubic-bezier(.23,1.2,.32,1) both, heroPulse 2.2s ease-in-out infinite 1s; }
+@keyframes heroZoomIn {
+  from { transform: scale(.7) rotate(-3deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.hero-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+.hero-card-ov {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(6,3,0,.45) 0%, transparent 25%, transparent 55%,
+    rgba(6,3,0,.75) 78%, rgba(4,2,0,.98) 100%);
+}
+.hero-card-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 5;
+  padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;
+}
+.hero-card-brand {
+  font-family: 'Cinzel', serif; font-size: 7px; font-weight: 700;
+  letter-spacing: 3px; color: rgba(232,184,109,.85);
+  text-shadow: 0 1px 6px #000;
+}
+.hero-card-pill {
+  background: rgba(10,5,0,.9); border: 1px solid rgba(232,184,109,.4);
+  color: #E8B86D; border-radius: 30px;
+  padding: 4px 10px; font-family: 'Cinzel', serif;
+  font-size: 7px; font-weight: 700; letter-spacing: 2px;
+  backdrop-filter: blur(12px);
+}
+.hero-card-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 5;
+  padding: 16px;
+}
+.hero-card-class { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 3px; color: rgba(232,184,109,.85); margin-bottom: 4px; text-shadow: 0 1px 8px #000; }
+.hero-card-name { font-family: 'Cinzel Decorative', serif; font-size: 26px; font-weight: 900; color: #fffbf0; line-height: 1; margin-bottom: 5px; text-shadow: 0 2px 16px #000; }
+.hero-card-title { font-family: 'EB Garamond', serif; font-size: 11px; font-style: italic; color: rgba(255,230,160,.6); margin-bottom: 8px; text-shadow: 0 1px 6px #000; }
+.hero-card-serial { font-family: 'Cinzel', serif; font-size: 6px; letter-spacing: 2.5px; color: rgba(232,184,109,.5); }
+.hero-card-holo {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: 18px;
+  mix-blend-mode: color-dodge;
+  background: linear-gradient(135deg, rgba(255,0,80,.05) 0%, rgba(255,160,0,.08) 25%, rgba(0,255,120,.08) 50%, rgba(0,200,255,.08) 75%, rgba(255,0,80,.05) 100%);
+  background-size: 200% 200%;
+  animation: lholo 4s ease infinite;
+  opacity: .5;
+}
+@keyframes lholo {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* ── PACK REVEAL MINI-SEQUENCE ── */
+.pack-stage {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #120820 0%, #060210 60%, #000 100%);
+}
+.pack-hex {
+  position: relative;
+  width: 240px; height: 280px;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 60px rgba(232,184,109,.3));
+  transition: transform .3s ease, filter .3s ease;
+}
+.pack-hex svg { width: 100%; height: 100%; display: block; }
+.pack-hex svg polygon {
+  fill: linear-gradient(#1a1028, #080410);
+  stroke: rgba(232,184,109,.6); stroke-width: 1.5;
+}
+.pack-logo-wrap {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 40px; color: #E8B86D;
+  filter: drop-shadow(0 0 12px rgba(232,184,109,.8));
+  animation: packSpin 3s linear infinite;
+}
+@keyframes packSpin { to { transform: rotate(360deg); } }
+
+.pack-hex.charging { animation: packCharge 1.5s ease-in forwards; }
+@keyframes packCharge {
+  0% { transform: scale(1); filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 40px rgba(232,184,109,.3)); }
+  70% { transform: scale(1.15); filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 120px rgba(255,240,180,.9)) brightness(1.8); }
+  100% { transform: scale(1.22); filter: drop-shadow(0 0 180px rgba(255,240,180,1)) brightness(2.4); }
+}
+.pack-hex.explode { animation: packExplode .4s ease-out forwards; }
+@keyframes packExplode {
+  to { transform: scale(2.8); opacity: 0; filter: drop-shadow(0 0 200px rgba(255,240,180,1)) brightness(3); }
+}
+
+.pack-flash {
+  position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none;
+}
+.pack-flash.fire { animation: packFlash .65s ease-out forwards; }
+@keyframes packFlash {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.rarity-reveal {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; opacity: 0; pointer-events: none;
+}
+.rarity-reveal.show { opacity: 1; transition: opacity .4s ease; }
+.rr-top { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 10px; color: rgba(232,184,109,.6); text-transform: uppercase; transform: translateY(16px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); }
+.rr-title { font-family: 'Cinzel Decorative', serif; font-size: 52px; font-weight: 900; color: #F2D187; letter-spacing: 6px; text-shadow: 0 0 40px rgba(232,184,109,.7), 0 0 80px rgba(232,184,109,.4); transform: translateY(20px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); }
+.rr-tagline { font-family: 'EB Garamond', serif; font-style: italic; font-size: 16px; color: rgba(232,184,109,.7); text-align: center; max-width: 80%; line-height: 1.3; transform: translateY(10px); opacity: 0; transition: opacity .5s ease, transform .5s cubic-bezier(.23,1.3,.32,1); }
+.rarity-reveal.show .rr-top { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+.rarity-reveal.show .rr-title { opacity: 1; transform: translateY(0); transition-delay: 150ms; }
+.rarity-reveal.show .rr-tagline { opacity: 1; transform: translateY(0); transition-delay: 500ms; }
+
+/* Final CTA */
+.cta-stage {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; text-align: center; padding: 0 32px;
+  background: radial-gradient(ellipse at center, #0c0818 0%, #000 80%);
+}
+.cta-line1 {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(24px, 5vh, 36px); color: #fff;
+  line-height: 1.15; letter-spacing: -.01em;
+}
+.cta-line1 em { color: #E8B86D; font-style: normal; }
+.cta-url {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 28px;
+  color: #E8B86D; letter-spacing: 2px;
+  text-shadow: 0 0 40px rgba(232,184,109,.6);
+}
+.cta-sub {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px;
+  color: rgba(255,255,255,.45); text-transform: uppercase;
+}
+
+/* Exit HUD (visible only during play) */
+.player-hud {
+  position: absolute; top: 12px; right: 12px; z-index: 50;
+  display: flex; gap: 8px; align-items: center;
+}
+.hud-btn {
+  background: rgba(0,0,0,.6); color: rgba(255,255,255,.75);
+  border: 1px solid rgba(255,255,255,.2); border-radius: 20px;
+  padding: 6px 14px; font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 2px; cursor: pointer; backdrop-filter: blur(10px);
+  text-transform: uppercase;
+}
+.hud-btn:hover { background: rgba(0,0,0,.85); color: #fff; }
+
+.player-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: rgba(255,255,255,.08); z-index: 40;
+}
+.player-progress-bar {
+  height: 100%; width: 0%; background: linear-gradient(90deg, #E8B86D, #F2D187);
+  transition: width .1s linear;
+}
+
+/* Sparks particles (during pack burst) */
+.spark {
+  position: absolute; width: 4px; height: 4px; border-radius: 50%;
+  pointer-events: none; will-change: transform, opacity;
+}
+
+/* RECORDING MODE — hide HUD for clean capture */
+body.recording .player-hud,
+body.recording .player-progress { display: none; }
+
+/* Smaller viewport adjustments */
+@media (max-height: 700px) {
+  .hero-card { width: 62%; }
+  .plot-beat { font-size: 32px; }
+  .rr-title { font-size: 42px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SETUP SCREEN ═══════════ -->
+<div id="setup">
+  <div class="setup-header">
+    <div class="sub">✦ TikTok Spot Studio ✦</div>
+    <h1>Spot 1 — The Kiss</h1>
+    <div class="spot-title">Caspian × Grimhilda · 22s · 9:16</div>
+  </div>
+
+  <div class="shot-grid" id="shotGrid"></div>
+
+  <div id="cost-meter">Est. cost: €<span id="costTotal">0.24</span> for first full gen · €0.04 per re-roll</div>
+
+  <div class="setup-actions">
+    <button class="big-btn ghost" onclick="clearCache()">↻ Clear cache</button>
+    <button class="big-btn" id="genAllBtn" onclick="generateAll()">⚡ Generate all missing</button>
+    <button class="big-btn play" id="playBtn" onclick="startPlayback()" disabled>▶ Play spot</button>
+  </div>
+
+  <div class="setup-note">
+    Images are cached in your browser after first generation. Use <kbd>F</kbd> during playback for fullscreen, <kbd>ESC</kbd> to exit. On iPhone: Add to Home Screen → open → screen-record.
+    <br><br>
+    <span style="color:rgba(232,184,109,.5)">For the cleanest recording, toggle <kbd>R</kbd> during play to hide HUD.</span>
+  </div>
+</div>
+
+<!-- ═══════════ PLAYER ═══════════ -->
+<div id="player">
+  <div id="stage">
+
+    <!-- SCENE 0: HERO CARD INTRO (0–2s) -->
+    <div class="scene" id="sceneHero">
+      <div class="hero-card-wrap">
+        <div class="hero-card zoom-in" id="heroCard">
+          <img id="heroCardImg" alt="">
+          <div class="hero-card-ov"></div>
+          <div class="hero-card-holo"></div>
+          <div class="hero-card-top">
+            <div class="hero-card-brand">✦ EndoCraft · Session 14</div>
+            <div class="hero-card-pill">✦ Legendary</div>
+          </div>
+          <div class="hero-card-bottom">
+            <div class="hero-card-class">Harengon Bard · Lv VI</div>
+            <div class="hero-card-name">Caspian</div>
+            <div class="hero-card-title">The Unwanted Kiss</div>
+            <div class="hero-card-serial">Caspian #0042 / 9999</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 1-5: PHOTO BEATS -->
+    <div class="scene photo" id="sceneGrimhilda"><img id="imgGrimhilda" alt=""></div>
+    <div class="scene photo" id="sceneCaspianNervous"><img id="imgCaspianNervous" alt=""></div>
+    <div class="scene photo" id="sceneTheKiss"><img id="imgTheKiss" alt=""></div>
+    <div class="scene photo" id="sceneParty"><img id="imgParty" alt=""></div>
+    <div class="scene photo" id="sceneMelancholy"><img id="imgMelancholy" alt=""></div>
+
+    <!-- SCENE 6: PACK REVEAL -->
+    <div class="scene" id="scenePack">
+      <div class="pack-stage">
+        <div class="pack-hex" id="packHex">
+          <svg viewBox="0 0 200 240">
+            <defs>
+              <linearGradient id="packGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#1a1028"/>
+                <stop offset="50%" style="stop-color:#080410"/>
+                <stop offset="100%" style="stop-color:#0c0618"/>
+              </linearGradient>
+            </defs>
+            <polygon points="100,8 190,60 190,180 100,232 10,180 10,60" fill="url(#packGrad)" stroke="rgba(232,184,109,0.6)" stroke-width="1.5"/>
+            <polygon points="100,28 172,72 172,168 100,212 28,168 28,72" fill="none" stroke="rgba(232,184,109,0.2)" stroke-width="1"/>
+          </svg>
+          <div class="pack-logo-wrap">✦</div>
+        </div>
+        <div class="pack-flash" id="packFlash"></div>
+        <div class="rarity-reveal" id="rarityReveal">
+          <div class="rr-top">Session Scroll</div>
+          <div class="rr-title">✦ LEGENDARY ✦</div>
+          <div class="rr-tagline">Some moments are too legendary to forget.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 7: FINAL CARD (post pack reveal) -->
+    <div class="scene" id="sceneFinalCard">
+      <div class="hero-card-wrap">
+        <div class="hero-card" id="finalCard">
+          <img id="finalCardImg" alt="">
+          <div class="hero-card-ov"></div>
+          <div class="hero-card-holo"></div>
+          <div class="hero-card-top">
+            <div class="hero-card-brand">✦ EndoCraft · Session 14</div>
+            <div class="hero-card-pill">✦ Legendary</div>
+          </div>
+          <div class="hero-card-bottom">
+            <div class="hero-card-class">Harengon Bard · Lv VI</div>
+            <div class="hero-card-name">Caspian</div>
+            <div class="hero-card-title">The Unwanted Kiss</div>
+            <div class="hero-card-serial">Caspian #0042 / 9999</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 8: CTA (end) -->
+    <div class="scene" id="sceneCta">
+      <div class="cta-stage">
+        <div class="cta-sub">Roll. Reveal. Remember.</div>
+        <div class="cta-line1">Turn your moment <em>into a card.</em></div>
+        <div class="cta-url">endocraft.app</div>
+      </div>
+    </div>
+
+    <!-- TEXT OVERLAYS -->
+    <div class="overlay overlay-bot" id="overlayHook"><div class="hook-text" id="hookText">That moment your party<br>will <em>never</em> let you forget 💀</div></div>
+    <div class="overlay overlay-mid" id="overlayPlot"><div class="plot-beat" id="plotBeat"></div></div>
+    <div class="overlay overlay-bot" id="overlayStory"><div class="story-line" id="storyLine"></div></div>
+
+    <!-- HUD -->
+    <div class="player-hud">
+      <button class="hud-btn" onclick="toggleRecording()" id="recBtn">Clean</button>
+      <button class="hud-btn" onclick="stopPlayback()">✕ Exit</button>
+    </div>
+    <div class="player-progress"><div class="player-progress-bar" id="progressBar"></div></div>
+
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — image prompts + storage slugs
+// ═══════════════════════════════════════════════
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const STORAGE_KEY = 'ec_tiktok_spot1_images_v1';
+const STORAGE_AGE_WARN_HOURS = 6; // AIML URLs may expire after a few hours
+
+// Text overrides (written by /admin panel, read on every load so edits apply on reload)
+const OVERRIDES = (() => {
+  try { return JSON.parse(localStorage.getItem('ec_tiktok_overrides_spot1') || '{}'); }
+  catch(e) { return {}; }
+})();
+function ov(key, def) { return (OVERRIDES[key] !== undefined && OVERRIDES[key] !== null) ? OVERRIDES[key] : def; }
+
+// Apply static-HTML overrides (card info, rarity reveal, CTA) at init
+function applyStaticOverrides() {
+  const map = {
+    '.hero-card-top .hero-card-brand':    'cardBrand',
+    '.hero-card-top .hero-card-pill':     'cardRarityPill',
+    '.hero-card-bottom .hero-card-class': 'cardClass',
+    '.hero-card-bottom .hero-card-name':  'cardName',
+    '.hero-card-bottom .hero-card-title': 'cardTitle',
+    '.hero-card-bottom .hero-card-serial':'cardSerial',
+    '#rarityReveal .rr-top':              'rarityTop',
+    '#rarityReveal .rr-title':            'rarityTitle',
+    '#rarityReveal .rr-tagline':          'rarityTagline',
+    '#sceneCta .cta-sub':                 'ctaSub',
+    '#sceneCta .cta-line1':               'ctaLine1',
+    '#sceneCta .cta-url':                 'ctaUrl'
+  };
+  for (const sel in map) {
+    const key = map[sel];
+    if (OVERRIDES[key] !== undefined) {
+      document.querySelectorAll(sel).forEach(el => { el.innerHTML = OVERRIDES[key]; });
+    }
+  }
+}
+
+// All prompts from the Master reference file, verbatim
+const SHOTS = [
+  {
+    slug: 'caspian-card-hero',
+    name: 'Caspian Card',
+    aspect: '3:4',
+    width: 1440, height: 1920,
+    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot head to chest, centered composition, space above head, darker vignette on bottom third, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
+    targetImg: ['heroCardImg', 'finalCardImg']
+  },
+  {
+    slug: 'grimhilda',
+    name: 'Grimhilda',
+    aspect: '9:16',
+    width: 1440, height: 2560,
+    prompt: `Ancient hag close-up portrait, grey matted hair, deeply wrinkled face, sinister warm smile, glowing amber eyes, misty dark background, cinematic fantasy, photorealistic, dramatic lighting, 8K, sharp focus, no text, no watermark`,
+    targetImg: ['imgGrimhilda']
+  },
+  {
+    slug: 'caspian-nervous',
+    name: 'Caspian (nervous)',
+    aspect: '9:16',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive eyes wide with nervousness, forest green coat, holding lute, standing alone in tavern, warm candlelight background, cinematic fantasy, photorealistic, shallow depth of field, 8K, no text, no watermark`,
+    targetImg: ['imgCaspianNervous']
+  },
+  {
+    slug: 'the-kiss',
+    name: 'The Kiss',
+    aspect: '9:16',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard shocked expression, ancient hag leaning in close, dramatic moment, warm brown fur, grey matted hair, misty forest background, cinematic fantasy, photorealistic, emotional intensity, 8K, no text, no watermark`,
+    targetImg: ['imgTheKiss']
+  },
+  {
+    slug: 'party-reaction',
+    name: 'Party Reaction',
+    aspect: '9:16',
+    width: 1440, height: 2560,
+    prompt: `Group of adventurers laughing and pointing, tavern setting, warm firelight, cinematic fantasy, photorealistic, candid moment, 8K, no text, no watermark`,
+    targetImg: ['imgParty']
+  },
+  {
+    slug: 'caspian-melancholy',
+    name: 'Caspian (after)',
+    aspect: '9:16',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard sitting alone on stone steps, warm brown fur, forest green coat, holding lute, distant sad expression, soft moonlight, cinematic fantasy, photorealistic, emotional, shallow depth of field, no text, no watermark`,
+    targetImg: ['imgMelancholy']
+  }
+];
+
+// ═══════════════════════════════════════════════
+// STORAGE — cache image URLs with timestamp
+// ═══════════════════════════════════════════════
+function loadCache() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+  catch (e) { return {}; }
+}
+function saveCache(cache) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cache)); }
+  catch (e) { console.warn('Cache save failed', e); }
+}
+function clearCache() {
+  if (!confirm('Delete all cached images? You\'ll need to regenerate them.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderShotGrid();
+}
+
+// ═══════════════════════════════════════════════
+// IMAGE GENERATION — call backend /api/image
+// ═══════════════════════════════════════════════
+async function generateShot(shot) {
+  const resp = await fetch(`${API_BASE}/api/image`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt: shot.prompt,
+      model: 'bytedance/seedream-4-5',
+      width: shot.width,
+      height: shot.height
+    })
+  });
+  const data = await resp.json();
+  if (!data.url) throw new Error(data.error || 'no image url returned');
+  return data.url;
+}
+
+async function generateOne(slug) {
+  const shot = SHOTS.find(s => s.slug === slug);
+  if (!shot) return;
+  const card = document.querySelector(`.shot[data-slug="${slug}"]`);
+  if (!card) return;
+  card.classList.remove('loaded', 'error');
+  card.classList.add('gen');
+  const thumb = card.querySelector('.shot-thumb');
+  thumb.innerHTML = '<div class="gen-spinner"></div>';
+  try {
+    const url = await generateShot(shot);
+    const cache = loadCache();
+    cache[slug] = { url, ts: Date.now() };
+    saveCache(cache);
+    card.classList.remove('gen');
+    card.classList.add('loaded');
+    thumb.innerHTML = `<img src="${url}" onerror="this.parentNode.innerHTML='URL expired — regenerate'">`;
+    applyCacheToDOM();
+    updatePlayButtonState();
+  } catch (err) {
+    card.classList.remove('gen');
+    card.classList.add('error');
+    thumb.innerHTML = `<span style="color:#E04A3A;padding:10px;font-size:10px;">${err.message}</span>`;
+    console.error(err);
+  }
+}
+
+async function generateAll() {
+  const cache = loadCache();
+  const missing = SHOTS.filter(s => !cache[s.slug]);
+  if (missing.length === 0) { alert('All images already cached.'); return; }
+  document.getElementById('genAllBtn').disabled = true;
+  // Parallel — up to 3 at a time to not hammer the backend
+  const CONCURRENCY = 3;
+  for (let i = 0; i < missing.length; i += CONCURRENCY) {
+    await Promise.all(missing.slice(i, i + CONCURRENCY).map(s => generateOne(s.slug)));
+  }
+  document.getElementById('genAllBtn').disabled = false;
+}
+
+// ═══════════════════════════════════════════════
+// UI — render shot grid, apply cached URLs to DOM
+// ═══════════════════════════════════════════════
+function renderShotGrid() {
+  const grid = document.getElementById('shotGrid');
+  const cache = loadCache();
+  grid.innerHTML = SHOTS.map(s => {
+    const cached = cache[s.slug];
+    const loaded = !!cached;
+    const ageHours = cached ? (Date.now() - cached.ts) / 3600000 : null;
+    const stale = ageHours !== null && ageHours > STORAGE_AGE_WARN_HOURS;
+    return `
+      <div class="shot ${loaded ? 'loaded' : ''}" data-slug="${s.slug}">
+        <div class="shot-thumb">
+          ${loaded
+            ? `<img src="${cached.url}" onerror="this.parentNode.innerHTML='URL expired — regenerate'">`
+            : s.name.toUpperCase()}
+        </div>
+        <div class="shot-name">${s.name} ${stale ? '<span style="color:#E04A3A;">⚠ stale</span>' : ''}</div>
+        <div class="shot-prompt">${s.prompt.slice(0, 90)}…</div>
+        <div style="display:flex;gap:6px;">
+          <button class="shot-btn ${loaded ? '' : 'primary'}" onclick="generateOne('${s.slug}')">${loaded ? 'Re-roll' : 'Generate'}</button>
+          ${loaded ? `<button class="shot-btn" onclick="downloadOne('${s.slug}')">↓</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+  applyCacheToDOM();
+  updatePlayButtonState();
+}
+
+function applyCacheToDOM() {
+  const cache = loadCache();
+  SHOTS.forEach(s => {
+    const c = cache[s.slug];
+    if (!c) return;
+    s.targetImg.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.src = c.url;
+    });
+  });
+}
+
+function updatePlayButtonState() {
+  const cache = loadCache();
+  const ready = SHOTS.every(s => cache[s.slug]);
+  document.getElementById('playBtn').disabled = !ready;
+}
+
+async function downloadOne(slug) {
+  const cache = loadCache();
+  const c = cache[slug];
+  if (!c) return;
+  try {
+    const resp = await fetch(c.url);
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${slug}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    // Fallback — open in new tab
+    window.open(c.url, '_blank');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// PLAYBACK — 22-second timeline controller
+// ═══════════════════════════════════════════════
+
+// Timeline: each entry is {at: ms, do: fn}
+// Scenes auto-crossfade (.4s) via CSS .on class toggle
+function buildTimeline() {
+  return [
+    // ── 0–2s: Hero Caspian card (hook) ──
+    { at: 0,     do: () => { show('sceneHero'); restartAnim('heroCard', 'zoom-in'); } },
+    { at: 600,   do: () => showOverlay('overlayHook', ov('hookText', 'That moment your party<br>will <em>never</em> let you forget 💀')) },
+
+    // ── 2–3.5s: Grimhilda (the antagonist revealed) ──
+    { at: 2200,  do: () => { show('sceneGrimhilda'); hideOverlay('overlayHook'); } },
+    { at: 2500,  do: () => showPlot(ov('plot1', 'She approached.'), 'small') },
+
+    // ── 3.5–5s: Caspian nervous ──
+    { at: 3600,  do: () => { show('sceneCaspianNervous'); hideOverlay('overlayPlot'); } },
+    { at: 3900,  do: () => showPlot(ov('plot2', 'Natural 2.'), 'gold') },
+
+    // ── 5–6.8s: The Kiss ──
+    { at: 5200,  do: () => { show('sceneTheKiss'); hideOverlay('overlayPlot'); } },
+    { at: 5500,  do: () => showStory(ov('story1', 'She kissed him anyway.')) },
+
+    // ── 6.8–8.5s: Party Reaction ──
+    { at: 7000,  do: () => { show('sceneParty'); hideOverlay('overlayStory'); } },
+    { at: 7300,  do: () => showStory(ov('story2', "My party hasn't stopped laughing since.")) },
+
+    // ── 8.5–9s: brief melancholy beat ──
+    { at: 8600,  do: () => { show('sceneMelancholy'); hideOverlay('overlayStory'); } },
+
+    // ── 9–16s: PACK REVEAL (~7s) ──
+    { at: 9300,  do: () => { show('scenePack'); resetPackState(); } },
+    { at: 10500, do: () => chargePack() },
+    { at: 12200, do: () => explodePack() },
+    { at: 12900, do: () => showRarity() },
+    { at: 14800, do: () => hideRarity() },
+
+    // ── 15.5–18s: final card ──
+    { at: 15400, do: () => { show('sceneFinalCard'); restartAnim('finalCard', 'zoom-in'); } },
+
+    // ── 18–22s: CTA ──
+    { at: 18200, do: () => show('sceneCta') },
+
+    // ── 22s: loop ──
+    { at: 22000, do: () => restart() }
+  ];
+}
+
+let rafId = null;
+let timelineStart = 0;
+let firedFlags = [];
+let timeline = [];
+
+function startPlayback() {
+  // Fullscreen attempt
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } catch (e) { /* silent — not critical */ }
+
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('player').classList.add('visible');
+  timeline = buildTimeline();
+  firedFlags = timeline.map(() => false);
+  timelineStart = performance.now();
+  hideAllScenes();
+  hideAllOverlays();
+  tick();
+}
+
+function stopPlayback() {
+  cancelAnimationFrame(rafId);
+  rafId = null;
+  document.getElementById('player').classList.remove('visible');
+  document.getElementById('setup').classList.remove('hidden');
+  document.body.classList.remove('recording');
+  try {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } catch (e) {}
+}
+
+function restart() {
+  timelineStart = performance.now();
+  firedFlags = timeline.map(() => false);
+  hideAllScenes();
+  hideAllOverlays();
+  resetPackState();
+}
+
+function tick() {
+  const now = performance.now();
+  const t = now - timelineStart;
+  // Fire events
+  timeline.forEach((entry, i) => {
+    if (!firedFlags[i] && t >= entry.at) {
+      firedFlags[i] = true;
+      try { entry.do(); } catch (e) { console.error('timeline event error', e); }
+    }
+  });
+  // Progress bar
+  const pct = Math.min(100, (t / 22000) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  rafId = requestAnimationFrame(tick);
+}
+
+// ═══════════════════════════════════════════════
+// Scene & overlay helpers
+// ═══════════════════════════════════════════════
+function hideAllScenes() {
+  document.querySelectorAll('.scene').forEach(el => el.classList.remove('on'));
+}
+function show(sceneId) {
+  hideAllScenes();
+  const el = document.getElementById(sceneId);
+  if (el) el.classList.add('on');
+}
+function restartAnim(elId, className) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.classList.remove(className);
+  void el.offsetWidth; // force reflow
+  el.classList.add(className);
+}
+
+function hideAllOverlays() {
+  document.querySelectorAll('.overlay').forEach(el => el.classList.remove('on'));
+}
+function showOverlay(id, html) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (html !== undefined) el.querySelector(':scope > *').innerHTML = html;
+  el.classList.add('on');
+}
+function hideOverlay(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('on');
+}
+function showPlot(text, klass) {
+  const beat = document.getElementById('plotBeat');
+  beat.className = 'plot-beat ' + (klass || '');
+  beat.innerHTML = text;
+  showOverlay('overlayPlot');
+}
+function showStory(text) {
+  document.getElementById('storyLine').innerHTML = text;
+  showOverlay('overlayStory');
+}
+
+// Pack reveal helpers
+function resetPackState() {
+  const hex = document.getElementById('packHex');
+  const flash = document.getElementById('packFlash');
+  const rarity = document.getElementById('rarityReveal');
+  hex.classList.remove('charging', 'explode');
+  hex.style.opacity = '';
+  flash.classList.remove('fire');
+  rarity.classList.remove('show');
+}
+function chargePack() {
+  document.getElementById('packHex').classList.add('charging');
+}
+function explodePack() {
+  document.getElementById('packHex').classList.add('explode');
+  document.getElementById('packFlash').classList.add('fire');
+  spawnBurstSparks();
+}
+function showRarity() {
+  document.getElementById('rarityReveal').classList.add('show');
+}
+function hideRarity() {
+  document.getElementById('rarityReveal').classList.remove('show');
+}
+
+// Burst sparks — 40 gold particles radiating from center
+function spawnBurstSparks() {
+  const stage = document.querySelector('#scenePack .pack-stage');
+  const rect = stage.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2;
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const ang = (i / 40) * Math.PI * 2 + (Math.random() - .5) * .3;
+    const dist = 120 + Math.random() * 240;
+    const size = 3 + Math.random() * 5;
+    const color = Math.random() > .4 ? '#E8B86D' : '#F2D187';
+    s.style.cssText = `
+      left: ${cx}px; top: ${cy}px;
+      width: ${size}px; height: ${size}px;
+      background: ${color};
+      box-shadow: 0 0 ${8 + Math.random()*8}px ${color};
+      opacity: 1;
+      transform: translate(-50%, -50%);
+      transition: transform .9s cubic-bezier(.2,.8,.3,1), opacity .9s ease-out;
+    `;
+    stage.appendChild(s);
+    requestAnimationFrame(() => {
+      s.style.transform = `translate(calc(-50% + ${Math.cos(ang)*dist}px), calc(-50% + ${Math.sin(ang)*dist}px))`;
+      s.style.opacity = '0';
+    });
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// Keyboard shortcuts
+// ═══════════════════════════════════════════════
+function toggleRecording() {
+  document.body.classList.toggle('recording');
+  const isOn = document.body.classList.contains('recording');
+  const btn = document.getElementById('recBtn');
+  if (btn) btn.textContent = isOn ? 'HUD' : 'Clean';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('player').classList.contains('visible')) return;
+  if (e.key === 'Escape') stopPlayback();
+  else if (e.key.toLowerCase() === 'r') toggleRecording();
+  else if (e.key.toLowerCase() === 'f') {
+    try {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    } catch (_) {}
+  }
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+applyStaticOverrides();
+renderShotGrid();
+
+// Show a small "edited" badge on setup if overrides are active
+if (Object.keys(OVERRIDES).length > 0) {
+  const header = document.querySelector('.setup-header .sub');
+  if (header) header.innerHTML += ' <span style="color:#E8B86D;margin-left:10px;">✎ using edits from /admin</span>';
+}
+</script>
+</body>
+</html>
