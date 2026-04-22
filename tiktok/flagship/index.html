@@ -461,8 +461,8 @@ const SHOTS = [
   {
     slug: 'caspian-hero',
     name: 'Caspian Hero Card',
-    width: 1536, height: 2048,
-    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot head to chest, centered composition, space above head, darker vignette on bottom third, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot framed from head to waist, face positioned in upper third of frame, centered composition, generous empty space below, darker vignette on bottom, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
     targetImg: ['heroCardImg']
   },
   {
@@ -516,17 +516,22 @@ function extractImageUrl(d) {
 }
 
 async function generateShot(shot) {
+  const body = { prompt: shot.prompt, model: 'bytedance/seedream-4-5', width: shot.width, height: shot.height };
+  console.log(`[gen:${shot.slug}] → sending`, body);
   const resp = await fetch(`${API_BASE}/api/image`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: shot.prompt, model: 'bytedance/seedream-4-5', width: shot.width, height: shot.height })
+    body: JSON.stringify(body)
   });
   const data = await resp.json();
-  console.log(`[gen:${shot.slug}] raw response:`, data);
+  console.log(`[gen:${shot.slug}] ← raw response:`, data);
   const url = extractImageUrl(data);
   if (!url || typeof url !== 'string') {
-    const errMsg = data?.error ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error).slice(0, 120)) : 'no image URL in response (see console)';
-    throw new Error(errMsg);
+    // Surface the full error shape — cut off at 400 chars so UI doesn't blow up
+    const errStr = data?.error
+      ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error))
+      : (data?.raw ? ('raw: ' + JSON.stringify(data.raw)) : 'no image URL (check console)');
+    throw new Error(errStr.slice(0, 400));
   }
   return url;
 }
@@ -550,7 +555,8 @@ async function generateOne(slug) {
     updatePlayButtonState();
   } catch (err) {
     card.classList.remove('gen'); card.classList.add('error');
-    thumb.innerHTML = `<span style="color:#E04A3A;padding:10px;font-size:10px;">${err.message}</span>`;
+    const safeMsg = String(err.message || 'Error').replace(/[<>]/g, '');
+    thumb.innerHTML = `<div style="color:#E04A3A;padding:8px;font-size:9px;line-height:1.4;overflow:auto;max-height:100%;text-align:left;font-family:monospace;">${safeMsg}</div>`;
     console.error(err);
   }
 }
