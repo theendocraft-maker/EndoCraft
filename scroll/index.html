@@ -946,6 +946,10 @@ body {
 @keyframes tcFlipHintPulse{0%,100%{opacity:.2;}50%{opacity:.7;}}
 #tcDownloadBtn{background:rgba(232,184,109,.12);color:#E8B86D;border:1px solid rgba(232,184,109,.3);border-radius:10px;padding:9px 20px;font-family:"Syne",sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;}
 #tcDownloadBtn:hover{background:rgba(232,184,109,.18);border-color:rgba(232,184,109,.5);}
+#tcShareBtn{background:linear-gradient(135deg,#E8B86D,#d9a85a);color:#1a0f03;border:1px solid #E8B86D;border-radius:10px;padding:9px 22px;font-family:"Syne",sans-serif;font-size:12px;font-weight:800;letter-spacing:1px;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(232,184,109,.25);}
+#tcShareBtn:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(232,184,109,.4);}
+#tcShareBtn:disabled{opacity:.55;cursor:wait;}
+.tc-actions-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
 </style>
 </head>
 <body>
@@ -1136,7 +1140,10 @@ body {
       <!-- Flip hint + download -->
       <div id="tcActions">
         <div id="tcFlipHint" onclick="tcToggleFlip()">TAP CARD TO FLIP</div>
-        <button id="tcDownloadBtn" onclick="tcDownload()">↓ Save image</button>
+        <div class="tc-actions-row">
+          <button id="tcShareBtn" onclick="shareCard(this)">↗ Share card</button>
+          <button id="tcDownloadBtn" onclick="tcDownload()">↓ Save image</button>
+        </div>
       </div>
       <!-- Loading state (kept for backwards compat, hidden by default) -->
       <div id="tcImgLoading" style="display:none;text-align:center;padding:8px 0;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);">
@@ -2020,15 +2027,9 @@ function toggleProvenance(){
   }
 }
 
-async function saveCard() {
-  const email = document.getElementById('cardSubEmail').value;
-  if (!email || !email.includes('@')) return;
-
-  const btn = document.querySelector('#cardSubForm button');
-  const origBtnText = btn ? btn.textContent : 'Save card';
-  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
-
-  const card = {
+// Helper — builds the current card's payload from DOM state. Shared by shareCard + saveCard.
+function buildCardPayload() {
+  return {
     session_title: document.getElementById('tcName')?.textContent || '',
     legendary_moment: document.getElementById('tcMoment')?.textContent || '',
     character_name: (document.getElementById('storyInput')?.value || '').match(/[Mm]y character is ([^,—\n]+)/)?.[1]?.trim().split(/[,—]+/)[0] || '',
@@ -2039,12 +2040,84 @@ async function saveCard() {
     seed_hash: document.getElementById('provSeed')?.textContent || null,
     source: 'scroll'
   };
+}
 
+// Anon share — saves the card to DB without email, then copies the share URL.
+// If a card has already been saved (anon or committed), just copies again.
+async function shareCard(btn) {
+  if (!btn) return;
+  // Already shared in this session → just copy the existing URL
+  if (window._cardShareUrl) {
+    copyCardShareLink(btn);
+    return;
+  }
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Preparing link…';
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/save-card', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ email, card })
+      body: JSON.stringify({ card: buildCardPayload() })  // no email → anon save
+    });
+    const data = await res.json();
+    if (!data.ok || !data.card || !data.card.id) throw new Error(data.error || 'save failed');
+    window._currentCardId = data.card.id;
+    window._cardShareUrl = 'https://endocraft-production.up.railway.app/c/' + data.card.id;
+    btn.textContent = orig;
+    btn.disabled = false;
+    copyCardShareLink(btn);  // performs the actual copy + shows feedback
+    showShareUpsell();        // gentle nudge to seal for collection
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Retry share';
+    console.error('[SHARE] anon save failed', e);
+  }
+}
+
+// Gentle upsell toast — pops up after anon share to encourage email seal for collection access
+function showShareUpsell() {
+  // Only show once per session
+  if (window._shareUpsellShown) return;
+  window._shareUpsellShown = true;
+  const toast = document.createElement('div');
+  toast.innerHTML = '✓ Link copied. Want this card in your collection too? <u>Drop your email below ↓</u>';
+  toast.style.cssText = 'position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);background:rgba(232,184,109,.96);color:#0a0610;padding:13px 20px;border-radius:12px;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.6);z-index:9999;max-width:92%;text-align:center;line-height:1.45;opacity:0;transition:opacity .35s ease,transform .4s cubic-bezier(.23,1.3,.32,1);cursor:pointer;';
+  toast.onclick = () => {
+    document.getElementById('cardSubEmail')?.focus();
+    document.getElementById('cardSubEmail')?.scrollIntoView({behavior:'smooth',block:'center'});
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 400);
+  };
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translate(-50%,0)';
+  });
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 400);
+  }, 5500);
+}
+
+async function saveCard() {
+  const email = document.getElementById('cardSubEmail').value;
+  if (!email || !email.includes('@')) return;
+
+  const btn = document.querySelector('#cardSubForm button');
+  const origBtnText = btn ? btn.textContent : 'Save card';
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+
+  const card = buildCardPayload();
+
+  try {
+    // If user already anon-shared, pass the card's id → backend PATCHes (claim) instead of duplicating
+    const payload = { email, card };
+    if (window._currentCardId) payload.id = window._currentCardId;
+    const res = await fetch('https://endocraft-production.up.railway.app/api/save-card', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
     });
     const result = await res.json();
     if (result.ok && result.card) {
@@ -2124,6 +2197,7 @@ async function saveCard() {
   // Wire up share buttons with the REAL card id — OG-tagged share page lives on Railway
   try {
     if (result && result.card && result.card.id) {
+      window._currentCardId = result.card.id;
       const shareUrl = 'https://endocraft-production.up.railway.app/c/' + result.card.id;
       window._cardShareUrl = shareUrl;
       const cardNameNow = document.getElementById('tcName')?.textContent || 'a legendary moment';
