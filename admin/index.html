@@ -205,6 +205,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .spot-card:hover { border-color: var(--border-hover); }
 .spot-card.planned { opacity: .58; }
 .spot-card.planned:hover { border-color: var(--border); }
+.spot-card.flagship { background: linear-gradient(135deg, rgba(232,184,109,.06), rgba(232,184,109,.02)); border-color: rgba(232,184,109,.35); box-shadow: 0 4px 30px rgba(232,184,109,.08); }
+.spot-card.flagship:hover { border-color: rgba(232,184,109,.55); }
+.spot-card.flagship .spot-card-name { color: #F2D187; }
 .spot-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
 .spot-card-name { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 4px; letter-spacing: -0.01em; }
 .spot-card-sub { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
@@ -779,13 +782,73 @@ function fmtDate(iso){
 
 const TIKTOK_SPOTS = [
   {
+    id: 'flagship',
+    name: 'Legendary.',
+    status: 'built',
+    flagship: true,
+    duration: 15,
+    shotCount: 4,
+    theme: 'Flagship · cinematic',
+    subtitle: 'D20 hook → montage → tagline → pack reveal → payoff → CTA',
+    url: '../tiktok/flagship/',
+    sections: [
+      {
+        title: 'Hook (0–2.5s)',
+        fields: [
+          { key: 'hookText1', label: 'Hook line 1', at: 1500, defaultValue: 'one roll.' },
+          { key: 'hookText2', label: 'Hook line 2', at: 2200, defaultValue: 'one moment.' }
+        ]
+      },
+      {
+        title: 'Montage captions (2.8–5.2s) — one sentence across 3 shots',
+        fields: [
+          { key: 'capEpic', label: 'Caption over Shot 1 (Caspian epic)', at: 2950, defaultValue: 'Every campaign' },
+          { key: 'capKiss', label: 'Caption over Shot 2 (The Kiss)', at: 3750, defaultValue: 'has legendary' },
+          { key: 'capParty', label: 'Caption over Shot 3 (Party)', at: 4550, defaultValue: 'moments.' }
+        ]
+      },
+      {
+        title: 'Tagline (5.2–7.5s)',
+        fields: [
+          { key: 'taglineText', label: 'Tagline (italic serif)', at: 5500, defaultValue: 'Some moments<br>are too <em>legendary</em><br>to forget.', hint: '<em>…</em> turns gold' }
+        ]
+      },
+      {
+        title: 'Pack reveal (7.6–11s)',
+        fields: [
+          { key: 'rarityTop', label: 'Rarity top label', at: 9600, defaultValue: 'Session Scroll' },
+          { key: 'rarityTitle', label: 'Rarity title', at: 9600, defaultValue: '✦ LEGENDARY ✦' }
+        ]
+      },
+      {
+        title: 'Hero card payoff (11–13s)',
+        fields: [
+          { key: 'cardBrand', label: 'Brand line (top of card)', defaultValue: '✦ EndoCraft · Session 14' },
+          { key: 'cardRarityPill', label: 'Rarity pill', defaultValue: '✦ Legendary' },
+          { key: 'cardClass', label: 'Class/level line', defaultValue: 'Harengon Bard · Lv VI' },
+          { key: 'cardName', label: 'Character name', defaultValue: 'Caspian' },
+          { key: 'cardTitle', label: 'Moment title', defaultValue: 'The Unwanted Kiss' },
+          { key: 'cardSerial', label: 'Serial number', defaultValue: 'Caspian #0042 / 9999' }
+        ]
+      },
+      {
+        title: 'CTA (13–15s)',
+        fields: [
+          { key: 'ctaUrl', label: 'Main URL (huge Cinzel)', at: 13200, defaultValue: 'endocraft.app' },
+          { key: 'ctaSub', label: 'Subtitle', at: 13400, defaultValue: 'Your session. Your card. <em>Forever.</em>' },
+          { key: 'ctaBrand', label: 'Brand line (bottom)', at: 13800, defaultValue: '✦ Roll. Reveal. Remember.' }
+        ]
+      }
+    ]
+  },
+  {
     id: 'spot1',
     name: 'The Kiss',
     status: 'built',
     duration: 22,
     shotCount: 6,
-    theme: 'Humor / Cringe',
-    subtitle: 'Caspian × Grimhilda',
+    theme: 'Humor / Cringe · backup',
+    subtitle: 'Caspian × Grimhilda — niche humor',
     url: '../tiktok/spot1/',
     sections: [
       {
@@ -883,13 +946,13 @@ function renderTiktokSpots() {
     }
     const hasOverrides = hasAnyOverride(s.id);
     return `
-      <div class="spot-card" data-spot="${s.id}">
+      <div class="spot-card ${s.flagship ? 'flagship' : ''}" data-spot="${s.id}">
         <div class="spot-card-head">
           <div>
-            <div class="spot-card-name">${s.name} ${hasOverrides ? '<span style="font-size:10px;color:var(--gold);font-family:\'Cinzel\',serif;letter-spacing:2px;margin-left:8px;">✎ EDITED</span>' : ''}</div>
+            <div class="spot-card-name">${s.flagship ? '★ ' : ''}${s.name} ${hasOverrides ? '<span style="font-size:10px;color:var(--gold);font-family:\'Cinzel\',serif;letter-spacing:2px;margin-left:8px;">✎ EDITED</span>' : ''}</div>
             <div class="spot-card-sub">${s.theme} · ${s.subtitle} · ${s.duration}s · ${s.shotCount} shots</div>
           </div>
-          <span class="spot-status-badge live">Built</span>
+          <span class="spot-status-badge ${s.flagship ? 'live' : 'live'}">${s.flagship ? 'Flagship' : 'Built'}</span>
         </div>
         <div class="spot-card-actions">
           <a href="${s.url}" target="_blank" class="sc-btn primary">▶ Open & record</a>

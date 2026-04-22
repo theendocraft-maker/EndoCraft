@@ -588,7 +588,7 @@ const SHOTS = [
     name: 'Caspian (nervous)',
     aspect: '9:16',
     width: 1440, height: 2560,
-    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive eyes wide with nervousness, forest green coat, holding lute, standing alone in tavern, warm candlelight background, cinematic fantasy, photorealistic, shallow depth of field, 8K, no text, no watermark`,
+    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive eyes wide with nervousness, tattered elegant forest green coat with gold trim, hands clasped in front of chest, standing alone in a rustic tavern, warm candlelight flickering from a hanging iron lantern, wooden beams, soft bokeh background, cinematic fantasy, photorealistic, shallow depth of field, 8K, sharp focus, no text, no watermark, no instruments, no lute`,
     targetImg: ['imgCaspianNervous']
   },
   {
@@ -596,7 +596,7 @@ const SHOTS = [
     name: 'The Kiss',
     aspect: '9:16',
     width: 1440, height: 2560,
-    prompt: `Anthropomorphic rabbit bard shocked expression, ancient hag leaning in close, dramatic moment, warm brown fur, grey matted hair, misty forest background, cinematic fantasy, photorealistic, emotional intensity, 8K, no text, no watermark`,
+    prompt: `Anthropomorphic rabbit bard with warm brown fur and large expressive eyes wide in shocked horror, tattered elegant forest green coat with gold trim, ancient hag leaning in close with sinister warm smile, grey matted hair, glowing amber eyes, dramatic emotional moment, dim tavern interior with warm candlelight, cinematic fantasy, photorealistic, extreme emotional intensity, shallow depth of field, 8K, sharp focus, no text, no watermark, no instruments, no lute`,
     targetImg: ['imgTheKiss']
   },
   {
@@ -612,7 +612,7 @@ const SHOTS = [
     name: 'Caspian (after)',
     aspect: '9:16',
     width: 1440, height: 2560,
-    prompt: `Anthropomorphic rabbit bard sitting alone on stone steps, warm brown fur, forest green coat, holding lute, distant sad expression, soft moonlight, cinematic fantasy, photorealistic, emotional, shallow depth of field, no text, no watermark`,
+    prompt: `Anthropomorphic rabbit bard sitting alone on worn stone steps at night, warm brown fur, tattered elegant forest green coat with gold trim, hands resting on knees, distant sad expression gazing into the distance, soft cool moonlight casting long shadows, atmospheric mist, cinematic fantasy, photorealistic, emotional, shallow depth of field, 8K, sharp focus, no text, no watermark, no instruments, no lute`,
     targetImg: ['imgMelancholy']
   }
 ];
@@ -649,8 +649,32 @@ async function generateShot(shot) {
     })
   });
   const data = await resp.json();
-  if (!data.url) throw new Error(data.error || 'no image url returned');
-  return data.url;
+  console.log(`[gen:${shot.slug}] raw response:`, data);
+
+  // Unwrap whatever shape the backend returned — Seedream responses vary
+  const url = extractImageUrl(data);
+  if (!url || typeof url !== 'string') {
+    const errMsg = data?.error
+      ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error).slice(0, 120))
+      : 'no image URL in response (see console)';
+    throw new Error(errMsg);
+  }
+  return url;
+}
+
+// Dig through possible response shapes — Seedream via AIMLAPI has returned
+// { url: "http..." }, { url: { url: "http..." } }, { data: [{url: ...}] }, etc.
+function extractImageUrl(d) {
+  if (!d) return null;
+  if (typeof d === 'string' && /^https?:\/\//.test(d)) return d;
+  if (typeof d.url === 'string') return d.url;
+  if (d.url && typeof d.url === 'object') return extractImageUrl(d.url);
+  if (typeof d.image_url === 'string') return d.image_url;
+  if (Array.isArray(d.images) && d.images[0]) return extractImageUrl(d.images[0]);
+  if (Array.isArray(d.data) && d.data[0]) return extractImageUrl(d.data[0]);
+  if (Array.isArray(d.output) && d.output[0]) return extractImageUrl(d.output[0]);
+  if (typeof d.output === 'string') return d.output;
+  return null;
 }
 
 async function generateOne(slug) {
@@ -699,6 +723,16 @@ async function generateAll() {
 function renderShotGrid() {
   const grid = document.getElementById('shotGrid');
   const cache = loadCache();
+  // Clean up any malformed cache entries (e.g. from an earlier bug where object got stored as URL)
+  let cacheDirty = false;
+  Object.keys(cache).forEach(k => {
+    const c = cache[k];
+    if (!c || typeof c.url !== 'string' || !/^https?:\/\//.test(c.url)) {
+      delete cache[k];
+      cacheDirty = true;
+    }
+  });
+  if (cacheDirty) saveCache(cache);
   grid.innerHTML = SHOTS.map(s => {
     const cached = cache[s.slug];
     const loaded = !!cached;
@@ -728,7 +762,7 @@ function applyCacheToDOM() {
   const cache = loadCache();
   SHOTS.forEach(s => {
     const c = cache[s.slug];
-    if (!c) return;
+    if (!c || typeof c.url !== 'string' || !/^https?:\/\//.test(c.url)) return;
     s.targetImg.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.src = c.url;
