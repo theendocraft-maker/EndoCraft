@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>EndoCraft — Flagship Spot · Legendary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital@0;1&family=Syne:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: #000; color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden; width: 100%; height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ═══════════ SETUP SCREEN ═══════════ */
+#setup {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  padding: 28px 24px; gap: 20px;
+  background: linear-gradient(180deg, #0c0a1a 0%, #060308 100%);
+  overflow-y: auto;
+}
+#setup.hidden { display: none; }
+.setup-header { text-align: center; padding: 10px 0 6px; }
+.setup-header h1 { font-family: 'Cinzel Decorative', serif; font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #E8B86D; margin-bottom: 6px; }
+.setup-header .sub { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,.4); text-transform: uppercase; }
+.setup-header .spot-title { font-family: 'EB Garamond', serif; font-size: 16px; font-style: italic; color: rgba(232,184,109,.65); margin-top: 10px; }
+.setup-concept { max-width: 580px; margin: 0 auto; padding: 16px 20px; background: rgba(232,184,109,.04); border: 1px solid rgba(232,184,109,.15); border-radius: 12px; font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.6; }
+.setup-concept strong { color: #E8B86D; font-weight: 600; }
+
+.shot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; max-width: 900px; margin: 0 auto; width: 100%; }
+.shot { background: rgba(255,255,255,.03); border: 1px solid rgba(232,184,109,.15); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; min-height: 250px; }
+.shot.loaded { border-color: rgba(76,175,125,.35); }
+.shot.gen { border-color: rgba(123,108,246,.5); animation: shotPulse 1.6s ease infinite; }
+.shot.error { border-color: rgba(224,74,58,.5); }
+@keyframes shotPulse { 0%,100% { border-color: rgba(123,108,246,.3); } 50% { border-color: rgba(123,108,246,.8); } }
+.shot-thumb { width: 100%; aspect-ratio: 9/16; border-radius: 8px; background: linear-gradient(135deg, #1a1428, #0a060f); overflow: hidden; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.25); position: relative; }
+.shot-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot-thumb .gen-spinner { width: 26px; height: 26px; border: 2px solid rgba(123,108,246,.25); border-top-color: #7B6CF6; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.shot-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: #E8B86D; text-transform: uppercase; }
+.shot-prompt { font-size: 10px; color: rgba(255,255,255,.45); line-height: 1.4; max-height: 36px; overflow: hidden; }
+.shot-btn { background: rgba(123,108,246,.15); border: 1px solid rgba(123,108,246,.4); color: #a392f8; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; border-radius: 6px; padding: 6px 10px; cursor: pointer; transition: all .2s; }
+.shot-btn:hover { background: rgba(123,108,246,.28); }
+.shot-btn:disabled { opacity: .5; cursor: not-allowed; }
+.shot-btn.primary { background: #7B6CF6; color: #fff; border-color: #7B6CF6; }
+.setup-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 20px 0 10px; }
+.big-btn { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; padding: 14px 28px; border-radius: 30px; border: 1px solid rgba(232,184,109,.5); background: rgba(232,184,109,.1); color: #E8B86D; cursor: pointer; text-transform: uppercase; transition: all .2s; }
+.big-btn:hover { background: rgba(232,184,109,.22); transform: translateY(-1px); }
+.big-btn.play { background: linear-gradient(135deg, #E8B86D, #d9a85a); color: #1a0f03; border-color: #E8B86D; font-weight: 700; box-shadow: 0 0 30px rgba(232,184,109,.4); }
+.big-btn.play:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
+.big-btn.ghost { background: transparent; border-color: rgba(255,255,255,.15); color: rgba(255,255,255,.5); }
+.setup-note { text-align: center; font-size: 11px; color: rgba(255,255,255,.4); max-width: 500px; margin: 0 auto; line-height: 1.6; }
+.setup-note kbd { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 4px; padding: 1px 6px; font-size: 10px; font-family: monospace; }
+#cost-meter { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,.35); text-align: center; }
+
+/* ═══════════ PLAYER ═══════════ */
+#player { position: fixed; inset: 0; z-index: 20; display: none; background: #000; overflow: hidden; }
+#player.visible { display: flex; align-items: center; justify-content: center; }
+/* Stage: fits viewport at 9:16 aspect. On mobile (≤9:16 screens) fills full width; on desktop clamps by viewport height. 100dvh avoids iOS Safari address-bar trap — with 100vh fallback for older iOS. */
+#stage {
+  position: relative;
+  width: min(100vw, calc(100vh * 9 / 16));
+  height: min(100vh, calc(100vw * 16 / 9));
+  width: min(100vw, calc(100dvh * 9 / 16));
+  height: min(100dvh, calc(100vw * 16 / 9));
+  max-width: 100vw;
+  max-height: 100dvh;
+  background: #000;
+  overflow: hidden;
+}
+
+/* Scenes */
+.scene { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s; }
+.scene.on { opacity: 1; visibility: visible; }
+.scene img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scene.photo::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 25%, transparent 60%, rgba(0,0,0,.6) 85%, rgba(0,0,0,.95) 100%); }
+.scene.photo.on img { animation: kenBurns 1.2s ease-out forwards; transform-origin: center 45%; }
+@keyframes kenBurns { from { transform: scale(1.0); } to { transform: scale(1.12); } }
+
+/* ── HOOK SCENE: D20 tumble ── */
+.hook-stage {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, #120820 0%, #000 80%);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+}
+.hook-particle { position: absolute; width: 2px; height: 2px; background: rgba(232,184,109,.8); border-radius: 50%; box-shadow: 0 0 4px rgba(232,184,109,.6); pointer-events: none; }
+
+.d20-wrap {
+  position: relative;
+  width: 240px; height: 240px;
+  opacity: 0;
+  filter: drop-shadow(0 0 30px rgba(232,184,109,.25)) drop-shadow(0 14px 24px rgba(0,0,0,.8));
+}
+.d20-wrap.tumble {
+  animation: d20Entry 1.3s cubic-bezier(.25,.7,.3,1) forwards, d20Breathe 5s ease-in-out 1.3s infinite;
+}
+/* Opening frame is directly BEAUTIFUL — no tiny-zoom-in. D20 starts near full-size with ambient
+   brightness lift + blur clear + subtle scale bump. Feels like revealing an object already in place,
+   not flying in from far away. After entry, a gentle breathe keeps it alive. */
+@keyframes d20Entry {
+  0%   { opacity: 0; transform: scale(.9);  filter: drop-shadow(0 0 15px rgba(232,184,109,.2)) blur(10px) brightness(.4); }
+  30%  { opacity: 1; transform: scale(.98); filter: drop-shadow(0 0 40px rgba(232,184,109,.5)) blur(2px) brightness(.85); }
+  70%  { opacity: 1; transform: scale(1.02);filter: drop-shadow(0 0 70px rgba(232,184,109,.75)) blur(0) brightness(1.05);}
+  100% { opacity: 1; transform: scale(1);   filter: drop-shadow(0 0 80px rgba(232,184,109,.8)) drop-shadow(0 14px 24px rgba(0,0,0,.8)) brightness(1); }
+}
+/* Subtle breathing so the opening frame isn't frozen — light pulses like candle flicker */
+@keyframes d20Breathe {
+  0%, 100% { filter: drop-shadow(0 0 80px rgba(232,184,109,.7)) drop-shadow(0 14px 24px rgba(0,0,0,.8)) brightness(1); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 95px rgba(232,184,109,.85)) drop-shadow(0 14px 24px rgba(0,0,0,.8)) brightness(1.04); transform: scale(1.008); }
+}
+
+/* CSS-only fallback — shown if the generated D20 image hasn't arrived yet. Stylish gold "20" behind the img. */
+.d20-wrap::before {
+  content: '20';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 130px; font-weight: 900;
+  color: rgba(232,184,109,.4);
+  text-shadow: 0 0 40px rgba(232,184,109,.35), 0 4px 16px rgba(0,0,0,.85);
+  pointer-events: none;
+  letter-spacing: -3px;
+}
+
+/* Photoreal D20 image — fills the wrap, object-contain so nothing crops, overlays the fallback */
+.d20-img {
+  position: relative;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,.75));
+}
+/* Hide broken/empty img icon on browsers that would otherwise show it */
+.d20-img:not([src]),
+.d20-img[src=""] { opacity: 0; }
+
+/* ═══════════════ OPENING HAMMER — Hero-Card-as-Hook ═══════════════
+   Replaces the old D20 opening. Uses the caspian-hero image as the opening visual.
+   Extra-dramatic reveal: gold burst explodes outward + card scales in with overshoot +
+   dual holo sweep + pulsing glow. Heavier FX than any later card reveal in the spot. */
+.opening-burst {
+  position: absolute; top: 50%; left: 50%;
+  width: 10px; height: 10px; border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, rgba(255,240,180,.75) 0%, rgba(232,184,109,.35) 40%, transparent 70%);
+  pointer-events: none; opacity: 0;
+}
+#sceneHook.on .opening-burst { animation: openingBurst 1.6s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes openingBurst {
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(0); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(50); }
+}
+
+.opening-card {
+  position: relative;
+  width: min(72%, 310px);
+  aspect-ratio: 3/4;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0a0610;
+  opacity: 0;
+  transform: scale(.45) rotate(-4deg);
+  box-shadow:
+    0 0 0 1.5px rgba(232,184,109,.55),
+    0 24px 60px rgba(0,0,0,.95),
+    0 0 100px rgba(232,184,109,.4);
+}
+#sceneHook.on .opening-card {
+  animation:
+    openingCardReveal 1.3s cubic-bezier(.15,1.35,.3,1.02) forwards,
+    openingCardPulse 2.8s ease-in-out 1.3s infinite;
+}
+@keyframes openingCardReveal {
+  0%   { opacity: 0; transform: scale(.45) rotate(-4deg); filter: blur(14px) brightness(.3); }
+  30%  { opacity: 1; filter: blur(6px) brightness(.7); }
+  55%  { transform: scale(1.08) rotate(1.5deg); filter: blur(0) brightness(1.1); }
+  70%  { transform: scale(.96) rotate(-.5deg); }
+  85%  { transform: scale(1.02) rotate(.3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0) brightness(1); }
+}
+@keyframes openingCardPulse {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.55), 0 24px 60px rgba(0,0,0,.95), 0 0 100px rgba(232,184,109,.35); }
+  50%      { box-shadow: 0 0 0 3px rgba(232,184,109,.95), 0 24px 60px rgba(0,0,0,.95), 0 0 200px rgba(232,184,109,.75); }
+}
+.opening-card-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+}
+/* Subtle vignette so edges feel richer */
+.opening-card-glow {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, transparent 55%, rgba(6,3,0,.55) 90%, rgba(4,2,0,.9) 100%);
+}
+/* Holo shimmer — dual-sweep (2 passes over ~2.4s for extra wow) */
+.opening-card-holo {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,245,210,.0) 45%, rgba(255,250,220,.7) 50%, rgba(255,245,210,.0) 55%, transparent 70%);
+  transform: translateX(-130%);
+  mix-blend-mode: screen;
+}
+#sceneHook.on .opening-card-holo { animation: openingHolo 2.4s cubic-bezier(.3,.55,.35,1) .6s 1; }
+@keyframes openingHolo {
+  0%   { transform: translateX(-130%); }
+  45%  { transform: translateX(130%); }
+  55%  { transform: translateX(-130%); }
+  100% { transform: translateX(130%); }
+}
+
+/* Landing impact — expanding gold ring shockwave centered on the die */
+.d20-impact {
+  position: absolute; top: 50%; left: 50%;
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 2px solid rgba(232,184,109,.9);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0; pointer-events: none;
+  box-shadow: 0 0 30px rgba(232,184,109,.5);
+}
+.d20-wrap.landed .d20-impact { animation: d20Impact .75s cubic-bezier(.15,.75,.3,1) .95s forwards; }
+@keyframes d20Impact {
+  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0; border-width: 4px; }
+  8%   { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(4);   opacity: 0; border-width: 1px; }
+}
+
+/* Hook text — layered pair: "one roll." and "one moment." that swap */
+.hook-text-wrap { position: absolute; bottom: 20%; left: 0; right: 0; text-align: center; }
+.hook-text {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(26px, 9vw, 38px); font-weight: 900;
+  color: #fff; letter-spacing: 2px;
+  text-shadow: 0 0 40px rgba(232,184,109,.4), 0 3px 14px rgba(0,0,0,.9);
+  opacity: 0; transition: opacity .35s ease;
+  position: absolute; inset: 0;
+  padding: 0 24px;
+}
+.hook-text.on { opacity: 1; }
+
+/* ── MONTAGE PHOTO SHOTS — one-word overlay ── */
+.montage-caption {
+  position: absolute; bottom: 18%;
+  left: 0; right: 0; text-align: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(28px, 9vw, 44px); font-weight: 900;
+  color: #E8B86D;
+  text-shadow: 0 0 30px rgba(232,184,109,.6), 0 4px 16px rgba(0,0,0,.98);
+  opacity: 0; transform: translateY(12px);
+  transition: opacity .35s ease, transform .5s cubic-bezier(.23,1.3,.32,1);
+  pointer-events: none;
+  letter-spacing: -.01em;
+  padding: 0 20px;
+}
+.montage-caption.on { opacity: 1; transform: translateY(0); }
+
+/* ── TAGLINE SCENE ── */
+.tagline-stage {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, #0e0820 0%, #000 75%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.tagline-text {
+  font-family: 'EB Garamond', serif; font-style: italic;
+  font-size: clamp(20px, 7vw, 30px); color: rgba(255,255,255,.95);
+  text-align: center; padding: 0 28px; line-height: 1.5;
+  text-shadow: 0 0 28px rgba(232,184,109,.35);
+  max-width: 92%;
+}
+.tagline-text em { color: #E8B86D; font-weight: 500; }
+/* Word-by-word reveal — each span fades in with slight upward push, staggered via data-delay */
+.tagline-text .tw {
+  display: inline-block;
+  opacity: 0; transform: translateY(14px);
+  filter: blur(6px);
+  transition: opacity .9s cubic-bezier(.2,.7,.25,1), transform 1s cubic-bezier(.23,1.3,.32,1), filter .9s ease;
+}
+.tagline-text.on .tw { opacity: 1; transform: translateY(0); filter: blur(0); }
+/* Staggered reveal — each line enters ~600ms after the previous (read-pace) */
+.tagline-text.on .tw:nth-of-type(1) { transition-delay: 0ms, 0ms, 0ms; }
+.tagline-text.on .tw:nth-of-type(2) { transition-delay: 650ms, 650ms, 650ms; }
+.tagline-text.on .tw:nth-of-type(3) { transition-delay: 1400ms, 1400ms, 1400ms; }
+
+/* Tagline scene — subtle camera-push-in effect on whole frame via scale of the stage backdrop.
+   Plus ambient floating particles that rise slowly through the dark void. */
+#sceneTagline.on .tagline-stage { animation: taglinePushIn 3.2s ease-out forwards; }
+@keyframes taglinePushIn {
+  from { transform: scale(1); }
+  to   { transform: scale(1.05); }
+}
+.tagline-particles {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.tagline-particles .tp {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: rgba(232,184,109,.7); box-shadow: 0 0 6px rgba(232,184,109,.5);
+  opacity: 0;
+}
+
+/* ── PACK REVEAL MINI-SEQUENCE ── */
+.pack-stage {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #120820 0%, #060210 60%, #000 100%);
+}
+.pack-hex {
+  position: relative; width: 220px; height: 255px;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 60px rgba(232,184,109,.3));
+  transition: transform .3s ease, filter .3s ease;
+  opacity: 0; transform: scale(.7);
+}
+.pack-hex.entering { animation: packEnter .45s cubic-bezier(.23,1.3,.32,1) forwards; }
+@keyframes packEnter { to { opacity: 1; transform: scale(1); } }
+.pack-hex svg { width: 100%; height: 100%; display: block; }
+.pack-logo-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel Decorative', serif; font-size: 40px; color: #E8B86D; filter: drop-shadow(0 0 12px rgba(232,184,109,.8)); animation: packSpin 3s linear infinite; }
+@keyframes packSpin { to { transform: rotate(360deg); } }
+/* Pack charge — aggressive ramping glow + micro-tremor via keyframe translate noise.
+   Shortened from 1.3s → 0.75s (+ .2s delay) so the tagline → LEGENDARY beat stays punchy. */
+.pack-hex.charging {
+  animation: packEnter .35s cubic-bezier(.23,1.3,.32,1) forwards, packCharge .75s ease-in .2s forwards;
+}
+@keyframes packCharge {
+  0%   { transform: scale(1)    translate(0,0);        filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 40px rgba(232,184,109,.3)) brightness(1); }
+  20%  { transform: scale(1.04) translate(-1.5px,1px);filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 70px rgba(232,184,109,.55)) brightness(1.2); }
+  35%  { transform: scale(1.07) translate(2px,-1px);  filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 100px rgba(232,184,109,.75)) brightness(1.45); }
+  50%  { transform: scale(1.11) translate(-2px,-1.5px);filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 130px rgba(255,230,160,.9)) brightness(1.75); }
+  65%  { transform: scale(1.15) translate(1.5px,2px); filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 170px rgba(255,240,180,1)) brightness(2.05); }
+  80%  { transform: scale(1.19) translate(-1px,-1px); filter: drop-shadow(0 0 200px rgba(255,240,180,1)) brightness(2.35); }
+  100% { transform: scale(1.25) translate(0,0);       filter: drop-shadow(0 0 240px rgba(255,255,200,1)) brightness(2.8); }
+}
+.pack-hex.explode { animation: packExplode .4s ease-out forwards; }
+@keyframes packExplode { to { transform: scale(3); opacity: 0; filter: drop-shadow(0 0 200px rgba(255,240,180,1)) brightness(3); } }
+
+.pack-flash { position: absolute; inset: 0; background: radial-gradient(circle at center, #fff 0%, rgba(255,240,180,.5) 35%, transparent 65%); opacity: 0; pointer-events: none; }
+.pack-flash.fire { animation: packFlash .6s ease-out forwards; }
+@keyframes packFlash { 0% { opacity: 0; } 6% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Pack shockwave — expanding gold ring(s) radiating outward on explosion */
+.pack-shockwave {
+  position: absolute; top: 50%; left: 50%;
+  width: 140px; height: 140px; border-radius: 50%;
+  border: 3px solid rgba(232,184,109,.9);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0; pointer-events: none;
+  box-shadow: 0 0 40px rgba(232,184,109,.5), inset 0 0 20px rgba(232,184,109,.4);
+}
+.pack-shockwave.fire { animation: packShockwaveRing 1.1s cubic-bezier(.1,.75,.3,1) forwards; }
+@keyframes packShockwaveRing {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 5px; }
+  40% { opacity: .8; }
+  100% { transform: translate(-50%, -50%) scale(6); opacity: 0; border-width: 1px; }
+}
+/* Second inner ring — starts later, different easing for layered feel */
+.pack-shockwave.inner { border-color: rgba(255,240,180,.7); width: 80px; height: 80px; }
+.pack-shockwave.inner.fire { animation: packShockwaveRingInner .85s ease-out .12s forwards; }
+@keyframes packShockwaveRingInner {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 4px; }
+  100% { transform: translate(-50%, -50%) scale(9); opacity: 0; border-width: 1px; }
+}
+
+.rarity-reveal { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; pointer-events: none; }
+.rarity-reveal.show { opacity: 1; transition: opacity .35s ease; }
+.rr-top { font-family: 'Cinzel', serif; font-size: clamp(9px, 2.6vw, 11px); letter-spacing: clamp(6px, 2.4vw, 10px); color: rgba(232,184,109,.65); text-transform: uppercase; transform: translateY(16px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); padding: 0 16px; text-align: center; }
+.rr-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(32px, 11vw, 54px); font-weight: 900; color: #F2D187; letter-spacing: clamp(2px, 1.2vw, 6px); text-shadow: 0 0 40px rgba(232,184,109,.8), 0 0 90px rgba(232,184,109,.5); transform: translateY(20px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); padding: 0 16px; text-align: center; }
+.rarity-reveal.show .rr-top { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+.rarity-reveal.show .rr-title { opacity: 1; transform: translateY(0); transition-delay: 150ms; }
+
+/* ── HERO CARD PAYOFF ── */
+.hero-card-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at center, #1a1028 0%, #080410 70%, #000 100%); }
+.hero-card { position: relative; width: 72%; max-width: 320px; aspect-ratio: 3/4; border-radius: 18px; overflow: hidden; box-shadow: 0 0 0 1.5px rgba(232,184,109,.5), 0 20px 60px rgba(0,0,0,.95), 0 0 80px rgba(232,184,109,.3); background: #0a0610; transform: scale(.8); opacity: 0; }
+/* Entry choreography: card lands with scale overshoot + micro-shake settle + pulsing glow. More gravitas than pure fade. */
+.hero-card.enter { animation: heroEnter 1.0s cubic-bezier(.18,1.25,.28,1.02) forwards, heroPulse 2.4s ease-in-out infinite 1s; }
+@keyframes heroEnter {
+  0%   { transform: scale(.65) rotate(-3deg); opacity: 0; filter: blur(8px); }
+  45%  { opacity: 1; filter: blur(0); }
+  60%  { transform: scale(1.05) rotate(1deg); }
+  72%  { transform: scale(.98) rotate(-.5deg); }
+  84%  { transform: scale(1.01) rotate(.2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; filter: blur(0); }
+}
+@keyframes heroPulse {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgba(232,184,109,.55), 0 20px 60px rgba(0,0,0,.95), 0 0 80px rgba(232,184,109,.3); }
+  50%      { box-shadow: 0 0 0 2.5px rgba(232,184,109,.9), 0 20px 60px rgba(0,0,0,.95), 0 0 160px rgba(232,184,109,.65); }
+}
+
+/* HOLO-SWEEP — diagonal light band that sweeps across the card on reveal. Reads as "foil shine"
+   like on premium trading cards. Fires once via .swept class, ~1.2s duration. */
+.hero-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,240,180,.0) 45%, rgba(255,245,210,.55) 50%, rgba(255,240,180,.0) 55%, transparent 70%);
+  transform: translateX(-120%);
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.hero-card.swept::before { animation: heroHoloSweep 1.4s cubic-bezier(.3,.6,.3,1) forwards; }
+@keyframes heroHoloSweep {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+.hero-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+.hero-card-ov { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(6,3,0,.45) 0%, transparent 25%, transparent 55%, rgba(6,3,0,.75) 78%, rgba(4,2,0,.98) 100%); }
+.hero-card-top { position: absolute; top: 0; left: 0; right: 0; z-index: 5; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+.hero-card-brand { font-family: 'Cinzel', serif; font-size: 7px; font-weight: 700; letter-spacing: 3px; color: rgba(232,184,109,.85); text-shadow: 0 1px 6px #000; }
+.hero-card-pill { background: rgba(10,5,0,.9); border: 1px solid rgba(232,184,109,.4); color: #E8B86D; border-radius: 30px; padding: 4px 10px; font-family: 'Cinzel', serif; font-size: 7px; font-weight: 700; letter-spacing: 2px; backdrop-filter: blur(12px); }
+.hero-card-bottom { position: absolute; bottom: 0; left: 0; right: 0; z-index: 5; padding: 16px; }
+.hero-card-class { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 3px; color: rgba(232,184,109,.85); margin-bottom: 4px; text-shadow: 0 1px 8px #000; }
+.hero-card-name { font-family: 'Cinzel Decorative', serif; font-size: 26px; font-weight: 900; color: #fffbf0; line-height: 1; margin-bottom: 5px; text-shadow: 0 2px 16px #000; }
+.hero-card-title { font-family: 'EB Garamond', serif; font-size: 11px; font-style: italic; color: rgba(255,230,160,.6); margin-bottom: 8px; text-shadow: 0 1px 6px #000; }
+.hero-card-serial { font-family: 'Cinzel', serif; font-size: 6px; letter-spacing: 2.5px; color: rgba(232,184,109,.5); }
+.hero-card-holo { position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: 18px; mix-blend-mode: color-dodge; background: linear-gradient(135deg, rgba(255,0,80,.05) 0%, rgba(255,160,0,.08) 25%, rgba(0,255,120,.08) 50%, rgba(0,200,255,.08) 75%, rgba(255,0,80,.05) 100%); background-size: 200% 200%; animation: lholo 4s ease infinite; opacity: .5; }
+@keyframes lholo { 0% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } 100% { background-position: 0% 0%; } }
+
+/* ── FINAL CTA ── */
+.cta-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 0 14px; background: radial-gradient(ellipse at center, #0c0818 0%, #000 80%); }
+/* URL — solid gold + brightness-pulse on reveal. Previous gradient-clip-text caused overflow/clipping
+   issues on iOS Safari. This version is reliable, readable, and still has the "shine" via filter pulse. */
+.cta-url {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: clamp(20px, 6.5vw, 38px);
+  letter-spacing: 0;
+  color: #E8B86D;
+  text-shadow:
+    0 0 24px rgba(232,184,109,.7),
+    0 0 60px rgba(232,184,109,.35),
+    0 2px 10px rgba(0,0,0,.85);
+  max-width: 95%;
+  white-space: nowrap;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .7s ease, transform .8s cubic-bezier(.23,1.3,.32,1);
+}
+.cta-url.on {
+  opacity: 1; transform: translateY(0);
+  animation: ctaGoldPulse 2.4s ease-out .3s 1;
+}
+/* Gold-pulse: brightness + glow-intensity sweeps up then settles. Reads as "gold shine" without needing
+   background-clip tricks that break on some browsers. */
+@keyframes ctaGoldPulse {
+  0%   { filter: brightness(1) drop-shadow(0 0 8px rgba(232,184,109,.5)); }
+  35%  { filter: brightness(1.35) drop-shadow(0 0 28px rgba(255,230,160,.95)); }
+  100% { filter: brightness(1) drop-shadow(0 0 12px rgba(232,184,109,.55)); }
+}
+.cta-sub { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(15px, 4.4vw, 22px); color: rgba(255,245,220,.85); max-width: 90%; line-height: 1.3; opacity: 0; transform: translateY(8px); transition: opacity .5s ease .2s, transform .6s cubic-bezier(.23,1.3,.32,1) .2s; padding: 0 8px; }
+.cta-sub.on { opacity: 1; transform: translateY(0); }
+.cta-brand { position: absolute; bottom: 6%; left: 0; right: 0; text-align: center; font-family: 'Cinzel', serif; font-size: clamp(8px, 2.2vw, 10px); letter-spacing: clamp(2px, 1vw, 5px); color: rgba(232,184,109,.4); text-transform: uppercase; opacity: 0; transition: opacity .5s ease .6s; padding: 0 16px; }
+.cta-brand.on { opacity: 1; }
+
+/* ── BRAND WATERMARK — persistent through all scenes, top-left corner ── */
+.brand-watermark {
+  position: absolute; top: 14px; left: 14px; z-index: 30;
+  pointer-events: none;
+  opacity: .6;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.8));
+}
+.brand-watermark img {
+  width: 22px; height: 22px; object-fit: contain;
+  filter: drop-shadow(0 0 5px rgba(232,184,109,.45));
+  display: block;
+}
+
+/* ── HUD ── */
+.player-hud { position: absolute; top: 12px; right: 12px; z-index: 50; display: flex; gap: 8px; align-items: center; }
+.hud-btn { background: rgba(0,0,0,.6); color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: 6px 14px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; cursor: pointer; backdrop-filter: blur(10px); text-transform: uppercase; }
+.hud-btn:hover { background: rgba(0,0,0,.85); color: #fff; }
+.player-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,.08); z-index: 40; }
+.player-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #E8B86D, #F2D187); transition: width .1s linear; }
+body.recording .player-hud, body.recording .player-progress { display: none; }
+
+/* Sparks */
+.spark { position: absolute; border-radius: 50%; pointer-events: none; will-change: transform, opacity; }
+
+/* Scene transition flash — brief white kiss between rapid cuts for cinematic feel */
+#sceneFlash {
+  position: absolute; inset: 0; z-index: 200;
+  background: rgba(255,250,220,0);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+#sceneFlash.fire { animation: sceneFlashFire .32s ease-out; }
+@keyframes sceneFlashFire {
+  0% { background: rgba(255,250,220,0); }
+  18% { background: rgba(255,250,220,.6); }
+  100% { background: rgba(255,250,220,0); }
+}
+
+/* Subtle film grain overlay — gives the whole spot a cinematic texture rather than sterile HTML */
+.film-grain {
+  position: absolute; inset: 0; z-index: 180; pointer-events: none;
+  opacity: .08; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.8 0 0 0 0 0.6 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  animation: grainShift 1s steps(6) infinite;
+}
+@keyframes grainShift {
+  0%   { transform: translate(0,0); }
+  17%  { transform: translate(-8%,5%); }
+  33%  { transform: translate(6%,-8%); }
+  50%  { transform: translate(-5%,-4%); }
+  67%  { transform: translate(8%,3%); }
+  83%  { transform: translate(-3%,8%); }
+  100% { transform: translate(0,0); }
+}
+
+/* Vignette — subtle edge darkening for cinematic depth */
+.vignette {
+  position: absolute; inset: 0; z-index: 170; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35) 100%);
+}
+
+/* Small-viewport tweaks — ONLY non-conflicting overrides. Text sizes use the clamp() rules
+   defined on each element (responsive by design), so we don't override them here anymore. */
+@media (max-height: 700px) {
+  .hero-card { width: 64%; }
+  .opening-card { width: min(62%, 280px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SETUP ═══════════ -->
+<div id="setup">
+  <div class="setup-header">
+    <div class="sub">✦ Flagship TikTok Spot ✦</div>
+    <h1>Legendary.</h1>
+    <div class="spot-title">15s · 9:16 · auto-loop</div>
+  </div>
+
+  <div class="setup-concept">
+    <strong>Concept:</strong> The D20 is the universal D&D hook. A montage builds a single sentence — "Every campaign has legendary moments." — which the tagline completes. The product payoff (pack reveal + sealed Caspian card) is the emotional punch. CTA is clean and final.
+    <br><br>
+    <strong>Marketing logic:</strong> 50% of runtime is product. Hook lands in &lt;2s. Copy flows as one cohesive sentence through the montage. No niche references — works for every D&D viewer, not just Witchlight players.
+  </div>
+
+  <div class="shot-grid" id="shotGrid"></div>
+
+  <div id="cost-meter">Est. cost: €<span id="costTotal">0.16</span> for first full gen · €0.04 per re-roll</div>
+
+  <div class="setup-actions">
+    <button class="big-btn ghost" onclick="clearCache()">↻ Clear cache</button>
+    <button class="big-btn" id="genAllBtn" onclick="generateAll()">⚡ Generate all missing</button>
+    <button class="big-btn play" id="playBtn" onclick="startPlayback()" disabled>▶ Play spot</button>
+  </div>
+
+  <div class="setup-note">
+    <kbd>F</kbd> fullscreen · <kbd>R</kbd> hide HUD · <kbd>ESC</kbd> exit.
+    <br><br>
+    <span style="color:rgba(232,184,109,.5)">Mobile workflow: deploy → open in Safari → Add to Home Screen → open from home → screen-record from Control Center. No HUD appears in that path.</span>
+  </div>
+</div>
+
+<!-- ═══════════ PLAYER ═══════════ -->
+<div id="player">
+  <div id="stage">
+
+    <!-- SCENE 1: HOOK (D20) -->
+    <div class="scene" id="sceneHook">
+      <div class="hook-stage">
+        <div id="hookParticles"></div>
+        <!-- OPENING HAMMER — the hero card itself IS the hook. No D20. Most dramatic visual the spot has,
+             delivered in frame 1 — max stopping power for the TikTok scroll. Uses same caspian-hero image
+             as the later payoff scene, so it's one generation cost but double narrative impact. -->
+        <div class="opening-burst" id="openingBurst"></div>
+        <div class="opening-card" id="openingCard">
+          <img class="opening-card-img" id="openingCardImg" alt="">
+          <div class="opening-card-glow"></div>
+          <div class="opening-card-holo"></div>
+        </div>
+        <div class="hook-text-wrap">
+          <div class="hook-text" id="hookText1">one roll.</div>
+          <div class="hook-text" id="hookText2">one moment.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 2-4: MONTAGE PHOTO BEATS -->
+    <div class="scene photo" id="sceneEpic">
+      <img id="imgEpic" alt="">
+      <div class="montage-caption" id="capEpic">Every campaign</div>
+    </div>
+    <div class="scene photo" id="sceneKiss">
+      <img id="imgKiss" alt="">
+      <div class="montage-caption" id="capKiss">has legendary</div>
+    </div>
+    <div class="scene photo" id="sceneParty">
+      <img id="imgParty" alt="">
+      <div class="montage-caption" id="capParty">moments.</div>
+    </div>
+
+    <!-- SCENE 5: TAGLINE -->
+    <div class="scene" id="sceneTagline">
+      <div class="tagline-stage">
+        <div class="tagline-text" id="taglineText">
+          <span class="tw" data-delay="0">Some moments</span><br>
+          <span class="tw" data-delay="600">are too <em>legendary</em></span><br>
+          <span class="tw" data-delay="1300">to forget.</span>
+        </div>
+        <div class="tagline-particles" id="taglineParticles"></div>
+      </div>
+    </div>
+
+    <!-- SCENE 6: PACK REVEAL -->
+    <div class="scene" id="scenePack">
+      <div class="pack-stage">
+        <div class="pack-hex" id="packHex">
+          <svg viewBox="0 0 200 240">
+            <defs>
+              <linearGradient id="packGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#1a1028"/>
+                <stop offset="50%" style="stop-color:#080410"/>
+                <stop offset="100%" style="stop-color:#0c0618"/>
+              </linearGradient>
+            </defs>
+            <polygon points="100,8 190,60 190,180 100,232 10,180 10,60" fill="url(#packGrad)" stroke="rgba(232,184,109,0.6)" stroke-width="1.5"/>
+            <polygon points="100,28 172,72 172,168 100,212 28,168 28,72" fill="none" stroke="rgba(232,184,109,0.2)" stroke-width="1"/>
+          </svg>
+          <div class="pack-logo-wrap">✦</div>
+        </div>
+        <div class="pack-flash" id="packFlash"></div>
+        <div class="pack-shockwave" id="packShockwaveOuter"></div>
+        <div class="pack-shockwave inner" id="packShockwaveInner"></div>
+        <div class="rarity-reveal" id="rarityReveal">
+          <div class="rr-top">Session Scroll</div>
+          <div class="rr-title">✦ LEGENDARY ✦</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 7: HERO CARD PAYOFF -->
+    <div class="scene" id="sceneHero">
+      <div class="hero-card-wrap">
+        <div class="hero-card" id="heroCard">
+          <img id="heroCardImg" alt="">
+          <div class="hero-card-ov"></div>
+          <div class="hero-card-holo"></div>
+          <div class="hero-card-top">
+            <div class="hero-card-brand">✦ EndoCraft · Session 14</div>
+            <div class="hero-card-pill">✦ Legendary</div>
+          </div>
+          <div class="hero-card-bottom">
+            <div class="hero-card-class">Harengon Bard · Lv VI</div>
+            <div class="hero-card-name">Caspian</div>
+            <div class="hero-card-title">The Unwanted Kiss</div>
+            <div class="hero-card-serial">Caspian #0042 / 9999</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 8: CTA -->
+    <div class="scene" id="sceneCta">
+      <div class="cta-stage">
+        <div class="cta-url" id="ctaUrl">endocraft.app</div>
+        <div class="cta-sub" id="ctaSub">Your session. Your card. <em>Forever.</em></div>
+        <div class="cta-brand" id="ctaBrand">✦ Roll. Reveal. Remember.</div>
+      </div>
+    </div>
+
+    <!-- CINEMATIC OVERLAYS — always on top, below only the watermark + HUD -->
+    <div class="vignette"></div>
+    <div class="film-grain"></div>
+    <div id="sceneFlash"></div>
+
+    <!-- PERSISTENT BRAND WATERMARK (top-left, icon-only, subtle) -->
+    <div class="brand-watermark">
+      <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft">
+    </div>
+
+    <!-- HUD -->
+    <div class="player-hud">
+      <button class="hud-btn" onclick="toggleRecording()" id="recBtn">Clean</button>
+      <button class="hud-btn" onclick="stopPlayback()">✕ Exit</button>
+    </div>
+    <div class="player-progress"><div class="player-progress-bar" id="progressBar"></div></div>
+
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const STORAGE_KEY = 'ec_tiktok_flagship_images_v1';
+const STORAGE_AGE_WARN_HOURS = 6;
+
+// Text overrides (edit in /admin)
+const OVERRIDES = (() => {
+  try { return JSON.parse(localStorage.getItem('ec_tiktok_overrides_flagship') || '{}'); }
+  catch(e) { return {}; }
+})();
+function ov(key, def) { return (OVERRIDES[key] !== undefined && OVERRIDES[key] !== null) ? OVERRIDES[key] : def; }
+
+function applyStaticOverrides() {
+  const map = {
+    '#hookText1':                          'hookText1',
+    '#hookText2':                          'hookText2',
+    '#capEpic':                            'capEpic',
+    '#capKiss':                            'capKiss',
+    '#capParty':                           'capParty',
+    '#taglineText':                        'taglineText',
+    '#rarityReveal .rr-top':               'rarityTop',
+    '#rarityReveal .rr-title':             'rarityTitle',
+    '.hero-card-top .hero-card-brand':     'cardBrand',
+    '.hero-card-top .hero-card-pill':      'cardRarityPill',
+    '.hero-card-bottom .hero-card-class':  'cardClass',
+    '.hero-card-bottom .hero-card-name':   'cardName',
+    '.hero-card-bottom .hero-card-title':  'cardTitle',
+    '.hero-card-bottom .hero-card-serial': 'cardSerial',
+    '#ctaUrl':                             'ctaUrl',
+    '#ctaSub':                             'ctaSub',
+    '#ctaBrand':                           'ctaBrand'
+  };
+  for (const sel in map) {
+    const key = map[sel];
+    if (OVERRIDES[key] !== undefined) {
+      document.querySelectorAll(sel).forEach(el => { el.innerHTML = OVERRIDES[key]; });
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SHOT PROMPTS — only 4 unique images needed
+// ═══════════════════════════════════════════════
+const SHOTS = [
+  // NOTE: d20-hero shot removed — the Opening Hammer now uses caspian-hero as the opening visual.
+  // One less image to generate. If you ever want to re-enable a D20 opening, restore the shot here
+  // and swap the #openingCard markup back to the .d20-wrap version.
+  {
+    slug: 'caspian-hero',
+    name: 'Caspian Hero Card',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot framed from head to waist, face positioned in upper third of frame, centered composition, generous empty space below, darker vignette on bottom, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
+    targetImg: ['heroCardImg', 'openingCardImg']
+  },
+  {
+    slug: 'caspian-epic',
+    name: 'Caspian Epic',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard walking with determined purpose through mystical foggy forest at dusk, warm brown fur, large expressive brown eyes bright with resolve, tattered elegant forest green coat with gold trim flowing behind him as if in wind, glowing purple magical lights in the atmospheric misty background, ancient standing stones barely visible, cinematic fantasy, heroic epic atmosphere, photorealistic, dramatic god-ray lighting, low angle shot looking up, golden hour color grading, 8K, sharp focus, shallow depth of field, no text, no watermark, no instruments, no lute`,
+    targetImg: ['imgEpic']
+  },
+  {
+    slug: 'the-kiss',
+    name: 'The Kiss',
+    width: 1440, height: 2560,
+    prompt: `Anthropomorphic rabbit bard with warm brown fur and large expressive eyes wide in shocked horror, tattered elegant forest green coat with gold trim, ancient hag leaning in close with sinister warm smile, grey matted hair, glowing amber eyes, dramatic emotional moment, dim tavern interior with warm candlelight, cinematic fantasy, photorealistic, extreme emotional intensity, shallow depth of field, 8K, sharp focus, no text, no watermark, no instruments, no lute`,
+    targetImg: ['imgKiss']
+  },
+  {
+    slug: 'party-reaction',
+    name: 'Party Reaction',
+    width: 1440, height: 2560,
+    prompt: `Group of four fantasy adventurers laughing heartily and pointing, warm firelit tavern interior, diverse characters including a human fighter, an elf wizard, a dwarf cleric and a halfling rogue, warm candlelight, wooden beams, cinematic fantasy, photorealistic, candid joyful moment, shallow depth of field, 8K, sharp focus, no text, no watermark`,
+    targetImg: ['imgParty']
+  }
+];
+
+// ═══════════════════════════════════════════════
+// CACHE
+// ═══════════════════════════════════════════════
+function loadCache() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; } }
+function saveCache(c) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch(e) {} }
+function clearCache() {
+  if (!confirm('Delete all cached images? You\'ll need to regenerate them.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderShotGrid();
+}
+
+// ═══════════════════════════════════════════════
+// IMAGE GENERATION
+// ═══════════════════════════════════════════════
+function extractImageUrl(d) {
+  if (!d) return null;
+  if (typeof d === 'string' && /^https?:\/\//.test(d)) return d;
+  if (typeof d.url === 'string') return d.url;
+  if (d.url && typeof d.url === 'object') return extractImageUrl(d.url);
+  if (typeof d.image_url === 'string') return d.image_url;
+  if (Array.isArray(d.images) && d.images[0]) return extractImageUrl(d.images[0]);
+  if (Array.isArray(d.data) && d.data[0]) return extractImageUrl(d.data[0]);
+  if (Array.isArray(d.output) && d.output[0]) return extractImageUrl(d.output[0]);
+  if (typeof d.output === 'string') return d.output;
+  return null;
+}
+
+async function generateShot(shot) {
+  const body = { prompt: shot.prompt, model: 'bytedance/seedream-4-5', width: shot.width, height: shot.height };
+  console.log(`[gen:${shot.slug}] → sending`, body);
+  const resp = await fetch(`${API_BASE}/api/image`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await resp.json();
+  console.log(`[gen:${shot.slug}] ← raw response:`, data);
+  const url = extractImageUrl(data);
+  if (!url || typeof url !== 'string') {
+    // Surface the full error shape — cut off at 400 chars so UI doesn't blow up
+    const errStr = data?.error
+      ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error))
+      : (data?.raw ? ('raw: ' + JSON.stringify(data.raw)) : 'no image URL (check console)');
+    throw new Error(errStr.slice(0, 400));
+  }
+  return url;
+}
+
+async function generateOne(slug) {
+  const shot = SHOTS.find(s => s.slug === slug);
+  if (!shot) return;
+  const card = document.querySelector(`.shot[data-slug="${slug}"]`);
+  if (!card) return;
+  card.classList.remove('loaded','error'); card.classList.add('gen');
+  const thumb = card.querySelector('.shot-thumb');
+  thumb.innerHTML = '<div class="gen-spinner"></div>';
+  try {
+    const url = await generateShot(shot);
+    const cache = loadCache();
+    cache[slug] = { url, ts: Date.now() };
+    saveCache(cache);
+    card.classList.remove('gen'); card.classList.add('loaded');
+    thumb.innerHTML = `<img src="${url}" onerror="this.parentNode.innerHTML='URL expired — regenerate'">`;
+    applyCacheToDOM();
+    updatePlayButtonState();
+  } catch (err) {
+    card.classList.remove('gen'); card.classList.add('error');
+    const safeMsg = String(err.message || 'Error').replace(/[<>]/g, '');
+    thumb.innerHTML = `<div style="color:#E04A3A;padding:8px;font-size:9px;line-height:1.4;overflow:auto;max-height:100%;text-align:left;font-family:monospace;">${safeMsg}</div>`;
+    console.error(err);
+  }
+}
+
+async function generateAll() {
+  const cache = loadCache();
+  const missing = SHOTS.filter(s => !cache[s.slug]);
+  if (missing.length === 0) { alert('All images already cached.'); return; }
+  document.getElementById('genAllBtn').disabled = true;
+  const CONCURRENCY = 3;
+  for (let i = 0; i < missing.length; i += CONCURRENCY) {
+    await Promise.all(missing.slice(i, i + CONCURRENCY).map(s => generateOne(s.slug)));
+  }
+  document.getElementById('genAllBtn').disabled = false;
+}
+
+// ═══════════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════════
+function renderShotGrid() {
+  const grid = document.getElementById('shotGrid');
+  const cache = loadCache();
+  let dirty = false;
+  Object.keys(cache).forEach(k => {
+    const c = cache[k];
+    if (!c || typeof c.url !== 'string' || !/^https?:\/\//.test(c.url)) { delete cache[k]; dirty = true; }
+  });
+  if (dirty) saveCache(cache);
+  grid.innerHTML = SHOTS.map(s => {
+    const cached = cache[s.slug];
+    const loaded = !!cached;
+    const ageHours = cached ? (Date.now() - cached.ts) / 3600000 : null;
+    const stale = ageHours !== null && ageHours > STORAGE_AGE_WARN_HOURS;
+    return `
+      <div class="shot ${loaded ? 'loaded' : ''}" data-slug="${s.slug}">
+        <div class="shot-thumb">${loaded ? `<img src="${cached.url}" onerror="this.parentNode.innerHTML='URL expired — regenerate'">` : s.name.toUpperCase()}</div>
+        <div class="shot-name">${s.name} ${stale ? '<span style="color:#E04A3A;">⚠ stale</span>' : ''}</div>
+        <div class="shot-prompt">${s.prompt.slice(0, 90)}…</div>
+        <div style="display:flex;gap:6px;">
+          <button class="shot-btn ${loaded ? '' : 'primary'}" onclick="generateOne('${s.slug}')">${loaded ? 'Re-roll' : 'Generate'}</button>
+          ${loaded ? `<button class="shot-btn" onclick="downloadOne('${s.slug}')">↓</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+  applyCacheToDOM();
+  updatePlayButtonState();
+}
+
+function applyCacheToDOM() {
+  const cache = loadCache();
+  SHOTS.forEach(s => {
+    const c = cache[s.slug];
+    if (!c || typeof c.url !== 'string' || !/^https?:\/\//.test(c.url)) return;
+    s.targetImg.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.src = c.url;
+    });
+  });
+}
+
+function updatePlayButtonState() {
+  const cache = loadCache();
+  const ready = SHOTS.every(s => cache[s.slug]);
+  document.getElementById('playBtn').disabled = !ready;
+}
+
+async function downloadOne(slug) {
+  const cache = loadCache();
+  const c = cache[slug];
+  if (!c) return;
+  try {
+    const resp = await fetch(c.url);
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${slug}.png`; a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) { window.open(c.url, '_blank'); }
+}
+
+// ═══════════════════════════════════════════════
+// TIMELINE — 15s flagship spot
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+// TIMELINE — edit here to reshape the spot. All timings in ms from playback start.
+// Scene transitions are automatic crossfades (.35s). Text overlays extend per-act
+// to give viewers enough read-time without rushing.
+//
+// To reuse this file as template for a new spot: clone this whole folder, then:
+//   1. Replace SHOTS prompts + reroll images
+//   2. Edit OVERRIDES (or use /admin/ TikTok panel) for all visible text
+//   3. Adjust timings below to match your narrative pace
+//   4. Change STORAGE_KEY + overrides-key names to prevent cache collision
+// ═══════════════════════════════════════════════════════════════════════════
+function buildTimeline() {
+  return [
+    // ─── ACT 1: OPENING HAMMER (0–3.2s) — Hero-Card explodes into frame ───
+    // No D20. The card itself IS the hook. Gold burst + scale-overshoot + holo-sweep in frame 1.
+    { at: 0,     do: () => { show('sceneHook'); spawnHookParticles(); } },
+    { at: 700,   do: () => { document.getElementById('hookText1').classList.add('on'); } },
+    { at: 2000,  do: () => { document.getElementById('hookText1').classList.remove('on'); document.getElementById('hookText2').classList.add('on'); } },
+
+    // ─── ACT 2: MONTAGE (3.2–6.6s) — 3 photo beats ~1.1s visibility each (was .65s) ───
+    { at: 3200,  do: () => { fireSceneFlash(); show('sceneEpic'); } },
+    { at: 3350,  do: () => showCaption('capEpic') },
+    { at: 4300,  do: () => { fireSceneFlash(); show('sceneKiss'); hideCaption('capEpic'); } },
+    { at: 4450,  do: () => showCaption('capKiss') },
+    { at: 5400,  do: () => { fireSceneFlash(); show('sceneParty'); hideCaption('capKiss'); } },
+    { at: 5550,  do: () => showCaption('capParty') },
+
+    // ─── ACT 3: TAGLINE (6.6–10.5s) — word-by-word reveal + particles + push-in. Full read ~2s. ───
+    { at: 6600,  do: () => { show('sceneTagline'); hideCaption('capParty'); spawnTaglineParticles(); } },
+    { at: 6900,  do: () => document.getElementById('taglineText').classList.add('on') },
+    { at: 10300, do: () => document.getElementById('taglineText').classList.remove('on') },
+
+    // ─── ACT 4: PACK REVEAL (10.4–11.9s) — compressed: snappier charge → fast burst → LEGENDARY ───
+    // Tightened from ~2.5s to ~1.5s so the beat between tagline and rarity reveal doesn't drag.
+    { at: 10400, do: () => { show('scenePack'); resetPackState(); enterPack(); } },
+    { at: 10600, do: () => { chargePack(); spawnPackEmbers(); } },
+    { at: 11200, do: () => explodePack() },
+    { at: 11400, do: () => showRarity() },
+    { at: 12300, do: () => hideRarity() },
+
+    // ─── ACT 5: HERO CARD PAYOFF (12.5–14.8s) — flash + holo-sweep over card ───
+    { at: 12500, do: () => { fireSceneFlash(); show('sceneHero'); restartAnim('heroCard', 'enter'); } },
+    { at: 13100, do: () => { const c = document.getElementById('heroCard'); if (c) { c.classList.remove('swept'); void c.offsetWidth; c.classList.add('swept'); } } },
+
+    // ─── ACT 6: CTA (14.8–17s) — URL with gold-pulse, subtitle, brand line ───
+    { at: 14800, do: () => { show('sceneCta'); } },
+    { at: 15000, do: () => document.getElementById('ctaUrl').classList.add('on') },
+    { at: 15400, do: () => document.getElementById('ctaSub').classList.add('on') },
+    { at: 15800, do: () => document.getElementById('ctaBrand').classList.add('on') },
+
+    // Loop at 17s — ~2s shorter than before (more snap in pack reveal phase)
+    { at: 17000, do: () => restart() }
+  ];
+}
+
+let rafId = null, timelineStart = 0, firedFlags = [], timeline = [];
+
+function startPlayback() {
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } catch(e) {}
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('player').classList.add('visible');
+  timeline = buildTimeline();
+  firedFlags = timeline.map(() => false);
+  timelineStart = performance.now();
+  hideAllScenes();
+  resetAllTexts();
+  tick();
+}
+
+function stopPlayback() {
+  cancelAnimationFrame(rafId); rafId = null;
+  document.getElementById('player').classList.remove('visible');
+  document.getElementById('setup').classList.remove('hidden');
+  document.body.classList.remove('recording');
+  try {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } catch(e) {}
+}
+
+function restart() {
+  timelineStart = performance.now();
+  firedFlags = timeline.map(() => false);
+  hideAllScenes();
+  resetAllTexts();
+  resetPackState();
+}
+
+function tick() {
+  const now = performance.now();
+  const t = now - timelineStart;
+  timeline.forEach((entry, i) => {
+    if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
+  });
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 17000) * 100) + '%';
+  rafId = requestAnimationFrame(tick);
+}
+
+// Scene helpers
+function hideAllScenes() { document.querySelectorAll('.scene').forEach(el => el.classList.remove('on')); }
+function show(id) {
+  hideAllScenes();
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Force reflow between class removal (via hideAllScenes) and re-add, so CSS animations
+  // inside this scene restart cleanly on loop iterations.
+  void el.offsetWidth;
+  el.classList.add('on');
+}
+
+// Fire a brief cinematic white-gold flash overlay — use on rapid cuts
+function fireSceneFlash() {
+  const f = document.getElementById('sceneFlash');
+  if (!f) return;
+  f.classList.remove('fire');
+  void f.offsetWidth;
+  f.classList.add('fire');
+}
+function restartAnim(elId, cls) {
+  const el = document.getElementById(elId); if (!el) return;
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+}
+
+function resetAllTexts() {
+  ['hookText1','hookText2','capEpic','capKiss','capParty','taglineText','ctaUrl','ctaSub','ctaBrand'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.classList.remove('on');
+  });
+  const hero = document.getElementById('heroCard'); if (hero) hero.classList.remove('enter','swept');
+  const hp = document.getElementById('hookParticles'); if (hp) hp.innerHTML = '';
+  const tp = document.getElementById('taglineParticles'); if (tp) tp.innerHTML = '';
+  // Drop leftover pack embers / sparks between loops
+  document.querySelectorAll('.pack-stage .spark').forEach(s => s.remove());
+}
+
+function showCaption(id) { const el = document.getElementById(id); if (el) el.classList.add('on'); }
+function hideCaption(id) { const el = document.getElementById(id); if (el) el.classList.remove('on'); }
+
+function triggerD20() {
+  const wrap = document.getElementById('d20wrap');
+  wrap.classList.remove('tumble','landed');
+  void wrap.offsetWidth;
+  wrap.classList.add('tumble');
+}
+
+function spawnHookParticles() {
+  const host = document.getElementById('hookParticles');
+  host.innerHTML = '';
+  const rect = host.parentElement.getBoundingClientRect();
+  const count = 24;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'hook-particle';
+    const x = Math.random() * rect.width;
+    const y = rect.height + Math.random() * 100;
+    const endY = -100 - Math.random() * 200;
+    const delay = Math.random() * 2;
+    p.style.cssText = `
+      left: ${x}px; top: ${y}px;
+      transform: translateY(0);
+      opacity: 0;
+      transition: transform 4s linear ${delay}s, opacity 4s ease ${delay}s;
+    `;
+    host.appendChild(p);
+    requestAnimationFrame(() => {
+      p.style.transform = `translateY(${endY - y}px)`;
+      p.style.opacity = '0.8';
+    });
+  }
+}
+
+// Pack helpers
+function resetPackState() {
+  const hex = document.getElementById('packHex');
+  const flash = document.getElementById('packFlash');
+  const rarity = document.getElementById('rarityReveal');
+  const sw1 = document.getElementById('packShockwaveOuter');
+  const sw2 = document.getElementById('packShockwaveInner');
+  hex.classList.remove('entering','charging','explode');
+  hex.style.opacity = ''; hex.style.transform = '';
+  flash.classList.remove('fire');
+  if (sw1) sw1.classList.remove('fire');
+  if (sw2) sw2.classList.remove('fire');
+  rarity.classList.remove('show');
+}
+function enterPack() { document.getElementById('packHex').classList.add('entering'); }
+function chargePack() {
+  const hex = document.getElementById('packHex');
+  hex.classList.remove('entering'); void hex.offsetWidth;
+  hex.classList.add('charging');
+}
+function explodePack() {
+  document.getElementById('packHex').classList.add('explode');
+  document.getElementById('packFlash').classList.add('fire');
+  const sw1 = document.getElementById('packShockwaveOuter');
+  const sw2 = document.getElementById('packShockwaveInner');
+  if (sw1) { sw1.classList.remove('fire'); void sw1.offsetWidth; sw1.classList.add('fire'); }
+  if (sw2) { sw2.classList.remove('fire'); void sw2.offsetWidth; sw2.classList.add('fire'); }
+  spawnBurstSparks();
+}
+function showRarity() { document.getElementById('rarityReveal').classList.add('show'); }
+function hideRarity() { document.getElementById('rarityReveal').classList.remove('show'); }
+
+function spawnBurstSparks() {
+  const stage = document.querySelector('#scenePack .pack-stage');
+  const rect = stage.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2;
+  for (let i = 0; i < 46; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const ang = (i / 46) * Math.PI * 2 + (Math.random() - .5) * .4;
+    const dist = 140 + Math.random() * 280;
+    const size = 3 + Math.random() * 5;
+    const color = Math.random() > .3 ? '#E8B86D' : '#F2D187';
+    s.style.cssText = `
+      left: ${cx}px; top: ${cy}px;
+      width: ${size}px; height: ${size}px;
+      background: ${color};
+      box-shadow: 0 0 ${8 + Math.random()*8}px ${color};
+      opacity: 1;
+      transform: translate(-50%, -50%);
+      transition: transform .9s cubic-bezier(.2,.8,.3,1), opacity .9s ease-out;
+    `;
+    stage.appendChild(s);
+    requestAnimationFrame(() => {
+      s.style.transform = `translate(calc(-50% + ${Math.cos(ang)*dist}px), calc(-50% + ${Math.sin(ang)*dist}px))`;
+      s.style.opacity = '0';
+    });
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+// Pack embers — small gold particles that rise from around the pack during charge phase.
+// Visual: like the pack is heating up and spitting sparks. Staggered over ~1.1s.
+function spawnPackEmbers() {
+  const stage = document.querySelector('#scenePack .pack-stage');
+  if (!stage) return;
+  const rect = stage.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2 + 40; // emit from just below pack center
+  const count = 24;
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const e = document.createElement('div');
+      e.className = 'spark';
+      const ang = -Math.PI/2 + (Math.random() - .5) * 1.2; // mostly upward
+      const dist = 80 + Math.random() * 180;
+      const size = 2 + Math.random() * 3;
+      const color = Math.random() > .4 ? '#E8B86D' : '#FFC877';
+      const xOffset = (Math.random() - .5) * 100;
+      e.style.cssText = `
+        left: ${cx + xOffset}px; top: ${cy}px;
+        width: ${size}px; height: ${size}px;
+        background: ${color};
+        box-shadow: 0 0 ${6 + Math.random()*6}px ${color};
+        opacity: 0;
+        transform: translate(-50%, -50%);
+        transition: transform 1.2s cubic-bezier(.3,.6,.3,1), opacity 1.2s ease-out;
+      `;
+      stage.appendChild(e);
+      requestAnimationFrame(() => {
+        e.style.opacity = '.9';
+        e.style.transform = `translate(calc(-50% + ${Math.cos(ang)*dist}px), calc(-50% + ${Math.sin(ang)*dist}px))`;
+      });
+      setTimeout(() => { e.style.opacity = '0'; }, 800);
+      setTimeout(() => e.remove(), 1400);
+    }, i * 45);
+  }
+}
+
+// Tagline particles — slowly rising gold dust in the tagline scene for mystical atmosphere.
+function spawnTaglineParticles() {
+  const host = document.getElementById('taglineParticles');
+  if (!host) return;
+  host.innerHTML = '';
+  const rect = host.getBoundingClientRect();
+  const count = 20;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'tp';
+    const x = Math.random() * rect.width;
+    const y = rect.height + Math.random() * 80;
+    const endY = -80 - Math.random() * 200;
+    const delay = Math.random() * 2;
+    const dur = 5 + Math.random() * 3;
+    p.style.cssText = `
+      left: ${x}px; top: ${y}px;
+      opacity: 0;
+      transition: transform ${dur}s linear ${delay}s, opacity ${dur}s ease-out ${delay}s;
+    `;
+    host.appendChild(p);
+    requestAnimationFrame(() => {
+      p.style.transform = `translateY(${endY - y}px)`;
+      p.style.opacity = '.7';
+    });
+  }
+}
+
+// HUD
+function toggleRecording() {
+  document.body.classList.toggle('recording');
+  const isOn = document.body.classList.contains('recording');
+  const btn = document.getElementById('recBtn');
+  if (btn) btn.textContent = isOn ? 'HUD' : 'Clean';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('player').classList.contains('visible')) return;
+  if (e.key === 'Escape') stopPlayback();
+  else if (e.key.toLowerCase() === 'r') toggleRecording();
+  else if (e.key.toLowerCase() === 'f') {
+    try {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    } catch(_) {}
+  }
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+applyStaticOverrides();
+renderShotGrid();
+if (Object.keys(OVERRIDES).length > 0) {
+  const header = document.querySelector('.setup-header .sub');
+  if (header) header.innerHTML += ' <span style="color:#E8B86D;margin-left:10px;">✎ using edits from /admin</span>';
+}
+</script>
+</body>
+</html>
