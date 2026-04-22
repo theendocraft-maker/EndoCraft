@@ -892,55 +892,72 @@ const TIKTOK_SPOTS = [
   },
   {
     id: 'spotnat1',
-    name: 'NAT 1.',
+    name: 'NAT 1 — The Footbridge Incident',
     status: 'built',
-    duration: 11,
+    duration: 15,
     shotCount: 2,
-    theme: 'Series-Start · Raw TikTok · Participation',
-    subtitle: 'Drop your nat 1 → next video',
+    theme: 'Series-Start · "You Shall Not Pass" parody',
+    subtitle: 'Lyrin intimidiert Bandit auf 3-ft Footbridge — Nat 1',
     url: '../tiktok/spot-nat1/',
     sections: [
       {
-        title: 'Hook (0–2s)',
+        title: 'Dramatic Hook (0–1.8s) — "YOU SHALL NOT PASS!"',
         fields: [
-          { key: 'hookText', label: 'Hook text', at: 0, defaultValue: 'I rolled a <span class="nat1">NAT 1</span><br>in front of my entire party.', hint: '<span class="nat1">...</span> wird rot + pulst' }
+          { key: 'dramaText', label: 'Hook text (over Lyrin pose)', at: 0, defaultValue: '"YOU SHALL<br>NOT PASS!"', hint: 'Cinzel Decorative, dramatic centered' }
         ]
       },
       {
-        title: 'Reaction (2–3.5s)',
+        title: 'The Roll (1.8–3s)',
         fields: [
-          { key: 'reactionText', label: 'Reaction text (over shocked image)', at: 2000, defaultValue: 'They will <span class="never">never</span> let it go.', hint: '<span class="never">...</span> wird rot' }
+          { key: 'rollText1', label: 'Roll action', at: 1800, defaultValue: 'intimidate check.' },
+          { key: 'rollText2', label: 'Nat 1 reveal', at: 2300, defaultValue: '<span class="nat1">NAT 1.</span>', hint: '<span class="nat1">...</span> shake-red' }
         ]
       },
       {
-        title: 'Card Reveal (3.5–5.5s)',
+        title: 'Bandit beats (3–6s) — 4 text steps',
         fields: [
-          { key: 'revealText', label: 'Reveal text', at: 3500, defaultValue: 'So we made it a card.' },
+          { key: 'banditText1', label: 'Beat 1 — setup', at: 3000, defaultValue: 'the bandit said' },
+          { key: 'banditText2', label: 'Beat 2 — the quote', at: 3500, defaultValue: '"\'scuse me."', hint: 'serif italic, gold tint' },
+          { key: 'banditText3', label: 'Beat 3 — action', at: 4400, defaultValue: 'stepped around me.' },
+          { key: 'banditText4', label: 'Beat 4 — continuation', at: 5200, defaultValue: 'continued walking.' }
+        ]
+      },
+      {
+        title: 'The Bridge Reveal (6–8.3s) — the punchline',
+        fields: [
+          { key: 'bridgeLabel', label: 'Setup label', at: 6000, defaultValue: 'we were on a' },
+          { key: 'bridgeTitle', label: 'Big reveal title', at: 6400, defaultValue: '3-foot footbridge.' },
+          { key: 'bridgeSub', label: 'Subtitle punchline', at: 7300, defaultValue: 'over a creek.' }
+        ]
+      },
+      {
+        title: 'Self-Aware (8.3–10s)',
+        fields: [
+          { key: 'awareText', label: 'Introspective beat', at: 8300, defaultValue: 'i had it built up<br>in my head.' }
+        ]
+      },
+      {
+        title: 'Card Reveal (10–11.8s)',
+        fields: [
+          { key: 'revealText', label: 'Reveal text', at: 10000, defaultValue: "now it's a card." },
           { key: 'mlClass', label: 'Card class/level', defaultValue: 'Half-Elf Wizard · Lv VII' },
           { key: 'mlName', label: 'Card character name', defaultValue: 'Lyrin' },
-          { key: 'mlTitle', label: 'Card moment title', defaultValue: 'Self-Immolation Protocol' },
+          { key: 'mlTitle', label: 'Card moment title', defaultValue: 'The Footbridge Incident' },
           { key: 'mlSerial', label: 'Card serial', defaultValue: 'Nº 1 of 300 · SEALED' }
         ]
       },
       {
-        title: 'Serial close-up (5.5–7s)',
+        title: 'Comment-Bait (11.8–14s) — THE FOLLOW TRIGGER',
         fields: [
-          { key: 'serialBig', label: 'Big serial number', at: 5500, defaultValue: 'Nº 1/300' },
-          { key: 'serialText', label: 'Serial tagline', at: 6100, defaultValue: 'The <span class="red">rarer the fail</span><br>the rarer the card.' }
+          { key: 'baitKicker', label: 'Kicker (top small red text)', at: 11800, defaultValue: '✦ YOUR TURN' },
+          { key: 'baitTitle', label: 'Bait headline', at: 12100, defaultValue: 'What\'s <span class="highlight">YOUR</span> most dramatic D&D moment?', hint: '<span class="highlight">...</span> kriegt orange-italic Emphasis' },
+          { key: 'baitSub', label: 'Bait subline (payoff-hook)', at: 12700, defaultValue: 'Top reply becomes <span class="payoff">next video\'s card.</span>', hint: '<span class="payoff">...</span> gold + underline + pulse' }
         ]
       },
       {
-        title: 'Comment-Bait (7.8–10.8s) — THE FOLLOW TRIGGER',
+        title: 'CTA (14–15s)',
         fields: [
-          { key: 'baitKicker', label: 'Kicker (top small red text)', at: 7800, defaultValue: '✦ YOUR TURN' },
-          { key: 'baitTitle', label: 'Bait headline', at: 8100, defaultValue: 'Drop <span class="highlight">YOUR</span> Nat 1 story', hint: '<span class="highlight">...</span> kriegt orange-italic Emphasis' },
-          { key: 'baitSub', label: 'Bait subline (payoff-hook)', at: 8700, defaultValue: 'Top reply becomes <span class="payoff">next video\'s card.</span>', hint: '<span class="payoff">...</span> gold + underline + pulse' }
-        ]
-      },
-      {
-        title: 'CTA (9.5–11s)',
-        fields: [
-          { key: 'ctaUrl', label: 'URL', at: 9500, defaultValue: 'endocraft.app' },
+          { key: 'ctaUrl', label: 'URL', at: 14000, defaultValue: 'endocraft.app' },
           { key: 'ctaTagline', label: 'CTA tagline', defaultValue: 'Seal your moment. Free.' }
         ]
       }

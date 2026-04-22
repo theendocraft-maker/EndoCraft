@@ -402,4 +402,75 @@ Nach jeder Session — Karten öffnen. Wie Pokemon freitags nach der Schule. Rit
 
 ---
 
+## 15. DM TOOL VISION (FUTURE — NICHT JETZT BAUEN)
+
+*Idee aus Cowork-Session April 2026. Langfristige Produkt-Erweiterung, nicht kurzfristig umsetzen.*
+
+### Kernidee
+EndoCraft ist heute die **Capture-Schicht am Ende der Session**. Der logische nächste große Produkt-Schritt ist die **Context-Schicht davor und währenddessen** — ein integriertes DM-Tool, das Prep und Live-Session abdeckt und dabei eine gemeinsame Datenbasis mit dem Karten-System teilt.
+
+### Das Flywheel
+```
+DM bereitet Session im Tool vor (NPCs, Szenen, Plot-Beats als strukturierte Daten)
+→ Session läuft → Tool logged mit, kennt Kontext
+→ Nach Session → Tool schlägt vor: "deine 3 legendärsten Momente — als Karten versiegeln?"
+→ Karten haben mehr Tiefe (NPC, Fraktion, Szenenkontext bereits bekannt)
+→ Party Album wird echte Kampagnenchronik, nicht nur lose Karten
+→ Mehr Prep = bessere Karten = Anreiz = mehr Recurring Revenue
+```
+
+### Löst ein strukturelles Problem
+Aktuell muss der User einen Moment *aktiv beschreiben*, damit eine Karte entsteht. Das ist Friction. Mit einem DM-Tool, das den Kontext kennt, wird aus "beschreibe deinen Moment in zwei Absätzen" ein "Klick hier — der KI-Co-DM weiß schon, was passiert ist."
+
+### Die drei Produkt-Säulen
+| Säule | Was | Phase |
+|-------|-----|-------|
+| **The Tome** | DM-Prep + Kampagnen-Graph (NPCs, Orte, Plots, Beziehungen relational verlinkt) | Vorbereitung |
+| **The Session** | Live-Companion (Notizen, Dialog-Anker, NPC-Quick-Access, Handouts, Auto-Log) | Spiel |
+| **The Card** | Was EndoCraft heute ist — wird zum Höhepunkt statt einzigem Produkt | Erinnerung |
+
+Alle drei teilen sich **eine Datenbasis**.
+
+### Positioning
+> *EndoCraft ist die Erinnerung deiner Kampagne — von der Vorbereitung bis zum versiegelten Moment.*
+
+### Strategischer Knackpunkt: NICHT Foundry bauen
+Owlbear + Foundry + Roll20 haben ~2 Dekaden Feature-Vorsprung bei Maps, Dynamic Lighting, Token-Management, Combat-Automation. Da reinzugehen = Geldverbrennung.
+
+Stattdessen die **Narrative/Story-Schicht**, die keiner dieser Tools hat:
+- Kampagnen-Graph (NPCs, Orte, Plots, Beziehungen — relational verlinkt)
+- Szenen-Prep mit AI-Assist, der die *eigene* Kampagne kennt
+- Live-Session-Begleiter (Notizen, NPC-Quick-Access, Handouts)
+- Auto-Logging + Post-Session-Zusammenfassung → direkter Hook zu Karten
+- Party-geteilter Kampagnen-Kanon
+
+Läuft **parallel** zu Foundry/Roll20 — User können beides nebeneinander benutzen. EndoCraft ist nicht der VTT, sondern der Kanon. Kampagnen-Daten sind extrem klebrig (wer steckt seine 2-Jahres-Kampagne in ein Tool rein, wechselt ungern) = starker Retention-Hebel.
+
+### Brand-Fit
+- *"Make Every Session Legendary"* deckt explizit **jede Phase** ab — Tagline ist heute schon größer als das Produkt
+- *"Some moments are too legendary to forget"* — Momente entstehen in Prep *und* Spiel. Karte ist Siegel, nicht Erzeuger.
+- **Caspian als Maskottchen** — ein Barde, ein Chronist, ein Geschichtenerzähler. Kein Maskottchen ist natürlicher in einen DM-Begleiter gewachsen. Naming-Idee: *"Caspian's Tome"* / *"The Bard's Ledger"*
+- Kompatibel mit Prinzip "Ernst wenn ernst, witzig wenn witzig"
+
+### Zusammenhang mit bestehender Roadmap
+Folgende Roadmap-Items sind eigentlich Bausteine dieses Tools — gehören strategisch zusammen:
+- Campaign Memory
+- Session Upload + Highlights
+- Party Code (Multiplayer)
+- Party Album (Phase 1 der NFT-Vision)
+- DM Vorlagen Feature (Gerald)
+
+### Empfohlener Phasenplan (wenn das ernst wird)
+1. **Messaging vorbereiten** — Landing Page & Vision-Texte so formulieren, dass DM-Tool-Pfad offen bleibt. Keine widersprüchlichen Claims.
+2. **Daten-Architektur heute schon dafür auslegen** — Kampagnen-, Party-, NPC-Objekte im Backend vorsehen, auch mit minimalen Feldern. Vermeidet späteres Schema-Chaos.
+3. **Kleiner Wedge als Phase 2** — bevor Vollbau: "Campaign Memory" Feature (User speichert NPCs/Orte, die in mehreren Karten auftauchen, kleiner Graph-View). Günstig, testet Appetit, sofortiger User-Value.
+
+### Warum jetzt nicht bauen
+- Launch des Kernprodukts hat Priorität
+- Scope-Creep-Risiko
+- Erst Karten-Produkt muss Revenue generieren + Community aufbauen
+- DM-Tool ist Vertiefung einer bestehenden User-Basis, nicht Akquise-Tool
+
+---
+
 *EndoCraft — Some moments are too legendary to forget.*
