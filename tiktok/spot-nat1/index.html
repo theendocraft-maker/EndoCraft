@@ -328,9 +328,9 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
           <img id="cardImg" alt="">
           <div class="misprint-pill">⚠ MISPRINT</div>
           <div class="misprint-labels">
-            <div class="ml-class" id="mlClass">Harengon Bard · Lv VI</div>
-            <div class="ml-name" id="mlName">Caspian</div>
-            <div class="ml-title" id="mlTitle">The Unwanted Kiss</div>
+            <div class="ml-class" id="mlClass">Half-Elf Wizard · Lv VII</div>
+            <div class="ml-name" id="mlName">Lyrin</div>
+            <div class="ml-title" id="mlTitle">Self-Immolation Protocol</div>
             <div class="ml-serial" id="mlSerial">Nº 1 of 300 · SEALED</div>
           </div>
         </div>
@@ -411,22 +411,23 @@ function applyStaticOverrides() {
   }
 }
 
-// ═══════════ SHOTS — 2 images, reuse cached if possible ═══════════
-// Uses Caspian + Kiss scene from the existing Spot 1 / Flagship visual world.
-// The card gets misprint-styled in CSS (red glitch) — no separate Misprint-version needed.
+// ═══════════ SHOTS — fresh character for this episode (brand-variety over repetition) ═══════════
+// Every episode in the series should feature a DIFFERENT character/class/scene. Viewers should
+// feel the EndoCraft universe is vast — not the same Caspian-moment rehashed. For Nat 1: classic
+// wizard-fireball-backfire scenario (universally recognizable D&D fail).
 const SHOTS = [
   {
-    slug: 'reaction-shocked',
-    name: 'Shocked Reaction',
+    slug: 'wizard-shocked',
+    name: 'Wizard Fireball Backfire',
     width: 1440, height: 2560,
-    prompt: `Anthropomorphic rabbit bard with warm brown fur and large expressive eyes wide in shocked horror, tattered elegant forest green coat with gold trim, ancient hag leaning in close with sinister warm smile, grey matted hair, glowing amber eyes, dramatic emotional moment, dim tavern interior with warm candlelight, cinematic fantasy, photorealistic, extreme emotional intensity, shallow depth of field, 8K, sharp focus, no text, no watermark, no instruments, no lute`,
+    prompt: `Close-up of a female half-elf wizard with wide-eyed shocked and horrified expression, mouth agape in disbelief, soot-smudged face, hair singed at the ends and smoking slightly, tattered midnight blue robes with silver arcane embroidery burned at the edges, small magical wand still glowing faintly, in the aftermath of a fireball spell backfire, scorched stone dungeon walls visible behind her with glowing embers, dramatic cinematic lighting with warm orange glow from aftermath embers, photorealistic, deeply emotional moment capturing embarrassment and shock, 8K, sharp focus, extreme emotional intensity, shallow depth of field, no text, no watermark`,
     targetImg: ['reactionImg']
   },
   {
-    slug: 'misprint-card-face',
-    name: 'Card Face (Caspian portrait)',
+    slug: 'wizard-card-portrait',
+    name: 'Lyrin — The Incident (Card)',
     width: 1440, height: 2560,
-    prompt: `Anthropomorphic rabbit bard, warm brown fur, large expressive brown eyes, tattered elegant forest green coat with gold trim, lute visible on side, medium shot framed from head to waist, face positioned in upper third of frame, centered composition, generous empty space below, darker vignette on bottom, enchanted forest background with soft purple magical lights, cinematic fantasy, photorealistic, warm dramatic lighting, shallow depth of field, 8K, sharp focus, no text, no watermark, no blur`,
+    prompt: `Medium portrait shot of a female half-elf wizard, disheveled yet dignified, soot-stained face and hands, pointed elven ears, long dark hair partially singed, ragged but elegant midnight blue wizard robes with silver thread still intact, holding a slightly cracked crystal wand, embarrassed but resilient expression with slight sad smile, burned spellbook visible at her side, ember particles floating around her, warm dramatic fantasy lighting with magical residue glow in background, dark mystical chamber with runes faintly glowing on walls, photorealistic, 8K, sharp focus, medium shot framed from head to waist, face in upper third, centered composition, space below for text overlay, dark vignette on bottom, cinematic fantasy, no text, no watermark`,
     targetImg: ['cardImg']
   }
 ];
