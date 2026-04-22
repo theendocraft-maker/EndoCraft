@@ -1159,10 +1159,15 @@ body {
         <input type="email" id="cardSubEmail" placeholder="your@email.com" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:13px;color:white;font-family:'DM Sans',sans-serif;outline:none;min-width:0;">
         <button onclick="saveCard()" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">✦ Commit your card</button>
       </div>
-      <div id="cardSubSuccess" style="display:none;margin-top:14px;padding:12px 14px;background:rgba(232,184,109,.08);border:1px solid rgba(232,184,109,.25);border-radius:10px;">
+      <div id="cardSubSuccess" style="display:none;margin-top:14px;padding:14px 16px;background:rgba(232,184,109,.08);border:1px solid rgba(232,184,109,.25);border-radius:10px;">
         <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:4px;">✦ SEALED</div>
         <div id="cardSubSuccessTitle" style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;">Your card is yours. Forever.</div>
         <div id="cardSubSuccessSub" style="font-size:12px;color:var(--text-dim);">We'll notify you when new features drop. Scroll down to see the Certificate.</div>
+        <div id="cardShareRow" style="display:none;gap:8px;margin-top:14px;flex-wrap:wrap;">
+          <button id="cardShareCopyBtn" onclick="copyCardShareLink(this)" style="flex:2;min-width:130px;background:rgba(232,184,109,.18);border:1px solid rgba(232,184,109,.5);color:#E8B86D;padding:11px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;">📋 Copy share link</button>
+          <a id="cardShareTwitter" href="#" target="_blank" rel="noopener" style="flex:1;min-width:70px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);padding:11px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;text-align:center;transition:all .15s;">𝕏 Post</a>
+          <a id="cardSharePreview" href="#" target="_blank" rel="noopener" style="flex:1;min-width:70px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);padding:11px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;text-align:center;transition:all .15s;">↗ Preview</a>
+        </div>
       </div>
     </div>
 
@@ -1960,6 +1965,44 @@ function closeCardModal(e) {
   }
 }
 
+function copyCardShareLink(btn) {
+  const url = window._cardShareUrl;
+  if (!url || !btn) return;
+  const original = btn.textContent;
+  const done = () => {
+    btn.textContent = '✓ Copied — paste in Discord / Twitter / anywhere';
+    btn.style.background = 'rgba(76,175,125,.18)';
+    btn.style.borderColor = 'rgba(76,175,125,.5)';
+    btn.style.color = '#4CAF7D';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2600);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(() => {
+      // fallback below
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = url; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        done();
+        setTimeout(() => document.body.removeChild(ta), 100);
+      } catch(_) { window.prompt('Copy this link:', url); }
+    });
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy');
+      done();
+      setTimeout(() => document.body.removeChild(ta), 100);
+    } catch(_) { window.prompt('Copy this link:', url); }
+  }
+}
+
 function toggleProvenance(){
   const content = document.getElementById('provenanceContent');
   const arrow = document.querySelector('.provenance-arrow');
@@ -2077,6 +2120,26 @@ async function saveCard() {
       successSub.innerHTML = 'Sealed on ' + new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) + '. <a href="' + myCardsLink + '" style="color:var(--gold);text-decoration:underline;">See your collection →</a>';
     }
   } catch(e) { /* non-fatal */ }
+
+  // Wire up share buttons with the REAL card id — OG-tagged share page lives on Railway
+  try {
+    if (result && result.card && result.card.id) {
+      const shareUrl = 'https://endocraft-production.up.railway.app/c/' + result.card.id;
+      window._cardShareUrl = shareUrl;
+      const cardNameNow = document.getElementById('tcName')?.textContent || 'a legendary moment';
+      const momentNow = document.getElementById('tcMoment')?.textContent || '';
+      const tweetText = encodeURIComponent(
+        (momentNow ? '"' + momentNow.slice(0, 120) + '" — ' : '') +
+        cardNameNow + ' · sealed on EndoCraft 🎲'
+      );
+      const tw = document.getElementById('cardShareTwitter');
+      if (tw) tw.href = 'https://twitter.com/intent/tweet?text=' + tweetText + '&url=' + encodeURIComponent(shareUrl);
+      const pv = document.getElementById('cardSharePreview');
+      if (pv) pv.href = shareUrl;
+      const shareRow = document.getElementById('cardShareRow');
+      if (shareRow) shareRow.style.display = 'flex';
+    }
+  } catch(e) { console.warn('[SHARE] wiring failed', e); }
 
   // Auto-open the Provenance/Certificate block so user sees their permanent identity
   try {
