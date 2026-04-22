@@ -323,9 +323,9 @@ html, body {
 .pack-logo-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel Decorative', serif; font-size: 40px; color: #E8B86D; filter: drop-shadow(0 0 12px rgba(232,184,109,.8)); animation: packSpin 3s linear infinite; }
 @keyframes packSpin { to { transform: rotate(360deg); } }
 /* Pack charge — aggressive ramping glow + micro-tremor via keyframe translate noise.
-   Feels like the pack is straining to contain the energy about to burst. Emit ember particles via JS. */
+   Shortened from 1.3s → 0.75s (+ .2s delay) so the tagline → LEGENDARY beat stays punchy. */
 .pack-hex.charging {
-  animation: packEnter .45s cubic-bezier(.23,1.3,.32,1) forwards, packCharge 1.3s ease-in .4s forwards;
+  animation: packEnter .35s cubic-bezier(.23,1.3,.32,1) forwards, packCharge .75s ease-in .2s forwards;
 }
 @keyframes packCharge {
   0%   { transform: scale(1)    translate(0,0);        filter: drop-shadow(0 20px 40px rgba(0,0,0,.9)) drop-shadow(0 0 40px rgba(232,184,109,.3)) brightness(1); }
@@ -516,15 +516,11 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
   background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35) 100%);
 }
 
+/* Small-viewport tweaks — ONLY non-conflicting overrides. Text sizes use the clamp() rules
+   defined on each element (responsive by design), so we don't override them here anymore. */
 @media (max-height: 700px) {
   .hero-card { width: 64%; }
-  .d20-wrap { width: 180px; height: 180px; }
-  .d20-number { font-size: 56px; }
-  .hook-text { font-size: 32px; }
-  .tagline-text { font-size: 24px; }
-  .rr-title { font-size: 42px; }
-  .montage-caption { font-size: 36px; }
-  .cta-url { font-size: 40px; }
+  .opening-card { width: min(62%, 280px); }
 }
 </style>
 </head>
@@ -953,25 +949,26 @@ function buildTimeline() {
     { at: 6900,  do: () => document.getElementById('taglineText').classList.add('on') },
     { at: 10300, do: () => document.getElementById('taglineText').classList.remove('on') },
 
-    // ─── ACT 4: PACK REVEAL (10.5–13.7s) — intensified charge + shockwave explosion ───
-    { at: 10500, do: () => { show('scenePack'); resetPackState(); enterPack(); } },
-    { at: 11100, do: () => { chargePack(); spawnPackEmbers(); } },
-    { at: 12400, do: () => explodePack() },
-    { at: 12700, do: () => showRarity() },
-    { at: 13800, do: () => hideRarity() },
+    // ─── ACT 4: PACK REVEAL (10.4–11.9s) — compressed: snappier charge → fast burst → LEGENDARY ───
+    // Tightened from ~2.5s to ~1.5s so the beat between tagline and rarity reveal doesn't drag.
+    { at: 10400, do: () => { show('scenePack'); resetPackState(); enterPack(); } },
+    { at: 10600, do: () => { chargePack(); spawnPackEmbers(); } },
+    { at: 11200, do: () => explodePack() },
+    { at: 11400, do: () => showRarity() },
+    { at: 12300, do: () => hideRarity() },
 
-    // ─── ACT 5: HERO CARD PAYOFF (14–16.5s) — flash + holo-sweep over card ───
-    { at: 14100, do: () => { fireSceneFlash(); show('sceneHero'); restartAnim('heroCard', 'enter'); } },
-    { at: 14700, do: () => { const c = document.getElementById('heroCard'); if (c) { c.classList.remove('swept'); void c.offsetWidth; c.classList.add('swept'); } } },
+    // ─── ACT 5: HERO CARD PAYOFF (12.5–14.8s) — flash + holo-sweep over card ───
+    { at: 12500, do: () => { fireSceneFlash(); show('sceneHero'); restartAnim('heroCard', 'enter'); } },
+    { at: 13100, do: () => { const c = document.getElementById('heroCard'); if (c) { c.classList.remove('swept'); void c.offsetWidth; c.classList.add('swept'); } } },
 
-    // ─── ACT 6: CTA (16.5–19s) — URL with gold-shimmer, subtitle, brand line ───
-    { at: 16500, do: () => { show('sceneCta'); } },
-    { at: 16700, do: () => document.getElementById('ctaUrl').classList.add('on') },
-    { at: 17100, do: () => document.getElementById('ctaSub').classList.add('on') },
-    { at: 17500, do: () => document.getElementById('ctaBrand').classList.add('on') },
+    // ─── ACT 6: CTA (14.8–17s) — URL with gold-pulse, subtitle, brand line ───
+    { at: 14800, do: () => { show('sceneCta'); } },
+    { at: 15000, do: () => document.getElementById('ctaUrl').classList.add('on') },
+    { at: 15400, do: () => document.getElementById('ctaSub').classList.add('on') },
+    { at: 15800, do: () => document.getElementById('ctaBrand').classList.add('on') },
 
-    // Loop at 19s — bit longer than 15s, but all pacing now comfortable to read/see
-    { at: 19000, do: () => restart() }
+    // Loop at 17s — ~2s shorter than before (more snap in pack reveal phase)
+    { at: 17000, do: () => restart() }
   ];
 }
 
@@ -1018,7 +1015,7 @@ function tick() {
   timeline.forEach((entry, i) => {
     if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
   });
-  document.getElementById('progressBar').style.width = Math.min(100, (t / 19000) * 100) + '%';
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 17000) * 100) + '%';
   rafId = requestAnimationFrame(tick);
 }
 
