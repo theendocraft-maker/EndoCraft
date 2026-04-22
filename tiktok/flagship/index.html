@@ -283,9 +283,9 @@ html, body {
 @keyframes lholo { 0% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } 100% { background-position: 0% 0%; } }
 
 /* ── FINAL CTA ── */
-.cta-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; padding: 0 20px; background: radial-gradient(ellipse at center, #0c0818 0%, #000 80%); }
-/* URL — scales with viewport width so it never overflows on mobile. 'endocraft.app' is 13 chars: at 9vw = 35px on 393px viewport, fits cleanly. */
-.cta-url { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: clamp(26px, 9vw, 44px); color: #E8B86D; letter-spacing: clamp(1px, .5vw, 3px); text-shadow: 0 0 60px rgba(232,184,109,.7), 0 0 30px rgba(232,184,109,.5); opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .7s cubic-bezier(.23,1.3,.32,1); max-width: 95%; }
+.cta-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 0 14px; background: radial-gradient(ellipse at center, #0c0818 0%, #000 80%); }
+/* URL — very conservative sizing. Cinzel Decorative is wide + letter-spacing hurt. On 393px viewport: 7vw = 27.5px, no letter-spacing → "endocraft.app" fits in ~290px with room to breathe. */
+.cta-url { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: clamp(22px, 7vw, 40px); color: #E8B86D; letter-spacing: 0; text-shadow: 0 0 60px rgba(232,184,109,.7), 0 0 30px rgba(232,184,109,.5); opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .7s cubic-bezier(.23,1.3,.32,1); max-width: 100%; white-space: nowrap; overflow: visible; }
 .cta-url.on { opacity: 1; transform: translateY(0); }
 .cta-sub { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(15px, 4.4vw, 22px); color: rgba(255,245,220,.85); max-width: 90%; line-height: 1.3; opacity: 0; transform: translateY(8px); transition: opacity .5s ease .2s, transform .6s cubic-bezier(.23,1.3,.32,1) .2s; padding: 0 8px; }
 .cta-sub.on { opacity: 1; transform: translateY(0); }
@@ -569,7 +569,7 @@ const SHOTS = [
     slug: 'd20-hero',
     name: 'D20 (hook icon)',
     width: 2048, height: 2048,
-    prompt: `Single large D20 twenty-sided icosahedron dice floating in empty space, polished dark obsidian material with metallic gold edges and gold-inlaid numerical engravings, the number 20 prominently displayed and clearly readable on the facing top face, centered composition on pure pitch black background, dramatic cinematic key light from above-left casting sharp reflections on the metallic edges, gentle warm gold dust particles floating ethereally around the dice, subtle soft shadow beneath grounding the dice, sharp focus, 8K, premium product photography, ominous and powerful atmosphere, no additional numbers or text visible anywhere, no watermark, no logos, no background props`,
+    prompt: `Extreme close-up of a single large D20 twenty-sided dice resting on a worn wooden tavern table, polished dark obsidian material with gold numerical engravings, the number 20 clearly displayed on the top facing face, warm candlelight illuminating the scene from the side casting dramatic gold reflections on the metallic edges, atmospheric firelit tavern interior softly blurred in the background with bokeh, hanging oil lanterns visible as warm light orbs out of focus, ambient gold dust particles floating around, cinematic fantasy product shot, photorealistic 8K, sharp focus on the dice, shallow depth of field, premium metallic sheen, warm cinematic color grade matching a cozy fantasy tavern mood, no additional numbers or text visible anywhere, no watermark, no logos, no characters, no hands`,
     targetImg: ['d20Img']
   },
   {
