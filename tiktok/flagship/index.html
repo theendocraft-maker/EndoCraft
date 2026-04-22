@@ -94,41 +94,58 @@ html, body {
 
 .d20-wrap {
   position: relative;
-  width: 220px; height: 220px;
-  filter: drop-shadow(0 0 30px rgba(232,184,109,.3));
+  width: 240px; height: 240px;
   opacity: 0;
-  transform: scale(.3) rotate(-45deg);
+  filter: drop-shadow(0 0 30px rgba(232,184,109,.25)) drop-shadow(0 14px 24px rgba(0,0,0,.8));
 }
 .d20-wrap.tumble {
-  animation: d20In 1.0s cubic-bezier(.2,.6,.2,1) forwards, d20Tumble .9s ease-in;
-}
-@keyframes d20In {
-  0% { opacity: 0; transform: scale(.3) rotate(-45deg); }
-  20% { opacity: 1; }
-  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 80px rgba(232,184,109,.8)); }
+  animation: d20Tumble 1.05s cubic-bezier(.18,.55,.25,1) forwards;
 }
 @keyframes d20Tumble {
-  0% { transform: rotateX(0deg) rotateY(0deg) scale(.3); }
-  33% { transform: rotateX(360deg) rotateY(180deg) scale(.7); }
-  66% { transform: rotateX(720deg) rotateY(360deg) scale(.95); }
-  100% { transform: rotateX(1080deg) rotateY(540deg) scale(1); }
+  0%   { opacity: 0;  transform: rotateZ(-160deg) scale(.25); filter: drop-shadow(0 0 12px rgba(232,184,109,.2)) blur(3px); }
+  35%  { opacity: 1;  transform: rotateZ(40deg)   scale(.7);  filter: drop-shadow(0 0 30px rgba(232,184,109,.4)) blur(1.5px); }
+  70%  { opacity: 1;  transform: rotateZ(300deg)  scale(1.05);filter: drop-shadow(0 0 50px rgba(232,184,109,.55)) blur(0); }
+  85%  { opacity: 1;  transform: rotateZ(356deg)  scale(.97); filter: drop-shadow(0 0 70px rgba(232,184,109,.7)); }
+  100% { opacity: 1;  transform: rotateZ(360deg)  scale(1);   filter: drop-shadow(0 0 80px rgba(232,184,109,.8)) drop-shadow(0 14px 24px rgba(0,0,0,.8)); }
 }
 
 .d20-svg { width: 100%; height: 100%; display: block; }
-.d20-svg polygon { fill: url(#d20grad); stroke: rgba(232,184,109,.8); stroke-width: 2; }
+
+/* Landing impact — expanding gold ring shockwave beneath the die */
+.d20-impact {
+  position: absolute; top: 50%; left: 50%;
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 2px solid rgba(232,184,109,.9);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0; pointer-events: none;
+}
+.d20-wrap.landed .d20-impact { animation: d20Impact .7s cubic-bezier(.15,.75,.3,1) 1.0s forwards; }
+@keyframes d20Impact {
+  0%   { transform: translate(-50%, -50%) scale(0);   opacity: 0; border-width: 4px; }
+  8%   { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; border-width: 1px; }
+}
+
 .d20-number {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Cinzel Decorative', serif;
-  font-size: 70px; font-weight: 900;
-  color: #fff; text-shadow: 0 0 30px rgba(232,184,109,.9);
+  font-size: 72px; font-weight: 900;
+  color: #F2D187;
+  text-shadow:
+    0 1px 0 rgba(255,240,180,.6),
+    0 -1px 0 rgba(0,0,0,.7),
+    0 0 20px rgba(232,184,109,.95),
+    0 0 50px rgba(232,184,109,.7),
+    0 4px 16px rgba(0,0,0,.95);
   opacity: 0;
+  letter-spacing: -2px;
 }
-.d20-wrap.landed .d20-number { animation: numberPop .4s cubic-bezier(.2,1.6,.3,1) .95s forwards; }
+.d20-wrap.landed .d20-number { animation: numberPop .5s cubic-bezier(.2,1.6,.3,1) 1.0s forwards; }
 @keyframes numberPop {
-  0% { opacity: 0; transform: scale(.3); color: #fff; }
-  50% { opacity: 1; transform: scale(1.3); color: #FFF4CC; text-shadow: 0 0 60px #E8B86D, 0 0 120px #E8B86D; }
-  100% { opacity: 1; transform: scale(1); color: #F2D187; text-shadow: 0 0 40px rgba(232,184,109,.9); }
+  0%   { opacity: 0; transform: scale(.4); }
+  55%  { opacity: 1; transform: scale(1.2); text-shadow: 0 1px 0 rgba(255,240,180,.7), 0 -1px 0 rgba(0,0,0,.7), 0 0 60px #FFF4CC, 0 0 120px #E8B86D, 0 4px 16px rgba(0,0,0,.95); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* Hook text — layered pair: "one roll." and "one moment." that swap */
@@ -205,9 +222,32 @@ html, body {
 .pack-hex.explode { animation: packExplode .4s ease-out forwards; }
 @keyframes packExplode { to { transform: scale(3); opacity: 0; filter: drop-shadow(0 0 200px rgba(255,240,180,1)) brightness(3); } }
 
-.pack-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
-.pack-flash.fire { animation: packFlash .55s ease-out forwards; }
-@keyframes packFlash { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
+.pack-flash { position: absolute; inset: 0; background: radial-gradient(circle at center, #fff 0%, rgba(255,240,180,.5) 35%, transparent 65%); opacity: 0; pointer-events: none; }
+.pack-flash.fire { animation: packFlash .6s ease-out forwards; }
+@keyframes packFlash { 0% { opacity: 0; } 6% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Pack shockwave — expanding gold ring(s) radiating outward on explosion */
+.pack-shockwave {
+  position: absolute; top: 50%; left: 50%;
+  width: 140px; height: 140px; border-radius: 50%;
+  border: 3px solid rgba(232,184,109,.9);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0; pointer-events: none;
+  box-shadow: 0 0 40px rgba(232,184,109,.5), inset 0 0 20px rgba(232,184,109,.4);
+}
+.pack-shockwave.fire { animation: packShockwaveRing 1.1s cubic-bezier(.1,.75,.3,1) forwards; }
+@keyframes packShockwaveRing {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 5px; }
+  40% { opacity: .8; }
+  100% { transform: translate(-50%, -50%) scale(6); opacity: 0; border-width: 1px; }
+}
+/* Second inner ring — starts later, different easing for layered feel */
+.pack-shockwave.inner { border-color: rgba(255,240,180,.7); width: 80px; height: 80px; }
+.pack-shockwave.inner.fire { animation: packShockwaveRingInner .85s ease-out .12s forwards; }
+@keyframes packShockwaveRingInner {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 4px; }
+  100% { transform: translate(-50%, -50%) scale(9); opacity: 0; border-width: 1px; }
+}
 
 .rarity-reveal { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; pointer-events: none; }
 .rarity-reveal.show { opacity: 1; transition: opacity .35s ease; }
@@ -264,15 +304,15 @@ html, body {
   letter-spacing: 3px; color: rgba(232,184,109,.85); text-transform: uppercase;
 }
 
-/* CTA logo — full brand reveal in the final beat */
+/* CTA logo — subtle brand mark above URL (not dominant) */
 .cta-logo {
-  width: 68px; height: 68px; object-fit: contain;
-  filter: drop-shadow(0 0 24px rgba(232,184,109,.7)) drop-shadow(0 0 48px rgba(232,184,109,.35));
-  margin-bottom: 4px;
-  opacity: 0; transform: scale(.75);
-  transition: opacity .6s ease, transform .7s cubic-bezier(.23,1.3,.32,1);
+  width: 42px; height: 42px; object-fit: contain;
+  filter: drop-shadow(0 0 14px rgba(232,184,109,.5)) drop-shadow(0 0 32px rgba(232,184,109,.22));
+  margin-bottom: 2px;
+  opacity: 0; transform: scale(.85) translateY(4px);
+  transition: opacity .7s ease, transform .8s cubic-bezier(.23,1.2,.32,1);
 }
-.cta-logo.on { opacity: 1; transform: scale(1); }
+.cta-logo.on { opacity: .95; transform: scale(1) translateY(0); }
 
 /* ── HUD ── */
 .player-hud { position: absolute; top: 12px; right: 12px; z-index: 50; display: flex; gap: 8px; align-items: center; }
@@ -284,6 +324,44 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
 
 /* Sparks */
 .spark { position: absolute; border-radius: 50%; pointer-events: none; will-change: transform, opacity; }
+
+/* Scene transition flash — brief white kiss between rapid cuts for cinematic feel */
+#sceneFlash {
+  position: absolute; inset: 0; z-index: 200;
+  background: rgba(255,250,220,0);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+#sceneFlash.fire { animation: sceneFlashFire .32s ease-out; }
+@keyframes sceneFlashFire {
+  0% { background: rgba(255,250,220,0); }
+  18% { background: rgba(255,250,220,.6); }
+  100% { background: rgba(255,250,220,0); }
+}
+
+/* Subtle film grain overlay — gives the whole spot a cinematic texture rather than sterile HTML */
+.film-grain {
+  position: absolute; inset: 0; z-index: 180; pointer-events: none;
+  opacity: .08; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.8 0 0 0 0 0.6 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  animation: grainShift 1s steps(6) infinite;
+}
+@keyframes grainShift {
+  0%   { transform: translate(0,0); }
+  17%  { transform: translate(-8%,5%); }
+  33%  { transform: translate(6%,-8%); }
+  50%  { transform: translate(-5%,-4%); }
+  67%  { transform: translate(8%,3%); }
+  83%  { transform: translate(-3%,8%); }
+  100% { transform: translate(0,0); }
+}
+
+/* Vignette — subtle edge darkening for cinematic depth */
+.vignette {
+  position: absolute; inset: 0; z-index: 170; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.35) 100%);
+}
 
 @media (max-height: 700px) {
   .hero-card { width: 64%; }
@@ -339,23 +417,75 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
       <div class="hook-stage">
         <div id="hookParticles"></div>
         <div class="d20-wrap" id="d20wrap">
-          <svg class="d20-svg" viewBox="-110 -110 220 220">
+          <svg class="d20-svg" viewBox="-120 -120 240 240">
             <defs>
-              <linearGradient id="d20grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#1a1028"/>
-                <stop offset="50%" style="stop-color:#0e0820"/>
-                <stop offset="100%" style="stop-color:#080410"/>
+              <!-- Body: deep obsidian with warm undertone -->
+              <radialGradient id="d20Body" cx="38%" cy="32%" r="78%">
+                <stop offset="0%"  stop-color="#3a2a1a"/>
+                <stop offset="45%" stop-color="#1c1024"/>
+                <stop offset="100%" stop-color="#060208"/>
+              </radialGradient>
+              <!-- Top-facing facets catch light -->
+              <linearGradient id="d20TopFacet" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%"  stop-color="rgba(255,230,160,.45)"/>
+                <stop offset="100%" stop-color="rgba(232,184,109,.05)"/>
+              </linearGradient>
+              <!-- Side facets -->
+              <linearGradient id="d20SideFacet" x1="0%" y1="50%" x2="100%" y2="50%">
+                <stop offset="0%"  stop-color="rgba(232,184,109,.22)"/>
+                <stop offset="100%" stop-color="rgba(232,184,109,.02)"/>
+              </linearGradient>
+              <!-- Bottom facets sit in shadow -->
+              <linearGradient id="d20BottomFacet" x1="50%" y1="0%" x2="50%" y2="100%">
+                <stop offset="0%"  stop-color="rgba(0,0,0,.2)"/>
+                <stop offset="100%" stop-color="rgba(0,0,0,.75)"/>
+              </linearGradient>
+              <!-- Top rim highlight — razor-thin catch light -->
+              <linearGradient id="d20Rim" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"  stop-color="rgba(255,240,180,.2)"/>
+                <stop offset="50%" stop-color="rgba(255,240,180,.95)"/>
+                <stop offset="100%" stop-color="rgba(255,240,180,.2)"/>
               </linearGradient>
             </defs>
-            <!-- Icosahedron 2D projection (hexagonal outer + triangular inner structure) -->
-            <polygon points="0,-100 87,-50 87,50 0,100 -87,50 -87,-50"/>
-            <polygon points="0,-100 0,0 87,-50" fill="rgba(232,184,109,.08)" stroke="rgba(232,184,109,.3)" stroke-width="1"/>
-            <polygon points="0,-100 0,0 -87,-50" fill="rgba(232,184,109,.12)" stroke="rgba(232,184,109,.3)" stroke-width="1"/>
-            <polygon points="0,100 0,0 87,50" fill="rgba(232,184,109,.05)" stroke="rgba(232,184,109,.3)" stroke-width="1"/>
-            <polygon points="0,100 0,0 -87,50" fill="rgba(232,184,109,.1)" stroke="rgba(232,184,109,.3)" stroke-width="1"/>
-            <polygon points="87,-50 87,50 0,0" fill="rgba(232,184,109,.03)" stroke="rgba(232,184,109,.3)" stroke-width="1"/>
-            <polygon points="-87,-50 -87,50 0,0" fill="rgba(232,184,109,.07)" stroke="rgba(232,184,109,.3)" stroke-width="1"/>
+
+            <!-- Floor shadow ellipse — sells the 3D weight -->
+            <ellipse cx="0" cy="108" rx="88" ry="11" fill="rgba(0,0,0,.55)"/>
+            <ellipse cx="0" cy="108" rx="62" ry="7" fill="rgba(232,184,109,.25)"/>
+
+            <!-- Main hexagon body with bold metallic stroke -->
+            <polygon points="0,-100 87,-50 87,50 0,100 -87,50 -87,-50"
+              fill="url(#d20Body)" stroke="rgba(232,184,109,.9)" stroke-width="2.5" stroke-linejoin="round"/>
+
+            <!-- Facet fills — 6 triangles radiating from center, each at different light angle -->
+            <polygon points="0,-100 0,0 87,-50"  fill="url(#d20TopFacet)"/>
+            <polygon points="0,-100 0,0 -87,-50" fill="url(#d20TopFacet)" opacity=".78"/>
+            <polygon points="87,-50 87,50 0,0"   fill="url(#d20SideFacet)"/>
+            <polygon points="-87,-50 -87,50 0,0" fill="url(#d20SideFacet)" opacity=".82" transform="scale(-1,1)"/>
+            <polygon points="0,100 0,0 87,50"    fill="url(#d20BottomFacet)"/>
+            <polygon points="0,100 0,0 -87,50"   fill="url(#d20BottomFacet)" opacity=".92"/>
+
+            <!-- Facet edge lines — thin gold scribes -->
+            <g stroke="rgba(232,184,109,.42)" stroke-width="1" stroke-linecap="round" fill="none">
+              <line x1="0" y1="-100" x2="0" y2="0"/>
+              <line x1="87" y1="-50" x2="0" y2="0"/>
+              <line x1="-87" y1="-50" x2="0" y2="0"/>
+              <line x1="87" y1="50" x2="0" y2="0" opacity=".7"/>
+              <line x1="-87" y1="50" x2="0" y2="0" opacity=".7"/>
+              <line x1="0" y1="100" x2="0" y2="0" opacity=".45"/>
+            </g>
+
+            <!-- Top rim razor highlight — this is what makes it feel metallic -->
+            <polyline points="-87,-50 0,-100 87,-50" fill="none"
+              stroke="url(#d20Rim)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+            <!-- Inner gold glow ring (faint) -->
+            <polygon points="0,-90 78,-45 78,45 0,90 -78,45 -78,-45"
+              fill="none" stroke="rgba(232,184,109,.18)" stroke-width="1"/>
           </svg>
+
+          <!-- Landing impact shockwave ring -->
+          <div class="d20-impact"></div>
+
           <div class="d20-number">20</div>
         </div>
         <div class="hook-text-wrap">
@@ -404,6 +534,8 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
           <div class="pack-logo-wrap">✦</div>
         </div>
         <div class="pack-flash" id="packFlash"></div>
+        <div class="pack-shockwave" id="packShockwaveOuter"></div>
+        <div class="pack-shockwave inner" id="packShockwaveInner"></div>
         <div class="rarity-reveal" id="rarityReveal">
           <div class="rr-top">Session Scroll</div>
           <div class="rr-title">✦ LEGENDARY ✦</div>
@@ -441,6 +573,11 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
         <div class="cta-brand" id="ctaBrand">✦ Roll. Reveal. Remember.</div>
       </div>
     </div>
+
+    <!-- CINEMATIC OVERLAYS — always on top, below only the watermark + HUD -->
+    <div class="vignette"></div>
+    <div class="film-grain"></div>
+    <div id="sceneFlash"></div>
 
     <!-- PERSISTENT BRAND WATERMARK (top-left, all scenes) -->
     <div class="brand-watermark">
@@ -696,12 +833,12 @@ function buildTimeline() {
     { at: 1500,  do: () => { document.getElementById('hookText1').classList.add('on'); } },
     { at: 2200,  do: () => { document.getElementById('hookText1').classList.remove('on'); document.getElementById('hookText2').classList.add('on'); } },
 
-    // ACT 2: MONTAGE (2.8–5.2s) — 3 beats @ 800ms
-    { at: 2800,  do: () => { show('sceneEpic'); } },
+    // ACT 2: MONTAGE (2.8–5.2s) — 3 beats @ 800ms with flash cuts
+    { at: 2800,  do: () => { fireSceneFlash(); show('sceneEpic'); } },
     { at: 2950,  do: () => showCaption('capEpic') },
-    { at: 3600,  do: () => { show('sceneKiss'); hideCaption('capEpic'); } },
+    { at: 3600,  do: () => { fireSceneFlash(); show('sceneKiss'); hideCaption('capEpic'); } },
     { at: 3750,  do: () => showCaption('capKiss') },
-    { at: 4400,  do: () => { show('sceneParty'); hideCaption('capKiss'); } },
+    { at: 4400,  do: () => { fireSceneFlash(); show('sceneParty'); hideCaption('capKiss'); } },
     { at: 4550,  do: () => showCaption('capParty') },
 
     // ACT 3: TAGLINE (5.2–7.5s)
@@ -716,8 +853,8 @@ function buildTimeline() {
     { at: 9600,  do: () => showRarity() },
     { at: 10700, do: () => hideRarity() },
 
-    // ACT 5: HERO CARD PAYOFF (11–13s)
-    { at: 11000, do: () => { show('sceneHero'); restartAnim('heroCard', 'enter'); } },
+    // ACT 5: HERO CARD PAYOFF (11–13s) — flash on reveal for cinematic bridge from pack explosion
+    { at: 11000, do: () => { fireSceneFlash(); show('sceneHero'); restartAnim('heroCard', 'enter'); } },
 
     // ACT 6: CTA (13–15s)
     { at: 13000, do: () => { show('sceneCta'); } },
@@ -781,6 +918,15 @@ function tick() {
 // Scene helpers
 function hideAllScenes() { document.querySelectorAll('.scene').forEach(el => el.classList.remove('on')); }
 function show(id) { hideAllScenes(); const el = document.getElementById(id); if (el) el.classList.add('on'); }
+
+// Fire a brief cinematic white-gold flash overlay — use on rapid cuts
+function fireSceneFlash() {
+  const f = document.getElementById('sceneFlash');
+  if (!f) return;
+  f.classList.remove('fire');
+  void f.offsetWidth;
+  f.classList.add('fire');
+}
 function restartAnim(elId, cls) {
   const el = document.getElementById(elId); if (!el) return;
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
@@ -835,9 +981,13 @@ function resetPackState() {
   const hex = document.getElementById('packHex');
   const flash = document.getElementById('packFlash');
   const rarity = document.getElementById('rarityReveal');
+  const sw1 = document.getElementById('packShockwaveOuter');
+  const sw2 = document.getElementById('packShockwaveInner');
   hex.classList.remove('entering','charging','explode');
   hex.style.opacity = ''; hex.style.transform = '';
   flash.classList.remove('fire');
+  if (sw1) sw1.classList.remove('fire');
+  if (sw2) sw2.classList.remove('fire');
   rarity.classList.remove('show');
 }
 function enterPack() { document.getElementById('packHex').classList.add('entering'); }
@@ -849,6 +999,10 @@ function chargePack() {
 function explodePack() {
   document.getElementById('packHex').classList.add('explode');
   document.getElementById('packFlash').classList.add('fire');
+  const sw1 = document.getElementById('packShockwaveOuter');
+  const sw2 = document.getElementById('packShockwaveInner');
+  if (sw1) { sw1.classList.remove('fire'); void sw1.offsetWidth; sw1.classList.add('fire'); }
+  if (sw2) { sw2.classList.remove('fire'); void sw2.offsetWidth; sw2.classList.add('fire'); }
   spawnBurstSparks();
 }
 function showRarity() { document.getElementById('rarityReveal').classList.add('show'); }
