@@ -494,6 +494,34 @@ body {
   .style-row { flex-direction: column; }
 }
 
+/* ── MOBILE READABILITY — bumps the tiny 7-11px fonts on card back + certificate so they're readable on phones ── */
+@media (max-width: 500px) {
+  /* Card-Back tagline */
+  .tc-back-tagline { font-size: 10px !important; letter-spacing: 3px !important; padding: 0 22px !important; line-height: 1.9 !important; }
+  .tc-back-serial { font-size: 10px !important; letter-spacing: 2.5px !important; color: rgba(232,184,109,.55) !important; bottom: 22px !important; }
+  .tc-back-name { font-size: 20px !important; }
+  /* Pack-back tagline (while holding the pack) */
+  .pack-back-tagline { font-size: 10px !important; letter-spacing: 3px !important; line-height: 1.9 !important; padding: 0 16px !important; }
+  .pack-count { font-size: 9px !important; letter-spacing: 2.5px !important; }
+  /* Provenance / Certificate-of-Authenticity block (#provenanceDetails children) */
+  #provenanceDetails [style*="font-size:8px"] { font-size: 10px !important; letter-spacing: 1.5px !important; }
+  #provenanceDetails [style*="font-size:9px"] { font-size: 11px !important; letter-spacing: 2px !important; }
+  #provenanceDetails [style*="font-size:10px"] { font-size: 12px !important; }
+  #provenanceDetails [style*="font-size:11px"] { font-size: 12.5px !important; }
+  /* Save-CTA section small labels */
+  #saveCta [style*="font-size:9px"] { font-size: 11px !important; letter-spacing: 2.5px !important; }
+  #saveCta [style*="font-size:10px"] { font-size: 12px !important; }
+  #provenanceToggle { font-size: 11px !important; letter-spacing: 2.5px !important; }
+  /* Pack overlay rarity labels */
+  #packOverlay #rarity .r1 { font-size: 11px !important; letter-spacing: 8px !important; }
+  #packOverlay #rarity .r3 { font-size: 10px !important; letter-spacing: 6px !important; }
+  #hint { font-size: 11px !important; letter-spacing: 4px !important; }
+  /* Trading-card serial + roll pill — brighter + slightly larger for mobile */
+  #tcFlipHint { font-size: 10px !important; letter-spacing: 3px !important; color: rgba(255,255,255,.5) !important; }
+  .tc-sv { font-size: 12px !important; }
+  .tc-loading-txt { font-size: 10px !important; letter-spacing: 2.5px !important; }
+}
+
 /* ── SESSION CARD ── */
 .session-card-wrap {
   display: none;
@@ -757,29 +785,30 @@ body {
 @keyframes cardRevealIn{from{transform:scale(0.85) translateY(24px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
 
 /* ═════════════ FLIP + CARD BACK ═════════════ */
-#tcFlipWrap{position:relative;width:min(300px,85vw);aspect-ratio:220/308;margin:0 auto;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .8s cubic-bezier(.23,1.2,.32,1);cursor:pointer;animation:tcFloat 4.5s ease-in-out infinite;}
-#tcFlipWrap.flipped{animation:tcFloatFlipped 4.5s ease-in-out infinite;}
-@keyframes tcFloat{0%,100%{transform:translateY(0) rotateY(-4deg) rotateX(2deg);}50%{transform:translateY(-8px) rotateY(4deg) rotateX(-1deg);}}
-@keyframes tcFloatFlipped{0%,100%{transform:rotateY(180deg) translateY(0) rotateX(2deg);}50%{transform:rotateY(180deg) translateY(-8px) rotateX(-1deg);}}
-/* Flip shimmer — one-shot gold glow that pulses as the card rolls (peak at edge-on, ~45%) */
-#tcFlipWrap.tc-flipping{filter:drop-shadow(0 0 0 rgba(232,184,109,0));animation:tcFlipGlow 900ms cubic-bezier(.4,0,.2,1),tcFloat 4.5s ease-in-out infinite;}
-#tcFlipWrap.tc-flipping.flipped{animation:tcFlipGlow 900ms cubic-bezier(.4,0,.2,1),tcFloatFlipped 4.5s ease-in-out infinite;}
+/* OUTER WRAP — handles the FLIP ROTATION only (smooth CSS transition, never fights an animation) */
+#tcFlipWrap{position:relative;width:min(300px,85vw);aspect-ratio:220/308;margin:0 auto;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;cursor:pointer;transform:rotateY(0deg);transition:transform .95s cubic-bezier(.22,.75,.25,1);will-change:transform;}
+#tcFlipWrap.flipped{transform:rotateY(180deg);}
+/* INNER FLOAT — gentle hover (translateY + rotateX). No rotateY here — that would fight the flip. */
+#tcFlipFloat{position:absolute;inset:0;width:100%;height:100%;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;animation:tcFloat 4.5s ease-in-out infinite;will-change:transform;}
+@keyframes tcFloat{0%,100%{transform:translateY(0) rotateX(2deg);}50%{transform:translateY(-6px) rotateX(-1deg);}}
+/* Flip shimmer — one-shot gold glow filter on outer wrap, triggered via .tc-flipping class */
+#tcFlipWrap.tc-flipping{animation:tcFlipGlow 950ms cubic-bezier(.4,0,.2,1);}
 @keyframes tcFlipGlow{
   0%{filter:drop-shadow(0 0 0 rgba(232,184,109,0)) brightness(1);}
   35%{filter:drop-shadow(0 0 30px rgba(232,184,109,.55)) brightness(1.05);}
-  50%{filter:drop-shadow(0 0 55px rgba(232,184,109,.85)) drop-shadow(0 0 100px rgba(242,209,135,.35)) brightness(1.12);}
+  50%{filter:drop-shadow(0 0 60px rgba(232,184,109,.9)) drop-shadow(0 0 110px rgba(242,209,135,.4)) brightness(1.14);}
   65%{filter:drop-shadow(0 0 30px rgba(232,184,109,.55)) brightness(1.05);}
   100%{filter:drop-shadow(0 0 0 rgba(232,184,109,0)) brightness(1);}
 }
-#tcFlipWrap > #tcBack,#tcFlipWrap > #tcCard{
+#tcFlipFloat > #tcBack,#tcFlipFloat > #tcCard{
   position:absolute !important;inset:0;width:100% !important;height:100% !important;margin:0 !important;
   -webkit-backface-visibility:hidden !important;backface-visibility:hidden !important;
   -webkit-transform-style:preserve-3d;transform-style:preserve-3d;
   isolation:isolate;
 }
-/* iOS Safari needs a tiny translateZ offset to prevent back bleeding through front */
-#tcFlipWrap > #tcBack{transform:translateZ(0.01px) !important;}
-#tcFlipWrap > #tcCard{transform:rotateY(180deg) translateZ(0.01px) !important;transition:none !important;}
+/* Bigger translateZ separation (.6px vs .01px) kills the edge-on backface bleed on iOS + Android */
+#tcFlipFloat > #tcBack{transform:translateZ(.6px) !important;}
+#tcFlipFloat > #tcCard{transform:rotateY(180deg) translateZ(.6px) !important;transition:none !important;}
 
 /* CARD BACK */
 /* Card Back — clean + iconic (certificate lives separately now) */
@@ -1018,13 +1047,14 @@ body {
     <div id="tradingCardWrap" style="display:none;" title="Tap card to flip">
       <div id="tcScene" style="perspective:1200px;margin:0 auto;width:min(300px,85vw);">
       <div id="tcFlipWrap" onclick="tcToggleFlip(event)">
+      <div id="tcFlipFloat">
       <!-- ── CARD BACK (clean, iconic — certificate lives separately) ── -->
       <div id="tcBack">
         <div class="tc-back-texture"></div>
         <img class="tc-back-logo" src="../IMG_8431.PNG" alt="">
         <div class="tc-back-name">EndoCraft</div>
         <div class="tc-back-div"><span class="tc-back-line"></span><span class="tc-back-diamond"></span><span class="tc-back-line"></span></div>
-        <div class="tc-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+        <div class="tc-back-tagline">SOME MOMENTS<br>ARE TOO LEGENDARY<br>TO FORGET</div>
         <div class="tc-back-serial" id="tcBackSerial">Nº —</div>
       </div>
       <!-- ── CARD FRONT ── -->
@@ -1074,6 +1104,7 @@ body {
             </div>
           </div>
         </div>
+      </div><!-- /tcFlipFloat -->
       </div><!-- /tcFlipWrap -->
       </div><!-- /tcScene -->
       </div><!-- /tradingCardWrap -->
@@ -2239,9 +2270,10 @@ function surpriseStory(){
   ta.style.transition = 'background .35s ease';
   ta.style.background = 'rgba(123,108,246,.09)';
   setTimeout(() => ta.style.background = '', 450);
-  // Put cursor at the "My character:" line so user can quickly edit
+  // Put cursor at the "My character:" line so user can quickly edit — skip on touch to avoid auto-opening mobile keyboard
   const idx = pick.story.indexOf('My character:');
-  if (idx > -1) { ta.focus(); try { ta.setSelectionRange(idx, pick.story.length); } catch(_){} }
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (idx > -1 && !isTouch) { ta.focus(); try { ta.setSelectionRange(idx, pick.story.length); } catch(_){} }
 }
 
 // Pre-fill a random story on first page load (only if textarea is empty)
@@ -2613,38 +2645,74 @@ function packLoop(t){
     ctx.strokeStyle=`rgba(242,209,135,${(c*.45).toFixed(2)})`;ctx.lineWidth=4*c;ctx.shadowColor='rgba(232,184,109,.7)';ctx.shadowBlur=10*c;ctx.stroke();ctx.shadowBlur=0;
     const chaos=Math.abs(Math.sin(t*.007)*Math.sin(t*.013)*Math.sin(t*.031));
     const burstProb=energy*(.55+chaos*.9);
-    const maxSparks=Math.floor(28*energy); // slightly fewer — more controlled, less spammy
-    ctx.shadowColor='rgba(232,184,109,.9)';
+    const maxSparks=Math.floor(22*energy); // quality > quantity — fewer but beefier bolts
     for(let b=0;b<maxSparks;b++){
       if(Math.random()>burstProb*(.2+Math.random()*.8))continue;
       const i=Math.floor(Math.random()*SEGS);
-      const ang=Math.atan2(pny[i],pnx[i])+(Math.random()-.5)*.5; // reduced angular chaos (was .7)
-      const len=(6+Math.pow(Math.random(),.3)*50)*c;
-      const kinks=1+Math.floor(Math.random()*2); // fewer kinks (was 1-3, now 1-2)
-      // Pre-compute path points so we can render two passes (glow + core) over the same line
+      const ang=Math.atan2(pny[i],pnx[i])+(Math.random()-.5)*.5;
+      const isMega=energy>.82 && Math.random()<.16; // rare mega bolts at peak hold
+      const len=(10+Math.pow(Math.random(),.3)*(isMega?95:58))*c;
+      const kinks=2+Math.floor(Math.random()*(isMega?4:3)); // 2-5 kinks for real-looking zigzag
+      // Main path: perpendicular-deviation zigzag from perimeter outward
       const pts=[[pmx[i],pmy[i]]];
       let lx=pmx[i],ly=pmy[i];
       for(let k=0;k<kinks;k++){
         const frac=(k+1)/kinks;
-        const dev=(Math.random()-.5)*len*.32; // tighter kink deviation (was .5)
+        const dev=(Math.random()-.5)*len*(isMega?.42:.30);
         lx=pmx[i]+Math.cos(ang)*len*frac+Math.cos(ang+1.5708)*dev;
         ly=pmy[i]+Math.sin(ang)*len*frac+Math.sin(ang+1.5708)*dev;
         pts.push([lx,ly]);
       }
-      const drawPath=()=>{ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(let j=1;j<pts.length;j++)ctx.lineTo(pts[j][0],pts[j][1]);ctx.stroke();};
-      // Pass 1 — wide soft gold aura (the glow that makes it feel luminous, not sketchy)
-      ctx.shadowBlur=16*c;
-      ctx.strokeStyle=`rgba(232,184,109,${(0.10+Math.random()*.18*Math.min(1,c*1.2)).toFixed(2)})`;
-      ctx.lineWidth=2.5+Math.random()*1.2;
-      drawPath();
-      // Pass 2 — thin near-white core (the discharge itself)
+      // Optional fork — branches off mid-path into a side bolt (real-lightning feel)
+      let forkPts=null;
+      if(Math.random()<.42 && pts.length>=3){
+        const fIdx=1+Math.floor(Math.random()*(pts.length-2));
+        const fStart=pts[fIdx];
+        const fAng=ang+(Math.random()<.5?1:-1)*(.55+Math.random()*.75);
+        const fLen=len*(.32+Math.random()*.38);
+        const fKinks=1+Math.floor(Math.random()*2);
+        forkPts=[fStart];
+        let fx=fStart[0],fy=fStart[1];
+        for(let k=0;k<fKinks;k++){
+          const frac=(k+1)/fKinks;
+          const dev=(Math.random()-.5)*fLen*.34;
+          fx=fStart[0]+Math.cos(fAng)*fLen*frac+Math.cos(fAng+1.5708)*dev;
+          fy=fStart[1]+Math.sin(fAng)*fLen*frac+Math.sin(fAng+1.5708)*dev;
+          forkPts.push([fx,fy]);
+        }
+      }
+      const drawSegs=(pp)=>{ctx.beginPath();ctx.moveTo(pp[0][0],pp[0][1]);for(let j=1;j<pp.length;j++)ctx.lineTo(pp[j][0],pp[j][1]);ctx.stroke();};
+      // Pass 1 — WIDE soft gold halo (the luminous bloom that sells it as lightning, not a pencil sketch)
+      ctx.shadowColor='rgba(232,184,109,.95)';
+      ctx.shadowBlur=(isMega?46:30)*Math.min(1,c*1.2);
+      ctx.strokeStyle=`rgba(232,184,109,${(0.09+Math.random()*.12).toFixed(2)})`;
+      ctx.lineWidth=(isMega?8.5:5.5)+Math.random()*2;
+      drawSegs(pts); if(forkPts) drawSegs(forkPts);
+      // Pass 2 — mid gold (the bright body of the strike)
+      ctx.shadowBlur=(isMega?20:13)*Math.min(1,c*1.2);
+      ctx.strokeStyle=`rgba(242,209,135,${(0.45+Math.random()*.3).toFixed(2)})`;
+      ctx.lineWidth=(isMega?3.2:2.1)+Math.random()*.7;
+      drawSegs(pts); if(forkPts) drawSegs(forkPts);
+      // Pass 3 — thin near-white core (the actual electric discharge)
+      ctx.shadowColor='rgba(255,250,220,1)';
       ctx.shadowBlur=4;
-      ctx.strokeStyle=`rgba(255,245,210,${(0.55+Math.random()*.35*Math.min(1,c*1.2)).toFixed(2)})`;
-      ctx.lineWidth=0.45+Math.random()*0.5;
-      drawPath();
-      if(Math.random()<energy*.5)emit(lx,ly,Math.cos(ang+(Math.random()-.5)*1.5)*(1+Math.random()*3),Math.sin(ang)*(1+Math.random()*2),.8+Math.random()*2,.08+Math.random()*.06,232,184,109);
+      ctx.strokeStyle=`rgba(255,250,220,${(0.78+Math.random()*.22).toFixed(2)})`;
+      ctx.lineWidth=(isMega?1.4:.85)+Math.random()*.35;
+      drawSegs(pts); if(forkPts) drawSegs(forkPts);
+      if(Math.random()<energy*.55)emit(lx,ly,Math.cos(ang+(Math.random()-.5)*1.5)*(1+Math.random()*3),Math.sin(ang)*(1+Math.random()*2),.8+Math.random()*2,.08+Math.random()*.06,232,184,109);
+      if(isMega){
+        const fl=forkPts?forkPts[forkPts.length-1]:pts[pts.length-1];
+        emit(fl[0],fl[1],(Math.random()-.5)*4,(Math.random()-.5)*4-1,1.2+Math.random()*1.5,.06+Math.random()*.03,255,250,220);
+      }
     }
     ctx.shadowBlur=0;
+    // Peak-energy strobe — subtle full-canvas gold wash on rare frames when holding near max power
+    if(energy>.88 && Math.random()<.08){
+      ctx.globalCompositeOperation='lighter';
+      ctx.fillStyle=`rgba(232,184,109,${(0.03+Math.random()*.05).toFixed(3)})`;
+      ctx.fillRect(-20,-20,W+40,H+40);
+      ctx.globalCompositeOperation='source-over';
+    }
     if(holding&&touchX>-900){
       const intensity=.5+energy*.5;
       ctx.beginPath();ctx.arc(touchX,touchY,8+energy*8,0,6.283);ctx.fillStyle=`rgba(232,184,109,${(intensity*.22).toFixed(2)})`;ctx.shadowColor='rgba(232,184,109,1)';ctx.shadowBlur=20*intensity;ctx.fill();
@@ -2927,7 +2995,7 @@ console.log('[PACK] IIFE loaded, showPackOverlay =', typeof window.showPackOverl
           <span class="pack-back-diamond"></span>
           <span class="pack-back-line"></span>
         </div>
-        <div class="pack-back-tagline">MAKE EVERY<br>SESSION<br>LEGENDARY</div>
+        <div class="pack-back-tagline">SOME MOMENTS<br>ARE TOO LEGENDARY<br>TO FORGET</div>
         <div class="pack-count" id="packCountText">1 CARD AWAITS</div>
       </div>
     </div>
