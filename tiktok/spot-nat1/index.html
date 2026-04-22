@@ -240,8 +240,18 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
 }
 .roll-text .nat1 { color: #E04A3A; text-shadow: 0 0 30px rgba(224,74,58,.9), 0 4px 16px rgba(0,0,0,1); }
 
-/* ═══════ SCENE 3: BANDIT beats (text-heavy dark scene) ═══════ */
-.bandit-stage { background: radial-gradient(ellipse at center, #0a0a0f 0%, #000 80%); padding: 40px 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; position: relative; }
+/* ═══════ SCENE 3: BANDIT beats — close-up portrait with text overlay ═══════ */
+.bandit-stage { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 40px 30px; }
+.bandit-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.55) contrast(1.1) saturate(.9); }
+.scene.on .bandit-img { animation: banditKenBurns 5s ease-out forwards; }
+@keyframes banditKenBurns { 0% { transform: scale(1.02); } 100% { transform: scale(1.08); } }
+.bandit-ov {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.6) 0%, rgba(0,0,0,.2) 30%, rgba(0,0,0,.2) 60%, rgba(0,0,0,.85) 100%),
+    radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.7) 100%);
+}
+.bandit-text-group { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
 .bandit-text {
   font-family: 'Inter', sans-serif; font-weight: 900;
   font-size: clamp(26px, 7vw, 40px);
@@ -263,8 +273,19 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
 }
 .bandit-quote.on { animation: banditIn .4s cubic-bezier(.2,1.3,.3,1) forwards; }
 
-/* ═══════ SCENE 4: BRIDGE REVEAL — comedy zoom-out reveal ═══════ */
-.bridge-stage { background: #000; padding: 30px 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+/* ═══════ SCENE 4: BRIDGE REVEAL — THE MONEY SHOT, full-screen wide establishing ═══════ */
+.bridge-stage { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 12px; text-align: center; padding: 0 28px 48px; }
+.bridge-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.82) contrast(1.05); transform: scale(1.15); }
+.scene.on .bridge-img { animation: bridgeZoomOut 2.3s cubic-bezier(.2,.6,.2,1) forwards; }
+/* The comedy: we zoom OUT to reveal how small/mundane the bridge actually is.
+   Starts slightly zoomed in (feels dramatic) → pulls back to show the full tiny bridge. */
+@keyframes bridgeZoomOut { 0% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.bridge-ov {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 25%, transparent 45%, rgba(0,0,0,.85) 100%);
+}
+.bridge-text-group { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .bridge-label {
   font-family: 'Inter', sans-serif; font-weight: 700;
   font-size: clamp(20px, 5.5vw, 30px);
@@ -462,16 +483,16 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
   <div class="setup-header">
     <div class="sub">✦ Legendary Cards Series · Folge 1</div>
     <h1>NAT 1.</h1>
-    <div class="spot-title">~11s · 9:16 · raw TikTok format</div>
+    <div class="spot-title">~15s · 9:16 · raw TikTok format</div>
   </div>
   <div class="setup-concept">
-    <strong>Concept:</strong> Participation-first TikTok. Opens with universal D&D pain ("I rolled a Nat 1"), payoff in 3s with card reveal, ends with comment-bait CTA: "Drop your Nat 1 story 👇 best one becomes next video's card." — User <strong>folgen weil sie in Folge 2 dabei sein könnten.</strong>
+    <strong>Concept:</strong> "You Shall Not Pass!" D&D-parody as Folge 1 der Legendary Cards Series. Wizard Lyrin schreit den epischen Gandalf-Moment — bandit sagt "'scuse me" und läuft vorbei. Payoff: es war nur eine 3ft-Holzbrücke über 'nen Bach. Ends with comment-bait CTA: "Drop your most dramatic D&D moment 👇 best one becomes next video's card." — User <strong>folgen weil sie in Folge 2 dabei sein könnten.</strong>
     <br><br>
-    <strong>Serie-Template:</strong> Gleiches Format, andere Themen (Nat 20, Worst DM Call, Character Death, etc.). Pro Folge User-Comments → Content-Pipeline.
+    <strong>5-Shot-Storytelling:</strong> Dramatic Pose → Shocked Reaction → Bandit Close-Up → Wide Bridge Reveal (Money Shot) → Card Portrait. Jeder Shot dient einem narrative beat.
   </div>
 
   <div class="shot-grid" id="shotGrid"></div>
-  <div id="cost-meter">Est. cost: €<span id="costTotal">0.08</span> for 2 images · €0.04 per re-roll</div>
+  <div id="cost-meter">Est. cost: €<span id="costTotal">0.20</span> for 5 images · €0.04 per re-roll</div>
   <div class="setup-actions">
     <button class="big-btn ghost" onclick="clearCache()">↻ Clear cache</button>
     <button class="big-btn" id="genAllBtn" onclick="generateAll()">⚡ Generate all missing</button>
@@ -505,22 +526,30 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
       </div>
     </div>
 
-    <!-- SCENE 3: BANDIT beats — 3 text changes on dark background (3–6s) -->
+    <!-- SCENE 3: BANDIT beats — bandit close-up + text overlays (3–6s) -->
     <div class="scene" id="sceneBandit">
       <div class="bandit-stage">
-        <div class="bandit-text" id="banditText1">the bandit said</div>
-        <div class="bandit-quote" id="banditText2">"'scuse me."</div>
-        <div class="bandit-text small" id="banditText3">stepped around me.</div>
-        <div class="bandit-text small" id="banditText4">continued walking.</div>
+        <img class="bandit-img" id="banditImg" alt="">
+        <div class="bandit-ov"></div>
+        <div class="bandit-text-group">
+          <div class="bandit-text" id="banditText1">the bandit said</div>
+          <div class="bandit-quote" id="banditText2">"'scuse me."</div>
+          <div class="bandit-text small" id="banditText3">stepped around me.</div>
+          <div class="bandit-text small" id="banditText4">continued walking.</div>
+        </div>
       </div>
     </div>
 
-    <!-- SCENE 4: THE REVEAL — "3-foot footbridge over a creek" (6–8.3s) -->
+    <!-- SCENE 4: THE REVEAL — THE MONEY SHOT, wide footbridge shot (6–8.3s) -->
     <div class="scene" id="sceneBridge">
       <div class="bridge-stage">
-        <div class="bridge-label" id="bridgeLabel">we were on a</div>
-        <div class="bridge-title" id="bridgeTitle">3-foot footbridge.</div>
-        <div class="bridge-subtitle" id="bridgeSub">over a creek.</div>
+        <img class="bridge-img" id="bridgeImg" alt="">
+        <div class="bridge-ov"></div>
+        <div class="bridge-text-group">
+          <div class="bridge-label" id="bridgeLabel">we were on a</div>
+          <div class="bridge-title" id="bridgeTitle">3-foot footbridge.</div>
+          <div class="bridge-subtitle" id="bridgeSub">over a creek.</div>
+        </div>
       </div>
     </div>
 
@@ -628,18 +657,39 @@ function applyStaticOverrides() {
 // wizard-fireball-backfire scenario (universally recognizable D&D fail).
 const SHOTS = [
   {
+    slug: 'lyrin-dramatic',
+    name: 'Lyrin — Dramatic "You Shall Not Pass" Pose',
+    width: 1440, height: 2560,
+    prompt: `Dynamic full-body heroic pose shot, low angle looking up. Character: 28-year-old female half-elf wizard named Lyrin, strikingly beautiful with high sharp cheekbones and confident graceful bone structure, oval face, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with a single striking silver-white streak running from her left temple to the tip (mark of her arcane bond to the moon), flowing dramatically in a gust of wind, pale fair porcelain skin, heterochromia — left eye warm hazel, right eye pale silver-gray, both eyes fierce and blazing with determination gazing down at the viewer, dark arched eyebrows knitted fiercely, full lips pressed together in resolute command, small celestial rune tattooed at her left temple, subtle beauty mark below right eye, small silver moon-and-star pendant at throat. Outfit: elegant midnight blue wizard robe with intricate silver celestial embroidery (stars, moons, constellations), tailored form-fitting cut, cape flowing dramatically in the wind. Pose: standing planted firmly with both feet shoulder-width apart, staff held high above her head with both hands in a commanding "YOU SHALL NOT PASS" Gandalf-style power stance, arm raised, fierce Warrior-mage presence. Emotion: epic heroic defiance, channeling gravitas, operatic drama. Environment: misty mountain pass or narrow stone bridge at dusk with swirling fog behind her, dramatic sky with storm clouds, dust and leaves swirling at her feet, distant silhouette suggesting a greater threat approaches. Lighting: backlit rim light creating heroic silhouette, golden-hour warm highlights on her face and raised staff, volumetric light rays piercing through the mist, deep dramatic shadows. Composition: low-angle hero shot emphasizing her power, full body visible, staff raised into the top of the frame. cinematic fantasy, photorealistic, 8K, sharp focus, operatic lighting, cinematic framing like a movie key art poster, no text, no watermark, no deformed hands, no blur`,
+    targetImg: ['dramaImg']
+  },
+  {
     slug: 'wizard-shocked',
     name: 'Lyrin — Shocked Reaction',
     width: 1440, height: 2560,
-    prompt: `Extreme close-up portrait shot. Character: 28-year-old female half-elf wizard named Lyrin, strikingly beautiful in an elegant elven way with high sharp cheekbones and confident graceful bone structure, oval face, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with wavy texture and a single striking silver-white streak running from her left temple all the way down to the tip (mark of her arcane bond to the moon), ends singed black with faint smoke wisps rising, pale fair porcelain skin with distinct soot smudges across her left cheek and the bridge of her nose, heterochromia — left eye warm hazel, right eye pale silver-gray (from a spell mishap at age 14), both eyes wide open in absolute shock with dark arched eyebrows raised high, full soft lips parted in an agape "oh no" expression of real horror and disbelief, small delicate celestial rune tattooed at her left temple barely visible past her hair, subtle beauty mark just below her right eye. Outfit: once-elegant midnight blue wizard robe with fine silver celestial embroidery (stars, moons, constellations) at the collar, tailored form-fitting cut, now tattered and burned black at the edges of the collar and shoulders, small silver moon-and-star pendant on thin chain at her throat. Emotion: raw embarrassed shock, catastrophic moment just occurred, frozen in time. Environment: standing in an ancient stone dungeon chamber after a magical accident, scorched stone walls behind her with smoldering dark scorch marks, warm orange ember particles drifting through air around her face in soft focus, faint red-orange residual glow from smoldering scorch marks illuminating her face from below. Lighting: dramatic cinematic chiaroscuro, flattering soft key-light from 45-degree angle with warm amber tone accenting her cheekbones, subtle rim-light on her hair catching the silver streak, deep shadows, shallow depth of field with blurred ember particles in foreground bokeh. cinematic fantasy, photorealistic, sharp focus on face, 8K, emotional intensity, portrait photography, no text, no watermark, no blur on subject, no deformed hands, no visible fireball, no open flames in frame, no magical effects in frame`,
+    prompt: `Extreme close-up portrait shot. Character: 28-year-old female half-elf wizard named Lyrin, strikingly beautiful in an elegant elven way with high sharp cheekbones and confident graceful bone structure, oval face, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with wavy texture and a single striking silver-white streak running from her left temple all the way down to the tip, ends slightly tousled, pale fair porcelain skin with faint dirt smudge across her left cheek, heterochromia — left eye warm hazel, right eye pale silver-gray — both eyes wide open in absolute shock and disbelief, dark arched eyebrows raised high, full soft lips parted in an agape "oh no" expression of stunned horror, small delicate celestial rune tattooed at her left temple barely visible past her hair, subtle beauty mark just below her right eye, small silver moon-and-star pendant at throat. Outfit: midnight blue wizard robe with fine silver celestial embroidery, still elegant. Emotion: raw embarrassed shock, catastrophic moment just occurred, frozen in time, realizing a disastrous failure. Environment: outdoors near a small wooden footbridge, soft mossy forest background blurred, warm natural daylight. Lighting: flattering soft key-light from 45-degree angle with warm daylight tone, subtle rim-light on her hair catching the silver streak, shallow depth of field. cinematic fantasy, photorealistic, sharp focus on face, 8K, portrait photography, magazine-cover quality, no text, no watermark, no deformed hands, no blur`,
     targetImg: ['reactionImg']
+  },
+  {
+    slug: 'bandit-close',
+    name: 'Bandit — Unbothered Close-Up',
+    width: 1440, height: 2560,
+    prompt: `Medium close-up portrait shot. Character: 40-year-old human male bandit named Garrick, rough scruffy appearance with weathered weather-beaten face, 4-day salt-and-pepper stubble beard, crooked nose that has been broken twice, thin pink scar running across his left cheek from old knife fight, short dirty dark-brown hair messily swept back, tired brown eyes with dark circles underneath, raised left eyebrow in mild confusion or polite skepticism, mouth slightly open as if about to say something casual and unimportant, small gold hoop earring in left ear. Outfit: worn brown leather armor vest over stained off-white linen undershirt, leather baldric across chest, simple dark green scarf tied loosely at throat, fingerless leather gloves visible at shoulders, rough fabric that has seen many miles. Emotion: completely unbothered, mildly bored, "just trying to get somewhere" energy, utterly unimpressed, everyday person who has seen weird magical nonsense a hundred times and stopped caring. Environment: outdoor forest path with soft green foliage and dappled daylight behind him, peaceful mundane setting. Lighting: natural soft daylight from overhead filtering through forest canopy, gentle shadows, no dramatic lighting, realistic documentary-style. Composition: centered, portrait, shoulders-up, looking slightly off-camera with a deadpan expression. cinematic fantasy, photorealistic, 8K, sharp focus on face, shallow depth of field, candid documentary-style photography, no text, no watermark, no deformed hands, no blur`,
+    targetImg: ['banditImg']
+  },
+  {
+    slug: 'footbridge-wide',
+    name: '🎯 THE MONEY SHOT — Footbridge Wide Angle',
+    width: 1440, height: 2560,
+    prompt: `Wide establishing shot in vertical portrait format, full-length figures visible. Two characters on a small wooden footbridge seen from a slight distance: On the left side of the bridge, Lyrin — a 28-year-old female half-elf wizard striking an epic Gandalf-style heroic pose with her staff raised dramatically high above her head with both hands, feet planted shoulder-width apart in a commanding power stance, cape and long chestnut-brown hair with a single silver-white streak flowing in the wind, elegant midnight blue wizard robe with silver celestial embroidery, fierce determined expression looking toward the other figure. On the right side, walking casually past her with complete disinterest, Garrick — a 40-year-old human male bandit in worn brown leather armor with scruffy salt-and-pepper stubble, hands in his pockets, mild polite shrug, clearly unbothered and just trying to cross the bridge without making a scene. The footbridge itself is VERY SMALL AND MUNDANE — only 3 feet long, 2 feet wide, built of simple weathered wooden planks with a low rope railing, crossing a peaceful shallow creek no more than a foot deep with clear water flowing gently over smooth round pebbles visible at the bottom. The surrounding environment is a calm mossy sunlit forest path, soft green foliage, completely ordinary and unthreatening. The visual comedy comes from the dramatic contrast: her epic heroic posture vs the tiny bridge and uninterested bandit. Both characters fully visible in frame, bridge scale clearly readable as small. Lighting: warm natural golden daylight, soft dappled light through forest canopy, peaceful mundane atmosphere (NOT dramatic lighting — the joke is that the setting is ordinary). cinematic fantasy, photorealistic, 8K, sharp focus on both characters, wide establishing shot, full environmental context, no text, no watermark, no deformed hands, no blur`,
+    targetImg: ['bridgeImg']
   },
   {
     slug: 'wizard-card-portrait',
     name: 'Lyrin — Card Portrait',
     width: 1440, height: 2560,
     prompt: `Medium shot portrait, framed from head to waist. Character: same 28-year-old female half-elf wizard named Lyrin with identical features for visual continuity — strikingly beautiful in an elegant elven way with high sharp cheekbones and confident graceful bone structure, oval face, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with wavy texture and a single striking silver-white streak running from her left temple all the way down to the tip, ends singed black subtly, pale fair porcelain skin with subtle soot smudge on her left cheek, heterochromia — left eye warm hazel, right eye pale silver-gray — gazing slightly off-camera to the left with weary wisdom and quiet resilience, dark arched eyebrows, full soft lips in subtle mysterious half-smile, small delicate celestial rune tattooed at her left temple just visible past her hair, subtle beauty mark just below her right eye, small silver moon-and-star pendant on thin chain at her throat. Outfit: elegant midnight blue wizard robe with intricate silver celestial embroidery (stars, moons, constellations) tailored form-fitting cut still beautiful despite burned tattered edges at the shoulders and cuffs, thin silver belt, leather-bound spellbook with burned cover visible hanging at her hip. Emotion: contemplative weary dignity, confident mysterious half-smile, survived-something-terrible expression, quietly resilient and magnetic. Environment: standing centered in a dark arcane study chamber, background softly out of focus showing faint glowing silver-blue arcane runes carved into stone walls, warm ember particles gently floating in the air around her in soft bokeh, atmospheric mist. Lighting: flattering warm dramatic fantasy lighting from front-left casting gentle shadow on right side of her face, soft volumetric light rays catching the silver streak in her hair, subtle rim-light defining her silhouette, shallow depth of field, face positioned in upper third of vertical frame, generous empty space below for text overlay, darker vignette along bottom third. Composition: centered, portrait, head-to-waist, no hands in frame, no objects held in hands. cinematic fantasy, photorealistic, 8K, sharp focus on face and upper body, shallow depth of field, magazine-cover quality, no text, no watermark, no deformed hands, no visible hands, no blur`,
-    targetImg: ['cardImg', 'dramaImg']
+    targetImg: ['cardImg']
   }
 ];
 
