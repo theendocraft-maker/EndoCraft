@@ -61,11 +61,15 @@ html, body {
 /* ═══════════ PLAYER ═══════════ */
 #player { position: fixed; inset: 0; z-index: 20; display: none; background: #000; overflow: hidden; }
 #player.visible { display: flex; align-items: center; justify-content: center; }
-/* Stage: fits viewport at 9:16 aspect. On mobile (≤9:16 screens) fills full width; on desktop clamps to 9:16 by viewport height. 100dvh avoids iOS Safari address-bar trap. */
+/* Stage: fits viewport at 9:16 aspect. On mobile (≤9:16 screens) fills full width; on desktop clamps by viewport height. 100dvh avoids iOS Safari address-bar trap — with 100vh fallback for older iOS. */
 #stage {
   position: relative;
+  width: min(100vw, calc(100vh * 9 / 16));
+  height: min(100vh, calc(100vw * 16 / 9));
   width: min(100vw, calc(100dvh * 9 / 16));
   height: min(100dvh, calc(100vw * 16 / 9));
+  max-width: 100vw;
+  max-height: 100dvh;
   background: #000;
   overflow: hidden;
 }
@@ -131,11 +135,12 @@ html, body {
 .hook-text-wrap { position: absolute; bottom: 20%; left: 0; right: 0; text-align: center; }
 .hook-text {
   font-family: 'Cinzel Decorative', serif;
-  font-size: 38px; font-weight: 900;
+  font-size: clamp(26px, 9vw, 38px); font-weight: 900;
   color: #fff; letter-spacing: 2px;
   text-shadow: 0 0 40px rgba(232,184,109,.4), 0 3px 14px rgba(0,0,0,.9);
   opacity: 0; transition: opacity .35s ease;
   position: absolute; inset: 0;
+  padding: 0 24px;
 }
 .hook-text.on { opacity: 1; }
 
@@ -164,10 +169,10 @@ html, body {
 }
 .tagline-text {
   font-family: 'EB Garamond', serif; font-style: italic;
-  font-size: 30px; color: rgba(255,255,255,.95);
-  text-align: center; padding: 0 34px; line-height: 1.3;
+  font-size: clamp(20px, 7vw, 30px); color: rgba(255,255,255,.95);
+  text-align: center; padding: 0 28px; line-height: 1.3;
   text-shadow: 0 0 28px rgba(232,184,109,.35);
-  max-width: 86%;
+  max-width: 92%;
   opacity: 0; transform: translateY(10px);
   transition: opacity .6s ease, transform .8s cubic-bezier(.23,1.3,.32,1);
 }
@@ -206,8 +211,8 @@ html, body {
 
 .rarity-reveal { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; pointer-events: none; }
 .rarity-reveal.show { opacity: 1; transition: opacity .35s ease; }
-.rr-top { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 10px; color: rgba(232,184,109,.65); text-transform: uppercase; transform: translateY(16px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); }
-.rr-title { font-family: 'Cinzel Decorative', serif; font-size: 54px; font-weight: 900; color: #F2D187; letter-spacing: 6px; text-shadow: 0 0 40px rgba(232,184,109,.8), 0 0 90px rgba(232,184,109,.5); transform: translateY(20px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); }
+.rr-top { font-family: 'Cinzel', serif; font-size: clamp(9px, 2.6vw, 11px); letter-spacing: clamp(6px, 2.4vw, 10px); color: rgba(232,184,109,.65); text-transform: uppercase; transform: translateY(16px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); padding: 0 16px; text-align: center; }
+.rr-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(32px, 11vw, 54px); font-weight: 900; color: #F2D187; letter-spacing: clamp(2px, 1.2vw, 6px); text-shadow: 0 0 40px rgba(232,184,109,.8), 0 0 90px rgba(232,184,109,.5); transform: translateY(20px); opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.23,1.3,.32,1); padding: 0 16px; text-align: center; }
 .rarity-reveal.show .rr-top { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
 .rarity-reveal.show .rr-title { opacity: 1; transform: translateY(0); transition-delay: 150ms; }
 
@@ -241,6 +246,33 @@ html, body {
 .cta-sub.on { opacity: 1; transform: translateY(0); }
 .cta-brand { position: absolute; bottom: 6%; left: 0; right: 0; text-align: center; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 5px; color: rgba(232,184,109,.4); text-transform: uppercase; opacity: 0; transition: opacity .5s ease .6s; }
 .cta-brand.on { opacity: 1; }
+
+/* ── BRAND WATERMARK — persistent through all scenes, top-left corner ── */
+.brand-watermark {
+  position: absolute; top: 14px; left: 14px; z-index: 30;
+  display: flex; align-items: center; gap: 7px;
+  pointer-events: none;
+  opacity: .85;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.85));
+}
+.brand-watermark img {
+  width: 24px; height: 24px; object-fit: contain;
+  filter: drop-shadow(0 0 5px rgba(232,184,109,.6));
+}
+.brand-watermark span {
+  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; color: rgba(232,184,109,.85); text-transform: uppercase;
+}
+
+/* CTA logo — full brand reveal in the final beat */
+.cta-logo {
+  width: 68px; height: 68px; object-fit: contain;
+  filter: drop-shadow(0 0 24px rgba(232,184,109,.7)) drop-shadow(0 0 48px rgba(232,184,109,.35));
+  margin-bottom: 4px;
+  opacity: 0; transform: scale(.75);
+  transition: opacity .6s ease, transform .7s cubic-bezier(.23,1.3,.32,1);
+}
+.cta-logo.on { opacity: 1; transform: scale(1); }
 
 /* ── HUD ── */
 .player-hud { position: absolute; top: 12px; right: 12px; z-index: 50; display: flex; gap: 8px; align-items: center; }
@@ -403,10 +435,17 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
     <!-- SCENE 8: CTA -->
     <div class="scene" id="sceneCta">
       <div class="cta-stage">
+        <img class="cta-logo" id="ctaLogo" src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft">
         <div class="cta-url" id="ctaUrl">endocraft.app</div>
         <div class="cta-sub" id="ctaSub">Your session. Your card. <em>Forever.</em></div>
         <div class="cta-brand" id="ctaBrand">✦ Roll. Reveal. Remember.</div>
       </div>
+    </div>
+
+    <!-- PERSISTENT BRAND WATERMARK (top-left, all scenes) -->
+    <div class="brand-watermark">
+      <img src="https://endocraft.app/IMG_8431.PNG" alt="">
+      <span>EndoCraft</span>
     </div>
 
     <!-- HUD -->
@@ -682,9 +721,10 @@ function buildTimeline() {
 
     // ACT 6: CTA (13–15s)
     { at: 13000, do: () => { show('sceneCta'); } },
-    { at: 13200, do: () => document.getElementById('ctaUrl').classList.add('on') },
-    { at: 13400, do: () => document.getElementById('ctaSub').classList.add('on') },
-    { at: 13800, do: () => document.getElementById('ctaBrand').classList.add('on') },
+    { at: 13100, do: () => document.getElementById('ctaLogo').classList.add('on') },
+    { at: 13400, do: () => document.getElementById('ctaUrl').classList.add('on') },
+    { at: 13600, do: () => document.getElementById('ctaSub').classList.add('on') },
+    { at: 14000, do: () => document.getElementById('ctaBrand').classList.add('on') },
 
     // Loop at 15s
     { at: 15000, do: () => restart() }
@@ -747,7 +787,7 @@ function restartAnim(elId, cls) {
 }
 
 function resetAllTexts() {
-  ['hookText1','hookText2','capEpic','capKiss','capParty','taglineText','ctaUrl','ctaSub','ctaBrand'].forEach(id => {
+  ['hookText1','hookText2','capEpic','capKiss','capParty','taglineText','ctaLogo','ctaUrl','ctaSub','ctaBrand'].forEach(id => {
     const el = document.getElementById(id); if (el) el.classList.remove('on');
   });
   const d20 = document.getElementById('d20wrap'); if (d20) d20.classList.remove('tumble','landed');
