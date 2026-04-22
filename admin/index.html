@@ -930,10 +930,11 @@ const TIKTOK_SPOTS = [
         ]
       },
       {
-        title: 'Comment-Bait (7–9.5s) — THE FOLLOW TRIGGER',
+        title: 'Comment-Bait (7.8–10.8s) — THE FOLLOW TRIGGER',
         fields: [
-          { key: 'baitTitle', label: 'Bait headline', at: 7000, defaultValue: 'Drop your Nat 1 story' },
-          { key: 'baitSub', label: 'Bait subline', at: 7800, defaultValue: "Best one becomes <strong>next video's card.</strong>" }
+          { key: 'baitKicker', label: 'Kicker (top small red text)', at: 7800, defaultValue: '✦ YOUR TURN' },
+          { key: 'baitTitle', label: 'Bait headline', at: 8100, defaultValue: 'Drop <span class="highlight">YOUR</span> Nat 1 story', hint: '<span class="highlight">...</span> kriegt orange-italic Emphasis' },
+          { key: 'baitSub', label: 'Bait subline (payoff-hook)', at: 8700, defaultValue: 'Top reply becomes <span class="payoff">next video\'s card.</span>', hint: '<span class="payoff">...</span> gold + underline + pulse' }
         ]
       },
       {

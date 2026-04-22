@@ -126,7 +126,13 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
   width: min(62%, 260px); aspect-ratio: 3/4;
   border-radius: 14px; overflow: hidden;
   background: #0a0404;
-  box-shadow: 0 0 0 2px rgba(224,74,58,.7), 0 20px 60px rgba(0,0,0,.95), 0 0 80px rgba(224,74,58,.4);
+  /* Premium misprint aesthetic: thin gold rim (brand signal) + subtle inner red hint + ambient red haze.
+     Feels like "rare collectible with damage printing", NOT like "ERROR badge". */
+  box-shadow:
+    0 0 0 1px rgba(232,184,109,.45),
+    inset 0 0 0 1px rgba(224,74,58,.22),
+    0 20px 60px rgba(0,0,0,.95),
+    0 0 110px rgba(224,74,58,.18);
   opacity: 0; transform: scale(.6) rotate(-3deg);
 }
 .misprint-card.snap { animation: cardSnap .45s cubic-bezier(.2,1.4,.3,1) forwards, misprintGlitch 2.4s steps(20) .45s infinite; }
@@ -174,11 +180,28 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
   text-shadow: 0 2px 12px rgba(0,0,0,.95);
 }
 
-/* Scene 4: SERIAL CLOSE-UP — huge number + tagline */
-.serial-stage { background: radial-gradient(ellipse at center, #1a0808 0%, #000 80%); padding: 40px 30px; gap: 30px; text-align: center; }
+/* Scene 4: SERIAL + CARD STILL VISIBLE — card shrinks to top half, serial number + tagline bottom half.
+   Keeps the card on screen so the viewer has ~4s total card visibility (vs 2s before). */
+.serial-stage { background: radial-gradient(ellipse at center, #1a0808 0%, #000 80%); padding: 30px 24px; gap: 18px; text-align: center; display: flex; flex-direction: column; }
+.serial-card-mini {
+  position: relative;
+  width: min(44%, 180px); aspect-ratio: 3/4;
+  border-radius: 12px; overflow: hidden;
+  background: #0a0404;
+  box-shadow: 0 0 0 1px rgba(232,184,109,.45), inset 0 0 0 1px rgba(224,74,58,.22), 0 16px 40px rgba(0,0,0,.9), 0 0 80px rgba(224,74,58,.18);
+  margin: 0 auto;
+  transform: scale(.9); opacity: 0;
+}
+.serial-card-mini.show { animation: serialCardIn .4s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes serialCardIn { to { opacity: 1; transform: scale(1); } }
+.serial-card-mini img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.7) contrast(1.1); }
+.serial-card-mini::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(10,4,4,.3) 0%, transparent 30%, transparent 60%, rgba(10,4,4,.9) 100%);
+}
 .serial-big {
   font-family: 'Cinzel Decorative', serif; font-weight: 900;
-  font-size: clamp(72px, 18vw, 120px);
+  font-size: clamp(56px, 14vw, 96px);
   color: #E04A3A; line-height: 1; letter-spacing: -.02em;
   text-shadow: 2px 0 rgba(0,224,255,.3), -2px 0 rgba(255,240,0,.3), 0 0 50px rgba(224,74,58,.6);
   transform: scale(.3); opacity: 0;
@@ -191,45 +214,78 @@ html, body { background: #000; color: #fff; font-family: 'DM Sans', sans-serif; 
 }
 .serial-text {
   font-family: 'Inter', sans-serif; font-weight: 900;
-  font-size: clamp(22px, 5.5vw, 32px);
+  font-size: clamp(18px, 4.5vw, 26px);
   color: #fff; line-height: 1.15; letter-spacing: -.01em;
   max-width: 90%;
+  margin: 0 auto;
   opacity: 0; transform: translateY(14px);
 }
 .serial-text.on { animation: serialTextIn .6s cubic-bezier(.2,.8,.3,1) forwards; }
 @keyframes serialTextIn { to { opacity: 1; transform: translateY(0); } }
 .serial-text .red { color: #E04A3A; }
 
-/* Scene 5: COMMENT BAIT — big text + pulsing arrow */
-.bait-stage { background: #000; padding: 40px 30px; gap: 18px; text-align: center; }
+/* Scene 5: COMMENT BAIT — THIS IS THE FOLLOW-TRIGGER. Bigger, louder, more emphasis. The
+   user needs to understand: "Reply with my story → I might be featured next week → FOLLOW." */
+.bait-stage { background: radial-gradient(ellipse at center, #1a0a0a 0%, #000 75%); padding: 30px 22px; gap: 16px; text-align: center; position: relative; }
+/* Subtle pulsing red frame for urgency — like a comment prompt is begging to be answered */
+.bait-stage::before {
+  content: '';
+  position: absolute; inset: 16px;
+  border: 2px solid rgba(224,74,58,.25);
+  border-radius: 18px;
+  pointer-events: none;
+  animation: baitBorderPulse 1.6s ease-in-out infinite;
+}
+@keyframes baitBorderPulse {
+  0%,100% { border-color: rgba(224,74,58,.2); box-shadow: inset 0 0 30px rgba(224,74,58,.05); }
+  50%     { border-color: rgba(224,74,58,.55); box-shadow: inset 0 0 50px rgba(224,74,58,.15); }
+}
+.bait-kicker {
+  font-family: 'Cinzel', serif; font-weight: 700;
+  font-size: clamp(11px, 3vw, 14px);
+  letter-spacing: 4px; color: #E04A3A; text-transform: uppercase;
+  opacity: 0; transform: translateY(8px);
+}
+.bait-kicker.on { animation: baitIn .4s ease forwards; }
 .bait-title {
   font-family: 'Inter', sans-serif; font-weight: 900;
-  font-size: clamp(30px, 8vw, 46px);
-  color: #fff; line-height: 1.05; letter-spacing: -.02em;
+  font-size: clamp(36px, 10vw, 56px);
+  color: #fff; line-height: 1.0; letter-spacing: -.025em;
   opacity: 0; transform: translateY(14px);
 }
 .bait-title.on { animation: baitIn .5s cubic-bezier(.2,.8,.3,1) forwards; }
+.bait-title .highlight { color: #ff8070; font-style: italic; }
 @keyframes baitIn { to { opacity: 1; transform: translateY(0); } }
 .bait-arrow {
-  font-size: clamp(50px, 14vw, 80px); line-height: 1;
+  font-size: clamp(64px, 18vw, 100px); line-height: 1;
   display: inline-block;
-  animation: arrowBounce 1s ease-in-out infinite;
-  filter: drop-shadow(0 4px 12px rgba(224,74,58,.6));
+  animation: arrowBounce .9s ease-in-out infinite;
+  filter: drop-shadow(0 6px 20px rgba(224,74,58,.7));
 }
 @keyframes arrowBounce {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(10px); }
+  0%,100% { transform: translateY(0) scale(1); }
+  50%     { transform: translateY(14px) scale(1.08); }
 }
 .bait-sub {
-  font-family: 'DM Sans', sans-serif; font-weight: 700;
-  font-size: clamp(16px, 4.4vw, 22px);
-  color: rgba(224,74,58,.9); line-height: 1.3; letter-spacing: 0;
-  max-width: 85%;
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(20px, 5.5vw, 28px);
+  color: #fff; line-height: 1.25; letter-spacing: -.01em;
+  max-width: 90%; margin: 0 auto;
   opacity: 0; transform: translateY(10px);
   transition: opacity .5s ease, transform .6s cubic-bezier(.2,.8,.3,1);
 }
 .bait-sub.on { opacity: 1; transform: translateY(0); }
-.bait-sub strong { color: #fff; }
+/* "next video's card" gets its own pop — gold on red (brand + urgency) */
+.bait-sub .payoff {
+  display: inline-block; color: #E8B86D;
+  text-decoration: underline; text-decoration-color: rgba(232,184,109,.7);
+  text-decoration-thickness: 3px; text-underline-offset: 4px;
+  animation: payoffPulse 1.4s ease-in-out infinite;
+}
+@keyframes payoffPulse {
+  0%,100% { filter: brightness(1) drop-shadow(0 0 10px rgba(232,184,109,.4)); }
+  50%     { filter: brightness(1.25) drop-shadow(0 0 20px rgba(232,184,109,.8)); }
+}
 
 /* Scene 6: CTA — quick gold flash + URL */
 .cta-stage { background: #000; padding: 40px 20px; gap: 12px; text-align: center; }
@@ -338,20 +394,22 @@ body.recording .player-hud, body.recording .player-progress { display: none; }
       </div>
     </div>
 
-    <!-- SCENE 4: SERIAL CLOSE-UP (5.5–7s) -->
+    <!-- SCENE 4: SERIAL + CARD STILL VISIBLE (card stays on screen for visual continuity) -->
     <div class="scene" id="sceneSerial">
       <div class="serial-stage">
+        <div class="serial-card-mini" id="serialCardMini"><img id="serialCardImg" alt=""></div>
         <div class="serial-big" id="serialBig">Nº 1/300</div>
         <div class="serial-text" id="serialText">The <span class="red">rarer the fail</span><br>the rarer the card.</div>
       </div>
     </div>
 
-    <!-- SCENE 5: COMMENT BAIT (7–9.5s) -->
+    <!-- SCENE 5: COMMENT BAIT — the follow-trigger, now visually loudest -->
     <div class="scene" id="sceneBait">
       <div class="bait-stage">
-        <div class="bait-title" id="baitTitle">Drop your Nat 1 story</div>
+        <div class="bait-kicker" id="baitKicker">✦ YOUR TURN</div>
+        <div class="bait-title" id="baitTitle">Drop <span class="highlight">YOUR</span> Nat 1 story</div>
         <div class="bait-arrow">👇</div>
-        <div class="bait-sub" id="baitSub">Best one becomes <strong>next video's card.</strong></div>
+        <div class="bait-sub" id="baitSub">Top reply becomes <span class="payoff">next video's card.</span></div>
       </div>
     </div>
 
@@ -398,6 +456,7 @@ function applyStaticOverrides() {
     '#revealText':    'revealText',
     '#serialBig':     'serialBig',
     '#serialText':    'serialText',
+    '#baitKicker':    'baitKicker',
     '#baitTitle':     'baitTitle',
     '#baitSub':       'baitSub',
     '#ctaUrl':        'ctaUrl',
@@ -428,7 +487,7 @@ const SHOTS = [
     name: 'Lyrin — Card Portrait',
     width: 1440, height: 2560,
     prompt: `Medium shot portrait, framed from head to waist. Character: same 28-year-old female half-elf wizard named Lyrin with identical features for visual continuity — strikingly beautiful in an elegant elven way with high sharp cheekbones and confident graceful bone structure, oval face, pointed elven ears clearly visible, long flowing dark chestnut-brown hair with wavy texture and a single striking silver-white streak running from her left temple all the way down to the tip, ends singed black subtly, pale fair porcelain skin with subtle soot smudge on her left cheek, heterochromia — left eye warm hazel, right eye pale silver-gray — gazing slightly off-camera to the left with weary wisdom and quiet resilience, dark arched eyebrows, full soft lips in subtle mysterious half-smile, small delicate celestial rune tattooed at her left temple just visible past her hair, subtle beauty mark just below her right eye, small silver moon-and-star pendant on thin chain at her throat. Outfit: elegant midnight blue wizard robe with intricate silver celestial embroidery (stars, moons, constellations) tailored form-fitting cut still beautiful despite burned tattered edges at the shoulders and cuffs, thin silver belt, leather-bound spellbook with burned cover visible hanging at her hip. Emotion: contemplative weary dignity, confident mysterious half-smile, survived-something-terrible expression, quietly resilient and magnetic. Environment: standing centered in a dark arcane study chamber, background softly out of focus showing faint glowing silver-blue arcane runes carved into stone walls, warm ember particles gently floating in the air around her in soft bokeh, atmospheric mist. Lighting: flattering warm dramatic fantasy lighting from front-left casting gentle shadow on right side of her face, soft volumetric light rays catching the silver streak in her hair, subtle rim-light defining her silhouette, shallow depth of field, face positioned in upper third of vertical frame, generous empty space below for text overlay, darker vignette along bottom third. Composition: centered, portrait, head-to-waist, no hands in frame, no objects held in hands. cinematic fantasy, photorealistic, 8K, sharp focus on face and upper body, shallow depth of field, magazine-cover quality, no text, no watermark, no deformed hands, no visible hands, no blur`,
-    targetImg: ['cardImg']
+    targetImg: ['cardImg', 'serialCardImg']
   }
 ];
 
@@ -525,28 +584,30 @@ function updatePlayButtonState() {
 // ═══════════════════════════════════════════════════════════════════════════
 function buildTimeline() {
   return [
-    // ACT 1: HOOK (0–2s)
+    // ACT 1: HOOK (0–1.8s)
     { at: 0,    do: () => { show('sceneHook'); spawnHookParticles(); } },
 
-    // ACT 2: REACTION (2–3.5s) — hard flash cut to shocked face
-    { at: 2000, do: () => { fireFlash(); show('sceneReaction'); const img = document.getElementById('reactionImg'); if (img) { img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake'); } } },
+    // ACT 2: REACTION (1.8–3.3s) — hard flash cut to shocked face
+    { at: 1800, do: () => { fireFlash(); show('sceneReaction'); const img = document.getElementById('reactionImg'); if (img) { img.classList.remove('shake'); void img.offsetWidth; img.classList.add('shake'); } } },
 
-    // ACT 3: CARD REVEAL (3.5–5.5s) — flash + misprint card snaps in
-    { at: 3500, do: () => { fireFlash(); show('sceneCardReveal'); const c = document.getElementById('misprintCard'); if (c) { c.classList.remove('snap'); void c.offsetWidth; c.classList.add('snap'); } } },
+    // ACT 3: CARD REVEAL (3.3–6s) — flash + misprint card snaps in, stays on screen 2.7s
+    { at: 3300, do: () => { fireFlash(); show('sceneCardReveal'); const c = document.getElementById('misprintCard'); if (c) { c.classList.remove('snap'); void c.offsetWidth; c.classList.add('snap'); } } },
 
-    // ACT 4: SERIAL (5.5–7s) — flash + big number pops
-    { at: 5500, do: () => { fireFlash(); show('sceneSerial'); const sb = document.getElementById('serialBig'); if (sb) { sb.classList.remove('pop'); void sb.offsetWidth; sb.classList.add('pop'); } } },
-    { at: 6100, do: () => document.getElementById('serialText').classList.add('on') },
+    // ACT 4: SERIAL + CARD STILL VISIBLE (6–7.8s) — card shrinks, Nº 1/300 pops + tagline
+    { at: 6000, do: () => { fireFlash(); show('sceneSerial'); const mini = document.getElementById('serialCardMini'); if (mini) { mini.classList.remove('show'); void mini.offsetWidth; mini.classList.add('show'); } } },
+    { at: 6350, do: () => { const sb = document.getElementById('serialBig'); if (sb) { sb.classList.remove('pop'); void sb.offsetWidth; sb.classList.add('pop'); } } },
+    { at: 6800, do: () => document.getElementById('serialText').classList.add('on') },
 
-    // ACT 5: COMMENT BAIT (7–9.5s) — "Drop your story 👇"
-    { at: 7000, do: () => { fireFlash(); show('sceneBait'); document.getElementById('baitTitle').classList.add('on'); } },
-    { at: 7800, do: () => document.getElementById('baitSub').classList.add('on') },
+    // ACT 5: COMMENT BAIT (7.8–10.8s) — THE FOLLOW-TRIGGER, now 3s + visually loud
+    { at: 7800, do: () => { fireFlash(); show('sceneBait'); document.getElementById('baitKicker').classList.add('on'); } },
+    { at: 8100, do: () => document.getElementById('baitTitle').classList.add('on') },
+    { at: 8700, do: () => document.getElementById('baitSub').classList.add('on') },
 
-    // ACT 6: CTA (9.5–11s)
-    { at: 9500, do: () => { show('sceneCta'); document.getElementById('ctaUrl').classList.add('on'); } },
+    // ACT 6: CTA (10.8–12s)
+    { at: 10800, do: () => { show('sceneCta'); document.getElementById('ctaUrl').classList.add('on'); } },
 
-    // Loop at 11s
-    { at: 11000, do: () => restart() }
+    // Loop at 12s
+    { at: 12000, do: () => restart() }
   ];
 }
 
@@ -584,7 +645,7 @@ function tick() {
   timeline.forEach((entry, i) => {
     if (!firedFlags[i] && t >= entry.at) { firedFlags[i] = true; try { entry.do(); } catch(e) { console.error(e); } }
   });
-  document.getElementById('progressBar').style.width = Math.min(100, (t / 11000) * 100) + '%';
+  document.getElementById('progressBar').style.width = Math.min(100, (t / 12000) * 100) + '%';
   rafId = requestAnimationFrame(tick);
 }
 
@@ -592,9 +653,10 @@ function tick() {
 function hideAllScenes() { document.querySelectorAll('.scene').forEach(el => el.classList.remove('on')); }
 function show(id) { hideAllScenes(); const el = document.getElementById(id); if (!el) return; void el.offsetWidth; el.classList.add('on'); }
 function resetAllTexts() {
-  ['serialText','baitTitle','baitSub','ctaUrl'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('on'); });
+  ['serialText','baitKicker','baitTitle','baitSub','ctaUrl'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('on'); });
   const sb = document.getElementById('serialBig'); if (sb) sb.classList.remove('pop');
   const mc = document.getElementById('misprintCard'); if (mc) mc.classList.remove('snap');
+  const scm = document.getElementById('serialCardMini'); if (scm) scm.classList.remove('show');
   const rImg = document.getElementById('reactionImg'); if (rImg) rImg.classList.remove('shake');
   const hp = document.getElementById('hookParticles'); if (hp) hp.innerHTML = '';
 }
