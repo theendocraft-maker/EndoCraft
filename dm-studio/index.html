@@ -302,9 +302,66 @@ body{
 
 .session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
 
-.session-read-pane{flex:1;overflow-y:auto;padding:28px 40px 40px;min-width:0;}
-.session-content-inner{max-width:880px;margin:0 auto;}
-.session-content-inner > .combat-overview{max-width:none;margin-left:-40px;margin-right:-40px;}
+.session-read-pane{flex:1;overflow-y:auto;padding:28px 36px 40px;min-width:0;}
+.session-content-inner{
+  max-width:1180px;margin:0 auto;
+  display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:30px;align-items:start;
+}
+.session-content-main{min-width:0;}
+.session-content-side{
+  position:sticky;top:0;align-self:start;
+  display:flex;flex-direction:column;gap:14px;
+  max-height:calc(100vh - 200px);overflow-y:auto;
+  padding-right:4px;
+}
+.session-content-inner > .session-content-main > .combat-overview{
+  margin-left:calc(-1 * 36px);margin-right:calc(-1 * (260px + 30px + 36px));max-width:none;
+}
+
+/* ══════ SIDE-COLUMN WIDGETS · Pyram-King Margin-Boxes ══════ */
+.side-widget{
+  background:#fbf6e6;border:1px solid #d9c89a;border-radius:4px;
+  overflow:hidden;box-shadow:0 1px 4px rgba(91,61,24,0.06);
+  font-size:13px;
+}
+.side-widget-h{
+  padding:8px 12px;background:linear-gradient(to bottom,var(--crimson),#941c12);color:#fdf6e8;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;
+  display:flex;align-items:center;gap:7px;border-bottom:1px solid #7a1810;
+}
+.side-widget-h .ico{font-size:12px;}
+.side-widget-b{padding:10px 12px;}
+
+.side-pc{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dotted var(--border);cursor:pointer;transition:background .1s;margin:0 -4px;padding-left:4px;padding-right:4px;border-radius:3px;}
+.side-pc:last-child{border-bottom:none;}
+.side-pc:hover{background:rgba(168,35,24,0.06);}
+.side-pc-av{width:26px;height:26px;border-radius:50%;overflow:hidden;background:var(--accent-dim);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:var(--accent);}
+.side-pc-av img{width:100%;height:100%;object-fit:cover;}
+.side-pc-info{flex:1;min-width:0;}
+.side-pc-name{font-weight:700;font-size:12.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.side-pc-meta{font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+.side-pc-hp{font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 6px;border-radius:3px;border:1px solid var(--border-strong);background:#fff;flex-shrink:0;}
+.side-pc-hp.low{border-color:var(--crimson);color:var(--crimson);font-weight:700;}
+.side-pc-hp.mid{border-color:var(--gold);color:var(--gold);font-weight:700;}
+
+.side-npc{padding:8px 0;border-bottom:1px dotted var(--border);cursor:pointer;transition:background .1s;margin:0 -4px;padding-left:4px;padding-right:4px;border-radius:3px;}
+.side-npc:last-child{border-bottom:none;}
+.side-npc:hover{background:rgba(168,35,24,0.06);}
+.side-npc-name{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--crimson);letter-spacing:.3px;margin-bottom:3px;}
+.side-npc-stats{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dim);display:flex;gap:10px;flex-wrap:wrap;}
+.side-npc-stats span{white-space:nowrap;}
+.side-npc-stats strong{color:var(--ink);}
+
+.side-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);line-height:1.55;padding:6px 0;border-bottom:1px dotted var(--border);}
+.side-note:last-child{border-bottom:none;}
+.side-note-time{color:var(--gold);font-weight:700;}
+
+.side-flow-step{font-size:11.5px;color:var(--text);padding:4px 0;padding-left:14px;position:relative;line-height:1.4;}
+.side-flow-step::before{content:'›';position:absolute;left:0;color:var(--crimson);font-weight:700;}
+.side-flow-step.current{background:rgba(168,35,24,0.08);padding-left:14px;padding-right:8px;border-radius:3px;font-weight:600;color:var(--ink);}
+.side-flow-step.current::before{content:'●';font-size:10px;top:4px;}
+
+.side-empty{font-style:italic;color:var(--text-dim);font-size:11px;padding:4px 0;}
 
 /* ══════ MODULE-STYLE ROOM HEADER — Pyram-King chapter opener ══════ */
 .mod-room-header{
@@ -2494,6 +2551,7 @@ function renderSessionLocation() {
 
   const host = document.getElementById('sessReadPane');
   host.innerHTML = `<div class="session-content-inner">
+    <div class="session-content-main">
     ${renderRecapBlock()}
 
     <!-- ROOM HEADER · D&D-Module style -->
@@ -2612,10 +2670,109 @@ function renderSessionLocation() {
           <pre style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;background:var(--surface-2);padding:14px;border-radius:6px;margin:0;">${escapeHtml(loc.log)}</pre>
         </div>
       </div>` : ''}
+    </div>
+    <aside class="session-content-side">
+      ${renderSideWidgets(loc, relevantNpcs)}
+    </aside>
   </div>`;
 
   renderSessSceneImage();
   renderSessMusic(loc);
+}
+
+// ══════ SIDE-COLUMN WIDGETS ══════
+function renderSideWidgets(loc, relevantNpcs) {
+  const pcs = state.characters.filter(c => c.type === 'pc');
+  const logs = (loc.log || '').split('\n').filter(l => l.trim()).slice(-4).reverse();
+
+  // Find current location in tree + next step
+  let flowSteps = [];
+  for (const group of campaign().tree) {
+    const idx = group.locations.findIndex(l => l.id === state.currentLocationId);
+    if (idx >= 0) {
+      // Show prev + current + next 2 from this group
+      const start = Math.max(0, idx - 1);
+      const end = Math.min(group.locations.length, idx + 3);
+      flowSteps = group.locations.slice(start, end).map(l => ({
+        ...l,
+        current: l.id === state.currentLocationId
+      }));
+      break;
+    }
+  }
+
+  return `
+    <!-- Party Quick-HP-Ref -->
+    <div class="side-widget">
+      <div class="side-widget-h"><span class="ico">👥</span><span>Party · Quick-Ref</span></div>
+      <div class="side-widget-b">
+        ${pcs.map(pc => {
+          const initials = pc.name.split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+          const pct = pc.maxHp ? (pc.hp / pc.maxHp) * 100 : 100;
+          const hpClass = pct <= 25 ? 'low' : (pct <= 50 ? 'mid' : '');
+          return `
+            <div class="side-pc" onclick="openChar('${pc.id}')">
+              <div class="side-pc-av">${pc.portraitUrl ? `<img src="${escapeAttr(pc.portraitUrl)}">` : initials}</div>
+              <div class="side-pc-info">
+                <div class="side-pc-name">${escapeHtml(pc.name)}</div>
+                <div class="side-pc-meta">AC ${pc.ac} · Init ${pc.initiative > 0 ? '+' + pc.initiative : '—'}</div>
+              </div>
+              <div class="side-pc-hp ${hpClass}">${pc.hp}/${pc.maxHp}</div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- NPCs in dieser Szene -->
+    ${relevantNpcs.length ? `
+      <div class="side-widget">
+        <div class="side-widget-h"><span class="ico">🎭</span><span>NPCs in der Szene</span></div>
+        <div class="side-widget-b">
+          ${relevantNpcs.map(n => `
+            <div class="side-npc" onclick="openChar('${n.id}')">
+              <div class="side-npc-name">${escapeHtml(n.name)}</div>
+              <div class="side-npc-stats">
+                <span><strong>HP</strong> ${n.hp}/${n.maxHp}</span>
+                <span><strong>AC</strong> ${n.ac}</span>
+                ${n.cr ? `<span><strong>CR</strong> ${escapeHtml(n.cr)}</span>` : ''}
+                ${n.initiative > 0 ? `<span><strong>Init</strong> +${n.initiative}</span>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    <!-- Live-Notes-Preview -->
+    ${logs.length ? `
+      <div class="side-widget">
+        <div class="side-widget-h"><span class="ico">📝</span><span>Letzte Live-Notizen</span></div>
+        <div class="side-widget-b">
+          ${logs.map(l => {
+            const m = l.match(/^\[(\d{2}:\d{2})\]\s*(.+)$/);
+            if (m) return `<div class="side-note"><span class="side-note-time">${m[1]}</span> ${escapeHtml(m[2])}</div>`;
+            return `<div class="side-note">${escapeHtml(l)}</div>`;
+          }).join('')}
+        </div>
+      </div>` : ''}
+
+    <!-- Session-Flow -->
+    ${flowSteps.length > 1 ? `
+      <div class="side-widget">
+        <div class="side-widget-h"><span class="ico">🧭</span><span>Session-Flow</span></div>
+        <div class="side-widget-b">
+          ${flowSteps.map(s => `
+            <div class="side-flow-step ${s.current ? 'current' : ''}" ${!s.current ? `onclick="selectLocation('${s.id}')" style="cursor:pointer;"` : ''}>${escapeHtml(s.name)}</div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+
+    <!-- Quick-Link: Regeln -->
+    <div class="side-widget" style="cursor:pointer;" onclick="openConditionsModal()">
+      <div class="side-widget-h"><span class="ico">📖</span><span>SRD Zustände</span></div>
+      <div class="side-widget-b" style="text-align:center;font-family:'EB Garamond',serif;font-style:italic;color:var(--text-dim);padding:10px 12px;">
+        Klick oder <kbd style="background:var(--surface-2);border:1px solid var(--border-strong);border-radius:3px;padding:1px 6px;font-family:monospace;font-size:11px;">R</kbd> öffnet Quick-Reference aller SRD-Conditions
+      </div>
+    </div>
+  `;
 }
 
 function toggleSessionSection(key, el) {
