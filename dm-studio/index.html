@@ -14,29 +14,29 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
-/* ═══════ PROFESSIONAL LIGHT THEME · 2nd-screen DM tool ═══════ */
+/* ═══════ PROFESSIONAL LIGHT THEME · PC-optimized, high-contrast DM tool ═══════ */
 :root{
-  --bg:#f7f6f3;               /* warm off-white — softer than pure white for long sessions */
-  --bg2:#eeeceb;              /* panel bg — subtle differentiation */
-  --surface:#ffffff;          /* cards, crisp */
-  --surface-2:#f4f3f0;        /* input/secondary surface */
-  --text:#1a1a1a;             /* near-black for headline readability */
-  --text-dim:#5a5956;         /* readable mid-gray */
-  --text-dimmer:#949390;      /* labels / tertiary */
-  --border:rgba(0,0,0,0.07);  /* hairlines */
-  --border-strong:rgba(0,0,0,0.14);
-  --accent:#6c5de4;           /* EndoCraft purple — CTA */
-  --accent-dim:rgba(108,93,228,0.1);
-  --gold:#a37d25;
-  --gold-dim:rgba(163,125,37,0.11);
-  --gold-br:#c8983b;
-  --crimson:#b82a20;
-  --crimson-dim:rgba(184,42,32,0.07);
-  --forest:#2d7a5f;
-  --ink:#0a0a0a;
-  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:0 2px 8px rgba(0,0,0,0.06);
-  --shadow-lg:0 8px 28px rgba(0,0,0,0.1);
+  --bg:#eceae5;               /* slightly darker warm off-white — higher card contrast */
+  --bg2:#e0ddd6;              /* panel bg — clearly separated from main */
+  --surface:#ffffff;          /* cards pop crisply on bg */
+  --surface-2:#f5f3ef;        /* input / secondary surface */
+  --text:#0f0f0f;             /* full black for body text */
+  --text-dim:#4a4845;         /* darker mid-gray — WCAG AA on light bg */
+  --text-dimmer:#7a7874;
+  --border:rgba(0,0,0,0.12);
+  --border-strong:rgba(0,0,0,0.22);
+  --accent:#6c5de4;
+  --accent-dim:rgba(108,93,228,0.13);
+  --gold:#936e1e;             /* deeper for stronger visual weight */
+  --gold-dim:rgba(147,110,30,0.14);
+  --gold-br:#b48829;
+  --crimson:#a82318;          /* stronger red */
+  --crimson-dim:rgba(168,35,24,0.08);
+  --forest:#27684f;
+  --ink:#050505;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:0 3px 12px rgba(0,0,0,0.09);
+  --shadow-lg:0 10px 40px rgba(0,0,0,0.15);
 }
 
 html,body{height:100%;overflow:hidden;}
@@ -44,10 +44,11 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:'DM Sans',sans-serif;
-  font-size:14px;line-height:1.55;
+  font-size:15px;line-height:1.55;
   display:flex;flex-direction:column;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+  min-width:1100px;  /* PC-optimized — mobile support comes later */
 }
 
 /* ═══════ TOP BAR ═══════ */
@@ -294,10 +295,10 @@ body{
 
 .session-read-pane{flex:1;overflow-y:auto;padding:22px 30px 30px;min-width:0;}
 .session-read-aloud{
-  background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--crimson);
-  border-radius:0 12px 12px 0;padding:26px 32px;margin-bottom:18px;
-  font-family:'EB Garamond',serif;font-size:21px;font-style:italic;color:var(--ink);line-height:1.55;
-  box-shadow:var(--shadow-sm);
+  background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--crimson);
+  border-radius:0 12px 12px 0;padding:28px 36px;margin-bottom:20px;
+  font-family:'EB Garamond',serif;font-size:23px;font-style:italic;color:var(--ink);line-height:1.55;
+  box-shadow:var(--shadow-md);
 }
 .session-read-aloud p{margin-bottom:12px;}
 .session-read-aloud p:last-child{margin-bottom:0;}
@@ -448,19 +449,59 @@ body{
 
 /* Statblock with HP-tracker header (used in Combat Overview) */
 .sb-hp-tracker{
-  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  display:flex;align-items:center;gap:8px;padding:10px 12px;
   background:#f4eadc;border-radius:6px;margin-bottom:10px;
-  border:1px solid #e8c890;
+  border:1px solid #e8c890;flex-wrap:wrap;position:relative;
 }
-.sb-hp-tracker .label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--crimson);font-weight:700;}
-.sb-hp-tracker input{width:54px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;padding:4px 7px;font-family:'EB Garamond',serif;font-size:15px;font-weight:700;color:var(--ink);text-align:center;outline:none;}
+.sb-hp-tracker .label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);font-weight:700;}
+.sb-hp-tracker input{width:56px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;padding:5px 7px;font-family:'EB Garamond',serif;font-size:16px;font-weight:700;color:var(--ink);text-align:center;outline:none;}
 .sb-hp-tracker input:focus{border-color:var(--crimson);}
-.sb-hp-tracker .max{font-size:13px;color:var(--text-dim);}
-.sb-hp-tracker .hp-btn{background:#fff;border:1px solid var(--border-strong);color:var(--text);padding:3px 8px;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .1s;}
+.sb-hp-tracker .max{font-size:14px;color:var(--text-dim);font-weight:600;}
+.sb-hp-tracker .hp-btn{background:#fff;border:1px solid var(--border-strong);color:var(--text);padding:4px 10px;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .1s;}
 .sb-hp-tracker .hp-btn:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
 .sb-hp-tracker .hp-btn.heal:hover{background:var(--forest);border-color:var(--forest);}
-.sb-hp-tracker .cond-badge{background:var(--gold-dim);color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;padding:2px 7px;border-radius:3px;font-weight:700;}
+.sb-hp-tracker .cond-badge{
+  background:var(--gold-dim);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;
+  padding:3px 8px;border-radius:4px;font-weight:700;cursor:pointer;border:1px solid rgba(147,110,30,0.4);
+  transition:all .1s;display:inline-flex;align-items:center;gap:4px;
+}
+.sb-hp-tracker .cond-badge:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+.sb-hp-tracker .cond-badge::after{content:'×';font-size:11px;opacity:.6;}
+.sb-hp-tracker .cond-add{
+  background:transparent;border:1px dashed var(--border-strong);color:var(--text-dim);
+  padding:3px 8px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;
+  transition:all .1s;
+}
+.sb-hp-tracker .cond-add:hover{border-color:var(--gold);color:var(--gold);border-style:solid;}
 .sb-hp-tracker.down{opacity:.5;background:repeating-linear-gradient(45deg,#f4eadc,#f4eadc 6px,#e8d9c0 6px,#e8d9c0 12px);}
+
+/* Condition Picker Popup */
+.cond-picker{
+  position:absolute;top:100%;left:0;right:0;z-index:30;margin-top:4px;
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;
+  box-shadow:var(--shadow-lg);max-height:360px;overflow-y:auto;display:none;
+}
+.cond-picker.open{display:block;}
+.cond-picker-h{
+  padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;background:var(--surface);z-index:2;
+}
+.cond-picker-h-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.cond-picker-h-close{background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;padding:0 4px;}
+.cond-picker-body{padding:4px;}
+.cond-picker-item{padding:9px 14px;border-radius:6px;cursor:pointer;transition:background .1s;display:flex;flex-direction:column;gap:3px;}
+.cond-picker-item:hover{background:var(--gold-dim);}
+.cond-picker-item-name{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--crimson);letter-spacing:.03em;}
+.cond-picker-item-desc{font-size:12px;color:var(--text-dim);line-height:1.45;font-family:'EB Garamond',serif;font-style:italic;}
+
+/* Recap nav buttons */
+.recap-nav-btn{
+  background:var(--surface);border:1px solid var(--border-strong);color:var(--text);
+  width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;transition:all .1s;
+}
+.recap-nav-btn:hover:not(:disabled){background:var(--gold);color:#fff;border-color:var(--gold);}
+.recap-nav-btn:disabled{opacity:.3;cursor:not-allowed;}
 
 /* Combat Overview — horizontal scrollable lane of statblocks with tracker heads */
 .combat-overview{
@@ -519,6 +560,19 @@ body{
 .action-block textarea{width:100%;background:transparent;border:none;outline:none;font-family:'EB Garamond',serif;font-size:13.5px;color:var(--text);line-height:1.5;resize:vertical;min-height:40px;padding:2px 0;}
 .action-block-remove{position:absolute;top:6px;right:8px;background:transparent;border:none;color:var(--text-dimmer);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px;transition:all .1s;}
 .action-block-remove:hover{background:var(--crimson);color:#fff;}
+
+/* ═══════ SRD MONSTER PICKER MODAL ═══════ */
+.srd-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.srd-modal-backdrop{position:absolute;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);}
+.srd-modal-inner{position:relative;background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;max-width:820px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);}
+.srd-modal-h{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-shrink:0;}
+.srd-modal-grid{flex:1;overflow-y:auto;padding:18px 22px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.srd-card{padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .12s;}
+.srd-card:hover{border-color:var(--crimson);background:#fff;box-shadow:var(--shadow-sm);transform:translateY(-1px);}
+.srd-card-name{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--crimson);letter-spacing:.01em;text-transform:uppercase;}
+.srd-card-type{font-family:'EB Garamond',serif;font-style:italic;font-size:12px;color:var(--text-dim);margin-top:3px;}
+.srd-card-stats{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);margin-top:6px;font-weight:600;}
+.srd-modal-foot{padding:10px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dimmer);font-style:italic;}
 
 /* ═══════ MODALS & TOAST ═══════ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-lg);font-weight:500;}
@@ -697,7 +751,10 @@ body{
     <aside class="lpanel">
       <div class="lp-header">
         <span class="lp-title">Charaktere</span>
-        <button class="lp-add" onclick="newCharacter()">+ Neu</button>
+        <div style="display:flex;gap:4px;">
+          <button class="lp-add" onclick="openSrdPicker()" title="SRD-Monster laden">+ SRD</button>
+          <button class="lp-add" onclick="newCharacter()">+ Neu</button>
+        </div>
       </div>
       <div class="char-filter" id="charFilter">
         <button class="active" data-f="all" onclick="filterChars('all')">Alle</button>
@@ -728,7 +785,11 @@ const DEFAULT_CAMPAIGN = {
   id: 'cos',
   name: 'Curse of Strahd',
   session: { number: 14, title: 'Orden des Silvanus', level: '5–6' },
-  lastSessionRecap: 'Session 13: Die Party erreichte das Wizard of Wines über den Svalich-Wald. Sie klärten W4 Loading Dock (zwei Giant Spiders erledigt — Gattok trug eine Wunde davon, die später infiziert wurde) und W9 Fermentation Vats. Sie trafen den Druid Naturalist, der ihnen von Yester Hill und dem Gulthias-Baum erzählte. Am Ende der Session folgten sie blutigen Spuren in den Keller — Cliffhanger vor W14.',
+  sessions: [
+    { number: 11, title: 'Reise durch den Svalich-Wald', date: '2026-03-14', recap: 'Die Party verließ Vallaki Richtung Wizard of Wines. Nebelwanderer im Wald, DC-15-WIS-Saves gegen mentale Verzerrung. Kaelis entdeckte Spuren der Spinnenagenten. Nächtliches Camp mit wiederkehrenden Alpträumen — Strahd besucht Larrymäus im Traum.' },
+    { number: 12, title: 'Ankunft am Weingut', date: '2026-03-28', recap: 'Die Party erreichte das Wizard of Wines. Erste Gespräche mit den Besitzern, den Martikov-Brüdern. Sie erfuhren von verschwundenen Fey Gems und dem Ausfall der Wein-Produktion. Ein Martikov (Davian) gab Hinweise auf die Plünderer im Keller. Session endete mit Aufbruch zum Keller.' },
+    { number: 13, title: 'Loading Dock + Fermentation', date: '2026-04-10', recap: 'Party betrat das Weingut-Gelände. Sie klärten W4 Loading Dock (zwei Giant Spiders — Gattok trug eine Wunde davon, die später infiziert wurde, DC 12 CON oder 1 Level Exhaustion). W9 Fermentation Vats mit einem Schwarm kleiner Spinnen — Akseth hat ihn mit Moonbeam weggebrannt. Sie trafen den Druid Naturalist (neutraler NPC, gab Infos über Yester Hill und den Gulthias-Baum). Session endete mit blutigen Spuren die in den Keller führten — Cliffhanger vor W14.' }
+  ],
   party: ['Larrymäus', 'Akseth', 'Gattok', 'Telro'],
   tree: [
     { id: 'wow', label: 'Wizard of Wines', locations: [
@@ -799,6 +860,155 @@ const DEFAULT_CAMPAIGN = {
     'vallaki-blue-water': { name: 'Blue Water Inn', meta: 'Vallaki · Safe hub', imagePrompt: '', readAloud: '', dmNote: 'Rumours, Ismark, rest.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
   }
 };
+
+// D&D 5e SRD 5.1 Conditions (Creative Commons CC BY 4.0)
+// Source: https://dnd.wizards.com/resources/systems-reference-document
+const CONDITIONS = [
+  { id: 'blinded',       name: 'Blinded',       desc: 'Kann nicht sehen · automatische Fehlschläge bei Checks, die Sehen erfordern · Angriffe gegen die Kreatur haben Vorteil · eigene Angriffe haben Nachteil.' },
+  { id: 'charmed',       name: 'Charmed',       desc: 'Kann den Verursacher nicht angreifen oder schädlich zielen · Verursacher hat Vorteil auf soziale Würfe mit der Kreatur.' },
+  { id: 'deafened',      name: 'Deafened',      desc: 'Kann nicht hören · automatische Fehlschläge bei Checks, die Hören erfordern.' },
+  { id: 'exhaustion-1',  name: 'Exhaustion 1',  desc: 'Lvl 1: Nachteil auf Ability Checks.' },
+  { id: 'exhaustion-2',  name: 'Exhaustion 2',  desc: 'Lvl 2: + Geschwindigkeit halbiert.' },
+  { id: 'exhaustion-3',  name: 'Exhaustion 3',  desc: 'Lvl 3: + Nachteil auf Angriffe und Saves.' },
+  { id: 'exhaustion-4',  name: 'Exhaustion 4',  desc: 'Lvl 4: + HP-Maximum halbiert.' },
+  { id: 'exhaustion-5',  name: 'Exhaustion 5',  desc: 'Lvl 5: + Geschwindigkeit auf 0.' },
+  { id: 'frightened',    name: 'Frightened',    desc: 'Nachteil auf Angriffe und Ability Checks solange Quelle sichtbar · kann sich nicht freiwillig näher zur Quelle bewegen.' },
+  { id: 'grappled',      name: 'Grappled',      desc: 'Geschwindigkeit 0, kein Bonus · endet wenn Grappler incapacitated oder Kreatur aus der Reichweite entfernt wird.' },
+  { id: 'incapacitated', name: 'Incapacitated', desc: 'Kann keine Actions oder Reactions ausführen.' },
+  { id: 'invisible',     name: 'Invisible',     desc: 'Für die Sicht-Abwehr heavily obscured · Angreifer haben Nachteil, die Kreatur hat Vorteil auf ihre Angriffe.' },
+  { id: 'paralyzed',     name: 'Paralyzed',     desc: 'Incapacitated, kann sich nicht bewegen oder sprechen · automatische Fehlschläge bei STR/DEX Saves · Angriffe haben Vorteil · Crit wenn Angreifer in 5 ft.' },
+  { id: 'petrified',     name: 'Petrified',     desc: 'In Stein verwandelt, Incapacitated · Widerstand gegen alle Schäden · immun gegen Poison & Disease · automatische Fehlschläge bei STR/DEX Saves.' },
+  { id: 'poisoned',      name: 'Poisoned',      desc: 'Nachteil auf Angriffe und Ability Checks.' },
+  { id: 'prone',         name: 'Prone',         desc: 'Nur Kriechen möglich · Nachteil auf Angriffe · Angriffe in Nahkampf haben Vorteil, Fernkampf Nachteil.' },
+  { id: 'restrained',    name: 'Restrained',    desc: 'Geschwindigkeit 0 · Nachteil auf eigene Angriffe · Angriffe haben Vorteil · Nachteil auf DEX Saves.' },
+  { id: 'stunned',       name: 'Stunned',       desc: 'Incapacitated, spricht stockend · automatische Fehlschläge bei STR/DEX Saves · Angriffe haben Vorteil.' },
+  { id: 'unconscious',   name: 'Unconscious',   desc: 'Incapacitated, fällt prone, lässt Gegenstände fallen · automatische Fehlschläge bei STR/DEX Saves · Angriffe haben Vorteil · Crit wenn Angreifer in 5 ft.' },
+  { id: 'concentration', name: 'Concentration', desc: 'Konzentriert auf einen Spell · verliert bei Schaden (CON Save DC = 10 oder ½ Schaden, was höher ist).' },
+  { id: 'bless',         name: 'Bless',         desc: 'Fügt W4 auf Angriffe und Saves hinzu (bis zu 1 min Concentration).' }
+];
+
+// ═══════════ D&D 5e SRD 5.1 MONSTER LIBRARY (Creative Commons CC BY 4.0) ═══════════
+// Curated core roster — can be expanded; these are the most-used for mid-tier campaigns.
+const SRD_MONSTERS = [
+  { name: 'Goblin', size: 'Small', creatureType: 'humanoid (goblinoid)', alignment: 'neutral evil',
+    ac: 15, acType: 'leather armor, shield', hp: 7, maxHp: 7, hitDice: '2d6', speed: '30 ft.',
+    stats: { str: 8, dex: 14, con: 10, int: 10, wis: 8, cha: 8 },
+    skills: 'Stealth +6',
+    senses: 'darkvision 60 ft., passive Perception 9',
+    languages: 'Common, Goblin',
+    cr: '1/4', xp: '50',
+    traits: [{ name: 'Nimble Escape', text: 'The goblin can take the Disengage or Hide action as a bonus action on each of its turns.' }],
+    actions: [
+      { name: 'Scimitar', text: '*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 5 (1d6+2) slashing damage.' },
+      { name: 'Shortbow', text: '*Ranged Weapon Attack:* +4 to hit, range 80/320 ft., one target. *Hit:* 5 (1d6+2) piercing damage.' }
+    ] },
+  { name: 'Bandit', size: 'Medium', creatureType: 'humanoid (any race)', alignment: 'any non-lawful alignment',
+    ac: 12, acType: 'leather armor', hp: 11, maxHp: 11, hitDice: '2d8+2', speed: '30 ft.',
+    stats: { str: 11, dex: 12, con: 12, int: 10, wis: 10, cha: 10 },
+    senses: 'passive Perception 10',
+    languages: 'any one language (usually Common)',
+    cr: '1/8', xp: '25',
+    actions: [
+      { name: 'Scimitar', text: '*Melee Weapon Attack:* +3 to hit, reach 5 ft., one target. *Hit:* 4 (1d6+1) slashing damage.' },
+      { name: 'Light Crossbow', text: '*Ranged Weapon Attack:* +3 to hit, range 80/320 ft., one target. *Hit:* 5 (1d8+1) piercing damage.' }
+    ] },
+  { name: 'Orc', size: 'Medium', creatureType: 'humanoid (orc)', alignment: 'chaotic evil',
+    ac: 13, acType: 'hide armor', hp: 15, maxHp: 15, hitDice: '2d8+6', speed: '30 ft.',
+    stats: { str: 16, dex: 12, con: 16, int: 7, wis: 11, cha: 10 },
+    skills: 'Intimidation +2',
+    senses: 'darkvision 60 ft., passive Perception 10',
+    languages: 'Common, Orc',
+    cr: '1/2', xp: '100',
+    traits: [{ name: 'Aggressive', text: 'As a bonus action, the orc can move up to its speed toward a hostile creature that it can see.' }],
+    actions: [
+      { name: 'Greataxe', text: '*Melee Weapon Attack:* +5 to hit, reach 5 ft., one target. *Hit:* 9 (1d12+3) slashing damage.' },
+      { name: 'Javelin', text: '*Melee or Ranged Weapon Attack:* +5 to hit, reach 5 ft. or range 30/120 ft., one target. *Hit:* 6 (1d6+3) piercing damage.' }
+    ] },
+  { name: 'Skeleton', size: 'Medium', creatureType: 'undead', alignment: 'lawful evil',
+    ac: 13, acType: 'armor scraps', hp: 13, maxHp: 13, hitDice: '2d8+4', speed: '30 ft.',
+    stats: { str: 10, dex: 14, con: 15, int: 6, wis: 8, cha: 5 },
+    damageVulnerabilities: 'bludgeoning', damageImmunities: 'poison',
+    conditionImmunities: 'exhaustion, poisoned',
+    senses: 'darkvision 60 ft., passive Perception 9',
+    languages: 'understands all languages it knew in life but can\'t speak',
+    cr: '1/4', xp: '50',
+    actions: [
+      { name: 'Shortsword', text: '*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 5 (1d6+2) piercing damage.' },
+      { name: 'Shortbow', text: '*Ranged Weapon Attack:* +4 to hit, range 80/320 ft., one target. *Hit:* 5 (1d6+2) piercing damage.' }
+    ] },
+  { name: 'Zombie', size: 'Medium', creatureType: 'undead', alignment: 'neutral evil',
+    ac: 8, acType: '', hp: 22, maxHp: 22, hitDice: '3d8+9', speed: '20 ft.',
+    stats: { str: 13, dex: 6, con: 16, int: 3, wis: 6, cha: 5 },
+    savingThrows: 'Wis +0',
+    damageImmunities: 'poison',
+    conditionImmunities: 'poisoned',
+    senses: 'darkvision 60 ft., passive Perception 8',
+    languages: 'understands languages it knew in life but can\'t speak',
+    cr: '1/4', xp: '50',
+    traits: [{ name: 'Undead Fortitude', text: 'If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw (DC 5 + damage taken) unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead.' }],
+    actions: [{ name: 'Slam', text: '*Melee Weapon Attack:* +3 to hit, reach 5 ft., one target. *Hit:* 4 (1d6+1) bludgeoning damage.' }] },
+  { name: 'Wolf', size: 'Medium', creatureType: 'beast', alignment: 'unaligned',
+    ac: 13, acType: '', hp: 11, maxHp: 11, hitDice: '2d8+2', speed: '40 ft.',
+    stats: { str: 12, dex: 15, con: 12, int: 3, wis: 12, cha: 6 },
+    skills: 'Perception +3, Stealth +4',
+    senses: 'passive Perception 13',
+    languages: '—',
+    cr: '1/4', xp: '50',
+    traits: [
+      { name: 'Keen Hearing and Smell', text: 'The wolf has advantage on Wisdom (Perception) checks that rely on hearing or smell.' },
+      { name: 'Pack Tactics', text: 'The wolf has advantage on an attack roll against a creature if at least one of the wolf\'s allies is within 5 feet of the creature and the ally isn\'t incapacitated.' }
+    ],
+    actions: [{ name: 'Bite', text: '*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 7 (2d4+2) piercing damage. If the target is a creature, it must succeed on a DC 11 Strength saving throw or be knocked prone.' }] },
+  { name: 'Dire Wolf', size: 'Large', creatureType: 'beast', alignment: 'unaligned',
+    ac: 14, acType: 'natural armor', hp: 37, maxHp: 37, hitDice: '5d10+10', speed: '50 ft.',
+    stats: { str: 17, dex: 15, con: 15, int: 3, wis: 12, cha: 7 },
+    skills: 'Perception +3, Stealth +4',
+    senses: 'passive Perception 13',
+    languages: '—',
+    cr: '1', xp: '200',
+    traits: [
+      { name: 'Keen Hearing and Smell', text: 'Advantage on Perception checks that rely on hearing or smell.' },
+      { name: 'Pack Tactics', text: 'Advantage on attack rolls if ally within 5 ft. of target and not incapacitated.' }
+    ],
+    actions: [{ name: 'Bite', text: '*Melee Weapon Attack:* +5 to hit, reach 5 ft., one target. *Hit:* 10 (2d6+3) piercing damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or be knocked prone.' }] },
+  { name: 'Giant Spider', size: 'Large', creatureType: 'beast', alignment: 'unaligned',
+    ac: 14, acType: 'natural armor', hp: 26, maxHp: 26, hitDice: '4d10+4', speed: '30 ft., climb 30 ft.',
+    stats: { str: 14, dex: 16, con: 12, int: 2, wis: 11, cha: 4 },
+    skills: 'Stealth +7',
+    senses: 'blindsight 10 ft., darkvision 60 ft., passive Perception 10',
+    languages: '—',
+    cr: '1', xp: '200',
+    traits: [
+      { name: 'Spider Climb', text: 'Can climb difficult surfaces, including upside down on ceilings, without ability check.' },
+      { name: 'Web Sense', text: 'While in contact with a web, the spider knows the exact location of any other creature in contact with the same web.' },
+      { name: 'Web Walker', text: 'Ignores movement restrictions caused by webbing.' }
+    ],
+    actions: [
+      { name: 'Bite', text: '*Melee Weapon Attack:* +5 to hit, reach 5 ft., one creature. *Hit:* 7 (1d8+3) piercing damage, and the target must make a DC 11 Constitution saving throw, taking 9 (2d8) poison damage on a failed save, or half as much on a successful one. If the poison damage reduces the target to 0 hit points, the target is stable but poisoned for 1 hour.' },
+      { name: 'Web (Recharge 5-6)', text: '*Ranged Weapon Attack:* +5 to hit, range 30/60 ft., one creature. *Hit:* The target is restrained by webbing. Can be broken with DC 12 Strength check. Web destroyed by 5 fire damage.' }
+    ] },
+  { name: 'Ghoul', size: 'Medium', creatureType: 'undead', alignment: 'chaotic evil',
+    ac: 12, acType: '', hp: 22, maxHp: 22, hitDice: '5d8', speed: '30 ft.',
+    stats: { str: 13, dex: 15, con: 10, int: 7, wis: 10, cha: 6 },
+    damageImmunities: 'poison', conditionImmunities: 'charmed, exhaustion, poisoned',
+    senses: 'darkvision 60 ft., passive Perception 10',
+    languages: 'Common',
+    cr: '1', xp: '200',
+    actions: [
+      { name: 'Bite', text: '*Melee Weapon Attack:* +2 to hit, reach 5 ft., one creature. *Hit:* 9 (2d6+2) piercing damage.' },
+      { name: 'Claws', text: '*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 7 (2d4+2) slashing damage. If the target is a creature other than an elf or undead, it must succeed on a DC 10 Constitution saving throw or be paralyzed for 1 minute.' }
+    ] },
+  { name: 'Ogre', size: 'Large', creatureType: 'giant', alignment: 'chaotic evil',
+    ac: 11, acType: 'hide armor', hp: 59, maxHp: 59, hitDice: '7d10+21', speed: '40 ft.',
+    stats: { str: 19, dex: 8, con: 16, int: 5, wis: 7, cha: 7 },
+    senses: 'darkvision 60 ft., passive Perception 8',
+    languages: 'Common, Giant',
+    cr: '2', xp: '450',
+    actions: [
+      { name: 'Greatclub', text: '*Melee Weapon Attack:* +6 to hit, reach 5 ft., one target. *Hit:* 13 (2d8+4) bludgeoning damage.' },
+      { name: 'Javelin', text: '*Melee or Ranged Weapon Attack:* +6 to hit, reach 5 ft. or range 30/120 ft., one target. *Hit:* 11 (2d6+4) piercing damage.' }
+    ] }
+];
 
 // D&D 5e Statblock schema (NPC + PC compatible).
 // Classic sourcebook layout: Size/Type/Alignment header → AC/HP/Speed → 6 abilities with mods →
@@ -1416,31 +1626,72 @@ function renderSessionLocation() {
   renderSessMusic(loc);
 }
 
-// ═══════════ SESSION RECAP ═══════════
-function renderRecapBlock() {
+// ═══════════ SESSION RECAPS (Multi-Session Array) ═══════════
+function ensureSessionsMigration() {
   const c = campaign();
-  const sessNum = c.session?.number ? c.session.number - 1 : '—';
-  const recap = c.lastSessionRecap || '';
+  if (!c.sessions) c.sessions = [];
+  // Migrate legacy lastSessionRecap into sessions[0] if needed
+  if (c.lastSessionRecap && !c.sessions.length) {
+    c.sessions.push({ number: (c.session?.number || 1) - 1, title: 'Vorherige Session', date: '', recap: c.lastSessionRecap });
+    delete c.lastSessionRecap; saveState();
+  }
+  // Ensure viewingSessionIdx points to the most recent one if unset
+  if (typeof state.viewingSessionIdx !== 'number' || state.viewingSessionIdx >= c.sessions.length) {
+    state.viewingSessionIdx = Math.max(0, c.sessions.length - 1);
+  }
+}
+
+function renderRecapBlock() {
+  ensureSessionsMigration();
+  const c = campaign();
+  const sessions = c.sessions || [];
+  const idx = state.viewingSessionIdx;
+  const session = sessions[idx];
   const collapsed = state.recapCollapsed ? 'collapsed' : '';
   const editMode = state.recapEditing;
+  const canPrev = idx > 0;
+  const canNext = idx < sessions.length - 1;
+
+  if (!sessions.length) {
+    return `
+      <div class="recap-block">
+        <div class="recap-head" onclick="toggleRecap(event)">
+          <div class="recap-head-l"><span class="recap-tag">Session-Recaps</span></div>
+          <button class="recap-edit-btn" onclick="event.stopPropagation();addSession()">+ Erste Session</button>
+        </div>
+        <div class="recap-body"><em style="color:var(--text-dim);">Noch keine Sessions dokumentiert. Klick <strong>+ Erste Session</strong>.</em></div>
+      </div>`;
+  }
+
   return `
-    <div class="recap-block ${collapsed}" id="recapBlock">
+    <div class="recap-block ${collapsed}">
       <div class="recap-head" onclick="toggleRecap(event)">
         <div class="recap-head-l">
-          <span class="recap-tag">Last Session · #${sessNum}</span>
-          <span class="recap-title">Recap</span>
+          <button class="recap-nav-btn" onclick="event.stopPropagation();recapPrev()" ${canPrev ? '' : 'disabled'} title="Vorherige Session">◂</button>
+          <div style="display:flex;flex-direction:column;">
+            <span class="recap-tag">Session #${session.number}${idx === sessions.length - 1 ? ' · LAST' : ''}${session.date ? ' · ' + session.date : ''}</span>
+            <span class="recap-title">${escapeHtml(session.title || 'Ohne Titel')}</span>
+          </div>
+          <button class="recap-nav-btn" onclick="event.stopPropagation();recapNext()" ${canNext ? '' : 'disabled'} title="Nächste Session">▸</button>
+          <span style="font-size:10px;color:var(--text-dimmer);">${idx + 1} / ${sessions.length}</span>
         </div>
         <div style="display:flex;gap:6px;align-items:center;">
+          <button class="recap-edit-btn" onclick="event.stopPropagation();addSession()" title="Neue Session anlegen">+ Session</button>
           <button class="recap-edit-btn" onclick="event.stopPropagation();toggleRecapEdit()">${editMode ? 'Fertig' : '✎ Bearbeiten'}</button>
           <span class="recap-toggle">${collapsed ? '▸' : '▾'}</span>
         </div>
       </div>
       <div class="recap-body ${editMode ? 'edit-mode' : ''}">
         ${editMode
-          ? `<textarea class="recap-textarea" id="recapTextarea" onblur="saveRecap(this.value)">${escapeHtml(recap)}</textarea>`
-          : recap
-            ? escapeHtml(recap).replace(/\n/g, '<br>')
-            : '<em style="color:var(--text-dim);">Noch kein Recap. Klick <strong>✎ Bearbeiten</strong> um den Recap der letzten Session festzuhalten — wird im System-Prompt der KI genutzt.</em>'
+          ? `<div style="display:flex;gap:8px;margin-bottom:10px;">
+              <input class="field-in" style="flex:1;" value="${escapeAttr(session.title || '')}" placeholder="Session-Titel" onblur="updateSessionField('title', this.value)">
+              <input class="field-in" style="max-width:140px;" value="${escapeAttr(session.date || '')}" placeholder="YYYY-MM-DD" onblur="updateSessionField('date', this.value)">
+              <button class="recap-edit-btn" onclick="deleteSession()" style="color:var(--crimson);border-color:var(--crimson);">Löschen</button>
+            </div>
+            <textarea class="recap-textarea" id="recapTextarea" placeholder="Was ist in dieser Session passiert? Schlüssel-Events, NPCs die getroffen wurden, Entscheidungen..." onblur="updateSessionField('recap', this.value)">${escapeHtml(session.recap || '')}</textarea>`
+          : session.recap
+            ? escapeHtml(session.recap).replace(/\n/g, '<br>')
+            : '<em style="color:var(--text-dim);">Noch kein Recap-Text. Klick <strong>✎ Bearbeiten</strong>.</em>'
         }
       </div>
     </div>
@@ -1448,7 +1699,7 @@ function renderRecapBlock() {
 }
 
 function toggleRecap(e) {
-  if (e && e.target.closest('.recap-edit-btn')) return;
+  if (e && (e.target.closest('.recap-edit-btn') || e.target.closest('.recap-nav-btn'))) return;
   state.recapCollapsed = !state.recapCollapsed; saveState();
   renderSessionLocation();
 }
@@ -1457,32 +1708,79 @@ function toggleRecapEdit() {
   renderSessionLocation();
   if (state.recapEditing) setTimeout(() => document.getElementById('recapTextarea')?.focus(), 50);
 }
-function saveRecap(value) {
-  campaign().lastSessionRecap = value; saveState();
+function recapPrev() {
+  if (state.viewingSessionIdx > 0) { state.viewingSessionIdx--; saveState(); renderSessionLocation(); }
+}
+function recapNext() {
+  const len = (campaign().sessions || []).length;
+  if (state.viewingSessionIdx < len - 1) { state.viewingSessionIdx++; saveState(); renderSessionLocation(); }
+}
+function updateSessionField(field, value) {
+  const s = campaign().sessions[state.viewingSessionIdx]; if (!s) return;
+  s[field] = value; saveState();
+}
+function addSession() {
+  const sessions = campaign().sessions || (campaign().sessions = []);
+  const lastNum = sessions.length ? sessions[sessions.length - 1].number : 0;
+  sessions.push({ number: lastNum + 1, title: '', date: new Date().toISOString().slice(0, 10), recap: '' });
+  state.viewingSessionIdx = sessions.length - 1;
+  state.recapEditing = true;
+  saveState(); renderSessionLocation();
+}
+function deleteSession() {
+  if (!confirm('Diese Session löschen?')) return;
+  campaign().sessions.splice(state.viewingSessionIdx, 1);
+  state.viewingSessionIdx = Math.max(0, state.viewingSessionIdx - 1);
+  state.recapEditing = false;
+  saveState(); renderSessionLocation();
 }
 
-// ═══════════ COMBAT OVERVIEW — full statblocks with HP trackers for every combatant ═══════════
+// ═══════════ COMBAT OVERVIEW — full statblocks with HP + Condition trackers ═══════════
 function renderCombatOverview() {
   if (!state.initiative.length) return '';
-  const stats = state.initiative.map(e => {
+  const stats = state.initiative.map((e, i) => {
     const c = state.characters.find(x => x.id === e.id); if (!c) return '';
-    const damageBtn = `<button class="hp-btn" onclick="damageHP(${state.initiative.indexOf(e)})" title="-5 HP">−5</button>`;
-    const healBtn = `<button class="hp-btn heal" onclick="healHP(${state.initiative.indexOf(e)})" title="+5 HP">+5</button>`;
-    const condBadges = (e.conditions || []).map(cd => `<span class="cond-badge">${escapeHtml(cd)}</span>`).join('');
+    e.conditions = e.conditions || [];
+
+    const condBadges = e.conditions.map(condId => {
+      const def = CONDITIONS.find(cd => cd.id === condId);
+      return `<span class="cond-badge" onclick="event.stopPropagation();removeCondition(${i}, '${condId}')" title="${escapeAttr((def?.desc) || condId)} · Klicken zum Entfernen">${escapeHtml(def?.name || condId)}</span>`;
+    }).join('');
+
+    const picker = `
+      <div class="cond-picker" id="condPicker-${i}">
+        <div class="cond-picker-h">
+          <span class="cond-picker-h-title">Zustand hinzufügen · SRD 5.1</span>
+          <button class="cond-picker-h-close" onclick="closeCondPicker(${i})">×</button>
+        </div>
+        <div class="cond-picker-body">
+          ${CONDITIONS.map(cd => `
+            <div class="cond-picker-item" onclick="addCondition(${i}, '${cd.id}')">
+              <div class="cond-picker-item-name">${escapeHtml(cd.name)}</div>
+              <div class="cond-picker-item-desc">${escapeHtml(cd.desc)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
     const turnIndicator = e.turn ? '<span style="color:var(--accent);font-weight:700;font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:2px;">● AKTIV</span>' : '';
     const downed = e.down ? 'down' : '';
     return `
       <div class="statblock-wrap">
         <div class="sb-hp-tracker ${downed}">
           <span class="label">HP</span>
-          <input type="number" value="${e.hp}" onblur="setCombatHP(${state.initiative.indexOf(e)}, this.value)">
+          <input type="number" value="${e.hp}" onblur="setCombatHP(${i}, this.value)">
           <span class="max">/ ${c.maxHp}</span>
-          ${damageBtn}${healBtn}
+          <button class="hp-btn" onclick="damageHP(${i})" title="-5 HP">−5</button>
+          <button class="hp-btn heal" onclick="healHP(${i})" title="+5 HP">+5</button>
           ${condBadges}
+          <button class="cond-add" onclick="event.stopPropagation();toggleCondPicker(${i})">+ Zustand</button>
           <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
             ${turnIndicator}
-            <button class="hp-btn" onclick="toggleDown(${state.initiative.indexOf(e)})" title="${e.down ? 'Aufstehen' : 'KO'}">${e.down ? '↑' : '💀'}</button>
+            <button class="hp-btn" onclick="toggleDown(${i})" title="${e.down ? 'Aufstehen' : 'KO'}">${e.down ? '↑' : '💀'}</button>
           </div>
+          ${picker}
         </div>
         ${renderStatblock(c)}
       </div>
@@ -1492,12 +1790,38 @@ function renderCombatOverview() {
     <div class="combat-overview">
       <div class="combat-overview-h">
         <div class="combat-overview-title">Combat Overview · ${state.initiative.length} Combatants</div>
-        <div style="font-size:11px;color:var(--text-dim);">← horizontal scrollen →</div>
+        <div style="font-size:12px;color:var(--text-dim);">← horizontal scrollen →</div>
       </div>
       <div class="combat-lane">${stats}</div>
     </div>
   `;
 }
+
+function toggleCondPicker(i) {
+  document.querySelectorAll('.cond-picker').forEach(p => {
+    if (p.id !== `condPicker-${i}`) p.classList.remove('open');
+  });
+  const picker = document.getElementById(`condPicker-${i}`);
+  if (picker) picker.classList.toggle('open');
+}
+function closeCondPicker(i) { document.getElementById(`condPicker-${i}`)?.classList.remove('open'); }
+function addCondition(i, condId) {
+  state.initiative[i].conditions = state.initiative[i].conditions || [];
+  if (!state.initiative[i].conditions.includes(condId)) state.initiative[i].conditions.push(condId);
+  closeCondPicker(i);
+  saveState(); renderSessionLocation();
+}
+function removeCondition(i, condId) {
+  if (!state.initiative[i].conditions) return;
+  state.initiative[i].conditions = state.initiative[i].conditions.filter(c => c !== condId);
+  saveState(); renderSessionLocation();
+}
+// Close condition pickers when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.cond-picker') && !e.target.closest('.cond-add')) {
+    document.querySelectorAll('.cond-picker.open').forEach(p => p.classList.remove('open'));
+  }
+});
 
 function setCombatHP(i, val) {
   state.initiative[i].hp = Math.max(0, parseInt(val) || 0);
@@ -1661,6 +1985,49 @@ function newCharacter() {
   state.characters.push(c);
   state.currentCharId = id; saveState();
   renderChars();
+}
+
+// SRD Monster Loader — opens modal with curated SRD 5.1 roster, loads as new NPC
+function openSrdPicker() {
+  const modal = document.createElement('div');
+  modal.className = 'srd-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="srd-modal-inner">
+      <div class="srd-modal-h">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;">Systems Reference Document 5.1</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--ink);margin-top:4px;">SRD-Monster laden</div>
+        </div>
+        <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:22px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
+      </div>
+      <div class="srd-modal-grid">
+        ${SRD_MONSTERS.map((m, i) => `
+          <div class="srd-card" onclick="loadSrdMonster(${i});this.closest('.srd-modal').remove();">
+            <div class="srd-card-name">${escapeHtml(m.name)}</div>
+            <div class="srd-card-type">${escapeHtml(m.size)} ${escapeHtml(m.creatureType)}, ${escapeHtml(m.alignment)}</div>
+            <div class="srd-card-stats">CR ${escapeHtml(m.cr || '—')} · HP ${m.hp} · AC ${m.ac}</div>
+          </div>`).join('')}
+      </div>
+      <div class="srd-modal-foot">SRD 5.1 · CC BY 4.0 Wizards of the Coast. Weitere Monster können später hinzugefügt werden.</div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+function loadSrdMonster(i) {
+  const monster = SRD_MONSTERS[i]; if (!monster) return;
+  const id = 'srd_' + Date.now().toString(36);
+  const c = { ...BLANK_CHAR(), ...monster, id, type: 'npc',
+    level: parseFloat(String(monster.cr || '1').replace('/', '/')) || 1,
+    race: monster.creatureType || '',
+    class: monster.name,
+    initiative: 10 + Math.floor((monster.stats.dex - 10) / 2),
+    portraitUrl: '', portraitSource: '', imagePrompt: `Portrait of a ${monster.name} from D&D, ${monster.size} ${monster.creatureType}, ${monster.alignment}, fantasy monster art, dark atmospheric lighting, photorealistic, 8K, no text, no deformed hands`
+  };
+  state.characters.push(c);
+  state.currentCharId = id; saveState();
+  renderChars();
+  toast(`${monster.name} geladen`);
 }
 
 function renderCharEditor() {
@@ -2052,7 +2419,7 @@ async function sendChatFrom(host) {
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        campaign: { ...campaign(), currentLocationId: state.currentLocationId, party: state.characters.filter(c => c.type === 'pc').map(c => `${c.name} (${c.race} ${c.class}, Lv ${c.level})`), characters: state.characters },
+        campaign: { ...campaign(), currentLocationId: state.currentLocationId, party: state.characters.filter(c => c.type === 'pc').map(c => `${c.name} (${c.race} ${c.class}, Lv ${c.level})`), characters: state.characters, combatState: state.initiative },
         messages: apiMessages
       })
     });
