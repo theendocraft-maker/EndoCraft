@@ -328,11 +328,24 @@ body{
 .sq-stat-row span:first-child{color:var(--text-dim);}
 .sq-stat-row span:last-child{color:var(--text);font-weight:500;}
 
-/* Session right panel — scene image + music + chat */
-.session-right{width:360px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.session-rt-head{padding:12px 14px 8px;border-bottom:1px solid var(--border);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
-.session-rt-scene{padding:14px;border-bottom:1px solid var(--border);}
-.session-rt-music{padding:10px 14px;border-bottom:1px solid var(--border);max-height:160px;overflow-y:auto;}
+/* Session right panel — tab system (Chat / Szene / Musik) */
+.session-right{width:420px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.session-rt-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.session-rt-tab{
+  flex:1;padding:12px 10px;border:none;background:transparent;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--text-dim);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  border-bottom:2px solid transparent;transition:all .15s;user-select:none;
+}
+.session-rt-tab:hover{color:var(--text);background:var(--surface-2);}
+.session-rt-tab.active{color:var(--ink);border-bottom-color:var(--accent);background:var(--surface-2);}
+.session-rt-pane{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
+.session-rt-pane.active{display:flex;}
+.session-rt-head{padding:12px 16px 8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;flex-shrink:0;}
+.session-rt-scene{padding:0 16px 16px;}
+.session-rt-music{padding:4px 10px 16px;overflow-y:auto;flex:1;}
+.session-rt-chat-head{padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.session-rt-chat-head strong{color:var(--accent);font-weight:700;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;}
 .music-item{padding:6px 10px;display:flex;gap:9px;align-items:center;cursor:pointer;border-radius:6px;transition:background .1s;}
 .music-item:hover{background:var(--surface);}
 .music-disc{width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
@@ -341,7 +354,6 @@ body{
 .music-sub{font-size:10px;color:var(--text-dim);font-style:italic;}
 .music-play{color:var(--text-dimmer);font-size:12px;}
 .music-item:hover .music-play{color:var(--gold);}
-.session-rt-chat{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 .session-rt-chat-head{padding:10px 14px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
 
 /* Empty session */
@@ -561,6 +573,82 @@ body{
 .action-block-remove{position:absolute;top:6px;right:8px;background:transparent;border:none;color:var(--text-dimmer);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px;transition:all .1s;}
 .action-block-remove:hover{background:var(--crimson);color:#fff;}
 
+/* ═══════ SESSION MODE TOGGLE (Szene / Kampf / Social / Exploration) ═══════ */
+.session-modes{display:flex;gap:4px;padding:2px;background:var(--bg2);border:1px solid var(--border-strong);border-radius:9px;}
+.session-mode-btn{
+  padding:6px 14px;border:none;background:transparent;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--text-dim);
+  border-radius:7px;display:flex;align-items:center;gap:6px;transition:all .15s;user-select:none;
+}
+.session-mode-btn:hover{color:var(--text);}
+.session-mode-btn.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm);}
+.session-mode-btn .ico{font-size:13px;}
+
+/* Layout shifts per mode — hide/prominent different content */
+.mode-combat .session-read-aloud{font-size:16px;padding:14px 20px;margin-bottom:10px;opacity:.75;}
+.mode-combat .session-quickgrid{display:none;}
+.mode-combat .recap-block{display:none;}
+.mode-social .combat-overview{display:none;}
+.mode-social .session-quickgrid .sq-card:first-child{display:none;}
+.mode-scene .combat-overview{display:none;}
+
+/* ═══════ QUICK NOTES BAR (always-visible in Session Live) ═══════ */
+.quick-notes{
+  flex-shrink:0;padding:8px 22px;background:var(--surface-2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.quick-notes-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:700;text-transform:uppercase;flex-shrink:0;}
+.quick-notes-input{
+  flex:1;background:var(--surface);border:1px solid var(--border-strong);border-radius:7px;
+  padding:6px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;
+  transition:border-color .15s;
+}
+.quick-notes-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.quick-notes-count{font-size:11px;color:var(--text-dim);flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.quick-notes-btn{background:var(--gold);color:#fff;border:none;padding:6px 12px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.quick-notes-btn:hover{opacity:.9;}
+
+/* ═══════ HP BAR + ACTIVE COMBATANT GLOW ═══════ */
+.hp-bar-wrap{flex:1;min-width:100px;max-width:160px;height:12px;background:rgba(0,0,0,0.08);border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--border);}
+.hp-bar-fill{height:100%;transition:width .35s ease-out, background .2s;}
+.hp-bar-fill.full{background:linear-gradient(to right,#27684f,#3da06b);}
+.hp-bar-fill.hurt{background:linear-gradient(to right,#c9a43a,#d4b657);}
+.hp-bar-fill.critical{background:linear-gradient(to right,var(--crimson),#d63628);}
+.hp-bar-wrap::after{content:attr(data-label);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.6);font-family:'JetBrains Mono',monospace;}
+
+/* Active combatant glow — strongly visible */
+.statblock-wrap.active-turn{position:relative;}
+.statblock-wrap.active-turn::before{
+  content:'';position:absolute;inset:-8px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(108,93,228,0.4) 0%,rgba(108,93,228,0.15) 100%);
+  filter:blur(14px);z-index:-1;animation:activePulse 2.4s ease-in-out infinite;
+}
+@keyframes activePulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+.statblock-wrap.active-turn .sb-hp-tracker{border-color:var(--accent);background:linear-gradient(to right,rgba(108,93,228,0.12),#f4eadc);}
+.active-turn-badge{background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;font-weight:700;}
+
+/* ═══════ INLINE AI REWRITE (Prep tab) ═══════ */
+.ai-inline{position:relative;}
+.ai-inline-btn{
+  position:absolute;top:6px;right:6px;z-index:3;
+  background:linear-gradient(135deg,var(--accent) 0%,#9488f4 100%);color:#fff;border:none;
+  padding:5px 11px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:5px;
+  transition:all .15s;
+}
+.ai-inline-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.ai-inline-btn:disabled{opacity:.6;cursor:wait;}
+.ai-inline-btn .ico{font-size:12px;}
+.ai-inline-loading{position:absolute;inset:0;background:rgba(255,255,255,0.85);display:none;align-items:center;justify-content:center;gap:10px;z-index:4;border-radius:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--accent);}
+.ai-inline.loading .ai-inline-loading{display:flex;}
+
+/* ═══════ TAB NAV STRONGER ACTIVE STATE ═══════ */
+.tab.active{position:relative;}
+.tab.active::before{content:'';position:absolute;bottom:-9px;left:12px;right:12px;height:2px;background:var(--accent);border-radius:1px;}
+
+/* ═══════ KEYBOARD SHORTCUT HINTS ═══════ */
+.kbd-hint{background:var(--surface);border:1px solid var(--border-strong);color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px;}
+
 /* ═══════ SRD MONSTER PICKER MODAL ═══════ */
 .srd-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .srd-modal-backdrop{position:absolute;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);}
@@ -704,42 +792,68 @@ body{
       </div>
     </aside>
 
-    <main class="session-main">
+    <main class="session-main" id="sessionMainEl">
       <div class="session-strip">
         <div class="session-strip-loc">
           <div class="session-strip-loc-tag" id="sessLocTag">LIVE · AKTUELLE SZENE</div>
           <div class="session-strip-loc-name" id="sessLocName">—</div>
           <div class="session-strip-loc-meta" id="sessLocMeta"></div>
         </div>
+        <div class="session-modes" id="sessionModes">
+          <button class="session-mode-btn active" data-mode="scene" onclick="setSessionMode('scene')" title="Fokus: Read-Aloud + Szenarien"><span class="ico">🎭</span>Szene</button>
+          <button class="session-mode-btn" data-mode="combat" onclick="setSessionMode('combat')" title="Fokus: Combat-Overview, Initiative"><span class="ico">⚔️</span>Kampf</button>
+          <button class="session-mode-btn" data-mode="social" onclick="setSessionMode('social')" title="Fokus: Dialoge + NPCs"><span class="ico">💬</span>Social</button>
+        </div>
         <div class="initiative" id="initiative"></div>
-        <button class="btn-top" onclick="nextTurn()">▸ Nächster Zug</button>
+        <button class="btn-top" onclick="nextTurn()" title="Keyboard: Space">▸ Nächster Zug<span class="kbd-hint">Space</span></button>
+      </div>
+      <div class="quick-notes">
+        <span class="quick-notes-lbl">Live-Notiz</span>
+        <input class="quick-notes-input" id="quickNotesInput" placeholder="Was gerade passiert... (Enter speichert in Session-Log für späteren Auto-Recap)" onkeydown="handleQuickNotesKey(event)">
+        <span class="quick-notes-count" id="quickNotesCount"></span>
+        <button class="quick-notes-btn" onclick="addQuickNote()">Speichern</button>
       </div>
       <div class="session-body">
         <div class="session-read-pane" id="sessReadPane"></div>
         <aside class="session-right">
-          <div class="session-rt-head">Szenen-Bild</div>
-          <div class="session-rt-scene">
-            <div class="scene-img" id="sessSceneImg">
-              <div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Bild</span></div>
-            </div>
-            <div class="scene-img-actions">
-              <button class="btn-top primary" style="flex:1;" onclick="generateSceneImage()">⚡ Generieren</button>
-              <button class="btn-top" onclick="copySceneUrl()">📋</button>
-            </div>
+          <div class="session-rt-tabs">
+            <button class="session-rt-tab active" data-srt="chat" onclick="switchSessionRT('chat')"><span>✦</span>Co-DM</button>
+            <button class="session-rt-tab" data-srt="image" onclick="switchSessionRT('image')"><span>🏛️</span>Szene</button>
+            <button class="session-rt-tab" data-srt="music" onclick="switchSessionRT('music')"><span>🎵</span>Musik</button>
           </div>
-          <div class="session-rt-head">Musik</div>
-          <div class="session-rt-music" id="sessMusic"></div>
-          <div class="session-rt-chat">
-            <div class="session-rt-chat-head">Co-DM · Improvise mit mir</div>
+
+          <div class="session-rt-pane active" data-srt="chat">
+            <div class="session-rt-chat-head">
+              <strong>Co-DM</strong> · Frag nach Lore, Regeln, Konsequenzen
+              <span class="kbd-hint" style="margin-left:auto;">C</span>
+            </div>
             <div class="chat-panel" data-chat-host="session">
               <div class="chat-scroll"></div>
               <div class="chat-input-wrap">
                 <div class="chat-input-box">
-                  <textarea class="chat-input" rows="1" placeholder="Schnelle Frage..."></textarea>
-                  <button class="chat-send-btn">↵</button>
+                  <textarea class="chat-input" rows="1" placeholder="Frage an den Co-DM..."></textarea>
+                  <button class="chat-send-btn">Senden</button>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="session-rt-pane" data-srt="image">
+            <div class="session-rt-head">Szenen-Bild</div>
+            <div class="session-rt-scene">
+              <div class="scene-img" id="sessSceneImg">
+                <div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Bild</span></div>
+              </div>
+              <div class="scene-img-actions">
+                <button class="btn-top primary" style="flex:1;" onclick="generateSceneImage()">⚡ Generieren</button>
+                <button class="btn-top" onclick="copySceneUrl()">📋 URL</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="session-rt-pane" data-srt="music">
+            <div class="session-rt-head">Musik-Empfehlungen</div>
+            <div class="session-rt-music" id="sessMusic"></div>
           </div>
         </aside>
       </div>
@@ -1269,6 +1383,7 @@ if (!state.threads) state.threads = {};  // keyed by 'prep' or 'session'
 if (!state.initiative) state.initiative = [];  // [{id, hp, down}]
 if (!state.charFilter) state.charFilter = 'all';
 if (!state.currentView) state.currentView = 'prep';
+if (!state.sessionMode) state.sessionMode = 'scene';
 
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
 function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn(e); } }
@@ -1526,15 +1641,54 @@ async function copySceneUrl() {
   catch (e) { toast('Copy fehlgeschlagen', true); }
 }
 
-function askAIRewrite(field) {
+// Inline AI rewrite — replaces field content directly without chat detour.
+// Single-shot call to /api/dm-chat with instruction to return only the rewritten text.
+async function askAIRewrite(field) {
   const loc = currentLoc(); if (!loc) return;
   const current = loc[field] || '';
+  const fieldLabel = field === 'readAloud' ? 'Vorlese-Text' : field === 'dmNote' ? 'DM-Notiz' : field;
   const prompt = current
-    ? `Verbessere diesen ${field === 'readAloud' ? 'Vorlese-Text' : 'Text'} für den Standort "${loc.name}". Mach ihn atmosphärischer und spannender. Antworte nur mit dem fertigen Text:\n\n${current}`
-    : `Schreibe einen ${field === 'readAloud' ? 'Vorlese-Text' : 'DM-Notiz-Text'} für den Standort "${loc.name}" (${loc.meta || 'kein context'}). Halte es atmospherisch und knapp.`;
-  switchPrepRT('chat');
-  const input = document.querySelector('[data-chat-host="prep"] .chat-input');
-  input.value = prompt; input.focus(); sendChatFrom('prep');
+    ? `Verbessere folgenden ${fieldLabel} für den Standort "${loc.name}" (${loc.meta || ''}). Atmosphärisch, präzise, im Sourcebook-Ton. Antworte AUSSCHLIESSLICH mit dem fertigen Text — kein Vorwort, keine Meta-Kommentare:\n\n${current}`
+    : `Schreibe einen ${fieldLabel} für "${loc.name}" (${loc.meta || 'keine Meta'}). Atmosphärisch, 2-4 Sätze für Read-Aloud bzw. 2-3 Sätze DM-Guidance für Notiz. Antworte AUSSCHLIESSLICH mit dem fertigen Text — kein Vorwort.`;
+
+  // Find the textarea corresponding to this field and show loading overlay
+  const textareas = document.querySelectorAll('#prepBody textarea');
+  let target;
+  for (const ta of textareas) { if (ta.getAttribute('onblur')?.includes(`'${field}'`)) { target = ta; break; } }
+  if (!target) { toast('Feld nicht gefunden', true); return; }
+
+  const wrap = target.closest('.card-b') || target.parentElement;
+  wrap.classList.add('ai-inline','loading');
+  if (!wrap.querySelector('.ai-inline-loading')) {
+    const ov = document.createElement('div'); ov.className = 'ai-inline-loading';
+    ov.innerHTML = '<div class="spinner"></div>KI SCHREIBT…';
+    wrap.appendChild(ov);
+  }
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/dm-chat`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaign: { ...campaign(), currentLocationId: state.currentLocationId, characters: state.characters, combatState: state.initiative },
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    let text = '';
+    if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
+    else if (typeof data.content === 'string') text = data.content;
+    // Strip leading/trailing quote marks AI sometimes adds
+    text = text.replace(/^["„"]|["""]$/g, '').trim();
+    if (!text) throw new Error('Leere Antwort');
+
+    target.value = text;
+    loc[field] = text; saveState();
+    toast('✨ KI-Text eingesetzt');
+  } catch (err) {
+    toast('Fehler: ' + err.message, true);
+  } finally {
+    wrap.classList.remove('loading');
+  }
 }
 function askAIGenerate(field) { askAIRewrite(field); }
 
@@ -1542,8 +1696,58 @@ function askAIGenerate(field) { askAIRewrite(field); }
 function renderSession() {
   renderSessionTree();
   renderPartyChips('sessionPartyChips');
+  applySessionMode();
   renderSessionLocation();
   renderInitiative();
+  updateQuickNotesCount();
+  // Restore last right-panel tab
+  switchSessionRT(state.sessionRTTab || 'chat');
+}
+
+// Session right-panel tab switcher (Chat / Szene / Musik)
+function switchSessionRT(tab) {
+  state.sessionRTTab = tab; saveState();
+  document.querySelectorAll('.session-rt-tab').forEach(b => b.classList.toggle('active', b.dataset.srt === tab));
+  document.querySelectorAll('.session-rt-pane').forEach(p => p.classList.toggle('active', p.dataset.srt === tab));
+  if (tab === 'chat') setTimeout(() => document.querySelector('[data-chat-host="session"] .chat-input')?.focus(), 40);
+}
+
+function setSessionMode(mode) {
+  state.sessionMode = mode; saveState();
+  document.querySelectorAll('.session-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  applySessionMode();
+  // Auto-scroll to top when mode changes (fresh focus)
+  const pane = document.getElementById('sessReadPane');
+  if (pane) pane.scrollTop = 0;
+  plausibleTrack('DMStudio · Session Mode', { mode });
+}
+function applySessionMode() {
+  const mode = state.sessionMode || 'scene';
+  const main = document.getElementById('sessionMainEl');
+  if (main) { main.classList.remove('mode-scene','mode-combat','mode-social','mode-exploration'); main.classList.add('mode-' + mode); }
+  document.querySelectorAll('.session-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+}
+
+// ═══════════ QUICK NOTES (Live Session Log) ═══════════
+function updateQuickNotesCount() {
+  const loc = currentLoc();
+  const log = loc?.log || '';
+  const count = (log.match(/\n/g) || []).length + (log ? 1 : 0);
+  const el = document.getElementById('quickNotesCount');
+  if (el) el.textContent = count > 0 ? `${count} Notizen` : '';
+}
+function handleQuickNotesKey(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addQuickNote(); }
+}
+function addQuickNote() {
+  const input = document.getElementById('quickNotesInput');
+  const text = input.value.trim(); if (!text) return;
+  const loc = currentLoc(); if (!loc) return;
+  const ts = new Date().toTimeString().slice(0, 5);
+  loc.log = (loc.log || '') + (loc.log ? '\n' : '') + `[${ts}] ${text}`;
+  saveState(); input.value = '';
+  updateQuickNotesCount();
+  toast('Notiz gespeichert');
 }
 
 function renderSessionTree() {
@@ -1764,16 +1968,23 @@ function renderCombatOverview() {
       </div>
     `;
 
-    const turnIndicator = e.turn ? '<span style="color:var(--accent);font-weight:700;font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:2px;">● AKTIV</span>' : '';
+    // HP bar color coding — green > 50%, yellow 25-50%, red < 25%
+    const pct = c.maxHp > 0 ? Math.max(0, Math.min(100, (e.hp / c.maxHp) * 100)) : 0;
+    const barClass = pct > 50 ? 'full' : pct > 25 ? 'hurt' : 'critical';
+    const turnIndicator = e.turn ? '<span class="active-turn-badge">● AM ZUG</span>' : '';
     const downed = e.down ? 'down' : '';
+    const activeClass = e.turn && !e.down ? 'active-turn' : '';
     return `
-      <div class="statblock-wrap">
+      <div class="statblock-wrap ${activeClass}" data-init-idx="${i}">
         <div class="sb-hp-tracker ${downed}">
           <span class="label">HP</span>
           <input type="number" value="${e.hp}" onblur="setCombatHP(${i}, this.value)">
           <span class="max">/ ${c.maxHp}</span>
-          <button class="hp-btn" onclick="damageHP(${i})" title="-5 HP">−5</button>
-          <button class="hp-btn heal" onclick="healHP(${i})" title="+5 HP">+5</button>
+          <div class="hp-bar-wrap" data-label="${e.hp}/${c.maxHp}">
+            <div class="hp-bar-fill ${barClass}" style="width:${pct}%;"></div>
+          </div>
+          <button class="hp-btn" onclick="damageHP(${i})" title="-5 HP (D)">−5</button>
+          <button class="hp-btn heal" onclick="healHP(${i})" title="+5 HP (H)">+5</button>
           ${condBadges}
           <button class="cond-add" onclick="event.stopPropagation();toggleCondPicker(${i})">+ Zustand</button>
           <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
@@ -1822,6 +2033,58 @@ document.addEventListener('click', e => {
     document.querySelectorAll('.cond-picker.open').forEach(p => p.classList.remove('open'));
   }
 });
+
+// ═══════════ KEYBOARD SHORTCUTS (Session Live) ═══════════
+document.addEventListener('keydown', e => {
+  // Don't capture if typing in input/textarea/contenteditable
+  if (e.target.matches('input, textarea, [contenteditable="true"]')) return;
+  // Only active in Session Live view
+  if (state.currentView !== 'session') return;
+
+  const activeIdx = state.initiative.findIndex(x => x.turn && !x.down);
+
+  if (e.key === ' ' && state.initiative.length) {
+    e.preventDefault();
+    nextTurn();
+  } else if ((e.key === 'd' || e.key === 'D') && activeIdx >= 0) {
+    e.preventDefault();
+    const amt = prompt('Damage an aktivem Kombattant?', '5');
+    if (amt) {
+      const n = parseInt(amt) || 0;
+      state.initiative[activeIdx].hp = Math.max(0, state.initiative[activeIdx].hp - n);
+      if (state.initiative[activeIdx].hp === 0) state.initiative[activeIdx].down = true;
+      saveState(); renderInitiative(); renderSessionLocation();
+      toast(`-${n} HP`);
+    }
+  } else if ((e.key === 'h' || e.key === 'H') && activeIdx >= 0) {
+    e.preventDefault();
+    const amt = prompt('Heal für aktiven Kombattant?', '5');
+    if (amt) {
+      const n = parseInt(amt) || 0;
+      const c = state.characters.find(x => x.id === state.initiative[activeIdx].id);
+      const max = c ? c.maxHp : 999;
+      state.initiative[activeIdx].hp = Math.min(max, state.initiative[activeIdx].hp + n);
+      if (state.initiative[activeIdx].hp > 0) state.initiative[activeIdx].down = false;
+      saveState(); renderInitiative(); renderSessionLocation();
+      toast(`+${n} HP`);
+    }
+  } else if (e.key === '1' || e.key === '2' || e.key === '3') {
+    const modes = { '1': 'scene', '2': 'combat', '3': 'social' };
+    setSessionMode(modes[e.key]);
+  } else if (e.key === 'n' || e.key === 'N') {
+    e.preventDefault();
+    document.getElementById('quickNotesInput')?.focus();
+  } else if (e.key === 'c' || e.key === 'C') {
+    e.preventDefault();
+    switchSessionRT('chat');
+  }
+});
+
+// Auto-scroll combat-lane to active combatant whenever render updates
+function scrollToActiveCombatant() {
+  const activeEl = document.querySelector('.statblock-wrap.active-turn');
+  if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
 
 function setCombatHP(i, val) {
   state.initiative[i].hp = Math.max(0, parseInt(val) || 0);
@@ -1924,6 +2187,7 @@ function nextTurn() {
   while (state.initiative[next].down && next !== curIdx) next = (next + 1) % state.initiative.length;
   state.initiative[next].turn = true;
   saveState(); renderInitiative(); renderSessionLocation();
+  setTimeout(scrollToActiveCombatant, 80);
 }
 function rollInitiativeUpdated() { rollInitiative(); renderSessionLocation(); }
 function toggleDown(i) { state.initiative[i].down = !state.initiative[i].down; saveState(); renderInitiative(); renderSessionLocation(); }
@@ -2339,13 +2603,21 @@ function renderChat(host) {
   const scroll = panel.querySelector('.chat-scroll');
   const t = chatThread(host);
   if (!t.messages.length) {
-    scroll.innerHTML = `
-      <div class="chat-empty">
-        <strong>CO-DM · ${host === 'prep' ? 'Vorbereitung' : 'Improvise'}</strong>
-        ${host === 'prep'
-          ? 'Lass mich Vorlese-Texte schreiben, Szenarien ausbauen, NPC-Reaktionen planen, Atmosphären-Bilder generieren.'
-          : 'Schnelle Improvisation während der Session. Was passiert wenn…?'}
-      </div>`;
+    scroll.innerHTML = host === 'prep'
+      ? `<div class="chat-empty">
+          <strong>CO-DM · VORBEREITUNG</strong>
+          Lass mich Vorlese-Texte schreiben, Szenarien ausbauen, NPC-Reaktionen planen, Atmosphären-Bilder generieren.
+        </div>`
+      : `<div class="chat-empty">
+          <strong>CO-DM · LIVE SESSION</strong>
+          Ich kenne die komplette Kampagne — Party-Stats, alle Session-Recaps, NPCs, Lore.<br><br>
+          <strong style="display:block;margin-bottom:6px;">Frag mich zum Beispiel:</strong>
+          <span style="font-style:italic;color:var(--text);">„Was wissen wir über Strahds Bruder Sergei?"<br>
+          „Was passierte in Session 11 nochmal?"<br>
+          „Welche Reaktion passt zu Rahadin wenn Gattok ihn beleidigt?"<br>
+          „Wie funktioniert Paralyzed nochmal genau?"<br>
+          „Was würde Larrymäus' Kleriker-Training hier sagen?"</span>
+        </div>`;
     return;
   }
   scroll.innerHTML = t.messages.map(m => renderMsg(m)).join('');
