@@ -303,6 +303,8 @@ body{
 .session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
 
 .session-read-pane{flex:1;overflow-y:auto;padding:28px 40px 40px;min-width:0;}
+.session-content-inner{max-width:880px;margin:0 auto;}
+.session-content-inner > .combat-overview{max-width:none;margin-left:-40px;margin-right:-40px;}
 
 /* ══════ MODULE-STYLE ROOM HEADER — Pyram-King chapter opener ══════ */
 .mod-room-header{
@@ -2257,7 +2259,7 @@ async function generateSceneImage() {
   try {
     const resp = await fetch(`${API_BASE}/api/image`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: loc.imagePrompt, model: 'bytedance/seedream-4-5', width: 2560, height: 1440 })
+      body: JSON.stringify({ prompt: loc.imagePrompt, model: 'bytedance/seedream-4-5', width: 2880, height: 1620 })
     });
     const data = await resp.json();
     const url = extractImageUrl(data);
@@ -2465,7 +2467,7 @@ function renderSessionLocation() {
   const cls = (k) => collapsed[k] ? 'collapsed' : '';
 
   const host = document.getElementById('sessReadPane');
-  host.innerHTML = `
+  host.innerHTML = `<div class="session-content-inner">
     ${renderRecapBlock()}
 
     <!-- ROOM HEADER · D&D-Module style -->
@@ -2584,7 +2586,7 @@ function renderSessionLocation() {
           <pre style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;background:var(--surface-2);padding:14px;border-radius:6px;margin:0;">${escapeHtml(loc.log)}</pre>
         </div>
       </div>` : ''}
-  `;
+  </div>`;
 
   renderSessSceneImage();
   renderSessMusic(loc);
@@ -3495,7 +3497,7 @@ async function generateEmbeddedImage(host, msgId, prompt) {
   try {
     const resp = await fetch(`${API_BASE}/api/image`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt + ', cinematic fantasy, photorealistic, 8K, no text', model: 'bytedance/seedream-4-5', width: 2560, height: 1440 })
+      body: JSON.stringify({ prompt: prompt + ', cinematic fantasy, photorealistic, 8K, no text', model: 'bytedance/seedream-4-5', width: 2880, height: 1620 })
     });
     const data = await resp.json();
     const url = extractImageUrl(data); if (!url) throw new Error('no url');
