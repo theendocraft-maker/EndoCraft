@@ -4222,10 +4222,38 @@ function renderCharEditor() {
             </div>
           </div>
           <div class="char-form-row">
-            <div class="field"><div class="field-lbl">Race</div><input class="field-in" value="${escapeAttr(c.race || '')}" onblur="updateCharField('race', this.value)"></div>
-            <div class="field"><div class="field-lbl">${c.type === 'pc' ? 'Class / Subclass' : 'Role'}</div><input class="field-in" value="${escapeAttr(c.class || '')}" onblur="updateCharField('class', this.value)"></div>
-            <div class="field"><div class="field-lbl">${c.type === 'pc' ? 'Level' : 'CR (numeric)'}</div><input class="field-in" type="number" value="${c.level || 1}" onblur="updateCharField('level', parseInt(this.value) || 1)"></div>
+            <div class="field"><div class="field-lbl">Race</div>
+              <div style="display:flex;gap:6px;">
+                <input class="field-in" style="flex:1;min-width:0;" value="${escapeAttr(c.race || '')}" placeholder="frei tippen oder SRD →" onblur="updateCharField('race', this.value)">
+                ${c.type === 'pc' ? `<select class="field-in" style="max-width:150px;" onchange="if(this.value){applyRaceTemplate(this.value);}this.value='';" title="SRD-Template anwenden · Ability-Bonus + Traits">
+                  <option value="">⚡ SRD Race</option>
+                  ${SRD_RACES.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('')}
+                </select>` : ''}
+              </div>
+            </div>
+            <div class="field"><div class="field-lbl">${c.type === 'pc' ? 'Class / Subclass' : 'Role'}</div>
+              <div style="display:flex;gap:6px;">
+                <input class="field-in" style="flex:1;min-width:0;" value="${escapeAttr(c.class || '')}" placeholder="frei tippen oder SRD →" onblur="updateCharField('class', this.value)">
+                ${c.type === 'pc' ? `<select class="field-in" style="max-width:150px;" onchange="if(this.value){applyClassTemplate(this.value);}this.value='';" title="SRD-Template anwenden · Hit Die + Saves + Features">
+                  <option value="">⚡ SRD Class</option>
+                  ${SRD_CLASSES.map(cl => `<option value="${cl.id}">${escapeHtml(cl.name)}</option>`).join('')}
+                </select>` : ''}
+              </div>
+            </div>
+            <div class="field"><div class="field-lbl">${c.type === 'pc' ? 'Level' : 'CR (numeric)'}</div><input class="field-in" type="number" value="${c.level || 1}" onblur="updateCharField('level', parseInt(this.value) || 1);if('${c.type}'==='pc')recalcProfBonus()"></div>
           </div>
+          ${c.type === 'pc' ? `
+          <div class="char-form-row" style="grid-template-columns:1fr;">
+            <div class="field"><div class="field-lbl">Background</div>
+              <div style="display:flex;gap:6px;">
+                <input class="field-in" style="flex:1;min-width:0;" value="${escapeAttr(c.background || '')}" placeholder="z.B. Acolyte, Soldier · frei tippen oder SRD →" onblur="updateCharField('background', this.value)">
+                <select class="field-in" style="max-width:180px;" onchange="if(this.value){applyBackgroundTemplate(this.value);}this.value='';" title="SRD-Background anwenden · Feature + Skills">
+                  <option value="">⚡ SRD Background</option>
+                  ${SRD_BACKGROUNDS.map(bg => `<option value="${bg.id}">${escapeHtml(bg.name)}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+          </div>` : ''}
         </div>
       </div>
 
@@ -4389,6 +4417,23 @@ function updateCharField(field, value) {
   const c = currentChar(); if (!c) return;
   c[field] = value; saveState();
   if (field === 'name' || field === 'race' || field === 'class') renderCharList();
+}
+
+// Automatisch Proficiency-Bonus + Saves neu berechnen wenn Level sich ändert (nur für PCs mit SRD-Class)
+function recalcProfBonus() {
+  const c = currentChar(); if (!c || c.type !== 'pc') return;
+  const newProf = formatMod(calcProfBonus(c.level));
+  if (c.proficiency !== newProf) {
+    c.proficiency = newProf;
+    // Wenn Class aus SRD gesetzt ist: Saves neu berechnen
+    const cls = SRD_CLASSES.find(x => c.class?.toLowerCase().includes(x.name.toLowerCase()));
+    if (cls) {
+      const saves = cls.savingThrows.map(s => s.toUpperCase() + ' +' + (abilityModifier(c.stats[s]) + calcProfBonus(c.level)));
+      c.savingThrows = saves.join(', ');
+    }
+    saveState();
+    renderCharEditor();
+  }
 }
 function updateCharStat(stat, value) {
   const c = currentChar(); if (!c) return;
