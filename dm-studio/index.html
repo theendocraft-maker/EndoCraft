@@ -681,7 +681,114 @@ body{
 .char-row-tag.npc{background:var(--gold-dim);color:var(--gold);}
 
 .char-editor{flex:1;background:var(--bg);overflow-y:auto;padding:26px 32px 40px;min-width:0;}
-.char-form-split{display:grid;grid-template-columns:minmax(0,1fr) 480px;gap:26px;align-items:start;max-width:1340px;margin:0 auto;}
+.char-form-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start;max-width:1400px;margin:0 auto;}
+
+/* ═══════ INTERACTIVE SHEET · Rolls, Skills, Saves, Attacks ═══════ */
+.sheet-section{background:#fbf6e6;border:1px solid #d9c89a;border-radius:6px;margin-bottom:14px;overflow:hidden;}
+.sheet-section-h{padding:10px 16px;background:linear-gradient(to bottom,var(--crimson),#941c12);color:#fdf6e8;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:10px;border-bottom:2px solid #7a1810;}
+.sheet-section-b{padding:12px 16px;}
+
+/* Klickbare Ability Scores */
+.ability-grid-interactive{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.ability-box{background:#fff;border:1px solid #d9c89a;border-radius:6px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
+.ability-box:hover{border-color:var(--crimson);background:#fef6e8;box-shadow:0 2px 8px rgba(168,35,24,0.15);}
+.ability-box-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.ability-box-mod{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--ink);line-height:1;margin:6px 0 4px;}
+.ability-box-score{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+.ability-box-score input{width:40px;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center;outline:none;padding:0;}
+.ability-box-score input:focus{background:#fbf6e6;color:var(--ink);}
+
+/* Saves Table */
+.saves-table,.skills-table{width:100%;border-collapse:collapse;}
+.saves-table th,.skills-table th{padding:6px 8px;text-align:left;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--crimson);text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--border-strong);}
+.saves-table td,.skills-table td{padding:6px 8px;border-bottom:1px dotted var(--border);font-size:13px;}
+.saves-table tr,.skills-table tr{transition:background .1s;}
+.saves-table tr:hover,.skills-table tr:hover{background:rgba(168,35,24,0.04);}
+.prof-toggle{width:16px;height:16px;border-radius:50%;border:2px solid var(--border-strong);cursor:pointer;display:inline-block;vertical-align:middle;position:relative;background:#fff;transition:all .1s;}
+.prof-toggle:hover{border-color:var(--crimson);}
+.prof-toggle.prof{background:var(--crimson);border-color:var(--crimson);}
+.prof-toggle.prof::after{content:'';position:absolute;inset:3px;background:#fff;border-radius:50%;}
+.prof-toggle.expertise{background:var(--gold);border-color:var(--gold);}
+.prof-toggle.expertise::after{content:'';position:absolute;inset:2px;background:#fff;border-radius:50%;border:1px solid var(--gold);}
+.roll-btn{background:transparent;border:1px solid transparent;color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;padding:2px 10px;border-radius:4px;cursor:pointer;transition:all .12s;min-width:44px;}
+.roll-btn:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+
+/* Attacks Table */
+.attacks-list{display:flex;flex-direction:column;gap:8px;}
+.attack-row{display:grid;grid-template-columns:1fr 70px 110px auto;gap:8px;align-items:center;padding:8px 10px;background:#fff;border:1px solid var(--border);border-radius:5px;}
+.attack-row input{background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);padding:2px 4px;}
+.attack-row input:focus{background:var(--surface-2);border-radius:3px;}
+.attack-row .attack-name{font-weight:600;}
+.attack-row .attack-tohit{font-family:'JetBrains Mono',monospace;text-align:center;}
+.attack-row .attack-damage{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.attack-row .attack-actions{display:flex;gap:3px;}
+.attack-row button{background:var(--crimson);color:#fff;border:none;padding:4px 9px;border-radius:3px;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;font-weight:700;}
+.attack-row button:hover{filter:brightness(1.1);}
+.attack-row .attack-remove{background:transparent;color:var(--text-dim);padding:4px 6px;}
+.attack-row .attack-remove:hover{color:var(--crimson);background:rgba(168,35,24,0.1);}
+
+/* Death Saves, HP extras */
+.hp-extras{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+.hp-extra-box{background:#fff;border:1px solid var(--border);border-radius:5px;padding:8px 10px;text-align:center;}
+.hp-extra-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.hp-extra-input{width:100%;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--ink);text-align:center;outline:none;}
+
+.deathsave-row{display:flex;align-items:center;gap:10px;}
+.deathsave-circles{display:flex;gap:4px;}
+.deathsave-circle{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-strong);cursor:pointer;}
+.deathsave-circle.success{background:var(--forest);border-color:var(--forest);}
+.deathsave-circle.fail{background:var(--crimson);border-color:var(--crimson);}
+
+/* Roll Log Panel */
+.roll-log-panel{background:#fbf6e6;border:1px solid #d9c89a;border-radius:6px;overflow:hidden;margin-bottom:14px;}
+.roll-log-h{padding:10px 14px;background:linear-gradient(to bottom,var(--crimson),#941c12);color:#fdf6e8;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.roll-log-clear{background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.2);color:#fdf6e8;font-size:10px;padding:2px 8px;border-radius:3px;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:1px;}
+.roll-log-body{max-height:520px;overflow-y:auto;padding:6px;}
+.roll-entry{padding:8px 10px;border-bottom:1px dotted var(--border);font-size:12px;display:flex;flex-direction:column;gap:3px;position:relative;}
+.roll-entry:last-child{border-bottom:none;}
+.roll-entry.crit{background:rgba(45,122,95,0.08);border-left:3px solid var(--forest);}
+.roll-entry.fail{background:rgba(168,35,24,0.08);border-left:3px solid var(--crimson);}
+.roll-entry.roll-damage{background:rgba(147,110,30,0.05);border-left:3px solid var(--gold);}
+.roll-label{font-family:'Cinzel',serif;font-size:10px;color:var(--ink);letter-spacing:.5px;font-weight:700;text-transform:uppercase;}
+.roll-advdis{background:var(--accent-dim);color:var(--accent);padding:1px 6px;border-radius:3px;margin-left:6px;font-size:9px;}
+.roll-calc{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
+.roll-calc strong{color:var(--ink);font-size:14px;}
+.roll-total{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);position:absolute;right:10px;top:50%;transform:translateY(-50%);}
+.roll-total.damage{color:var(--gold);}
+
+/* Spell Slots Tracker */
+.spellslot-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px dotted var(--border);}
+.spellslot-row:last-child{border-bottom:none;}
+.spellslot-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;color:var(--crimson);text-transform:uppercase;font-weight:700;width:60px;}
+.spellslot-boxes{display:flex;gap:4px;flex-wrap:wrap;flex:1;}
+.spellslot-box{width:18px;height:18px;border:2px solid var(--border-strong);border-radius:3px;cursor:pointer;background:#fff;}
+.spellslot-box.used{background:var(--crimson);border-color:var(--crimson);}
+
+/* Vitals · Death Saves · Inspiration · Exhaustion */
+.vitals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px;}
+.vitals-cell{display:flex;flex-direction:column;gap:4px;}
+.vitals-cell .field-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--crimson);text-transform:uppercase;font-weight:700;}
+.vitals-hint{font-size:10px;color:var(--text-dim);font-style:italic;}
+.insp-toggle{background:#fff;border:2px solid var(--border-strong);border-radius:6px;padding:8px 12px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;transition:all .15s;font-weight:700;}
+.insp-toggle:hover{border-color:var(--gold);}
+.insp-toggle.active{background:var(--gold);color:#fff;border-color:var(--gold);box-shadow:0 2px 8px rgba(147,110,30,0.3);}
+.exhaustion-row{display:flex;gap:4px;}
+.exh-box{width:26px;height:26px;border:2px solid var(--border-strong);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-family:'Cinzel',serif;font-weight:700;color:var(--text-dim);background:#fff;transition:all .12s;}
+.exh-box:hover{border-color:var(--crimson);}
+.exh-box.active{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+.exh-box.current{box-shadow:0 0 0 2px var(--gold);}
+.death-saves{background:#fff;border:1px solid #d9c89a;border-radius:6px;padding:12px 16px;margin-top:10px;}
+.death-saves-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center;}
+.ds-col{display:flex;align-items:center;gap:6px;}
+.ds-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;font-weight:700;margin-right:4px;}
+.ds-col.success .ds-lbl{color:var(--forest);}
+.ds-col.fail .ds-lbl{color:var(--crimson);}
+.ds-dot{width:18px;height:18px;border:2px solid var(--border-strong);border-radius:50%;cursor:pointer;background:#fff;transition:all .12s;}
+.ds-dot:hover{transform:scale(1.15);}
+.ds-dot.success.filled{background:var(--forest);border-color:var(--forest);}
+.ds-dot.fail.filled{background:var(--crimson);border-color:var(--crimson);}
+.ds-reset{background:var(--surface-2);border:1px solid var(--border-strong);border-radius:4px;padding:4px 10px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;cursor:pointer;font-weight:700;color:var(--text-dim);}
+.ds-reset:hover{border-color:var(--crimson);color:var(--crimson);}
 .char-form-editor{min-width:0;}
 .char-form-preview{position:sticky;top:0;align-self:start;max-height:calc(100vh - 140px);overflow-y:auto;padding-right:4px;}
 .char-form-preview-h{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--text-dim);margin-bottom:12px;text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:8px;}
@@ -1848,6 +1955,135 @@ const SRD_BACKGROUNDS = [
 function abilityModifier(score) { return Math.floor((score - 10) / 2); }
 function formatMod(n) { return (n >= 0 ? '+' : '') + n; }
 function calcProfBonus(level) { return Math.ceil(level / 4) + 1; }  // Lvl 1-4: +2, 5-8: +3, 9-12: +4, 13-16: +5, 17-20: +6
+
+// ─── 18 D&D Skills mit Ability-Mapping ─────────────────────────────────
+const SKILL_LIST = [
+  { name: 'Acrobatics', ability: 'dex' },
+  { name: 'Animal Handling', ability: 'wis' },
+  { name: 'Arcana', ability: 'int' },
+  { name: 'Athletics', ability: 'str' },
+  { name: 'Deception', ability: 'cha' },
+  { name: 'History', ability: 'int' },
+  { name: 'Insight', ability: 'wis' },
+  { name: 'Intimidation', ability: 'cha' },
+  { name: 'Investigation', ability: 'int' },
+  { name: 'Medicine', ability: 'wis' },
+  { name: 'Nature', ability: 'int' },
+  { name: 'Perception', ability: 'wis' },
+  { name: 'Performance', ability: 'cha' },
+  { name: 'Persuasion', ability: 'cha' },
+  { name: 'Religion', ability: 'int' },
+  { name: 'Sleight of Hand', ability: 'dex' },
+  { name: 'Stealth', ability: 'dex' },
+  { name: 'Survival', ability: 'wis' }
+];
+
+// ─── DICE ROLLER + ROLL-LOG ─────────────────────────────────────────────
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function rollDice(n, sides) { return Array.from({length: n}, () => randInt(1, sides)); }
+
+function performRoll(label, modifier, opts = {}) {
+  const { advantage = false, disadvantage = false, crit = false, charName = '' } = opts;
+  let d20rolls = [randInt(1, 20)];
+  let result;
+  if (advantage && !disadvantage) {
+    d20rolls.push(randInt(1, 20));
+    result = Math.max(...d20rolls);
+  } else if (disadvantage && !advantage) {
+    d20rolls.push(randInt(1, 20));
+    result = Math.min(...d20rolls);
+  } else {
+    result = d20rolls[0];
+  }
+  const total = result + modifier;
+  const entry = {
+    id: 't_' + Date.now().toString(36),
+    label, charName, d20rolls, result, mod: modifier, total,
+    adv: advantage && !disadvantage, dis: disadvantage && !advantage,
+    crit: result === 20, fail: result === 1,
+    ts: Date.now()
+  };
+  state.rollLog = state.rollLog || [];
+  state.rollLog.unshift(entry);
+  state.rollLog = state.rollLog.slice(0, 30);
+  saveState();
+  renderRollLog();
+  // Brief animation feedback on the newest entry
+  return entry;
+}
+
+function rollDamage(diceExpr, modifier, label, opts = {}) {
+  // diceExpr like "1d6", "2d8+2d6", "3d6"
+  const { charName = '', isCrit = false } = opts;
+  const parts = String(diceExpr).match(/(\d+)d(\d+)/g) || [];
+  const allRolls = [];
+  let total = 0;
+  parts.forEach(p => {
+    const [n, sides] = p.split('d').map(Number);
+    const nFinal = isCrit ? n * 2 : n;
+    const rolls = rollDice(nFinal, sides);
+    allRolls.push({ expr: nFinal + 'd' + sides, rolls });
+    total += rolls.reduce((a,b) => a+b, 0);
+  });
+  total += modifier;
+  const entry = {
+    id: 't_' + Date.now().toString(36),
+    label: label + (isCrit ? ' · CRIT!' : ''), charName, damageRolls: allRolls, mod: modifier, total,
+    isDamage: true, ts: Date.now()
+  };
+  state.rollLog = state.rollLog || [];
+  state.rollLog.unshift(entry);
+  state.rollLog = state.rollLog.slice(0, 30);
+  saveState();
+  renderRollLog();
+  return entry;
+}
+
+function clearRollLog() {
+  state.rollLog = []; saveState(); renderRollLog();
+}
+
+function renderRollLog() {
+  const host = document.getElementById('rollLogHost');
+  if (!host) return;
+  const log = state.rollLog || [];
+  if (!log.length) {
+    host.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-dimmer);font-size:12px;font-style:italic;">Noch keine Rolls. Klick auf Abilities, Skills, Saves oder Attacks um zu würfeln.</div>';
+    return;
+  }
+  host.innerHTML = log.map(e => {
+    if (e.isDamage) {
+      const rollsText = e.damageRolls.map(r => `${r.expr}: [${r.rolls.join(', ')}]`).join(' + ');
+      return `<div class="roll-entry roll-damage">
+        <div class="roll-label">${escapeHtml(e.charName ? e.charName + ' · ' : '')}${escapeHtml(e.label)}</div>
+        <div class="roll-calc">${rollsText}${e.mod ? ' ' + formatMod(e.mod) : ''}</div>
+        <div class="roll-total damage">${e.total}</div>
+      </div>`;
+    }
+    const advDis = e.adv ? ' ADV' : e.dis ? ' DIS' : '';
+    const critFail = e.crit ? 'crit' : e.fail ? 'fail' : '';
+    const rollDisplay = e.d20rolls.length > 1
+      ? `[${e.d20rolls.map(r => r === e.result ? `<strong>${r}</strong>` : `<s style="opacity:.4">${r}</s>`).join(', ')}]`
+      : `[${e.d20rolls[0]}]`;
+    return `<div class="roll-entry ${critFail}">
+      <div class="roll-label">${escapeHtml(e.charName ? e.charName + ' · ' : '')}${escapeHtml(e.label)}${advDis ? `<span class="roll-advdis">${advDis}</span>` : ''}</div>
+      <div class="roll-calc">${rollDisplay}${e.mod !== 0 ? ' ' + formatMod(e.mod) : ''} = <strong>${e.total}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Character-Initialisierung für fehlende Sheet-Felder ──────────────
+function ensureCharFields(c) {
+  if (!c.skillProfs) c.skillProfs = {};  // { 'Perception': 1 } 1=prof, 2=expertise
+  if (!c.savingThrowProfs) c.savingThrowProfs = {};  // { str: true }
+  if (!c.attacks) c.attacks = [];  // [{ name, bonus, damageDice, damageType, range }]
+  if (typeof c.tempHp !== 'number') c.tempHp = 0;
+  if (!c.inspiration) c.inspiration = false;
+  if (typeof c.exhaustion !== 'number') c.exhaustion = 0;
+  if (!c.deathSaves) c.deathSaves = { success: 0, fail: 0 };
+  if (typeof c.hitDiceUsed !== 'number') c.hitDiceUsed = 0;
+  if (!c.spellSlots) c.spellSlots = {};  // { 1: { max: 4, used: 0 }, 2: { max: 2, used: 0 } }
+}
 
 // Apply SRD-Race-Template auf aktuellen Charakter
 function applyRaceTemplate(raceId) {
@@ -4170,6 +4406,7 @@ function renderCharEditor() {
       </div>`;
     return;
   }
+  ensureCharFields(c);
 
   // Action list renderer (traits/actions/bonus/reactions/legendary all share this structure)
   const actionList = (listName, items) => `
@@ -4277,21 +4514,166 @@ function renderCharEditor() {
         </div>
       </div>
 
-      <!-- Abilities -->
-      <div class="sb-edit">
-        <div class="sb-edit-h"><span class="sb-edit-h-ico">💪</span>Ability Scores</div>
-        <div class="sb-edit-b">
-          <div class="stats-grid">
-            ${['str','dex','con','int','wis','cha'].map(s => `
-              <div class="stat-block">
-                <div class="stat-block-l">${s.toUpperCase()}</div>
-                <input class="stat-block-v" type="number" value="${c.stats[s]}" onblur="updateCharStat('${s}', parseInt(this.value) || 10)">
-                <div style="font-family:'EB Garamond',serif;font-size:12px;color:var(--text-dim);margin-top:2px;">(${formatMod(abilityMod(c.stats[s]))})</div>
+      <!-- HP Extras · Death Saves · Inspiration · Exhaustion · PC only -->
+      ${c.type === 'pc' ? `
+      <div class="sheet-section">
+        <div class="sheet-section-h"><span>❤️</span>Vitals · Death Saves · Exhaustion</div>
+        <div class="sheet-section-b">
+          <div class="vitals-grid">
+            <div class="vitals-cell">
+              <div class="field-lbl">Temp HP</div>
+              <input class="field-in" type="number" value="${c.tempHp || 0}" onblur="updateCharField('tempHp', parseInt(this.value) || 0)">
+            </div>
+            <div class="vitals-cell">
+              <div class="field-lbl">Hit Dice Used</div>
+              <input class="field-in" type="number" min="0" max="${c.level || 1}" value="${c.hitDiceUsed || 0}" onblur="updateCharField('hitDiceUsed', Math.max(0, Math.min(${c.level || 1}, parseInt(this.value) || 0)))">
+              <div class="vitals-hint">von ${c.level || 1} (${c.hitDice || '—'})</div>
+            </div>
+            <div class="vitals-cell">
+              <div class="field-lbl">Inspiration</div>
+              <button class="insp-toggle ${c.inspiration ? 'active' : ''}" onclick="toggleInspiration()" title="Toggle Inspiration">
+                ${c.inspiration ? '★ INSPIRED' : '☆ None'}
+              </button>
+            </div>
+            <div class="vitals-cell">
+              <div class="field-lbl">Exhaustion Level (0–6)</div>
+              <div class="exhaustion-row">
+                ${[0,1,2,3,4,5,6].map(lvl => `<span class="exh-box ${(c.exhaustion || 0) >= lvl && lvl > 0 ? 'active' : ''} ${(c.exhaustion || 0) === lvl ? 'current' : ''}" onclick="setExhaustion(${lvl})" title="Level ${lvl}">${lvl}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="death-saves">
+            <div class="field-lbl" style="text-align:center;margin-bottom:6px;">Death Saves</div>
+            <div class="death-saves-row">
+              <div class="ds-col success">
+                <div class="ds-lbl">SUCCESS</div>
+                ${[1,2,3].map(n => `<span class="ds-dot success ${(c.deathSaves?.success || 0) >= n ? 'filled' : ''}" onclick="toggleDeathSave('success', ${n})" title="Success ${n}"></span>`).join('')}
+              </div>
+              <div class="ds-col fail">
+                <div class="ds-lbl">FAILURE</div>
+                ${[1,2,3].map(n => `<span class="ds-dot fail ${(c.deathSaves?.fail || 0) >= n ? 'filled' : ''}" onclick="toggleDeathSave('fail', ${n})" title="Fail ${n}"></span>`).join('')}
+              </div>
+              <button class="ds-reset" onclick="resetDeathSaves()" title="Reset bei Short/Long Rest">Reset</button>
+              <button class="roll-btn" onclick="performRoll('Death Save', 0, {charName:'${escapeAttr(c.name)}'})" title="d20: ≥10 = Success · &lt;10 = Fail · 1 = 2 Fails · 20 = aufstehen">🎲 Roll</button>
+            </div>
+          </div>
+        </div>
+      </div>` : ''}
+
+      <!-- Abilities · Klickbar für Rolls -->
+      <div class="sheet-section">
+        <div class="sheet-section-h"><span>💪</span>Ability Checks · Klick zum Würfeln</div>
+        <div class="sheet-section-b">
+          <div class="ability-grid-interactive">
+            ${['str','dex','con','int','wis','cha'].map(s => {
+              const mod = abilityModifier(c.stats[s]);
+              return `
+                <div class="ability-box" onclick="performRoll('${s.toUpperCase()} Check', ${mod}, {charName:'${escapeAttr(c.name)}', advantage:event.shiftKey, disadvantage:event.ctrlKey})" title="Klick: Normal Roll · Shift: Advantage · Ctrl: Disadvantage">
+                  <div class="ability-box-label">${s.toUpperCase()}</div>
+                  <div class="ability-box-mod">${formatMod(mod)}</div>
+                  <div class="ability-box-score"><input type="number" value="${c.stats[s]}" onblur="updateCharStat('${s}', parseInt(this.value) || 10)" onclick="event.stopPropagation()"></div>
+                </div>`;
+            }).join('')}
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:8px;text-align:center;font-style:italic;">Klick Box = d20+Mod · <kbd style="background:var(--surface-2);padding:1px 4px;border-radius:3px;font-size:10px;">Shift</kbd>+Klick = Advantage · <kbd style="background:var(--surface-2);padding:1px 4px;border-radius:3px;font-size:10px;">Ctrl</kbd>+Klick = Disadvantage</div>
+        </div>
+      </div>
+
+      <!-- Saving Throws · Klickbar -->
+      <div class="sheet-section">
+        <div class="sheet-section-h"><span>🛡️</span>Saving Throws · Klick zum Würfeln</div>
+        <div class="sheet-section-b">
+          <table class="saves-table">
+            <thead><tr><th style="width:60px;">Prof</th><th>Save</th><th style="text-align:right;">Bonus</th></tr></thead>
+            <tbody>
+              ${['str','dex','con','int','wis','cha'].map(s => {
+                const isProf = !!c.savingThrowProfs?.[s];
+                const mod = abilityModifier(c.stats[s]) + (isProf ? calcProfBonus(c.level) : 0);
+                return `
+                  <tr>
+                    <td><span class="prof-toggle ${isProf ? 'prof' : ''}" onclick="toggleSaveProf('${s}')" title="Toggle Proficiency"></span></td>
+                    <td>${s.toUpperCase()}</td>
+                    <td style="text-align:right;"><button class="roll-btn" onclick="performRoll('${s.toUpperCase()} Save', ${mod}, {charName:'${escapeAttr(c.name)}', advantage:event.shiftKey, disadvantage:event.ctrlKey})">${formatMod(mod)}</button></td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Skills · Klickbar mit Prof/Expertise -->
+      <div class="sheet-section">
+        <div class="sheet-section-h"><span>🎯</span>Skills · Klick zum Würfeln</div>
+        <div class="sheet-section-b">
+          <table class="skills-table">
+            <thead><tr><th style="width:60px;">Prof</th><th>Skill</th><th style="width:60px;color:var(--text-dim);font-size:9px;">(Ability)</th><th style="text-align:right;">Bonus</th></tr></thead>
+            <tbody>
+              ${SKILL_LIST.map(skill => {
+                const profLevel = c.skillProfs?.[skill.name] || 0;  // 0=none, 1=prof, 2=expertise
+                const profMult = profLevel === 2 ? 2 : profLevel === 1 ? 1 : 0;
+                const mod = abilityModifier(c.stats[skill.ability]) + (profMult * calcProfBonus(c.level));
+                const profClass = profLevel === 2 ? 'expertise' : profLevel === 1 ? 'prof' : '';
+                return `
+                  <tr>
+                    <td><span class="prof-toggle ${profClass}" onclick="toggleSkillProf('${escapeAttr(skill.name)}')" title="Klick: None→Prof→Expertise→None"></span></td>
+                    <td>${escapeHtml(skill.name)}</td>
+                    <td style="color:var(--text-dim);font-size:10px;text-transform:uppercase;">${skill.ability}</td>
+                    <td style="text-align:right;"><button class="roll-btn" onclick="performRoll('${escapeAttr(skill.name)}', ${mod}, {charName:'${escapeAttr(c.name)}', advantage:event.shiftKey, disadvantage:event.ctrlKey})">${formatMod(mod)}</button></td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:8px;text-align:center;font-style:italic;">Prof-Toggle: einmal = Proficiency (Gold-Ring), zweimal = Expertise (Voll-Gold), dreimal = keine</div>
+        </div>
+      </div>
+
+      <!-- Attacks · Klickbar für to-Hit + Damage -->
+      <div class="sheet-section">
+        <div class="sheet-section-h"><span>⚔️</span>Attacks & Spells · Klick zum Würfeln</div>
+        <div class="sheet-section-b">
+          <div class="attacks-list">
+            ${(c.attacks || []).map((atk, i) => `
+              <div class="attack-row">
+                <input class="attack-name" value="${escapeAttr(atk.name || '')}" placeholder="z.B. Longsword" onblur="updateAttack(${i}, 'name', this.value)">
+                <input class="attack-tohit" value="${escapeAttr(atk.bonus || '')}" placeholder="+5" onblur="updateAttack(${i}, 'bonus', this.value)">
+                <input class="attack-damage" value="${escapeAttr(atk.damage || '')}" placeholder="1d8+3 slashing" onblur="updateAttack(${i}, 'damage', this.value)">
+                <div class="attack-actions">
+                  <button onclick="rollAttack(${i})">To Hit</button>
+                  <button onclick="rollAttackDamage(${i}, false)" title="Damage · Shift+Klick = Crit">DMG</button>
+                  <button class="attack-remove" onclick="removeAttack(${i})" title="Löschen">×</button>
+                </div>
               </div>
             `).join('')}
+            <button class="add-row" onclick="addAttack()">+ Attack / Spell hinzufügen</button>
           </div>
         </div>
       </div>
+
+      <!-- Spell Slots · PC only -->
+      ${c.type === 'pc' ? `
+      <div class="sheet-section">
+        <div class="sheet-section-h">
+          <span>✨</span>Spell Slots
+          <button class="roll-log-clear" style="margin-left:auto;" onclick="resetSpellSlots()" title="Alle Slots zurück auf unused (Long Rest)">Long Rest</button>
+        </div>
+        <div class="sheet-section-b">
+          ${[1,2,3,4,5,6,7,8,9].map(lvl => {
+            const slot = c.spellSlots?.[lvl];
+            const max = slot?.max || 0;
+            const used = slot?.used || 0;
+            return `
+              <div class="spellslot-row">
+                <div class="spellslot-label">Lv ${lvl}</div>
+                <div class="spellslot-max"><input type="number" min="0" max="9" value="${max}" onblur="setSpellSlotMax(${lvl}, this.value)" title="Max Slots auf Level ${lvl}" style="width:42px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:12px;"></div>
+                <div class="spellslot-boxes">
+                  ${Array.from({length: max}, (_, i) => `<span class="spellslot-box ${i < used ? 'used' : ''}" onclick="toggleSpellSlot(${lvl}, ${i})" title="Klick: toggle used"></span>`).join('')}
+                  ${max > 0 ? `<span style="font-size:11px;color:var(--text-dim);margin-left:6px;">${max - used}/${max} verfügbar</span>` : `<span style="font-size:11px;color:var(--text-dimmer);margin-left:6px;font-style:italic;">keine</span>`}
+                </div>
+              </div>`;
+          }).join('')}
+          <div style="font-size:11px;color:var(--text-dim);margin-top:10px;text-align:center;font-style:italic;">Max-Input setzt die Slot-Anzahl pro Level · Klick auf Boxen = verbrauchen/zurück · "Long Rest" setzt alle Slots zurück</div>
+        </div>
+      </div>` : ''}
 
       <!-- Saves, Skills, Resistances -->
       <div class="sb-edit">
@@ -4390,11 +4772,19 @@ function renderCharEditor() {
     </div>
     </div>
     <aside class="char-form-preview">
+      <div class="roll-log-panel">
+        <div class="roll-log-h">
+          <span>🎲 Roll Log</span>
+          <button class="roll-log-clear" onclick="clearRollLog()">Clear</button>
+        </div>
+        <div class="roll-log-body" id="rollLogHost"></div>
+      </div>
       <div class="char-form-preview-h">Live-Preview · Statblock</div>
       ${renderStatblock(c)}
     </aside>
   </div>
   `;
+  renderRollLog();
 }
 
 // ═══════════ ACTION-LIST CRUD ═══════════
@@ -4443,6 +4833,163 @@ function deleteChar() {
   if (!confirm('Wirklich löschen?')) return;
   state.characters = state.characters.filter(c => c.id !== state.currentCharId);
   state.currentCharId = null; saveState(); renderChars();
+}
+
+// ═══════════ INTERACTIVE SHEET: VITALS ═══════════
+function toggleInspiration() {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  c.inspiration = !c.inspiration;
+  saveState(); renderCharEditor();
+}
+function setExhaustion(level) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  c.exhaustion = (c.exhaustion === level) ? Math.max(0, level - 1) : level;
+  saveState(); renderCharEditor();
+}
+function toggleDeathSave(kind, n) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  const cur = c.deathSaves[kind] || 0;
+  c.deathSaves[kind] = (cur >= n) ? n - 1 : n;
+  saveState(); renderCharEditor();
+}
+function resetDeathSaves() {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  c.deathSaves = { success: 0, fail: 0 };
+  saveState(); renderCharEditor();
+}
+
+// ═══════════ INTERACTIVE SHEET: SPELL SLOTS ═══════════
+function setSpellSlotMax(lvl, max) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  const m = Math.max(0, parseInt(max, 10) || 0);
+  if (m === 0) { delete c.spellSlots[lvl]; }
+  else {
+    c.spellSlots[lvl] = c.spellSlots[lvl] || { max: 0, used: 0 };
+    c.spellSlots[lvl].max = m;
+    c.spellSlots[lvl].used = Math.min(c.spellSlots[lvl].used, m);
+  }
+  saveState(); renderCharEditor();
+}
+function toggleSpellSlot(lvl, idx) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  const slot = c.spellSlots[lvl]; if (!slot) return;
+  // toggle: if slot idx is used (idx < used), unuse one; else use one
+  if (idx < slot.used) slot.used = idx;
+  else slot.used = idx + 1;
+  saveState(); renderCharEditor();
+}
+function resetSpellSlots() {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  Object.values(c.spellSlots).forEach(s => s.used = 0);
+  saveState(); renderCharEditor();
+}
+
+// ═══════════ INTERACTIVE SHEET: PROF TOGGLES ═══════════
+function toggleSaveProf(ability) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  c.savingThrowProfs[ability] = !c.savingThrowProfs[ability];
+  saveState(); renderCharEditor();
+}
+function toggleSkillProf(skillName) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  const cur = c.skillProfs[skillName] || 0;
+  c.skillProfs[skillName] = (cur + 1) % 3;  // 0 → 1 → 2 → 0
+  saveState(); renderCharEditor();
+}
+
+// ═══════════ INTERACTIVE SHEET: ATTACKS CRUD ═══════════
+function addAttack() {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  c.attacks.push({ name: '', bonus: '', damage: '' });
+  saveState(); renderCharEditor();
+}
+function removeAttack(i) {
+  const c = currentChar(); if (!c) return;
+  ensureCharFields(c);
+  c.attacks.splice(i, 1);
+  saveState(); renderCharEditor();
+}
+function updateAttack(i, field, value) {
+  const c = currentChar(); if (!c?.attacks?.[i]) return;
+  c.attacks[i][field] = value; saveState();
+}
+
+// ═══════════ INTERACTIVE SHEET: ATTACK ROLLS ═══════════
+function parseBonus(str) {
+  if (!str) return 0;
+  const m = String(str).trim().match(/^([+-]?)\s*(\d+)/);
+  if (!m) return 0;
+  const n = parseInt(m[2], 10);
+  return m[1] === '-' ? -n : n;
+}
+function parseDamageDice(str) {
+  // Extract all dice expressions (e.g. "1d8+3 slashing + 2d6 fire" → [{dice:'1d8',mod:3}, {dice:'2d6',mod:0}])
+  if (!str) return [];
+  const parts = [];
+  const rx = /(\d+)d(\d+)(\s*([+-])\s*(\d+))?/gi;
+  let m;
+  while ((m = rx.exec(str)) !== null) {
+    const count = parseInt(m[1], 10);
+    const sides = parseInt(m[2], 10);
+    const mod = m[3] ? (m[4] === '-' ? -parseInt(m[5], 10) : parseInt(m[5], 10)) : 0;
+    parts.push({ count, sides, mod, expr: `${count}d${sides}` });
+  }
+  return parts;
+}
+function rollAttack(i) {
+  const c = currentChar(); if (!c?.attacks?.[i]) return;
+  const atk = c.attacks[i];
+  const bonus = parseBonus(atk.bonus);
+  const ev = window.event || {};
+  performRoll(`${atk.name || 'Attack'} · To Hit`, bonus, {
+    charName: c.name,
+    advantage: ev.shiftKey && !ev.ctrlKey,
+    disadvantage: ev.ctrlKey && !ev.shiftKey
+  });
+}
+function rollAttackDamage(i) {
+  const c = currentChar(); if (!c?.attacks?.[i]) return;
+  const atk = c.attacks[i];
+  const dice = parseDamageDice(atk.damage);
+  if (!dice.length) { toast('Kein Damage-Dice (z.B. "1d8+3")', true); return; }
+  const ev = window.event || {};
+  const isCrit = !!ev.shiftKey;
+  const entry = {
+    id: 'r_' + Date.now().toString(36),
+    isDamage: true,
+    charName: c.name,
+    label: `${atk.name || 'Attack'} · Damage${isCrit ? ' · CRIT' : ''}`,
+    damageRolls: [],
+    mod: 0,
+    total: 0,
+    timestamp: Date.now()
+  };
+  let total = 0;
+  dice.forEach(d => {
+    const count = isCrit ? d.count * 2 : d.count;
+    const rolls = [];
+    for (let k = 0; k < count; k++) rolls.push(1 + Math.floor(Math.random() * d.sides));
+    const sum = rolls.reduce((a, b) => a + b, 0);
+    entry.damageRolls.push({ expr: `${count}d${d.sides}`, rolls });
+    total += sum + d.mod;
+    entry.mod += d.mod;
+  });
+  entry.total = total;
+  state.rollLog = state.rollLog || [];
+  state.rollLog.unshift(entry);
+  state.rollLog = state.rollLog.slice(0, 30);
+  saveState();
+  renderRollLog();
 }
 
 function triggerPortraitUpload() { document.getElementById('portraitUploadInput').click(); }
