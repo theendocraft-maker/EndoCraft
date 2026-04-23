@@ -733,6 +733,7 @@ body{
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
   </div>
   <div class="topbar-right">
+    <button class="btn-top" onclick="loadSession14Prep()" title="Session 14 Prep-Daten laden" style="background:var(--crimson);color:#fff;border-color:var(--crimson);">🎲 Session 14 laden</button>
     <button class="btn-top" id="syncStatusBtn" onclick="openSyncModal()" title="Cloud-Sync Status">☁️ <span id="syncStatusText">Sync</span></button>
     <button class="btn-top" onclick="exportPDF()">📄 PDF</button>
     <button class="btn-top" onclick="exportJSON()">💾 Export</button>
@@ -3085,6 +3086,429 @@ function turnMomentIntoCard(momentText) {
   toast('→ EndoCraft öffnet sich mit vorausgefülltem Moment');
   plausibleTrack('DMStudio · Moment to Card', { location: state.currentLocationId });
 }
+// ═══════════════════════════════════════════════════════════════════════════
+// SESSION 14 PREP — "Orden des Silvanus" · Wizard of Wines → Rahadin → W15
+// Vollständige Pyram-King-basierte Session-Prep für Marcos Curse-of-Strahd-Tisch.
+// Laden überschreibt den aktuellen State (vorher Backup mit 💾 Export).
+// ═══════════════════════════════════════════════════════════════════════════
+const SESSION_14_PREP = {
+  campaign: {
+    id: 'cos',
+    name: 'Curse of Strahd · Orden des Silvanus',
+    session: { number: 14, title: 'Orden des Silvanus · Wizard of Wines', level: '5–6' },
+    party: ['Larrymäus', 'Akseth', 'Gattok', 'Telro'],
+    sessions: [
+      { number: 8, title: 'Beast of Graenseskov', date: '2026-01-17', recap: 'Die Party besiegte das Beast von Graenseskov im Svalich-Wald. Erste Hinweise auf die Keepers of the Feather und den gestohlenen grünen Fey Gem.' },
+      { number: 9, title: 'Krezk · Abtei-Hinweis', date: '2026-02-07', recap: 'Ankunft in Krezk. Tore öffneten erst als Larrymäus sein Gebet sprach. Hinweis auf Abbey of Saint Markovia und Wolfsdens.' },
+      { number: 10, title: 'Wolf Den', date: '2026-02-28', recap: 'Säuberung der Wolfsdens nördlich von Krezk. Versteckter Höhleneingang zur Abbey. Gattok wurde zweimal verwundet — Narbe über dem rechten Auge.' },
+      { number: 11, title: 'Abbey of Saint Markovia', date: '2026-03-14', recap: 'Die Abtei war ein Albtraum aus Fleischwesen und dem gefallenen Abt. Telro bekam Einblick in die alten Pakte Baroviens. Informationen über Fey-Sisters und das Nebel-Ritual. Kein Fey Gem — aber Spur führt weiter zum Weingut.' },
+      { number: 12, title: 'Ankunft Wizard of Wines', date: '2026-03-28', recap: 'Im Waldlager: Martikovs (Wereravens) getroffen. Davian erklärte: grüner Fey Gem gestohlen, Druiden haben ihn nach Yester Hill. Muriel Vinshaw kennengelernt. Martikovs verwandelten sich für Ablenkungsangriff.' },
+      { number: 13, title: 'Loading Dock & Fermentation', date: '2026-04-10', recap: 'Eingang über W4 Loading Dock (Giant Spiders, Gattok verletzt, Infection-Risk). W9 Fermentation: Druidin Naturalist besiegt, vergifteter Wein vernichtet. Session endete als sie in W14 hinabstiegen — eine Gestalt trat aus dem Dunkel. Tausend Stimmen im Kopf. Cliffhanger.' }
+    ],
+    tree: [
+      { id: 'wow', label: 'Wizard of Wines (aktuell)', locations: [
+        { id: 'w4', name: 'W4 Loading Dock', status: 'done' },
+        { id: 'w9', name: 'W9 Fermentation Vats', status: 'done' },
+        { id: 'w14', name: 'W14 Wine Cellar', status: 'active' },
+        { id: 'w15', name: 'W15 Teleportationskreis', status: 'warn' },
+        { id: 'w17', name: 'W17 Master\'s Chamber · Tunnel', status: 'pending' },
+        { id: 'w20', name: 'W20 Barrel Room · Verna', status: 'pending' }
+      ]},
+      { id: 'szenario-a', label: 'Szenario A — Dinner with Strahd', locations: [
+        { id: 'k63', name: 'K63 Wine Room (Ankunft)', status: 'pending' },
+        { id: 'k10', name: 'K10 Dining Hall · Strahd', status: 'pending' }
+      ]},
+      { id: 'szenario-b', label: 'Szenario B — Weingut Aftermath', locations: [
+        { id: 'martikov-tagebuch', name: 'W13 Martikov Tagebuch', status: 'pending' },
+        { id: 'waldlager', name: 'Waldlager Aftermath', status: 'pending' }
+      ]},
+      { id: 'yester-hill', label: 'Yester Hill (nächste Session)', locations: [
+        { id: 'yester-approach', name: 'Der Aufstieg', status: 'pending' },
+        { id: 'wickerman', name: 'Der Wickerman · Malachiel', status: 'pending' }
+      ]}
+    ],
+    locations: {
+      'w14': {
+        name: 'W14 — Wine Cellar',
+        meta: 'Keller · Rahadin-Encounter · Cliffhanger aktiv',
+        imagePrompt: 'Dark Gothic wine cellar with 3m ceiling and thick oak beams, two sections of 2.4m tall wine shelves with old barrels, some broken with dark red stains on stone floor, single torch at far end casting flickering shadows, tall slender figure in dark studded leather armor emerging from shadow, dust in air, moody Ravenloft aesthetic, cinematic chiaroscuro, photorealistic, 8K, no text',
+        readAloud: 'Der Keller riecht nach altem Wein und Erde. Überall Fässer — manche zerbrochen, ihr Inhalt längst versickert. In der Luft liegt etwas Süßliches, fast Betäubendes. Eine einzelne Fackel brennt am Ende des Ganges.\n\nAus dem Dunkel löst sich eine Gestalt. Groß. Schlank. In dunkle Rüstung gekleidet. Er bewegt sich lautlos.\n\nUnd dann hört ihr es — tausend Stimmen gleichzeitig. Flüsternd. Schreiend. Sterbend. Alle in eurem Kopf.',
+        dmNote: 'Rahadins Deathly Choir ist PASSIV — immer aktiv bei Annäherung auf 30 ft. DC 16 WIS Save sofort. Fail: frightened 1 Min. Success: immun gegen diesen Passiv-Effekt. Rahadin ist NICHT hier um zu kämpfen — er ist wegen dem Fey Gem hier. Kämpft defensiv, flieht unter 60 HP zu W15. Unterschätzt die Party — sein Fehler.',
+        scenarios: [
+          { title: 'Kampf — Party attackiert', probability: 'Wahrscheinlich', body: 'Rahadin hält Distanz, Scimitar-Multiattack + Deathly Choir-Recharge. Legendary Actions für Mobility + extra Angriffe. Bei <60 HP: „Genug." + Deathly Choir ohne Ankündigung, dann Flucht zu W15.' },
+          { title: 'Gespräch', probability: 'Möglich', body: 'Rahadin antwortet minimal. Auf Namenfrage: nur ein Blick, kein Wort. Bei Konfrontation: „Ihr seid hartnäckiger als erwartet. Das ändert nichts."' },
+          { title: 'Tod Rahadins', probability: 'Unwahrscheinlich', body: 'Möglich aber knapp. Konsequenzen: Strahd weiß es sofort, Reaktion später. Beute: +1 Scimitar, 50 gp, Strahd-Signet-Ring.' }
+        ],
+        dialogs: [
+          { speaker: 'RAHADIN — Konfrontation', text: '„Ihr seid hartnäckiger als erwartet. Das ändert nichts."' },
+          { speaker: 'RAHADIN — Namenfrage', text: '[Kein Lächeln. Keine Antwort. Nur ein Blick der sagt: das ist irrelevant.]' },
+          { speaker: 'RAHADIN — Unter 60 HP', text: '„Genug." [Aktiviert Deathly Choir ohne Ankündigung]' },
+          { speaker: 'RAHADIN — Flucht', text: '„Mein Herr wird von euch hören." [Tritt in den Teleportationskreis]' }
+        ],
+        statblocks: [],
+        music: [
+          { icon: '🎵', title: 'Castle Ravenloft', sub: 'Sword Coast Soundscapes' },
+          { icon: '🥁', title: 'Dark Battle', sub: 'Bardify · D&D Combat' }
+        ],
+        history: 'Party kam über W4 (Giant Spiders, Gattok-Wunde) und W9 (Druidin Naturalist besiegt) in den Keller. Session 13 endete mit blutigen Spuren die hier runterführten.',
+        log: ''
+      },
+      'w15': {
+        name: 'W15 — Earthen Chamber / Teleportationskreis',
+        meta: 'Rahadin-Fluchtpunkt · 30-Sekunden-Entscheidung',
+        imagePrompt: 'Small stone chamber with ancient teleportation circle carved in floor, silver-blue runes pulsing magical energy, faint mist rising from active circle, statue of a fey figure with outstretched hands in corner as if holding something, empty wine shelves against walls, atmospheric blue-white glow, cinematic moody lighting, dark fantasy, photorealistic, 8K, no text',
+        readAloud: 'Ein kleiner Raum. Steinboden. An der Wand lehnen leere Weinregale. In der Ecke: eine Statue einer Fey-Gestalt mit ausgestreckten Händen — als hätte sie einmal etwas gehalten.\n\nIn der Mitte des Bodens: ein Kreis aus eingemeißelten Runen. Sie leuchten schwach — blau-weiß, pulsierend. Warm.\n\nRahadin tritt hinein. Das Licht wird heller. Er ist weg.\n\nDer Kreis pulsiert weiter. Er ist noch aktiv.',
+        dmNote: 'SOBALD RAHADIN WEG IST: 30-Sekunden-ECHTZEIT-Timer. Party muss JETZT entscheiden. Nach 30s erlischt der Kreis langsam. Nächste Aktivierung: 1d4 Stunden. Ziel: Castle Ravenloft K63 Wine Room. Bidirektional.',
+        scenarios: [
+          { title: 'Sofort folgen', probability: 'Wahrscheinlich', body: '→ Szenario A: Dinner with Strahd. Party landet bewaffnet in K63.' },
+          { title: 'Zögern und dann gehen', probability: 'Möglich', body: '→ Szenario A, aber Nachteil auf ersten Save (Disadvantage auf K10 Orgel DC 10 WIS).' },
+          { title: 'Bleiben', probability: 'Möglich', body: '→ Szenario B: W17 Earthen Tunnel + W20 Druidin Verna + W13 Martikov Tagebuch + Waldlager Aftermath + Yester-Hill-Hook.' }
+        ],
+        dialogs: [],
+        statblocks: [{ name: 'Teleportationskreis', rows: [['Typ','Arcane Permanent'],['Aktivierung','Betreten während aktiv'],['Ziel','Castle Ravenloft K63'],['Arcana DC 12','Aktiv, Ziel unbekannt'],['Arcana DC 15','Permanente Installation'],['Arcana DC 18','Ravenloft-Muster']] }],
+        music: [{ icon: '✨', title: 'Arcane Portal', sub: 'Tabletop Audio' }],
+        history: 'Rahadin floh hierher nach dem Encounter in W14.',
+        log: ''
+      },
+      'w17': {
+        name: 'W17 — Master\'s Chamber · Earthen Tunnel',
+        meta: 'Obergeschoss · Nur Szenario B',
+        imagePrompt: 'Luxurious Barovian winery bedroom, ornate wooden bed with carved wine-leaf and raven motifs, bear rug on wooden floor, writing desk with scattered papers, small wooden chest, hidden passage revealed behind wine shelf showing fresh earth tunnel going downward with druid sandal footprints, dim candlelight, cinematic moody, photorealistic, 8K, no text',
+        readAloud: 'Die Herrenkammer ist unberührt — außer einer Stelle. Hinter einem der Weinregale: ein schmaler Gang. Ihr hättet ihn fast übersehen. Die Erde ist frisch aufgewühlt.\n\nJemand war kürzlich hier.',
+        dmNote: 'Nur Szenario B. Kein Kampf. Koffer: DC 12 STR oder DEX Sleight of Hand. Bettpfosten-Schlüssel: DC 12 Perception. Koffer-Inhalt: 1d10+10 Strahd-Münzen (je 2 gp), 1d20+50 gp, 4d20+100 sp, Scroll of Purify Food and Drink. Schreibtisch: Martikov Journal.',
+        scenarios: [
+          { title: 'Tunnel untersuchen', probability: 'Wahrscheinlich', body: 'Druiden-Spuren Richtung Süden (Yester Hill). DC 14 Nature (Akseth Advantage): Erde mit Wald verbunden. Vergrabenes Bündel: 3 Silberflaschen (50 gp + Fey-Ritual-Relevanz).' },
+          { title: 'Koffer', probability: 'Möglich', body: 'Münzen + Scroll.' }
+        ],
+        dialogs: [],
+        statblocks: [],
+        music: [{ icon: '🌿', title: 'Dark Forest', sub: 'Sword Coast Soundscapes' }],
+        history: '', log: ''
+      },
+      'w20': {
+        name: 'W20 — Print Room · Druidin Verna',
+        meta: 'Szenario B · Emotionale Szene · Kein Kampf wenn respektvoll',
+        imagePrompt: 'Printing room in abandoned winery, old wooden printing press covered in dust, stacks of unused wine labels scattered on floor, empty wine barrels with frayed ropes, two druid figures in torn robes kneeling exhaustedly among barrels, older female druid with bark-patterned tattoos on her arms, dim candlelight, melancholic atmosphere, cinematic moody, photorealistic, 8K, no text',
+        readAloud: 'Zwei Gestalten in zerfetzten Gewändern kauern zwischen den leeren Fässern. Als ihr eintretet, stehen sie auf — aber sie greifen nicht an.\n\nEiner von ihnen — eine Frau, älter, mit eingegrabenen Baumrinden-Mustern auf den Armen — spricht:\n\n„Es ist vorbei, nicht wahr?"',
+        dmNote: 'Verna ist Yester-Hill-Hook. Kein Kampf wenn Party respektvoll. Verna lügt NICHT (DC 12 Insight). DC 14 Persuasion: zusätzliche Yester-Hill-Info (schwarzer Pfahl, Sonnenaufgang). Sie kann Akseth etwas über Silvanus sagen das er nicht wusste.',
+        scenarios: [
+          { title: 'Respektvoll reden', probability: 'Wahrscheinlich', body: 'Verna erklärt Wickerman-Plan, Fey Gem bei Malachiel auf Yester Hill, Strahds Einfluss auf Druiden.' },
+          { title: 'Angreifen', probability: 'Unwahrscheinlich', body: 'Druiden fliehen (müde, nicht feige). Verna verschwindet.' }
+        ],
+        dialogs: [
+          { speaker: 'VERNA — Was ist passiert?', text: '„Wir haben vergessen wer wir sind. Wir haben dem Baum gedient — aber nicht dem Wald. Strahd hat uns das Feuer gegeben. Wir haben nicht gefragt was es verbrennt."' },
+          { speaker: 'VERNA — Akseth / Wild Shape', text: '„Das Land ist krank. Nicht tot. Krank. Die Verbindung zu Silvanus ist schwach — wie eine Kerze im Wind. Aber sie brennt noch." [Pause] „Ich habe sie seit Jahren nicht gespürt. Du scheinst... anders."' },
+          { speaker: 'VERNA — Fey Gem?', text: '„Der grüne Stein? Malachiel hat ihn — unser Anführer auf Yester Hill. Er glaubt er kann damit den Wickerman vollenden. Er irrt sich. Aber er wird nicht hören."' },
+          { speaker: 'VERNA — DC 14 Persuasion Bonus', text: '„Yester Hill liegt südwestlich. Wenn ihr geht — geht bei Sonnenaufgang. Strahds Geschöpfe sind in der Nacht stärker. Und nehmt euch vor dem schwarzen Pfahl auf dem Hügel in Acht. Der ist nicht von uns."' }
+        ],
+        statblocks: [],
+        music: [{ icon: '🕯️', title: 'Sad/Emotional', sub: 'Bardify' }],
+        history: 'Die Druidin Naturalist in W9 wurde von der Party besiegt. Verna weiß davon.',
+        log: ''
+      },
+      'martikov-tagebuch': {
+        name: 'W13 Storage · Martikov Tagebuch',
+        meta: 'Verstecktes Fach · DC 16 Investigation',
+        imagePrompt: 'Old weathered leather journal with raven feather bookmark open on dusty stone floor, handwritten pages visible, warm candlelight from above, cinematic close-up, photorealistic, 8K, no text',
+        readAloud: 'Unter einem losen Stein — ein verstecktes Fach. Ein in Leder gebundenes Tagebuch. Auf dem Einband: ein Rabenfeder-Eingravur.',
+        dmNote: 'DC 16 Investigation ODER Davian erzählt der Party davon. Drei Einträge bestätigen was Party weiß — macht es konkreter. Rahadin war schon VOR dieser Session hier.',
+        scenarios: [],
+        dialogs: [
+          { speaker: 'Tagebuch · 3. Mond 734', text: '„Der grüne Stein ist verschwunden. Muriel hat bestätigt: die Druiden. Sie sind auf Yester Hill. Wir können ihn nicht zurückholen — zu viele. Wir brauchen Hilfe."' },
+          { speaker: 'Tagebuch · 17. Mond', text: '„Jemand hat den Wein vergiftet. Das ist nicht die Arbeit der Druiden. Das ist professioneller. Rahadin war hier — ich habe seine Spuren gesehen."' },
+          { speaker: 'Tagebuch · Letzter Eintrag', text: '„Falls ihr das lest — wir sind bei den Raben. Findet Muriel. Sie weiß was zu tun ist."' }
+        ],
+        statblocks: [], music: [], history: '', log: ''
+      },
+      'waldlager': {
+        name: 'Waldlager Aftermath · Martikovs',
+        meta: 'Nach Szenario B · Davian + Muriel Briefing',
+        imagePrompt: 'Night forest camp with small fire, large ravens perched on low branches transforming into human forms, older man with gray beard and raven-feather cloak stepping forward, mist drifting between trees, cinematic moody, Ravenloft atmosphere, photorealistic, 8K, no text',
+        readAloud: 'Die Martikovs warten im Waldlager. Als ihr auftaucht — verwandeln sie sich zurück. Davian tritt vor.\n\n„Ist es vorbei?"',
+        dmNote: 'Yester-Hill-Setup. Davian reagiert sichtbar als „Rahadin war da" genannt wird. Muriel briefed Yester Hill.',
+        scenarios: [],
+        dialogs: [
+          { speaker: 'DAVIAN — Rahadin war da', text: '„Rahadin." [Lange Pause.] „Strahd weiß es also. Das bedeutet... wir haben weniger Zeit als ich dachte."' },
+          { speaker: 'DAVIAN — Was jetzt?', text: '„Ihr habt das Weingut gerettet. Das war nicht nichts. Aber der Stein ist immer noch weg. Yester Hill. Das ist euer nächstes Ziel — 250 gp wenn ihr den Fey Gem zurückbringt."' },
+          { speaker: 'MURIEL — Yester Hill', text: '„Ich war auf Yester Hill. Einmal. Ich gehe nicht zurück. Aber ich kann euch sagen was ihr euch anseht: Druiden-Lager kreisförmig auf einem Hügel. Ein Wickerman in der Mitte — großes Geflecht aus Ästen, bereit für ein Opfer. Malachiel, der Anführer: fanatisch, verbunden mit Strahds Willen. Fey Gem: wahrscheinlich beim Wickerman. Beste Zeit: tagsüber."' }
+        ],
+        statblocks: [], music: [{ icon: '🌲', title: 'Sad/Reflective', sub: 'Bardify' }], history: '', log: ''
+      },
+      'k63': {
+        name: 'K63 — Wine Room (Castle Ravenloft)',
+        meta: 'Szenario A · Ankunft · Strahd erwartet sie',
+        imagePrompt: 'Castle Ravenloft wine cellar chamber, ancient stone walls with racks of crystal decanters filled with blood-red wine, single candelabra casting long shadows, ornate carved archway leading to dining hall, Gothic horror, cinematic moody chiaroscuro, photorealistic, 8K, no text',
+        readAloud: 'Die Runen werden hell — zu hell. Dann: nichts. Kein Licht, kein Ton, kein Boden. Und dann: Kälte. Stein. Dunkelheit.\n\nUnd irgendwo über euch — eine Tür.\n\nIhr steht in einem Weinkeller. Aber dieser ist anders. Kristallkaraffen, gefüllt mit etwas das zu dick ist um Wein zu sein. Ein Leuchter mit einer einzigen Kerze. Und über euch — Schritte.',
+        dmNote: 'Party ist bewaffnet (Rahadins Fehler). Strahd macht daraus eine Gelegenheit. Er tritt nicht sofort auf — lässt sie die Tür finden. Oben K10.',
+        scenarios: [], dialogs: [], statblocks: [], music: [{ icon: '🎻', title: 'Ravenloft Ambience', sub: 'Sword Coast Soundscapes' }], history: '', log: ''
+      },
+      'k10': {
+        name: 'K10 — Dining Hall · Strahd\'s Welcome',
+        meta: 'Szenario A · Dinner with Strahd · Eine Frage pro Charakter',
+        imagePrompt: 'Castle Ravenloft grand dining hall, massive dark oak table set with silver candelabras and crystal wine glasses, tall Gothic windows with storm clouds, roaring fireplace, raven-feather motifs on red velvet tapestries, throne-like chair at head of table with tall pale aristocratic vampire in dark crimson velvet coat watching calmly, Gothic horror, cinematic photorealistic, 8K, no text',
+        readAloud: 'Die Halle ist gewaltig. Kerzen flackern. Der Tisch ist gedeckt — Silber, Kristall, schwerer Rotwein. An seiner Spitze steht er.\n\nLang. Aristokratisch. Rot wie Blut und schwarz wie Nacht. Er lächelt.\n\n„Willkommen, Freunde. Ihr seid pünktlich. Setzt euch."',
+        dmNote: 'Strahd sieht das Holy Symbol of Ravenkind sofort. Sagt NICHTS. Beobachtet Larrymäus über gesamtes Dinner. Orgel-Check DC 10 WIS Save, Fail → Disadvantage auf CHA/WIS. Strahd bietet Deal: Fey Gem gegen freien Durchgang. Eine Frage pro Charakter.',
+        scenarios: [
+          { title: 'Party akzeptiert Deal', probability: 'Unwahrscheinlich', body: 'Strahd: „Vernünftig. Der Gem ist euer, wenn ihr ihn mir bringt. Ich weiß nicht wo er ist. Ihr scheinbar schon." (Er fischt nach Info.)' },
+          { title: 'Party lehnt ab', probability: 'Wahrscheinlich', body: 'Strahd: „Wie ihr wollt. Das Dinner ist hervorragend." Mitternacht: Kutsche zu westlichen Toren.' },
+          { title: 'Party attackiert', probability: 'Sehr unwahrscheinlich', body: 'Strahd kann nicht besiegt werden. Legendary Actions + Resistance. Ziel: Party entkommen lassen mit klarer Message.' }
+        ],
+        dialogs: [
+          { speaker: 'STRAHD — Begrüßung', text: '„Willkommen, Freunde. Ihr seid pünktlich. Setzt euch. Der Wein ist exzellent — einer der wenigen Vorteile ein Vampir zu sein ist dass man nicht vom eigenen Vorrat trinken muss."' },
+          { speaker: 'STRAHD — Zu Larrymäus', text: '[Blickt kurz auf das Holy Symbol. Hält den Blick. Sagt nichts. Trinkt aus seinem Glas.]' },
+          { speaker: 'STRAHD — Das Angebot', text: '„Ich habe ein Geschäft. Ihr bringt mir den grünen Stein — ich bringe euch sicher zu den Toren. Keine Tricks. Keine Nebel. Freiheit."' },
+          { speaker: 'STRAHD — Eine Frage pro Char', text: '„Ihr habt eine Frage frei. Nutzt sie weise. Ich lüge nicht — ihr werdet feststellen dass die Wahrheit grausamer ist als jede Lüge."' }
+        ],
+        statblocks: [], music: [{ icon: '🎻', title: 'Strahd\'s Waltz', sub: 'Custom · Gothic' }], history: '', log: ''
+      },
+      'yester-approach': {
+        name: 'Yester Hill · Der Aufstieg',
+        meta: 'Nächste Session · Hook etabliert in Szenario B',
+        imagePrompt: 'Ominous dark hill rising in Barovian mist, twisted leafless trees, circle of druids visible in distance around a massive wicker figure silhouetted against stormy sky, black wooden pillar visible on slope, early morning fog, cinematic dark fantasy, photorealistic, 8K, no text',
+        readAloud: '', dmNote: 'Setup für nächste Session. Malachiel mit Fey Gem beim Wickerman. Schwarzer Pfahl = Strahds Einfluss.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: ''
+      },
+      'wickerman': { name: 'Der Wickerman · Malachiel', meta: 'Nächste Session · Fey Gem Recovery', imagePrompt: '', readAloud: '', dmNote: 'TBD — nächste Session-Prep.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w4': { name: 'W4 — Loading Dock', meta: 'abgeschlossen', imagePrompt: '', readAloud: '', dmNote: 'Session 13. 2 Giant Spiders, Gattok verletzt (DC 12 CON täglich gegen Infection).', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w9': { name: 'W9 — Fermentation Vats', meta: 'abgeschlossen', imagePrompt: '', readAloud: '', dmNote: 'Session 13. Druidin Naturalist besiegt, vergifteter Wein vernichtet.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
+    }
+  },
+  characters: [
+    { id: 'larrymaeus', type: 'pc', name: 'Larrymäus', race: 'Human', class: 'Cleric (Life Domain)', level: 5,
+      size: 'Medium', creatureType: 'humanoid (human)', alignment: 'lawful good',
+      ac: 18, acType: 'plate mail', hp: 38, maxHp: 38, hitDice: '5d8+10', speed: '30 ft.', initiative: 0, proficiency: '+3',
+      stats: { str: 13, dex: 10, con: 14, int: 11, wis: 16, cha: 12 },
+      savingThrows: 'Wis +6, Cha +4', skills: 'Medicine +6, Religion +3, Insight +6',
+      damageResistances: '', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: '',
+      senses: 'passive Perception 13', languages: 'Common, Celestial',
+      traits: [
+        { name: 'Holy Symbol of Ravenkind', text: '*Sonnenstern mit rotem Edelstein.* Strahd weiß davon — sagt nichts. Direkte Bedrohung für ihn.' },
+        { name: 'Spellcasting', text: 'Cleric 5. DC 14, +6 to hit. Prepared: *bless, cure wounds, guiding bolt, healing word, lesser restoration, spiritual weapon, mass healing word, revivify, beacon of hope, spirit guardians, death ward*.' },
+        { name: 'Life Domain', text: 'Heilzauber stellen 2 + Spell-Level extra HP wieder her.' }
+      ],
+      actions: [
+        { name: 'Mace', text: '*Melee:* +4 to hit, 1d6+1 bludgeoning.' },
+        { name: 'Guiding Bolt (1st)', text: '*Ranged Spell:* +6 to hit, 120 ft. 4d6 radiant, next attack: advantage.' }
+      ],
+      bonusActions: [{ name: 'Healing Word (1st)', text: '60 ft., 1d4+3 HP.' }],
+      reactions: [], legendaryActions: [],
+      backstory: 'Priester des Silvanus. De-facto Anführer.',
+      personality: 'Kahlköpfig, langer Bart, Plattenrüstung. Ruhig, besonnen, stur.',
+      notes: 'WIS 16 → Deathly-Choir DC 16 noch verwundbar (+6 Save). Holy Symbol: Strahd-Begegnung wird spannungsgeladen.',
+      portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+    { id: 'akseth', type: 'pc', name: 'Akseth', race: 'Half-Elf', class: 'Druid (Circle of the Moon)', level: 5,
+      size: 'Medium', creatureType: 'humanoid (half-elf)', alignment: 'chaotic good',
+      ac: 14, acType: 'leather armor', hp: 34, maxHp: 34, hitDice: '5d8+5', speed: '30 ft.', initiative: 2, proficiency: '+3',
+      stats: { str: 10, dex: 14, con: 13, int: 12, wis: 16, cha: 11 },
+      savingThrows: 'Int +4, Wis +6', skills: 'Nature +4, Perception +6, Survival +6, Animal Handling +6',
+      damageResistances: '', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: 'charmed',
+      senses: 'darkvision 60 ft., passive Perception 16', languages: 'Common, Elvish, Druidic, Sylvan',
+      traits: [
+        { name: 'Wild Shape — geschwächt', text: 'Durch Strahds Herrschaft limitiert. Verbindung zu Silvanus „wie eine Kerze im Wind".' },
+        { name: 'Spellcasting', text: 'Druid 5. DC 14, +6. Prepared: *entangle, faerie fire, healing word, moonbeam, pass without trace, call lightning, conjure animals*.' }
+      ],
+      actions: [
+        { name: 'Scimitar', text: '*Melee:* +5, 1d6+2 slashing.' },
+        { name: 'Moonbeam (2nd)', text: '5-ft radius, DC 14 CON, 2d10 radiant.' }
+      ],
+      bonusActions: [{ name: 'Wild Shape (Dire Wolf)', text: 'HP 37, AC 14, Bite +5 (2d6+3 + knockdown DC 13 STR). In engen Räumen limitiert.' }],
+      reactions: [], legendaryActions: [],
+      backstory: 'Silvanus-Anhänger. Tiefer Konflikt mit Yester Hill Druiden. Emotionaler Kern.',
+      personality: 'Steinspitzen, grüne Magie, Holzstab.',
+      notes: 'Verna (W20) kann mit Akseth auf Silvanus-Ebene sprechen. Wild Shape in W14 schwierig — wenig Platz.',
+      portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+    { id: 'gattok', type: 'pc', name: 'Gattok', race: 'Half-Orc', class: 'Barbarian (Berserker)', level: 6,
+      size: 'Medium', creatureType: 'humanoid (orc)', alignment: 'chaotic neutral',
+      ac: 14, acType: 'unarmored defense', hp: 62, maxHp: 62, hitDice: '6d12+18', speed: '40 ft.', initiative: 1, proficiency: '+3',
+      stats: { str: 17, dex: 13, con: 16, int: 9, wis: 11, cha: 10 },
+      savingThrows: 'Str +6, Con +6', skills: 'Athletics +6, Intimidation +3, Survival +3',
+      damageResistances: 'bludgeoning, piercing, slashing (raging)', conditionImmunities: '',
+      senses: 'darkvision 60 ft., passive Perception 10', languages: 'Common, Orc',
+      traits: [
+        { name: 'Rage (4/rest)', text: 'Bonus action. +2 Str-Damage, advantage Str checks/saves, resistance. 1 min.' },
+        { name: 'Relentless Endurance (1/long rest)', text: 'Bei 0 HP (nicht instant-kill): drop to 1.' },
+        { name: 'Frenzy', text: 'Rage-Option: Bonus-Action-Melee. Nach Rage: 1 Level Exhaustion.' }
+      ],
+      actions: [
+        { name: 'Multiattack', text: 'Zwei Greataxe-Attacken.' },
+        { name: 'Greataxe', text: '*Melee:* +6, 1d12+3 slashing (+2 raging).' }
+      ],
+      bonusActions: [{ name: 'Rage / Frenzy-Attack', text: 'Siehe Traits.' }],
+      reactions: [], legendaryActions: [],
+      backstory: 'Stammeskrieger, in Barovia gestrandet.',
+      personality: 'Ork. Bärenpelz, Großschwert diagonal. Wenig Worte, viel Wirkung.',
+      notes: 'WUNDE aus W4 → Infection-Risk. DC 12 CON am Morgen, sonst 1 Level Exhaustion.',
+      portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+    { id: 'telro', type: 'pc', name: 'Telro', race: 'Tiefling', class: 'Warlock (Fiend Patron)', level: 5,
+      size: 'Medium', creatureType: 'humanoid (tiefling)', alignment: 'chaotic neutral',
+      ac: 13, acType: 'studded leather', hp: 33, maxHp: 33, hitDice: '5d8+5', speed: '30 ft.', initiative: 2, proficiency: '+3',
+      stats: { str: 9, dex: 14, con: 14, int: 13, wis: 12, cha: 17 },
+      savingThrows: 'Wis +4, Cha +6', skills: 'Arcana +4, Deception +6, Insight +4, Persuasion +6',
+      damageResistances: 'fire', conditionImmunities: '',
+      senses: 'darkvision 60 ft., passive Perception 11', languages: 'Common, Infernal',
+      traits: [
+        { name: 'Pact of the Tome', text: 'Book of Shadows mit 3 Cantrips. Ritual-Kanalisierung.' },
+        { name: 'Dark One\'s Blessing', text: 'Feind bei 0 HP reduziert: THP = CHA-Mod + Warlock-Level (8 THP).' },
+        { name: 'Fiendish Resilience', text: 'Ein Damage-Type pro Rest: Resistance.' }
+      ],
+      actions: [
+        { name: 'Eldritch Blast (cantrip)', text: '*Ranged Spell:* +6, 120 ft., 1d10+3 force (Agonizing). Zwei Beams bei 5th-level.' },
+        { name: 'Hex (1st conc)', text: 'Ziel +1d6 necrotic pro Treffer. Disadvantage auf Ability.' }
+      ],
+      bonusActions: [], reactions: [], legendaryActions: [],
+      backstory: 'Tiefling. Pakt mit minor Fiend. Skeptisch, analytisch — kennt Pakte von innen.',
+      personality: 'Tiefling. Hörnerkrone mit Runen. Versteht Strahd auf einer Ebene die die anderen nicht können.',
+      notes: 'Bei Strahd: kann eventuell die Pakt-Mechanik mit den Dunklen Mächten erkennen. WIS 12 → Deathly Choir verwundbar.',
+      portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+    { id: 'rahadin', type: 'npc', name: 'Rahadin',
+      size: 'Medium', creatureType: 'humanoid (dusk elf)', alignment: 'lawful evil',
+      race: 'Dusk Elf', class: 'Chamberlain of Strahd',
+      ac: 18, acType: 'studded leather', hp: 135, maxHp: 135, hitDice: '18d8+54', speed: '35 ft.', initiative: 7, proficiency: '+4',
+      stats: { str: 14, dex: 22, con: 17, int: 15, wis: 14, cha: 18 },
+      savingThrows: 'Dex +10, Wis +6', skills: 'Deception +8, Insight +6, Perception +10, Stealth +14',
+      damageImmunities: 'poison', conditionImmunities: 'frightened, poisoned',
+      senses: 'darkvision 60 ft., passive Perception 20', languages: 'alle (Tongues always)',
+      cr: '10', xp: '5,900', level: 10,
+      traits: [
+        { name: 'Deathly Choir (Passive)', text: '*Erste Annäherung auf 30 ft.: DC 16 WIS Save. Fail: frightened 1 Min. Success: immun gegen diesen Passiv-Effekt für Rest des Encounters.*' },
+        { name: 'Legendary Resistance (2/day)', text: 'Gescheiterten Save bestehen wählen.' },
+        { name: 'Fey Ancestry', text: 'Immun gegen Sleep-Magie.' }
+      ],
+      actions: [
+        { name: 'Multiattack', text: 'Zwei Scimitar-Attacken.' },
+        { name: 'Scimitar', text: '*Melee Weapon Attack:* +10 to hit, reach 5 ft., one target. *Hit:* 9 (1d6+6) slashing.' },
+        { name: 'Deathly Choir (Recharge 5–6)', text: 'Alle in 30 ft.: DC 16 WIS Save. Fail: 44 (8d10) psychic + frightened bis Ende des nächsten Turns. Success: halber Schaden, nicht frightened.' }
+      ],
+      bonusActions: [],
+      reactions: [{ name: 'Parry', text: '+3 AC gegen einen eingehenden Melee-Treffer.' }],
+      legendaryActions: [
+        { name: 'Move (1)', text: 'Bewegt sich Speed ohne Opportunity Attacks.' },
+        { name: 'Scimitar (1)', text: 'Eine Scimitar-Attacke.' },
+        { name: 'Deathly Choir (3)', text: 'Deathly Choir ohne Recharge.' }
+      ],
+      backstory: 'Dusk-Elf, Jahrhunderte alt. Strahds Kammerherr. Loyal bis zum Tod. War wegen Fey Gem hier — hat Party nicht erwartet.',
+      personality: 'Kalt, verachtend. Spricht wenig, tötet effizient. Schweigen und Blicke.',
+      notes: 'Kämpft DEFENSIV. Flieht zu W15 unter 60 HP. Beute: +1 Scimitar, 50 gp, Strahd-Signet-Ring.',
+      portraitUrl: '', portraitSource: '',
+      imagePrompt: 'Medium-close portrait of Rahadin, Strahd\'s chamberlain, tall slender elven humanoid with pale ashen-grey skin, long white-silver hair, sharp angular features with high cheekbones, haunted dark eyes filled with contempt, dark studded leather armor with ancient Dusk-Elf motifs, crimson cloak with faded gold trim, cold disdainful expression, torchlight dramatic shadows, gothic wine cellar background, cinematic chiaroscuro, Ravenloft aesthetic, photorealistic, 8K, sharp focus, no text, no deformed hands' },
+
+    { id: 'strahd', type: 'npc', name: 'Strahd von Zarovich',
+      size: 'Medium', creatureType: 'undead (shapechanger)', alignment: 'lawful evil',
+      race: 'Vampire', class: 'Dark Lord of Barovia',
+      ac: 16, acType: 'natural armor', hp: 200, maxHp: 200, hitDice: '21d8+105', speed: '30 ft.', initiative: 4, proficiency: '+5',
+      stats: { str: 18, dex: 18, con: 18, int: 20, wis: 15, cha: 18 },
+      savingThrows: 'Dex +9, Wis +7, Cha +9', skills: 'Arcana +13, Perception +12, Religion +8, Stealth +14',
+      damageResistances: 'necrotic; bludgeoning, piercing, slashing from nonmagical attacks',
+      conditionImmunities: 'charmed, exhaustion, frightened',
+      senses: 'darkvision 120 ft., passive Perception 22',
+      languages: 'Abyssal, Common, Draconic, Elvish, Giant, Infernal',
+      cr: '15', xp: '13,000', level: 15,
+      traits: [
+        { name: 'Regeneration', text: '20 HP zu Turn-Beginn wenn nicht in Sonnenlicht/fließendem Wasser.' },
+        { name: 'Legendary Resistance (3/day)', text: 'Gescheiterten Save bestehen.' },
+        { name: 'Lügt nie', text: '*Manipuliert durch Auslassung — aber lügt nie direkt. Richtige Frage: Wahrheit.*' },
+        { name: 'Shapechanger', text: 'Bat / Wolf / Mist / Human.' }
+      ],
+      actions: [
+        { name: 'Multiattack', text: 'Zwei Attacken, max eine Bite.' },
+        { name: 'Unarmed Strike', text: '*Melee:* +12, 8 (1d8+4) bludgeoning + Grapple (DC 18).' },
+        { name: 'Bite', text: '*Melee:* +12, willige/gegrabbte Kreatur. *Hit:* 7 (1d6+4) piercing + 10 (3d6) necrotic, Max-HP um necrotic reduziert. Strahd regeneriert = necrotic.' },
+        { name: 'Charm', text: 'Humanoid in 30 ft.: DC 17 WIS Save oder charmed (sieht Strahd als vertrauten Freund).' }
+      ],
+      bonusActions: [{ name: 'Shapechange', text: 'Bat/Wolf/Mist.' }],
+      reactions: [],
+      legendaryActions: [
+        { name: 'Move', text: 'Speed ohne Opportunity Attacks.' },
+        { name: 'Unarmed Strike (1)', text: 'Ein Unarmed Strike.' },
+        { name: 'Bite (2)', text: 'Ein Bite.' }
+      ],
+      backstory: 'Dark Lord of Barovia, 500 Jahre alt. Vampire. Liebt Tatyana (Ireenas Seele) — würde sie nie zwingen.',
+      personality: 'Charmant, aristokratisch, endlose Geduld. Beobachter. Lügt nie — manipuliert durch Schweigen. Sieht Holy Symbol: beobachtet Larrymäus.',
+      notes: 'Weiß von Party seit Barovia-Eintritt (Spione). Weiß vom Holy Symbol. WEISS NICHT dass Party weiß wo Fey Gem ist — Party\'s Verhandlungsmacht. Erscheint in Szenario A (K10).',
+      portraitUrl: '', portraitSource: '',
+      imagePrompt: 'Portrait of Strahd von Zarovich, tall pale aristocratic vampire with sharp widow\'s peak hairline and piercing red eyes, high cheekbones, cold amused half-smile revealing subtle fangs, formal Victorian-era dark crimson velvet coat with gold trim, raven black hair swept back, ornate silver amulet, castle Ravenloft candlelit dining hall background, moody chiaroscuro lighting, Gothic horror aesthetic, cinematic photorealistic, 8K, no text, no deformed hands' },
+
+    { id: 'muriel', type: 'npc', name: 'Muriel Vinshaw',
+      size: 'Medium', creatureType: 'humanoid (wereraven)', alignment: 'chaotic good',
+      race: 'Wereraven', class: 'Keeper of the Feather',
+      ac: 14, acType: '', hp: 58, maxHp: 58, hitDice: '9d8+18', speed: '30 ft., fly 50 ft. (raven)', initiative: 2, proficiency: '+3',
+      stats: { str: 10, dex: 15, con: 14, int: 13, wis: 16, cha: 14 },
+      skills: 'Perception +6, Stealth +5, Insight +6, Nature +4',
+      damageImmunities: 'bludgeoning, piercing, slashing (nonmagical non-silver)',
+      senses: 'darkvision 60 ft., passive Perception 16', languages: 'Common, Elvish',
+      cr: '2', xp: '450', level: 3,
+      traits: [{ name: 'Shapechanger', text: 'Human ↔ Giant Raven (Bonus Action).' }],
+      actions: [{ name: 'Shortsword', text: '*Melee:* +4, 1d6+2 piercing.' }],
+      bonusActions: [{ name: 'Shapechange', text: 'Human ↔ Raven.' }],
+      reactions: [], legendaryActions: [],
+      backstory: 'Einzige Nachfahrin der Vinshaw-Linie (historische Hüter des grünen Fey Gems). Kennt Yester Hill — war einmal dort.',
+      personality: 'Pragmatisch, loyal, vorsichtig. Weiß mehr als sie sagt.',
+      notes: 'Bietet Yester-Hill-Briefing an (Waldlager). Begleitet bis zum Rand von Yester Hill — nicht weiter.',
+      portraitUrl: '', portraitSource: '',
+      imagePrompt: 'Portrait of Muriel Vinshaw, wereraven woman mid-30s with sharp features and dark intelligent eyes, short ash-black hair, subtle black feather-pattern tattoos on neck, wearing practical leather and dark forest-green traveler\'s cloak, a raven perched on her shoulder, misty Barovian forest background, melancholic determined expression, cinematic moody lighting, photorealistic, 8K, no text, no deformed hands' },
+
+    { id: 'davian', type: 'npc', name: 'Davian Martikov',
+      size: 'Medium', creatureType: 'humanoid (wereraven)', alignment: 'lawful good',
+      race: 'Wereraven', class: 'Patriarch',
+      ac: 13, acType: '', hp: 45, maxHp: 45, hitDice: '7d8+14', speed: '30 ft., fly 50 ft.', initiative: 1, proficiency: '+2',
+      stats: { str: 11, dex: 13, con: 14, int: 14, wis: 15, cha: 14 },
+      skills: 'Perception +4, Persuasion +4, Insight +4, History +4',
+      damageImmunities: 'bludgeoning, piercing, slashing (nonmagical non-silver)',
+      senses: 'passive Perception 14', languages: 'Common, Elvish',
+      cr: '2', xp: '450', level: 2,
+      traits: [{ name: 'Shapechanger', text: 'Human ↔ Raven.' }],
+      actions: [{ name: 'Shortsword', text: '*Melee:* +3, 1d6+1 piercing.' }],
+      bonusActions: [], reactions: [], legendaryActions: [],
+      backstory: 'Patriarch der Martikov-Familie. Wereraven. Führt die Keepers of the Feather.',
+      personality: 'Würdevoll, besonnen, diplomatisch.',
+      notes: 'Bietet 250 gp bei Fey-Gem-Rückgabe. „Rahadin war da" → sichtbare Reaktion (lange Pause).',
+      portraitUrl: '', portraitSource: '',
+      imagePrompt: 'Portrait of Davian Martikov, dignified older man around 60 with gray-white hair and neatly-trimmed beard, dark intelligent eyes with crow\'s feet, subtle raven-feather pendant at his throat, wearing a rustic vintner\'s waistcoat with dark forest-green embroidery, warm candlelight of a forest camp, weathered-but-kind expression, cinematic moody lighting, photorealistic, 8K, no text, no deformed hands' },
+
+    { id: 'verna', type: 'npc', name: 'Druidin Verna',
+      size: 'Medium', creatureType: 'humanoid (human)', alignment: 'neutral',
+      race: 'Human', class: 'Druid · Former Yester Hill',
+      ac: 11, acType: 'no armor', hp: 28, maxHp: 28, hitDice: '5d8+5', speed: '30 ft.', initiative: 0, proficiency: '+2',
+      stats: { str: 9, dex: 11, con: 13, int: 12, wis: 15, cha: 10 },
+      skills: 'Nature +4, Perception +4, Survival +4',
+      senses: 'passive Perception 14', languages: 'Common, Druidic, Sylvan',
+      cr: '1', xp: '200', level: 3,
+      traits: [{ name: 'Erschöpft', text: '*Kämpft nicht. Spricht offen bei respektvollem Umgang.*' }],
+      actions: [{ name: 'Staff', text: '*Melee (nur wenn attackiert):* +1, 1d6 bludgeoning.' }],
+      bonusActions: [], reactions: [], legendaryActions: [],
+      backstory: 'Druidin von Yester Hill. War gegen den Wickerman-Plan — zu schwach um sich durchzusetzen. Floh zum Weingut.',
+      personality: 'Müde, resigniert, ehrlich. Baumrinden-Tattoos auf Armen.',
+      notes: 'LÜGT NICHT. DC 12 Insight bestätigt. DC 14 Persuasion: Yester-Hill-Info (schwarzer Pfahl, Sonnenaufgang). Kann Akseth über Silvanus informieren.',
+      portraitUrl: '', portraitSource: '',
+      imagePrompt: 'Portrait of Verna, tired older druid woman around 50 with gray-streaked brown hair, intricate bark-pattern tattoos wrapping her arms and throat, weary kind eyes with dark circles, wearing torn forest-green druid robes with fallen leaves stuck in folds, dim candlelight in abandoned wine cellar room, exhausted-but-dignified expression, cinematic moody lighting, photorealistic, 8K, no text, no deformed hands' }
+  ]
+};
+
+function loadSession14Prep() {
+  if (!confirm('Session 14 Prep-Daten laden?\n\nAktuelle Kampagne + Charaktere werden überschrieben.\nVorher 💾 Export zur Sicherheit klicken!')) return;
+  state.campaign = JSON.parse(JSON.stringify(SESSION_14_PREP.campaign));
+  state.characters = JSON.parse(JSON.stringify(SESSION_14_PREP.characters));
+  state.currentLocationId = 'w14';
+  state.currentCharId = null;
+  state.images = {};
+  state.threads = {};
+  state.initiative = [];
+  state.currentView = 'session';
+  state.sessionMode = 'scene';
+  state.viewingSessionIdx = 5;  // last index = Session 13
+  state.recapCollapsed = false;
+  saveState();
+  renderCampaignMeta();
+  switchView('session');
+  toast('✨ Session 14 Prep geladen — W14 Wine Cellar aktiv');
+  plausibleTrack('DMStudio · Session 14 Prep Loaded');
+}
+
+function exportPDF() { toast('PDF-Gen kommt in Phase 1b'); }
 function exportJSON() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
