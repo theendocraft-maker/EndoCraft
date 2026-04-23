@@ -1289,6 +1289,10 @@ async function signOut() {
   toast('Abgemeldet');
 }
 
+// Track sign-in state — nur bei echtem neuem Login den Cloud-Load-Dialog triggern,
+// nicht bei Token-Refresh oder Session-Restore.
+let _wasSignedIn = false;
+
 async function initAuthState() {
   const sb = initSupabaseClient(); if (!sb) return;
   const { data: { session } } = await sb.auth.getSession();
@@ -1296,18 +1300,27 @@ async function initAuthState() {
     syncSettings().email = session.user.email;
     syncSettings().googleAuth = true;
     saveState(); renderSyncStatus();
+    _wasSignedIn = true;  // already signed in when page loaded → kein neuer Login
   }
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session?.user?.email) {
+      const freshLogin = !_wasSignedIn;
+      _wasSignedIn = true;
       syncSettings().email = session.user.email;
       syncSettings().googleAuth = true;
       saveState(); renderSyncStatus();
-      toast('Eingeloggt als ' + session.user.email);
-      // Offer cloud-load after successful auth
-      setTimeout(() => {
-        if (confirm('Erfolgreich eingeloggt. Cloud-State jetzt laden?')) loadFromCloud();
-      }, 400);
+
+      // Dialog + toast NUR bei echtem neuem Login (nicht bei Token-Refresh/Session-Restore)
+      if (freshLogin) {
+        toast('Eingeloggt als ' + session.user.email);
+        setTimeout(() => {
+          if (confirm('Erfolgreich eingeloggt. Cloud-State jetzt laden?')) loadFromCloud();
+        }, 400);
+      }
+    } else if (event === 'SIGNED_OUT') {
+      _wasSignedIn = false;
     }
+    // TOKEN_REFRESHED, USER_UPDATED etc. werden ignoriert
   });
 }
 
