@@ -576,6 +576,101 @@ body{
 .action-block-remove{position:absolute;top:6px;right:8px;background:transparent;border:none;color:var(--text-dimmer);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px;transition:all .1s;}
 .action-block-remove:hover{background:var(--crimson);color:#fff;}
 
+/* ═══════ BRIEFING VIEW — Pre-Session Dashboard ═══════ */
+.briefing-main{flex:1;overflow-y:auto;background:var(--bg);padding:32px 40px 60px;}
+.briefing-inner{max-width:1080px;margin:0 auto;}
+.briefing-hero{
+  background:linear-gradient(135deg,var(--accent) 0%,#5a4dc7 100%);color:#fff;
+  padding:28px 32px;border-radius:14px;margin-bottom:24px;box-shadow:var(--shadow-md);
+  position:relative;overflow:hidden;
+}
+.briefing-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;
+  background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);pointer-events:none;
+}
+.briefing-hero-tag{font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.75);font-weight:700;text-transform:uppercase;}
+.briefing-hero-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-0.02em;line-height:1.15;margin-top:6px;}
+.briefing-hero-title em{color:var(--gold-br);font-style:italic;}
+.briefing-hero-meta{display:flex;gap:22px;margin-top:14px;font-size:14px;color:rgba(255,255,255,0.85);flex-wrap:wrap;}
+.briefing-hero-meta-item{display:flex;align-items:center;gap:7px;}
+.briefing-hero-meta-item::before{content:'●';color:var(--gold-br);font-size:9px;}
+
+.briefing-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;margin-bottom:24px;}
+.briefing-grid.single{grid-template-columns:1fr;}
+
+.briefing-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.briefing-card-h{
+  padding:12px 18px;background:var(--surface-2);border-bottom:1px solid var(--border);
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--crimson);
+  text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:10px;justify-content:space-between;
+}
+.briefing-card-h-l{display:flex;align-items:center;gap:9px;}
+.briefing-card-h .ico{font-size:15px;}
+.briefing-card-b{padding:18px 22px;}
+
+.briefing-recap{font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;color:var(--ink);font-style:italic;}
+.briefing-recap-meta{font-size:11px;color:var(--text-dim);margin-top:10px;font-style:normal;font-family:'Cinzel',serif;letter-spacing:1.5px;}
+
+.briefing-loc-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-0.01em;}
+.briefing-loc-meta{font-size:12px;color:var(--text-dim);font-style:italic;margin-top:2px;margin-bottom:14px;}
+.briefing-loc-readaloud{
+  background:rgba(168,35,24,0.05);border-left:3px solid var(--crimson);padding:10px 14px;border-radius:0 8px 8px 0;
+  font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:12px;
+}
+.briefing-loc-dmnote{font-size:13.5px;color:var(--text);line-height:1.55;background:rgba(147,110,30,0.06);padding:10px 14px;border-radius:8px;border-left:3px solid var(--gold);}
+
+.briefing-party{display:flex;flex-direction:column;gap:10px;}
+.briefing-party-row{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:var(--surface-2);border:1px solid var(--border);
+}
+.briefing-party-av{width:38px;height:38px;border-radius:50%;overflow:hidden;background:var(--accent-dim);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:12px;color:var(--accent);}
+.briefing-party-av img{width:100%;height:100%;object-fit:cover;}
+.briefing-party-info{flex:1;min-width:0;}
+.briefing-party-name{font-weight:700;font-size:14px;color:var(--ink);}
+.briefing-party-class{font-size:11.5px;color:var(--text-dim);}
+.briefing-party-hp{font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:5px;background:#fff;border:1px solid var(--border-strong);}
+.briefing-party-note{font-size:11px;color:var(--crimson);font-style:italic;margin-top:3px;}
+
+.briefing-npc-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface-2);
+  border:1px solid var(--border-strong);border-radius:20px;margin:4px 5px 0 0;font-size:12.5px;color:var(--ink);
+  cursor:pointer;transition:all .12s;
+}
+.briefing-npc-chip:hover{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+.briefing-npc-chip .cr{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:1px;font-weight:700;}
+
+.briefing-objectives{list-style:none;padding:0;margin:0;}
+.briefing-obj{padding:9px 0;border-bottom:1px dashed var(--border);font-size:14px;display:flex;align-items:flex-start;gap:10px;}
+.briefing-obj:last-child{border-bottom:none;}
+.briefing-obj-num{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--crimson);color:#fff;
+  font-family:'Cinzel',serif;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;
+}
+.briefing-obj-text{flex:1;line-height:1.45;color:var(--ink);}
+.briefing-obj-text strong{color:var(--crimson);}
+
+.briefing-checklist{list-style:none;padding:0;margin:0;}
+.briefing-check{display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:14px;color:var(--text);cursor:pointer;user-select:none;}
+.briefing-check input{margin-top:2px;width:17px;height:17px;cursor:pointer;accent-color:var(--accent);}
+.briefing-check label{flex:1;line-height:1.45;cursor:pointer;}
+.briefing-check.done label{text-decoration:line-through;color:var(--text-dimmer);}
+
+.briefing-notes{
+  width:100%;min-height:120px;background:var(--bg);border:1px solid var(--border-strong);border-radius:8px;
+  padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--ink);line-height:1.55;
+  outline:none;transition:border-color .15s;resize:vertical;
+}
+.briefing-notes:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+
+.briefing-music-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);margin-bottom:6px;}
+.briefing-music-row:last-child{margin-bottom:0;}
+.briefing-music-ico{width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.briefing-music-title{font-size:13px;color:var(--ink);}
+.briefing-music-sub{font-size:11px;color:var(--text-dim);font-style:italic;}
+
+.briefing-mini-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.briefing-mini-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:7px;text-transform:uppercase;font-weight:700;}
+
 /* ═══════ SESSION MODE TOGGLE (Szene / Kampf / Social / Exploration) ═══════ */
 .session-modes{display:flex;gap:4px;padding:2px;background:var(--bg2);border:1px solid var(--border-strong);border-radius:9px;}
 .session-mode-btn{
@@ -728,6 +823,7 @@ body{
     </div>
   </div>
   <div class="tabnav">
+    <div class="tab" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Briefing</span></div>
     <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
     <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
@@ -742,6 +838,11 @@ body{
 
 <!-- SHELL -->
 <div class="shell">
+
+  <!-- ═══════ VIEW: BRIEFING — Pre-Session-Überblick ═══════ -->
+  <div class="view" id="view-briefing">
+    <main class="briefing-main" id="briefingMain"></main>
+  </div>
 
   <!-- ═══════ VIEW: PREPARATION ═══════ -->
   <div class="view active" id="view-prep">
@@ -788,8 +889,9 @@ body{
             <div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Szenen-Bild</span></div>
           </div>
           <div class="scene-img-actions">
-            <button class="btn-top primary" onclick="generateSceneImage()">⚡ Generieren</button>
-            <button class="btn-top" onclick="copySceneUrl()">📋 URL</button>
+            <button class="btn-top primary" onclick="generateSceneImage()" title="AI-Bild per Seedream">⚡ Generieren</button>
+            <button class="btn-top" onclick="triggerSceneUpload()" title="Bild-Datei vom PC hochladen">📸 Upload</button>
+            <button class="btn-top" onclick="copySceneUrl()" title="URL in Zwischenablage">📋 URL</button>
           </div>
           <div class="field">
             <div class="field-lbl">Prompt (wird für Generation benutzt)</div>
@@ -879,7 +981,8 @@ body{
               </div>
               <div class="scene-img-actions">
                 <button class="btn-top primary" style="flex:1;" onclick="generateSceneImage()">⚡ Generieren</button>
-                <button class="btn-top" onclick="copySceneUrl()">📋 URL</button>
+                <button class="btn-top" onclick="triggerSceneUpload()" title="Datei hochladen">📸</button>
+                <button class="btn-top" onclick="copySceneUrl()">📋</button>
               </div>
             </div>
           </div>
@@ -917,6 +1020,7 @@ body{
 </div>
 
 <input type="file" id="portraitUploadInput" accept="image/*" style="display:none" onchange="handlePortraitUpload(event)">
+<input type="file" id="sceneUploadInput" accept="image/*" style="display:none" onchange="handleSceneUpload(event)">
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1489,10 +1593,234 @@ function switchView(view) {
   state.currentView = view; saveState();
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  if (view === 'briefing') renderBriefing();
   if (view === 'prep') renderPrep();
   if (view === 'session') renderSession();
   if (view === 'chars') renderChars();
   plausibleTrack('DMStudio · View', { view });
+}
+
+// ═══════════ BRIEFING — Pre-Session Dashboard ═══════════
+function renderBriefing() {
+  const host = document.getElementById('briefingMain');
+  const c = campaign();
+  const sessions = c.sessions || [];
+  const lastSession = sessions[sessions.length - 1];
+  const loc = currentLoc();
+  const pcs = state.characters.filter(ch => ch.type === 'pc');
+  const npcs = state.characters.filter(ch => ch.type === 'npc');
+
+  // Detect NPCs relevant to current location (name match in dmNote/meta)
+  const relevantNpcs = loc ? npcs.filter(n => {
+    const hay = `${loc.name} ${loc.meta || ''} ${loc.dmNote || ''} ${JSON.stringify(loc.dialogs || [])}`.toLowerCase();
+    return hay.includes(n.name.toLowerCase().split(' ')[0]);
+  }) : [];
+
+  // Checklist — stored in state.briefingChecks per session number
+  const sessionKey = `s${c.session?.number || 0}`;
+  state.briefingChecks = state.briefingChecks || {};
+  state.briefingChecks[sessionKey] = state.briefingChecks[sessionKey] || {};
+  const checks = state.briefingChecks[sessionKey];
+  const checklistItems = [
+    { id: 'recap', label: 'Letzten Recap gelesen und verinnerlicht' },
+    { id: 'readaloud', label: 'Read-Aloud der Start-Location laut durchgelesen' },
+    { id: 'dialogs', label: 'NPC-Dialoge & Tonfall im Kopf' },
+    { id: 'statblocks', label: 'Relevante Statblöcke gecheckt (Angriff, DC, Saves)' },
+    { id: 'owlbear', label: 'Owlbear: Scene-Image + Tokens platziert' },
+    { id: 'music', label: 'Musik-Playlist vorbereitet' },
+    { id: 'maps', label: 'Handout-Karten bereit (PDF-Seiten 13 + 16)' },
+    { id: 'snacks', label: 'Wasser + Snacks am Tisch (DM-Gesundheit)' }
+  ];
+
+  const briefingNotes = state.briefingNotes || '';
+
+  host.innerHTML = `
+    <div class="briefing-inner">
+
+      <!-- HERO -->
+      <div class="briefing-hero">
+        <div class="briefing-hero-tag">✦ DM Briefing · Session Prep</div>
+        <div class="briefing-hero-title">${escapeHtml(c.name)}</div>
+        <div class="briefing-hero-meta">
+          <div class="briefing-hero-meta-item">Session ${c.session?.number || '—'}: ${escapeHtml(c.session?.title || '—')}</div>
+          <div class="briefing-hero-meta-item">Party Level ${escapeHtml(c.session?.level || '—')}</div>
+          <div class="briefing-hero-meta-item">Standort · ${escapeHtml(loc?.name || '—')}</div>
+        </div>
+      </div>
+
+      <!-- TOP ROW: Recap + Current Location -->
+      <div class="briefing-grid">
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">📜</span>Letzter Recap${lastSession ? ' · #' + lastSession.number : ''}</div>
+            <button class="recap-edit-btn" onclick="switchView('session');toggleRecapEdit();">✎ Bearbeiten</button>
+          </div>
+          <div class="briefing-card-b">
+            ${lastSession?.recap
+              ? `<div class="briefing-recap">${escapeHtml(lastSession.recap).replace(/\n/g,'<br>')}</div>
+                 <div class="briefing-recap-meta">${escapeHtml(lastSession.title || '')} · ${escapeHtml(lastSession.date || '')}</div>`
+              : '<em style="color:var(--text-dim);">Noch kein Recap der letzten Session. Im <strong>Session Live</strong>-Tab unter Recap-Block eintragen.</em>'}
+          </div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">📍</span>Start-Standort heute</div>
+          </div>
+          <div class="briefing-card-b">
+            ${loc ? `
+              <div class="briefing-loc-name">${escapeHtml(loc.name)}</div>
+              <div class="briefing-loc-meta">${escapeHtml(loc.meta || '')}</div>
+              ${loc.readAloud ? `<div class="briefing-loc-readaloud">"${escapeHtml(loc.readAloud.split('\n\n')[0] || loc.readAloud)}..."</div>` : ''}
+              ${loc.dmNote ? `<div class="briefing-loc-dmnote"><strong>DM-Notiz:</strong> ${escapeHtml(loc.dmNote)}</div>` : ''}
+            ` : '<em style="color:var(--text-dim);">Kein Standort ausgewählt. Wähl einen in <strong>Vorbereitung</strong>.</em>'}
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTY + NPCS -->
+      <div class="briefing-grid">
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">👥</span>Party · ${pcs.length} Spieler</div>
+          </div>
+          <div class="briefing-card-b">
+            <div class="briefing-party">
+              ${pcs.map(pc => {
+                const initials = pc.name.split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+                return `
+                  <div class="briefing-party-row" onclick="openChar('${pc.id}')">
+                    <div class="briefing-party-av">${pc.portraitUrl ? `<img src="${escapeAttr(pc.portraitUrl)}">` : initials}</div>
+                    <div class="briefing-party-info">
+                      <div class="briefing-party-name">${escapeHtml(pc.name)}</div>
+                      <div class="briefing-party-class">${escapeHtml(pc.race)} · ${escapeHtml(pc.class)} · Lv ${pc.level}</div>
+                      ${pc.notes ? `<div class="briefing-party-note">⚠ ${escapeHtml(pc.notes.slice(0,90))}${pc.notes.length > 90 ? '…' : ''}</div>` : ''}
+                    </div>
+                    <div class="briefing-party-hp">${pc.hp}/${pc.maxHp} · AC ${pc.ac}</div>
+                  </div>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">🎭</span>Heute relevante NPCs</div>
+          </div>
+          <div class="briefing-card-b">
+            ${relevantNpcs.length
+              ? relevantNpcs.map(n => `
+                  <div class="briefing-npc-chip" onclick="openChar('${n.id}')">
+                    ${escapeHtml(n.name)}
+                    ${n.cr ? `<span class="cr">CR ${escapeHtml(n.cr)}</span>` : ''}
+                  </div>`).join('')
+              : '<em style="color:var(--text-dim);font-size:13px;">Keine NPCs automatisch erkannt. Füg sie im <strong>Charaktere</strong>-Tab hinzu — sobald ihre Namen in Location-Daten vorkommen, erscheinen sie hier.</em>'}
+            <div class="briefing-mini-section">
+              <div class="briefing-mini-label">Alle NPCs in Kampagne</div>
+              <div>
+                ${npcs.map(n => `<div class="briefing-npc-chip" onclick="openChar('${n.id}')" style="background:transparent;border-color:var(--border);font-size:11.5px;">${escapeHtml(n.name)}</div>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEXT OBJECTIVES + SESSION FLOW -->
+      <div class="briefing-grid">
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">🎯</span>Nächste Ziele</div>
+          </div>
+          <div class="briefing-card-b">
+            <ul class="briefing-objectives">
+              ${(state.briefingObjectives || [
+                'Rahadin-Encounter in W14 überleben',
+                'Entscheidung am W15 Teleportationskreis (Szenario A vs. B)',
+                'Yester Hill vorbereiten (wenn Szenario B)',
+                'Fey Green Gem zurückholen'
+              ]).map((obj, i) => `
+                <li class="briefing-obj">
+                  <span class="briefing-obj-num">${i+1}</span>
+                  <span class="briefing-obj-text">${escapeHtml(obj)}</span>
+                </li>`).join('')}
+            </ul>
+            <div class="briefing-mini-section">
+              <div class="briefing-mini-label">Session-Flow (aus Prep)</div>
+              <div style="font-size:12.5px;color:var(--text-dim);line-height:1.6;font-family:'JetBrains Mono',monospace;background:var(--surface-2);padding:10px 12px;border-radius:6px;">
+W14 Rahadin<br>
+  ↓<br>
+W15 Teleportationskreis · 30s-Entscheidung<br>
+  ├─ folgen → Szenario A: K63 → K10 Dinner<br>
+  └─ bleiben → Szenario B: W17 + W20 + Aftermath → Yester Hill
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">🎵</span>Musik · Start-Location</div>
+          </div>
+          <div class="briefing-card-b">
+            ${(loc?.music || []).length
+              ? loc.music.map(m => `
+                <div class="briefing-music-row">
+                  <div class="briefing-music-ico">${m.icon || '🎵'}</div>
+                  <div style="flex:1;">
+                    <div class="briefing-music-title">${escapeHtml(m.title)}</div>
+                    <div class="briefing-music-sub">${escapeHtml(m.sub || '')}</div>
+                  </div>
+                </div>`).join('')
+              : '<em style="color:var(--text-dim);font-size:13px;">Keine Musik für diese Location. Im Prep-Tab unter der Location nachtragen.</em>'}
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKLIST + NOTES -->
+      <div class="briefing-grid">
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">✓</span>Prep-Checkliste</div>
+          </div>
+          <div class="briefing-card-b">
+            <ul class="briefing-checklist">
+              ${checklistItems.map(item => `
+                <li class="briefing-check ${checks[item.id] ? 'done' : ''}">
+                  <input type="checkbox" ${checks[item.id] ? 'checked' : ''} onchange="toggleBriefingCheck('${item.id}', this.checked)" id="chk-${item.id}">
+                  <label for="chk-${item.id}">${escapeHtml(item.label)}</label>
+                </li>`).join('')}
+            </ul>
+          </div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-h">
+            <div class="briefing-card-h-l"><span class="ico">📝</span>Meine Briefing-Notizen</div>
+            <span style="font-size:10px;color:var(--text-dim);font-family:'DM Sans',sans-serif;letter-spacing:0;text-transform:none;font-weight:400;">auto-save</span>
+          </div>
+          <div class="briefing-card-b">
+            <textarea class="briefing-notes" placeholder="Hier kommen deine eigenen Vorbereitungs-Notizen hin:&#10;• Was will ich als DM heute bewusst anders machen?&#10;• Welche Szenen will ich besonders stark spielen?&#10;• Welcher Spieler hat diese Woche Spotlight verdient?&#10;• Welche Twists plane ich?" onblur="saveBriefingNotes(this.value)">${escapeHtml(briefingNotes)}</textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function toggleBriefingCheck(id, checked) {
+  const c = campaign();
+  const sessionKey = `s${c.session?.number || 0}`;
+  state.briefingChecks = state.briefingChecks || {};
+  state.briefingChecks[sessionKey] = state.briefingChecks[sessionKey] || {};
+  state.briefingChecks[sessionKey][id] = checked;
+  saveState();
+  // Update just the list item style without full re-render
+  const li = document.getElementById('chk-' + id)?.closest('.briefing-check');
+  if (li) li.classList.toggle('done', checked);
+}
+function saveBriefingNotes(text) {
+  state.briefingNotes = text; saveState();
 }
 
 function renderCampaignMeta() {
@@ -1724,6 +2052,24 @@ async function generateSceneImage() {
     toast('Fehler: ' + err.message, true);
     renderPrepSceneImage(); renderSessSceneImage();
   }
+}
+
+function triggerSceneUpload() { document.getElementById('sceneUploadInput').click(); }
+function handleSceneUpload(e) {
+  const file = e.target.files?.[0]; if (!file) return;
+  if (!state.currentLocationId) { toast('Erst Standort wählen', true); return; }
+  if (file.size > 3 * 1024 * 1024) { toast('Max 3 MB (localStorage-Limit)', true); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.images[state.currentLocationId] = reader.result;  // base64 data URL
+    saveState();
+    renderPrepSceneImage();
+    renderSessSceneImage();
+    toast('✨ Szenen-Bild hochgeladen');
+    plausibleTrack('DMStudio · Scene Image Upload', { location: state.currentLocationId });
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
 }
 
 async function copySceneUrl() {
