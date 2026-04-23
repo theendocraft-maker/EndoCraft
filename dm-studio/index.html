@@ -3452,23 +3452,47 @@ const SESSION_14_PREP = {
       { number: 13, title: 'Loading Dock & Fermentation', date: '2026-04-10', recap: 'Eingang über W4 Loading Dock (Giant Spiders, Gattok verletzt, Infection-Risk). W9 Fermentation: Druidin Naturalist besiegt, vergifteter Wein vernichtet. Session endete als sie in W14 hinabstiegen — eine Gestalt trat aus dem Dunkel. Tausend Stimmen im Kopf. Cliffhanger.' }
     ],
     tree: [
-      { id: 'wow', label: 'Wizard of Wines (aktuell)', locations: [
-        { id: 'w4', name: 'W4 Loading Dock', status: 'done' },
-        { id: 'w9', name: 'W9 Fermentation Vats', status: 'done' },
-        { id: 'w14', name: 'W14 Wine Cellar', status: 'active' },
-        { id: 'w15', name: 'W15 Teleportationskreis', status: 'warn' },
-        { id: 'w17', name: 'W17 Master\'s Chamber · Tunnel', status: 'pending' },
-        { id: 'w20', name: 'W20 Barrel Room · Verna', status: 'pending' }
+      { id: 'maps', label: '📍 Maps (Handouts)', locations: [
+        { id: 'map-groundfloor-combat', name: 'Erdgeschoss · Kampf-Map (Blights)', status: 'pending' },
+        { id: 'map-groundfloor', name: 'Erdgeschoss · Overview', status: 'pending' },
+        { id: 'map-topfloor', name: 'Obergeschoss · Top Floor', status: 'pending' }
       ]},
-      { id: 'szenario-a', label: 'Szenario A — Dinner with Strahd', locations: [
+      { id: 'wow-keller', label: '🍷 Winery — Keller (aktuell)', locations: [
+        { id: 'w14', name: 'W14 Wine Cellar', status: 'active' },
+        { id: 'w15', name: 'W15 Teleportationskreis', status: 'warn' }
+      ]},
+      { id: 'wow-eg', label: '🍷 Winery — Erdgeschoss', locations: [
+        { id: 'w1', name: 'W1 Stable Entrance', status: 'pending' },
+        { id: 'w2', name: 'W2 Loading Dock', status: 'done' },
+        { id: 'w3', name: 'W3 Barrel Maker\'s Workshop', status: 'pending' },
+        { id: 'w4', name: 'W4 Barrel Storage', status: 'done' },
+        { id: 'w5', name: 'W5 Veranda', status: 'pending' },
+        { id: 'w6', name: 'W6 Well', status: 'pending' },
+        { id: 'w7', name: 'W7 Outhouse', status: 'pending' },
+        { id: 'w8', name: 'W8 Storage', status: 'pending' },
+        { id: 'w9', name: 'W9 Fermentation Vats', status: 'done' },
+        { id: 'w10', name: 'W10 Glassblower\'s Workshop', status: 'pending' },
+        { id: 'w11', name: 'W11 Spiral Staircase', status: 'pending' },
+        { id: 'w12', name: 'W12 Ramp', status: 'pending' },
+        { id: 'w13', name: 'W13 Back Staircase', status: 'pending' }
+      ]},
+      { id: 'wow-og', label: '🍷 Winery — Obergeschoss', locations: [
+        { id: 'w16', name: 'W16 Loading Winch', status: 'pending' },
+        { id: 'w17', name: 'W17 Master\'s Chamber', status: 'pending' },
+        { id: 'w18', name: 'W18 Kitchen / Dining', status: 'pending' },
+        { id: 'w19a', name: 'W19a Children\'s Room', status: 'pending' },
+        { id: 'w19b', name: 'W19b Bunk Room', status: 'pending' },
+        { id: 'w20', name: 'W20 Print Room · Verna', status: 'pending' }
+      ]},
+      { id: 'szenario-a', label: '🎭 Szenario A — Dinner with Strahd', locations: [
         { id: 'k63', name: 'K63 Wine Room (Ankunft)', status: 'pending' },
         { id: 'k10', name: 'K10 Dining Hall · Strahd', status: 'pending' }
       ]},
-      { id: 'szenario-b', label: 'Szenario B — Weingut Aftermath', locations: [
+      { id: 'szenario-b', label: '🎭 Szenario B — Weingut Aftermath', locations: [
         { id: 'martikov-tagebuch', name: 'W13 Martikov Tagebuch', status: 'pending' },
         { id: 'waldlager', name: 'Waldlager Aftermath', status: 'pending' }
       ]},
-      { id: 'yester-hill', label: 'Yester Hill (nächste Session)', locations: [
+      { id: 'yester-hill', label: '🌲 Yester Hill (nächste Session)', locations: [
         { id: 'yester-approach', name: 'Der Aufstieg', status: 'pending' },
         { id: 'wickerman', name: 'Der Wickerman · Malachiel', status: 'pending' }
       ]}
@@ -3615,8 +3639,86 @@ const SESSION_14_PREP = {
         scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: ''
       },
       'wickerman': { name: 'Der Wickerman · Malachiel', meta: 'Nächste Session · Fey Gem Recovery', imagePrompt: '', readAloud: '', dmNote: 'TBD — nächste Session-Prep.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
-      'w4': { name: 'W4 — Loading Dock', meta: 'abgeschlossen', imagePrompt: '', readAloud: '', dmNote: 'Session 13. 2 Giant Spiders, Gattok verletzt (DC 12 CON täglich gegen Infection).', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
-      'w9': { name: 'W9 — Fermentation Vats', meta: 'abgeschlossen', imagePrompt: '', readAloud: '', dmNote: 'Session 13. Druidin Naturalist besiegt, vergifteter Wein vernichtet.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
+      'w1': { name: 'W1 — Stable Entrance', meta: 'Erdgeschoss · Stall · Eingangsbereich',
+        imagePrompt: '', readAloud: '*Zwei große Schiebetüren, halb offen. Rustling von innen.*',
+        dmNote: '2 Needle Blights außen. Innen: 2 Zugpferde — keine Blights im Stall selbst. Türen nicht gesperrt. Umgehen: DEX Acrobatics DC 15 oder Stealth DC 15.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w2': { name: 'W2 — Loading Dock', meta: 'Party-Eingang · Laderampe',
+        imagePrompt: '', readAloud: '*Karren an der Laderampe, Fässer, Lastkran mit Seilen und Haken.*',
+        dmNote: 'Party-Eingang bereits genutzt. 2 Needle Blights an Einfahrt. Checks: STR Athletics DC 20 (barrikadieren) · STR/DEX DC 15 (Kran zu W16) · DEX Stealth DC 12 (in W9 oder W12).',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: 'Die Party kam hier durch in Session 12. Seither geklärt.', log: '' },
+      'w3': { name: 'W3 — Barrel Maker\'s Workshop', meta: 'Böttcherei · gesperrt',
+        imagePrompt: '', readAloud: '*Nebentür neben der Laderampe.*',
+        dmNote: 'Tür von innen gesperrt (Querbalken) · DC 18 STR zum Aufbrechen. 2+ Fehlversuche → 1d4+1 Needle Blights alarmiert. Inhalt: Eisenreifen, Holzplanken, 2 Werkbänke. Doppeltür nach Westen.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w4': { name: 'W4 — Barrel Storage', meta: 'Fasslager · durchquert',
+        imagePrompt: '', readAloud: '*Dreizehn große Weinfässer. Steintreppe in der SW-Ecke nach oben. Doppeltür Südwand.*',
+        dmNote: 'Fässer leer. Treppe führt ins Obergeschoss. Tür kann nicht von dieser Seite gesperrt werden. Session 13 durchquert.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w5': { name: 'W5 — Veranda', meta: 'Große Veranda · Blick auf Weinberg',
+        imagePrompt: '', readAloud: '*Große Veranda mit Blick auf den Weinberg. Drei 4-Fuß-Holzfässer mit Leitern. Große Schiebetür Südwand, kleine Tür SO-Wand.*',
+        dmNote: 'Große Türen: innen gekettet · DC 20 STR. Kleine Tür: innen gesperrt · DC 18 STR. 2 Fehlversuche → 1d4+1 Needle Blights.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w6': { name: 'W6 — Well', meta: 'Brunnen',
+        imagePrompt: '', readAloud: '*Brunnen mit niedriger Steinmauer.*',
+        dmNote: 'Tiefe ca. 12 m bis zum Wasser. Kein besonderer Inhalt.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w7': { name: 'W7 — Outhouse', meta: 'Toilette · sichere Zuflucht möglich',
+        imagePrompt: '', readAloud: '*Überraschend sauber. Kräuterbüschel hängen an der Tür.*',
+        dmNote: 'Sichere Zuflucht: Tür von innen mit Querbalken. Platz für 2 Medium-Kreaturen. Blights meiden die Gegend wegen der Kräuter — taktisch nutzbar.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w8': { name: 'W8 — Storage', meta: 'Lager · Needle Blight innen',
+        imagePrompt: '', readAloud: '*Kleine Tür auf Steinsteinen an der Westseite.*',
+        dmNote: 'Tür ungesperrt — aber Needle Blight wartet innen. Türöffnung: DC 15 DEX Save oder Needles-Treffer. Inhalt: Weinlesegerät, Sandalen-Lager · Tür nach Osten · Querbalken auf Boden.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w9': { name: 'W9 — Fermentation Vats', meta: 'abgeschlossen · Druidin Naturalist besiegt',
+        imagePrompt: '', readAloud: '*Vier massive Holzfässer (2,5m Durchmesser, 3,7m hoch). Holzbalkon entlang Südwand. Treppe in der Mitte.*',
+        dmNote: 'Session 13. Druidin Naturalist besiegt, vergifteter Wein vernichtet, Fässer ausgeleert. Zugänge: 2 Türen Westwand · 1 Tür unter Balkon · 3 Türen Ostwand · Doppeltür Nord (gekettet). Quergang zu W10 und W12.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w10': { name: 'W10 — Glassblower\'s Workshop', meta: 'Glasbläserei · Needle Blight innen',
+        imagePrompt: '', readAloud: '*Ostseite, kleines Steingebäude. Leichter Rauch aus dem Schornstein.*',
+        dmNote: 'Tür ungesperrt — Needle Blight wartet innen. DC 15 DEX Save. Inhalt: Weinflaschen-Kühlregal, Herd (warm), Werkzeug, Sandfass. Tür nach Norden + Steintreppe nach unten (→ Keller). Querbalken neben Außentür.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w11': { name: 'W11 — Spiral Staircase', meta: 'Wendeltreppe · alle Ebenen',
+        imagePrompt: '', readAloud: '*Kleines Turmfenster gibt schwaches Licht.*',
+        dmNote: 'Verbindet alle drei Ebenen (Keller · EG · OG).',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w12': { name: 'W12 — Ramp', meta: 'Kreisförmige Rampe · Kratzerspuren',
+        imagePrompt: '', readAloud: '*Kreisförmige Holzrampe um den Turm. Kratzer zeigen dass Fässer rauf und runter gerollt wurden.*',
+        dmNote: 'DC 12 DEX Acrobatics beim Hochgehen. Fail: rutschen in den Weinkeller W14.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w13': { name: 'W13 — Back Staircase', meta: 'Hintertreppe · verstecktes Fach',
+        imagePrompt: '', readAloud: '*Jahrhundertealte Steintreppe. Rundbogentür am Fuß.*',
+        dmNote: 'Tür ungesperrt, kann vom Keller aus gesperrt werden. **[Szenario B]** Verstecktes Fach unter losem Stein: DC 16 Investigation → Martikov Tagebuch.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w16': { name: 'W16 — Loading Winch', meta: 'Ladewinde · Druid Guardian flieht hier',
+        imagePrompt: '', readAloud: '*Offener Balkon mit Winde über dem Karren. Zwei Fässer in einer Ecke. Fenster nach Norden (Blick auf Weinberg). Korridor nach Süden.*',
+        dmNote: 'Druid Guardian flieht sofort wenn die Party eintritt → W18 → W17. Letzte Option: aus dem Fenster springen.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w18': { name: 'W18 — Kitchen / Dining', meta: 'Küche + Speisesaal',
+        imagePrompt: '', readAloud: '*Großer Tisch, Fenster zum Weinberg, Speisekammer NO-Ecke.*',
+        dmNote: 'Speisekammer gut bestückt. Osttür → W17 (Druid möglicherweise noch zu hören).',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w19a': { name: 'W19a — Children\'s Room', meta: 'Verwittertes Schaukelpferd',
+        imagePrompt: '', readAloud: '*Verwittertes Schaukelpferd mit flammenden Augen.*',
+        dmNote: 'Name am Bauch: "Beucephalus" + "Is No Fun, Is No Blinsky!" — Verweis auf Strahds Reittier Beucephalus. Flavor-Detail.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'w19b': { name: 'W19b — Bunk Room', meta: 'Schlafraum · durchsucht',
+        imagePrompt: '', readAloud: '*Durchsucht oder hastig verlassen.*',
+        dmNote: 'Buch auf dem Boden: *Wines of Barovia* (Seiten kaum geknickt). Kleidung und persönliche Gegenstände verstreut.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'map-groundfloor-combat': { name: 'Erdgeschoss — Kampf-Map', meta: 'Tactical Handout · Needle Blight Positions',
+        imagePrompt: '', readAloud: '',
+        dmNote: 'Pyram-King-Kampf-Map mit Needle-Blight-Positionen. Als Bild-Handout hochgeladen — kein Kampf hier. Nutze als Referenz für Encounter-Planung.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'map-groundfloor': { name: 'Erdgeschoss — Overview', meta: 'Player-Handout · Zimmer-Labels',
+        imagePrompt: '', readAloud: '',
+        dmNote: 'Pyram-King-Erdgeschoss-Map mit Raum-Labels. Als Handout hochgeladen — kann in Owlbear als Scene-Image geteilt werden wenn die Party sich orientieren muss.',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' },
+      'map-topfloor': { name: 'Obergeschoss — Top Floor', meta: 'Map · Print/Bunk/Children/Kitchen/Master + Loading Winch',
+        imagePrompt: '', readAloud: '',
+        dmNote: 'Pyram-King-Obergeschoss-Map. Für Szenario B wichtig wenn Party nach oben geht (W16-W20).',
+        scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
     }
   },
   characters: [
