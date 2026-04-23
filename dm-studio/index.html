@@ -11,6 +11,9 @@
 <script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
 <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
 
+<!-- Supabase JS SDK for Google OAuth — auth identity flows into Cloud Sync -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -649,6 +652,33 @@ body{
 /* ═══════ KEYBOARD SHORTCUT HINTS ═══════ */
 .kbd-hint{background:var(--surface);border:1px solid var(--border-strong);color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px;}
 
+/* ═══════ CLOUD SYNC MODAL ═══════ */
+.sync-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.sync-modal-inner{position:relative;background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;max-width:520px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;}
+.sync-modal-h{padding:20px 24px 6px;}
+.sync-modal-h-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--accent);font-weight:700;text-transform:uppercase;}
+.sync-modal-h-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-top:4px;letter-spacing:-0.01em;}
+.sync-modal-b{padding:16px 24px 24px;}
+.sync-field{margin-bottom:14px;}
+.sync-field-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.8px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;font-weight:700;}
+.sync-row{display:flex;gap:8px;align-items:center;}
+.sync-info{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:14px;}
+.sync-info strong{color:var(--ink);}
+.sync-status-line{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--text-dim);}
+.sync-status-line .dot{width:7px;height:7px;border-radius:50%;}
+.sync-status-line .dot.synced{background:var(--forest);}
+.sync-status-line .dot.pending{background:var(--gold-br);animation:pulse 1.5s ease-in-out infinite;}
+.sync-status-line .dot.error{background:var(--crimson);}
+.sync-status-line .dot.offline{background:var(--text-dimmer);}
+@keyframes pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+.sync-modal-foot{padding:14px 24px;background:var(--surface-2);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+.sync-modal-close{background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:22px;padding:4px 10px;position:absolute;top:14px;right:14px;}
+.sync-modal-close:hover{color:var(--ink);}
+
+#syncStatusBtn.syncing{color:var(--gold);}
+#syncStatusBtn.synced{color:var(--forest);}
+#syncStatusBtn.error{color:var(--crimson);}
+
 /* ═══════ SRD MONSTER PICKER MODAL ═══════ */
 .srd-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .srd-modal-backdrop{position:absolute;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);}
@@ -703,6 +733,7 @@ body{
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
   </div>
   <div class="topbar-right">
+    <button class="btn-top" id="syncStatusBtn" onclick="openSyncModal()" title="Cloud-Sync Status">☁️ <span id="syncStatusText">Sync</span></button>
     <button class="btn-top" onclick="exportPDF()">📄 PDF</button>
     <button class="btn-top" onclick="exportJSON()">💾 Export</button>
   </div>
@@ -809,9 +840,10 @@ body{
       </div>
       <div class="quick-notes">
         <span class="quick-notes-lbl">Live-Notiz</span>
-        <input class="quick-notes-input" id="quickNotesInput" placeholder="Was gerade passiert... (Enter speichert in Session-Log für späteren Auto-Recap)" onkeydown="handleQuickNotesKey(event)">
+        <input class="quick-notes-input" id="quickNotesInput" placeholder="Was gerade passiert... (Enter = speichern, 🃏 = speichern + als Sammelkarte festhalten)" onkeydown="handleQuickNotesKey(event)">
         <span class="quick-notes-count" id="quickNotesCount"></span>
-        <button class="quick-notes-btn" onclick="addQuickNote()">Speichern</button>
+        <button class="quick-notes-btn" onclick="addQuickNote()" title="Keyboard: N">Speichern</button>
+        <button class="quick-notes-btn" onclick="saveNoteAsCard()" title="Legendärer Moment → EndoCraft-Karte" style="background:var(--accent);">🃏 Als Karte</button>
       </div>
       <div class="session-body">
         <div class="session-read-pane" id="sessReadPane"></div>
@@ -893,6 +925,65 @@ body{
 
 const API_BASE = 'https://endocraft-production.up.railway.app';
 const STORAGE_KEY = 'ec_dmstudio_v3';
+
+// ═══════════ SUPABASE AUTH CONFIG ═══════════
+// Public anon key — safe to expose in frontend (RLS enforces permissions).
+// To set up: Supabase Dashboard → Project Settings → API → copy URL + anon public key.
+// Then: Dashboard → Auth → Providers → Enable Google (requires Google Cloud OAuth Client).
+// Replace these with your values below:
+const SUPABASE_URL_PUBLIC = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY-HERE';
+
+let supabaseClient = null;
+function initSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (!window.supabase) return null;
+  if (SUPABASE_URL_PUBLIC.includes('YOUR-PROJECT')) return null;  // not configured yet
+  supabaseClient = window.supabase.createClient(SUPABASE_URL_PUBLIC, SUPABASE_ANON_KEY);
+  return supabaseClient;
+}
+
+async function signInWithGoogle() {
+  const sb = initSupabaseClient();
+  if (!sb) { toast('Supabase nicht konfiguriert — Config-Konstanten am HTML-Anfang setzen', true); return; }
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href.split('?')[0].split('#')[0] }
+  });
+  if (error) toast('Google-Login-Fehler: ' + error.message, true);
+}
+
+async function signOut() {
+  const sb = initSupabaseClient(); if (!sb) return;
+  await sb.auth.signOut();
+  syncSettings().email = '';
+  syncSettings().googleAuth = false;
+  saveState(); renderSyncStatus();
+  document.querySelector('.sync-modal')?.remove();
+  toast('Abgemeldet');
+}
+
+async function initAuthState() {
+  const sb = initSupabaseClient(); if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user?.email) {
+    syncSettings().email = session.user.email;
+    syncSettings().googleAuth = true;
+    saveState(); renderSyncStatus();
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session?.user?.email) {
+      syncSettings().email = session.user.email;
+      syncSettings().googleAuth = true;
+      saveState(); renderSyncStatus();
+      toast('Eingeloggt als ' + session.user.email);
+      // Offer cloud-load after successful auth
+      setTimeout(() => {
+        if (confirm('Erfolgreich eingeloggt. Cloud-State jetzt laden?')) loadFromCloud();
+      }, 400);
+    }
+  });
+}
 
 // ═══════════ DEFAULT CAMPAIGN DATA ═══════════
 const DEFAULT_CAMPAIGN = {
@@ -1749,6 +1840,14 @@ function addQuickNote() {
   updateQuickNotesCount();
   toast('Notiz gespeichert');
 }
+function saveNoteAsCard() {
+  const input = document.getElementById('quickNotesInput');
+  const text = input.value.trim();
+  if (!text) { toast('Notiz leer', true); return; }
+  // Save as regular log entry AND open EndoCraft card creation in new tab
+  addQuickNote();
+  turnMomentIntoCard(text);
+}
 
 function renderSessionTree() {
   const host = document.getElementById('sessionTree');
@@ -1890,9 +1989,10 @@ function renderRecapBlock() {
           ? `<div style="display:flex;gap:8px;margin-bottom:10px;">
               <input class="field-in" style="flex:1;" value="${escapeAttr(session.title || '')}" placeholder="Session-Titel" onblur="updateSessionField('title', this.value)">
               <input class="field-in" style="max-width:140px;" value="${escapeAttr(session.date || '')}" placeholder="YYYY-MM-DD" onblur="updateSessionField('date', this.value)">
+              <button class="recap-edit-btn" onclick="generateRecapFromLog()" title="KI generiert Recap aus Quick-Notes" style="color:var(--accent);border-color:var(--accent);">✨ Aus Log</button>
               <button class="recap-edit-btn" onclick="deleteSession()" style="color:var(--crimson);border-color:var(--crimson);">Löschen</button>
             </div>
-            <textarea class="recap-textarea" id="recapTextarea" placeholder="Was ist in dieser Session passiert? Schlüssel-Events, NPCs die getroffen wurden, Entscheidungen..." onblur="updateSessionField('recap', this.value)">${escapeHtml(session.recap || '')}</textarea>`
+            <textarea class="recap-textarea" id="recapTextarea" placeholder="Was ist in dieser Session passiert? Schlüssel-Events, NPCs die getroffen wurden, Entscheidungen... (oder nutze ✨ Aus Log um aus Quick-Notes zu generieren)" onblur="updateSessionField('recap', this.value)">${escapeHtml(session.recap || '')}</textarea>`
           : session.recap
             ? escapeHtml(session.recap).replace(/\n/g, '<br>')
             : '<em style="color:var(--text-dim);">Noch kein Recap-Text. Klick <strong>✎ Bearbeiten</strong>.</em>'
@@ -2751,7 +2851,240 @@ function toast(msg, isError) {
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 function plausibleTrack(event, props) { try { window.plausible?.(event, { props: props || {} }); } catch (e) {} }
-function exportPDF() { toast('PDF-Gen kommt in Phase 1b'); }
+// ═══════════ CLOUD SYNC ═══════════
+let syncDebounceTimer = null;
+let syncInProgress = false;
+
+function syncSettings() {
+  if (!state.syncSettings) state.syncSettings = { email: '', autoSync: false, lastSync: null, lastError: null };
+  return state.syncSettings;
+}
+
+function openSyncModal() {
+  const s = syncSettings();
+  const modal = document.createElement('div');
+  modal.className = 'sync-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="sync-modal-inner">
+      <button class="sync-modal-close" onclick="this.closest('.sync-modal').remove()">×</button>
+      <div class="sync-modal-h">
+        <div class="sync-modal-h-tag">☁️ Cloud Sync</div>
+        <div class="sync-modal-h-title">Kampagne in der Cloud sichern</div>
+      </div>
+      <div class="sync-modal-b">
+        <div class="sync-info">
+          <strong>Wie funktioniert's:</strong> Dein kompletter Kampagnen-State (Charaktere, Locations, Recaps, Notizen) wird in Supabase gespeichert. Mit demselben Google-Account lädst du ihn auf jedem Gerät.
+        </div>
+
+        ${(() => {
+          const oauthConfigured = !SUPABASE_URL_PUBLIC.includes('YOUR-PROJECT') && window.supabase;
+          if (s.googleAuth && s.email && oauthConfigured) {
+            return `<div class="sync-field">
+              <div class="sync-field-lbl">Eingeloggt als</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;">
+                <span style="background:var(--forest);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">G</span>
+                <div style="flex:1;">
+                  <div style="font-weight:600;color:var(--ink);font-size:14px;">${escapeHtml(s.email)}</div>
+                  <div style="font-size:11px;color:var(--text-dim);">Google Account · OAuth-authenticated</div>
+                </div>
+                <button class="btn-top" onclick="signOut()">Abmelden</button>
+              </div>
+            </div>`;
+          }
+          if (oauthConfigured) {
+            return `<div class="sync-field">
+              <button onclick="signInWithGoogle()" style="width:100%;padding:14px;background:#fff;border:1px solid var(--border-strong);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--ink);transition:all .15s;box-shadow:var(--shadow-sm);" onmouseover="this.style.borderColor='var(--accent)';this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.borderColor='var(--border-strong)';this.style.boxShadow='var(--shadow-sm)'">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>
+                Mit Google anmelden
+              </button>
+              <div style="text-align:center;margin:12px 0;font-size:11px;color:var(--text-dimmer);font-family:'Cinzel',serif;letter-spacing:2px;">ODER MANUELL</div>
+              <div class="sync-field-lbl">Sync-Email (manuell)</div>
+              <input class="field-in" id="syncEmailInput" type="email" value="${escapeAttr(s.email || '')}" placeholder="deine@email.de" onblur="updateSyncEmail(this.value)">
+            </div>`;
+          }
+          // OAuth not configured — just email-based identity (Phase 1, no accounts needed)
+          return `<div class="sync-field">
+            <div class="sync-field-lbl">Sync-Email</div>
+            <input class="field-in" id="syncEmailInput" type="email" value="${escapeAttr(s.email || '')}" placeholder="deine@email.de" onblur="updateSyncEmail(this.value)">
+            <div style="margin-top:6px;font-size:11px;color:var(--text-dim);line-height:1.5;">
+              Google-OAuth kommt später. Für jetzt: tippe deine Email ein — mit derselben Email lädst du den State auf jedem Gerät. Wie bei EndoCraft.
+            </div>
+          </div>`;
+        })()}
+
+        <div class="sync-field">
+          <div class="sync-field-lbl">Auto-Sync</div>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">
+            <input type="checkbox" id="autoSyncToggle" ${s.autoSync ? 'checked' : ''} onchange="updateAutoSync(this.checked)" style="width:18px;height:18px;cursor:pointer;">
+            <span style="font-size:13px;">Automatisch alle 60s speichern wenn Änderungen anstehen</span>
+          </label>
+        </div>
+
+        <div class="sync-row">
+          <button class="btn-top primary" onclick="syncNow()" style="flex:1;">☁️↑ Jetzt in Cloud speichern</button>
+          <button class="btn-top" onclick="loadFromCloud()" style="flex:1;">☁️↓ Aus Cloud laden</button>
+        </div>
+
+        ${s.lastSync ? `
+          <div class="sync-status-line" style="margin-top:14px;">
+            <span class="dot synced"></span>
+            Zuletzt gesynct: <strong style="color:var(--ink);">${new Date(s.lastSync).toLocaleString('de-DE')}</strong>
+          </div>` : ''}
+        ${s.lastError ? `
+          <div class="sync-status-line" style="margin-top:8px;color:var(--crimson);">
+            <span class="dot error"></span>
+            Letzter Fehler: ${escapeHtml(s.lastError)}
+          </div>` : ''}
+      </div>
+      <div class="sync-modal-foot">
+        <span style="font-size:11px;color:var(--text-dim);">Kampagnen-ID: <strong style="color:var(--ink);">${escapeHtml(campaign().id)}</strong></span>
+        <button class="btn-top" onclick="this.closest('.sync-modal').remove()">Fertig</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function updateSyncEmail(email) { syncSettings().email = email; saveState(); renderSyncStatus(); }
+function updateAutoSync(enabled) { syncSettings().autoSync = enabled; saveState(); renderSyncStatus(); }
+
+async function syncNow() {
+  const s = syncSettings();
+  if (!s.email) { toast('Email angeben im Sync-Dialog', true); return; }
+  setSyncStatus('syncing', 'Sync…');
+  try {
+    const resp = await fetch(`${API_BASE}/api/dm-studio/save`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: s.email, campaignId: campaign().id, state })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) throw new Error(data.error || 'Save failed');
+    s.lastSync = data.updated_at || new Date().toISOString(); s.lastError = null;
+    saveState();
+    setSyncStatus('synced', 'Synced ✓');
+    toast('Cloud-Sync erfolgreich');
+  } catch (err) {
+    s.lastError = err.message; saveState();
+    setSyncStatus('error', 'Fehler');
+    toast('Sync-Fehler: ' + err.message, true);
+  }
+}
+
+async function loadFromCloud() {
+  const s = syncSettings();
+  if (!s.email) { toast('Email angeben', true); return; }
+  if (!confirm('Aktuellen lokalen Stand mit Cloud-Version überschreiben?')) return;
+  setSyncStatus('syncing', 'Lade…');
+  try {
+    const resp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(campaign().id)}`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Load failed');
+    if (!data.found) { toast('Keine Cloud-Version gefunden', true); setSyncStatus('', 'Sync'); return; }
+    // Restore but preserve syncSettings (don't overwrite email)
+    const preservedSync = s;
+    Object.assign(state, data.state);
+    state.syncSettings = preservedSync;
+    state.syncSettings.lastSync = data.updated_at;
+    saveState();
+    // Re-init UI
+    switchView(state.currentView || 'prep');
+    setSyncStatus('synced', 'Loaded ✓');
+    toast('Aus Cloud geladen');
+    // Close modal
+    document.querySelector('.sync-modal')?.remove();
+  } catch (err) {
+    syncSettings().lastError = err.message; saveState();
+    setSyncStatus('error', 'Fehler');
+    toast('Load-Fehler: ' + err.message, true);
+  }
+}
+
+function setSyncStatus(cls, text) {
+  const btn = document.getElementById('syncStatusBtn'); if (!btn) return;
+  btn.classList.remove('syncing','synced','error');
+  if (cls) btn.classList.add(cls);
+  document.getElementById('syncStatusText').textContent = text;
+}
+function renderSyncStatus() {
+  const s = syncSettings();
+  if (!s.email) return setSyncStatus('', 'Sync');
+  if (s.lastError) return setSyncStatus('error', 'Fehler');
+  if (s.lastSync) {
+    const ago = Date.now() - new Date(s.lastSync).getTime();
+    const minutes = Math.floor(ago / 60000);
+    return setSyncStatus('synced', minutes < 1 ? 'Synced ✓' : `Synced ${minutes}min`);
+  }
+  setSyncStatus('', 'Sync');
+}
+
+// Auto-sync debouncer — overrides saveState to also trigger cloud save when autoSync is on
+const originalSaveState = saveState;
+saveState = function() {
+  originalSaveState.apply(this, arguments);
+  const s = syncSettings();
+  if (s.autoSync && s.email && !syncInProgress) {
+    clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+      syncInProgress = true;
+      syncNow().finally(() => { syncInProgress = false; });
+    }, 3000);  // 3s debounce after last change
+  }
+};
+
+// ═══════════ AUTO-RECAP GENERATOR ═══════════
+async function generateRecapFromLog() {
+  const sessions = campaign().sessions || [];
+  const currentSession = sessions[state.viewingSessionIdx];
+  if (!currentSession) { toast('Keine Session ausgewählt', true); return; }
+
+  // Gather all log entries from all locations (most are tied to current-session work)
+  const logs = [];
+  Object.values(campaign().locations).forEach(loc => {
+    if (loc.log && loc.log.trim()) logs.push(`**${loc.name}:**\n${loc.log}`);
+  });
+  if (!logs.length) { toast('Keine Session-Logs vorhanden. Quick-Notes während der Session nutzen.', true); return; }
+
+  const textarea = document.getElementById('recapTextarea');
+  if (textarea) { textarea.disabled = true; textarea.value = 'KI schreibt Recap aus Session-Log…'; }
+
+  try {
+    const prompt = `Schreibe einen Session-Recap für "${currentSession.title || 'Session'}" basierend auf diesen Live-Notizen des DMs während der Session. Der Recap soll als kohärenter 3-5 Satz Narrativ-Text die wichtigsten Events zusammenfassen, zum Vorlesen am Anfang der nächsten Session geeignet. Schreibe im Präteritum, atmosphärisch. Antworte AUSSCHLIESSLICH mit dem Recap — kein Vorwort:\n\n${logs.join('\n\n')}`;
+
+    const resp = await fetch(`${API_BASE}/api/dm-chat`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    let text = '';
+    if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
+    else if (typeof data.content === 'string') text = data.content;
+    text = text.replace(/^["„"]|["""]$/g, '').trim();
+    if (!text) throw new Error('Leere Antwort');
+
+    currentSession.recap = text; saveState();
+    renderSessionLocation();
+    toast('✨ Recap aus Log generiert');
+  } catch (err) {
+    toast('Recap-Fehler: ' + err.message, true);
+    if (textarea) { textarea.disabled = false; textarea.value = currentSession.recap || ''; }
+  }
+}
+
+// ═══════════ MOMENT → ENDOCRAFT CARD ═══════════
+// Takes a session moment (from logs or quick note), sends DM to EndoCraft's card creation
+// flow with pre-filled context. The magic is: DM-Studio provides structured data that
+// EndoCraft's card factory normally has to guess from free-text input.
+function turnMomentIntoCard(momentText) {
+  const loc = currentLoc();
+  const pcs = state.characters.filter(c => c.type === 'pc');
+  // Build a prompt-ready text combining moment + location + party context
+  const storyText = `${momentText}\n\nOrt: ${loc?.name || 'unbekannt'}. Party: ${pcs.map(c => c.name + ' (' + c.race + ' ' + c.class + ')').join(', ')}.`;
+  const encoded = encodeURIComponent(storyText);
+  window.open(`https://endocraft.app/session/?story=${encoded}&source=dm-studio`, '_blank');
+  toast('→ EndoCraft öffnet sich mit vorausgefülltem Moment');
+  plausibleTrack('DMStudio · Moment to Card', { location: state.currentLocationId });
+}
 function exportJSON() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -2765,6 +3098,30 @@ function exportJSON() {
 renderCampaignMeta();
 switchView(state.currentView || 'prep');
 renderChat('prep'); renderChat('session');
+renderSyncStatus();
+initAuthState();  // Supabase Google OAuth — no-op if config missing
+
+// On load — if sync email configured, check if cloud version is newer than local
+(async function checkCloudOnLoad() {
+  const s = syncSettings();
+  if (!s.email) return;
+  try {
+    const resp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(campaign().id)}`);
+    const data = await resp.json();
+    if (!data.found) return;
+    const cloudTs = new Date(data.updated_at).getTime();
+    const localTs = s.lastSync ? new Date(s.lastSync).getTime() : 0;
+    if (cloudTs > localTs + 2000) {
+      const minutes = Math.floor((Date.now() - cloudTs) / 60000);
+      if (confirm(`Neuere Cloud-Version gefunden (${minutes < 1 ? 'gerade eben' : minutes + ' min'} alt). Jetzt laden?`)) {
+        await loadFromCloud();
+      }
+    }
+  } catch (e) { /* silent — no cloud, no sync, no problem */ }
+})();
+
+// Update relative sync status every 30s (keeps "Synced 2min" badge live)
+setInterval(renderSyncStatus, 30000);
 </script>
 </body>
 </html>
