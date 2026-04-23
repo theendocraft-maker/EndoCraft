@@ -225,20 +225,56 @@ body{
 .field-imgprompt{min-height:80px;font-size:12px;font-family:'JetBrains Mono',monospace;}
 
 /* ═══════ CHAT COMPONENT (shared across views) ═══════ */
-.chat-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;min-width:0;}
-.chat-scroll{
-  flex:1;overflow-y:auto;overflow-x:hidden;min-width:0;
-  padding:10px 8px 4px;display:flex;flex-direction:column;gap:14px;
-  scroll-behavior:smooth;
+/* CHAT-CONTAINMENT — flex-child min-width:0 overall, alle Inhalte strikt begrenzt */
+.session-rt-pane{min-width:0;width:100%;}
+.session-rt-pane.active[data-srt="chat"]{display:flex;flex-direction:column;min-width:0;width:100%;overflow:hidden;}
+
+.chat-panel{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;min-height:0;min-width:0;width:100%;
+  contain:layout;  /* Prevent content from expanding parent */
 }
-.chat-scroll,
-.chat-scroll *{word-break:break-word;overflow-wrap:anywhere;max-width:100%;}
-.chat-msg{min-width:0;max-width:100%;}
-.chat-msg-body{min-width:0;max-width:calc(100% - 36px);word-break:break-word;overflow-wrap:anywhere;}
-.chat-msg-content{min-width:0;overflow-wrap:anywhere;}
-.chat-msg-content pre,.chat-msg-content code{white-space:pre-wrap;word-break:break-word;max-width:100%;overflow-x:auto;}
-.img-embed{max-width:100%;min-width:0;}
-.img-embed img{max-width:100%;height:auto;}
+.chat-scroll{
+  flex:1;min-height:0;min-width:0;width:100%;
+  overflow-y:auto;overflow-x:hidden;
+  padding:10px 8px 4px;
+  display:flex;flex-direction:column;gap:14px;
+  scroll-behavior:smooth;
+  box-sizing:border-box;
+}
+
+/* Alles im Chat: harte Breiten-Begrenzung + Wortumbruch erzwingen */
+.chat-scroll *{
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box;
+}
+.chat-scroll{overflow-wrap:anywhere;word-break:break-word;}
+.chat-msg{display:flex;min-width:0;width:100%;gap:12px;align-items:flex-start;}
+.chat-msg-av{flex-shrink:0;}
+.chat-msg-body{
+  flex:1 1 0;min-width:0;width:auto;
+  overflow:hidden;
+  word-break:break-word;overflow-wrap:anywhere;
+}
+.chat-msg-content{min-width:0;overflow-wrap:anywhere;word-break:break-word;}
+.chat-msg-content p,
+.chat-msg-content div,
+.chat-msg-content li,
+.chat-msg-content blockquote{overflow-wrap:anywhere;word-break:break-word;}
+.chat-msg-content pre,.chat-msg-content code{
+  white-space:pre-wrap;word-break:break-word;
+  max-width:100%;overflow-x:auto;
+}
+.chat-msg-content a{word-break:break-all;}
+
+/* Embedded content im Chat */
+.img-embed{width:100%;min-width:0;margin:10px 0;}
+.img-embed img{width:100%;max-width:100%;height:auto;display:block;}
+.img-embed .cap{min-width:0;overflow:hidden;}
+.img-embed .cap-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.read-aloud-embed{width:100%;min-width:0;overflow-wrap:anywhere;}
+.img-loading{width:100%;min-width:0;}
 .chat-empty{padding:20px 10px;text-align:center;color:var(--text-dim);font-size:12px;font-style:italic;line-height:1.6;}
 .chat-empty strong{display:block;color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;margin-bottom:8px;font-style:normal;font-weight:700;}
 
@@ -1083,6 +1119,51 @@ body{
 #syncStatusBtn.synced{color:var(--forest);}
 #syncStatusBtn.error{color:var(--crimson);}
 
+/* ═══════ RULES MODAL — Multi-Tab SRD Browser ═══════ */
+.rules-tabs{
+  display:flex;gap:2px;padding:0 22px;border-bottom:1px solid var(--border);background:var(--surface-2);
+  overflow-x:auto;flex-shrink:0;
+}
+.rules-tab{
+  flex:0 0 auto;padding:11px 16px;background:transparent;border:none;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--text-dim);
+  display:flex;align-items:center;gap:7px;border-bottom:2px solid transparent;
+  transition:all .15s;text-transform:uppercase;white-space:nowrap;
+}
+.rules-tab:hover{color:var(--ink);background:rgba(168,35,24,0.04);}
+.rules-tab.active{color:var(--crimson);border-bottom-color:var(--crimson);background:var(--surface);}
+.rules-tab-count{background:rgba(168,35,24,0.12);color:var(--crimson);font-size:10px;padding:2px 7px;border-radius:10px;letter-spacing:.5px;}
+.rules-tab.active .rules-tab-count{background:var(--crimson);color:#fff;}
+
+.rules-body{
+  flex:1;overflow-y:auto;padding:14px 22px 22px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;
+  align-content:start;
+}
+.rules-card{
+  background:#fbf6e6;border:1px solid #d9c89a;border-radius:4px;
+  padding:14px 18px;box-shadow:0 1px 3px rgba(91,61,24,0.06);
+  display:flex;flex-direction:column;gap:6px;
+}
+.rules-card-h{
+  font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--crimson);
+  letter-spacing:.5px;text-transform:uppercase;
+  padding-bottom:6px;border-bottom:1px solid rgba(168,35,24,0.2);
+}
+.rules-card-b{
+  font-family:'EB Garamond',Georgia,serif;font-size:15px;line-height:1.6;color:var(--ink);font-style:italic;
+}
+.rules-card-meta{
+  display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--text-dim);
+  font-family:'DM Sans',sans-serif;font-style:normal;line-height:1.5;padding:4px 0;
+  border-bottom:1px dotted var(--border);
+}
+.rules-card-meta strong{color:var(--ink);font-weight:700;}
+.rules-spell{grid-column:span 2;}
+@media (max-width:900px){
+  .rules-spell{grid-column:span 1;}
+}
+
 /* ═══════ SRD MONSTER PICKER MODAL ═══════ */
 .srd-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
 .srd-modal-backdrop{position:absolute;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(4px);}
@@ -1494,6 +1575,121 @@ const DEFAULT_CAMPAIGN = {
     'vallaki-blue-water': { name: 'Blue Water Inn', meta: 'Vallaki · Safe hub', imagePrompt: '', readAloud: '', dmNote: 'Rumours, Ismark, rest.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
   }
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// D&D 5e SRD 5.1 CONTENT LIBRARY
+// Alle Inhalte unter Creative Commons CC BY 4.0 — Wizards of the Coast
+// https://dnd.wizards.com/resources/systems-reference-document
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── COMBAT ACTIONS ─────────────────────────────────────────────────────────
+const SRD_ACTIONS = [
+  { name: 'Angriff (Attack)', short: 'Eine Waffenattacke oder unbewaffneter Schlag. Mehrfache Attacken bei Extra-Attack-Feature.' },
+  { name: 'Zaubern (Cast a Spell)', short: 'Spruch wirken entsprechend der Casting-Time des Spells.' },
+  { name: 'Dash', short: 'Zusätzliche Bewegung gleich deiner Geschwindigkeit in diesem Zug.' },
+  { name: 'Disengage', short: 'Bewegung provoziert für den Rest des Zugs KEINE Opportunity Attacks.' },
+  { name: 'Dodge', short: 'Bis Start deines nächsten Zugs: Angriffe gegen dich mit Nachteil, DEX-Saves mit Vorteil. Nur wirksam wenn du nicht incapacitated oder Geschwindigkeit 0.' },
+  { name: 'Help', short: 'Hilf einem Ally: nächster Ability Check oder Attack gegen Target in 5 ft. hat Vorteil (bis Start deines nächsten Zugs).' },
+  { name: 'Hide', short: 'DEX (Stealth) Check — bei Erfolg gegen passive Perception versteckt. Verloren wenn du angreifst oder Zauber wirkst (andere Regeln für bestimmte Features).' },
+  { name: 'Ready', short: 'Bereite eine Reaktion auf ein Trigger vor. Trigger festlegen, Action oder Movement reservieren. Action nutzt deine Reaction.' },
+  { name: 'Search', short: 'WIS (Perception) oder INT (Investigation) Check — etwas suchen.' },
+  { name: 'Use an Object', short: 'Zweite Objekt-Interaktion pro Zug (die erste ist kostenlos). Z.B. Trank trinken, Tür öffnen, Fackel anzünden.' },
+  { name: 'Grapple', short: 'Special Attack statt Angriff: STR (Athletics) vs STR (Athletics) oder DEX (Acrobatics) des Ziels. Erfolg: Target grappled (Speed 0).' },
+  { name: 'Shove', short: 'Special Attack statt Angriff: STR (Athletics) vs STR (Athletics) oder DEX (Acrobatics). Erfolg: 5 ft. wegschieben ODER prone.' },
+  { name: 'Two-Weapon Fighting', short: 'Mit Bonus Action eine zusätzliche Light-Waffe-Attacke mit off-hand. Kein Ability-Mod auf Damage (außer negativ).' },
+  { name: 'Improvise Action', short: 'DM-Ruling nötig. Alles was nicht in der Liste steht — DM entscheidet ob Check/Save nötig ist.' }
+];
+
+// ─── REACTIONS ─────────────────────────────────────────────────────────────
+const SRD_REACTIONS = [
+  { name: 'Opportunity Attack', short: 'Wenn ein feindliches Ziel sich aus deiner Reichweite wegbewegt (ohne Disengage), ein Melee-Weapon-Attack als Reaction.' },
+  { name: 'Ready-Action auslösen', short: 'Wenn dein vorher gesetzter Trigger eintritt, Reaction nutzen für die reservierte Action.' },
+  { name: 'Zauber mit Casting Time "1 Reaction"', short: 'Z.B. Counterspell, Shield, Hellish Rebuke, Feather Fall.' }
+];
+
+// ─── COMMON RULES ──────────────────────────────────────────────────────────
+const SRD_RULES = [
+  { name: 'Advantage / Disadvantage', short: 'Zweimal würfeln — höheren (Advantage) bzw. niedrigeren (Disadvantage) nehmen. Mehrere Sources stacken NICHT. Adv + Disadv = neutralisieren sich komplett.' },
+  { name: 'Proficiency Bonus', short: 'Level 1-4: +2 · Level 5-8: +3 · Level 9-12: +4 · Level 13-16: +5 · Level 17-20: +6. Addiert zu Attack-Roll, Saves, Skill Checks wo prof.' },
+  { name: 'Death Saving Throws', short: 'Bei 0 HP, eigener Zug: d20. 10+ = Success. 3 Successes = stabil. 3 Failures = tot. 1 = 2 Failures. 20 = sofort 1 HP. Schaden bei 0 HP = 1 Failure (Crit = 2).' },
+  { name: 'Concentration', short: 'Manche Spells verlangen Concentration. Bei Schaden: CON Save DC 10 oder halber Schaden (je höher). Fail = Spell endet. Nur 1 Concentration-Spell gleichzeitig.' },
+  { name: 'Cover', short: 'Half Cover: +2 AC & DEX-Saves. Three-Quarters: +5 AC & DEX-Saves. Total Cover: kann nicht als Ziel gewählt werden.' },
+  { name: 'Resting · Short Rest', short: '1 Stunde leichter Aktivität. Hit Dice ausgeben für HP-Heilung. Manche Features recharge (Warlock-Slots, Action Surge, etc.).' },
+  { name: 'Resting · Long Rest', short: '8 Stunden, max 2h leichte Aktivität. Alle HP zurück. Alle Spell-Slots + Features zurück. Max 1 Long Rest pro 24h.' },
+  { name: 'Jumping', short: 'Long: Anlauf 10 ft. = STR score in feet. Stehend: halb so weit. Hoch: 3 + STR-Mod feet (Anlauf). Stehend: halb.' },
+  { name: 'Climbing / Swimming', short: 'Jedes Foot Movement kostet extra 1 Foot Speed (Difficult Terrain). Athletics-Check DC nach DM bei schwierigen Oberflächen.' },
+  { name: 'Falling', short: '1d6 bludgeoning Damage pro 10 ft. Fall. Max 20d6. Landet prone außer bewusst gestolpert.' },
+  { name: 'Suffocating', short: 'Atem anhalten = 1 + CON-Mod Minuten (min 30 sec). Danach 0 HP am Ende des nächsten Zugs.' },
+  { name: 'Object AC & HP', short: 'Tiny Object: AC 17. Small: 15. Medium: 13. Large: 11. Huge: 9. Gargantuan: 7. HP je nach Material.' }
+];
+
+// ─── SKILLS ────────────────────────────────────────────────────────────────
+const SRD_SKILLS = [
+  { name: 'Acrobatics (DEX)', short: 'Balancieren, schwierige Bewegungen, aus Grapple entkommen (alternative zu Athletics).' },
+  { name: 'Animal Handling (WIS)', short: 'Tiere beruhigen, Intentionen erkennen, Reiten.' },
+  { name: 'Arcana (INT)', short: 'Wissen über Zauber, magische Gegenstände, mystische Symbole, planare Wesen.' },
+  { name: 'Athletics (STR)', short: 'Klettern, Springen, Schwimmen unter Schwierigkeit. Grapple/Shove-Checks.' },
+  { name: 'Deception (CHA)', short: 'Lügen, Täuschungen, Bluffs. Gegen Insight.' },
+  { name: 'History (INT)', short: 'Historische Ereignisse, legendäre Personen, alte Königreiche, verlorene Zivilisationen.' },
+  { name: 'Insight (WIS)', short: 'Absichten, Lügen erkennen, Persönlichkeit einschätzen. Gegen Deception.' },
+  { name: 'Intimidation (CHA)', short: 'Jemand durch offene Feindseligkeit/Drohungen beeinflussen.' },
+  { name: 'Investigation (INT)', short: 'Schlussfolgerungen aus Hinweisen, versteckte Objekte finden, Rätsel lösen.' },
+  { name: 'Medicine (WIS)', short: 'Krankheit diagnostizieren, Wunden versorgen, Gift identifizieren, stabilisieren bei 0 HP.' },
+  { name: 'Nature (INT)', short: 'Wissen über Terrain, Pflanzen, Tiere, Wetter, natürliche Zyklen.' },
+  { name: 'Perception (WIS)', short: 'Etwas wahrnehmen (Sehen, Hören, andere Sinne). Passive Perception = 10 + WIS-Mod + Prof.' },
+  { name: 'Performance (CHA)', short: 'Musik, Tanz, Theater, Storytelling — Publikum unterhalten.' },
+  { name: 'Persuasion (CHA)', short: 'Jemand durch Taktgefühl, Freundlichkeit oder gute Argumente beeinflussen.' },
+  { name: 'Religion (INT)', short: 'Wissen über Gottheiten, Riten, Hierarchien, heilige Symbole, Kulte.' },
+  { name: 'Sleight of Hand (DEX)', short: 'Taschendiebstahl, Gegenstände verstecken, Manipulation/Fingerfertigkeit, Diebeswerkzeug nutzen.' },
+  { name: 'Stealth (DEX)', short: 'Sich verstecken, unbemerkt bewegen. Gegen passive Perception.' },
+  { name: 'Survival (WIS)', short: 'Spuren lesen, Tiere jagen, durch Wildnis führen, Gefahren erkennen, Wetter vorhersagen.' }
+];
+
+// ─── SRD 5.1 SPELLS (Auswahl der häufigsten — kann inkrementell erweitert werden) ─
+// Level 0 (Cantrips) + Level 1-3 = 90% aller Session-Zauber
+const SRD_SPELLS = [
+  // CANTRIPS
+  { name: 'Acid Splash', level: 0, school: 'Conjuration', time: '1 Action', range: '60 ft.', comp: 'V, S', duration: 'Instant', classes: 'Sorcerer, Wizard', short: 'Säure-Kugel auf 1 Kreatur (oder 2 in 5 ft. Radius). DEX Save DC oder 1d6 acid. 5th-level: 2d6, 11th: 3d6, 17th: 4d6.' },
+  { name: 'Eldritch Blast', level: 0, school: 'Evocation', time: '1 Action', range: '120 ft.', comp: 'V, S', duration: 'Instant', classes: 'Warlock', short: 'Strahl force damage. Ranged Spell Attack, 1d10. 5th-level: 2 beams, 11th: 3, 17th: 4.' },
+  { name: 'Fire Bolt', level: 0, school: 'Evocation', time: '1 Action', range: '120 ft.', comp: 'V, S', duration: 'Instant', classes: 'Sorcerer, Wizard', short: 'Ranged Spell Attack, 1d10 fire. Scaled: 2d10 (5), 3d10 (11), 4d10 (17). Zündet brennbare Objekte.' },
+  { name: 'Guidance', level: 0, school: 'Divination', time: '1 Action', range: 'Touch', comp: 'V, S', duration: '1 min (Concentration)', classes: 'Cleric, Druid', short: 'Ziel bekommt 1x +1d4 auf Ability Check seiner Wahl. Willing creature.' },
+  { name: 'Mage Hand', level: 0, school: 'Conjuration', time: '1 Action', range: '30 ft.', comp: 'V, S', duration: '1 min', classes: 'Bard, Sorcerer, Warlock, Wizard', short: 'Schwebende Hand in 30 ft. Kann max 10 lb heben, Türen öffnen, Fackeln halten. Keine Angriffe.' },
+  { name: 'Minor Illusion', level: 0, school: 'Illusion', time: '1 Action', range: '30 ft.', comp: 'S, M', duration: '1 min', classes: 'Bard, Sorcerer, Warlock, Wizard', short: 'Sound ODER Bild (max 5-ft-Würfel). INT (Investigation) vs Spell-DC um Illusion zu erkennen.' },
+  { name: 'Prestidigitation', level: 0, school: 'Transmutation', time: '1 Action', range: '10 ft.', comp: 'V, S', duration: 'bis 1h', classes: 'Bard, Sorcerer, Warlock, Wizard', short: 'Kleine magische Tricks: Geschmack/Geruch ändern, Kerze entzünden/löschen, klein sauber/schmutzig machen, Symbol/Bild bilden für 1h.' },
+  { name: 'Sacred Flame', level: 0, school: 'Evocation', time: '1 Action', range: '60 ft.', comp: 'V, S', duration: 'Instant', classes: 'Cleric', short: 'Ziel macht DEX Save (kein Benefit durch Cover). Fail: 1d8 radiant. Skalierung wie andere Cantrips.' },
+  { name: 'Thornwhip', level: 0, school: 'Transmutation', time: '1 Action', range: '30 ft.', comp: 'V, S, M', duration: 'Instant', classes: 'Druid', short: 'Melee Spell Attack 30 ft. Hit: 1d6 piercing + Target Large or smaller wird 10 ft. zum Caster gezogen.' },
+
+  // LEVEL 1
+  { name: 'Bless', level: 1, school: 'Enchantment', time: '1 Action', range: '30 ft.', comp: 'V, S, M', duration: '1 min (Concentration)', classes: 'Cleric, Paladin', short: 'Bis zu 3 Kreaturen: +1d4 auf Attacks und Saves. Upcast: 1 extra Target pro Slot-Level.' },
+  { name: 'Cure Wounds', level: 1, school: 'Evocation', time: '1 Action', range: 'Touch', comp: 'V, S', duration: 'Instant', classes: 'Bard, Cleric, Druid, Paladin, Ranger', short: 'Ziel heilt 1d8 + Spellcasting-Mod HP. Nicht bei Undead/Constructs. Upcast: +1d8 pro extra Slot.' },
+  { name: 'Detect Magic', level: 1, school: 'Divination', time: '1 Action (Ritual)', range: 'Self', comp: 'V, S', duration: '10 min (Concentration)', classes: 'Bard, Cleric, Druid, Paladin, Ranger, Sorcerer, Wizard', short: 'Spürt magische Aura innerhalb 30 ft. Action nötig um Schule zu identifizieren.' },
+  { name: 'Faerie Fire', level: 1, school: 'Evocation', time: '1 Action', range: '60 ft.', comp: 'V', duration: '1 min (Concentration)', classes: 'Bard, Druid', short: '20-ft-Würfel. DEX Save oder alle Objekte/Kreaturen darin leuchten. Attacks gegen sie haben Advantage. Unsichtbare Ziele sichtbar.' },
+  { name: 'Healing Word', level: 1, school: 'Evocation', time: '1 Bonus Action', range: '60 ft.', comp: 'V', duration: 'Instant', classes: 'Bard, Cleric, Druid', short: 'Ziel heilt 1d4 + Mod HP. Bonus Action! Upcast: +1d4 pro Level.' },
+  { name: 'Mage Armor', level: 1, school: 'Abjuration', time: '1 Action', range: 'Touch', comp: 'V, S, M', duration: '8h', classes: 'Sorcerer, Wizard', short: 'Willing creature ohne Rüstung: AC = 13 + DEX-Mod. Endet wenn Rüstung angelegt oder Dismiss.' },
+  { name: 'Magic Missile', level: 1, school: 'Evocation', time: '1 Action', range: '120 ft.', comp: 'V, S', duration: 'Instant', classes: 'Sorcerer, Wizard', short: '3 Pfeile à 1d4+1 force. Auto-Hit (kein Attack Roll, kein Save). Upcast: +1 Pfeil pro Slot.' },
+  { name: 'Shield', level: 1, school: 'Abjuration', time: '1 Reaction', range: 'Self', comp: 'V, S', duration: '1 Runde', classes: 'Sorcerer, Wizard', short: 'Reaction bei Hit oder Magic Missile. +5 AC bis zum Beginn deines nächsten Zugs, immun gegen Magic Missile.' },
+  { name: 'Sleep', level: 1, school: 'Enchantment', time: '1 Action', range: '90 ft.', comp: 'V, S, M', duration: '1 min', classes: 'Bard, Sorcerer, Wizard', short: '5d8 HP Pool. Kreaturen im 20-ft-Radius, niedrigste HP zuerst, schlafen ein wenn HP ≤ Pool. Upcast: +2d8 pro Slot.' },
+  { name: 'Thunderwave', level: 1, school: 'Evocation', time: '1 Action', range: '15-ft Würfel (Self)', comp: 'V, S', duration: 'Instant', classes: 'Bard, Druid, Sorcerer, Wizard', short: 'CON Save. Fail: 2d8 thunder + 10 ft. weg. Upcast: +1d8 pro Level. Unbefestigte Objekte werden weggestoßen.' },
+
+  // LEVEL 2
+  { name: 'Hold Person', level: 2, school: 'Enchantment', time: '1 Action', range: '60 ft.', comp: 'V, S, M', duration: '1 min (Concentration)', classes: 'Bard, Cleric, Druid, Sorcerer, Warlock, Wizard', short: 'Humanoid. WIS Save oder paralyzed. Save am Ende jedes Zugs. Upcast: +1 Humanoid pro Slot (in 30 ft. zueinander).' },
+  { name: 'Invisibility', level: 2, school: 'Illusion', time: '1 Action', range: 'Touch', comp: 'V, S, M', duration: '1h (Concentration)', classes: 'Bard, Sorcerer, Warlock, Wizard', short: 'Ziel + getragene Gegenstände unsichtbar. Endet bei Attack oder Zauber. Upcast: +1 Ziel pro Slot.' },
+  { name: 'Misty Step', level: 2, school: 'Conjuration', time: '1 Bonus Action', range: 'Self', comp: 'V', duration: 'Instant', classes: 'Sorcerer, Warlock, Wizard', short: 'Teleport bis zu 30 ft. an unbesetzte Stelle die du sehen kannst.' },
+  { name: 'Moonbeam', level: 2, school: 'Evocation', time: '1 Action', range: '120 ft.', comp: 'V, S, M', duration: '1 min (Concentration)', classes: 'Druid', short: '5-ft-Radius Strahl, 40 ft. hoch. CON Save. Fail: 2d10 radiant (half on save). Shapechangers Disadvantage, Fail = zurück in ursprüngliche Form + 2d10. Bewegung als Action: 60 ft.' },
+  { name: 'Scorching Ray', level: 2, school: 'Evocation', time: '1 Action', range: '120 ft.', comp: 'V, S', duration: 'Instant', classes: 'Sorcerer, Wizard', short: '3 Strahlen, je Ranged Spell Attack, 2d6 fire. Können auf verschiedene Ziele verteilt werden. Upcast: +1 Strahl pro Slot.' },
+  { name: 'Spiritual Weapon', level: 2, school: 'Evocation', time: '1 Bonus Action', range: '60 ft.', comp: 'V, S', duration: '1 min', classes: 'Cleric', short: 'Erschafft flotende Waffe. Melee Spell Attack, 1d8 + Spellcasting-Mod force damage. Bonus Action pro Runde: bewegen 20 ft. + Attack. Upcast: +1d8 pro 2 Level.' },
+  { name: 'Web', level: 2, school: 'Conjuration', time: '1 Action', range: '60 ft.', comp: 'V, S, M', duration: '1h (Concentration)', classes: 'Sorcerer, Wizard', short: '20-ft-Würfel Webs. DEX Save bei Betreten/Ende des Zugs — Fail = restrained. Action für STR Check DC gegen Spell-DC um rauszukommen. Brennbar: 2d4 fire für alle drin + Web zerstört.' },
+
+  // LEVEL 3
+  { name: 'Counterspell', level: 3, school: 'Abjuration', time: '1 Reaction', range: '60 ft.', comp: 'S', duration: 'Instant', classes: 'Sorcerer, Warlock, Wizard', short: 'Reaction wenn du einen Zauber siehst der gecastet wird. Level ≤3: automatisch negiert. Level 4+: Ability Check DC 10 + Spell-Level gegen deinen Spellcasting Ability.' },
+  { name: 'Dispel Magic', level: 3, school: 'Abjuration', time: '1 Action', range: '120 ft.', comp: 'V, S', duration: 'Instant', classes: 'Bard, Cleric, Druid, Paladin, Sorcerer, Warlock, Wizard', short: 'Alle Spells auf Target Level 3 oder niedriger enden automatisch. Level 4+: DC 10 + Spell-Level.' },
+  { name: 'Fireball', level: 3, school: 'Evocation', time: '1 Action', range: '150 ft.', comp: 'V, S, M', duration: 'Instant', classes: 'Sorcerer, Wizard', short: '20-ft-Radius Sphere. DEX Save. Fail: 8d6 fire, half on save. Upcast: +1d6 pro Slot. Zündet brennbare Objekte.' },
+  { name: 'Fly', level: 3, school: 'Transmutation', time: '1 Action', range: 'Touch', comp: 'V, S, M', duration: '10 min (Concentration)', classes: 'Sorcerer, Warlock, Wizard', short: 'Willing creature bekommt Fly Speed 60 ft. Upcast: +1 Ziel pro Slot.' },
+  { name: 'Haste', level: 3, school: 'Transmutation', time: '1 Action', range: '30 ft.', comp: 'V, S, M', duration: '1 min (Concentration)', classes: 'Sorcerer, Wizard', short: 'Willing creature: Speed x2, +2 AC, Advantage auf DEX Saves, 1 extra Action (nur Attack, Dash, Disengage, Hide, Use Object). Bei Spell-Ende: 1 Runde keine Actions/Movement (lethargy).' },
+  { name: 'Lightning Bolt', level: 3, school: 'Evocation', time: '1 Action', range: '100 ft.', comp: 'V, S, M', duration: 'Instant', classes: 'Sorcerer, Wizard', short: '100-ft-Linie, 5 ft. breit. DEX Save. Fail: 8d6 lightning, half on save. Upcast: +1d6 pro Slot.' },
+  { name: 'Revivify', level: 3, school: 'Necromancy', time: '1 Action', range: 'Touch', comp: 'V, S, M (300 gp diamond)', duration: 'Instant', classes: 'Cleric, Paladin', short: 'Kreatur die <1 min tot ist zurück mit 1 HP. Nicht bei Old Age, missing vital organs, oder wenn Seele will nicht.' },
+  { name: 'Spirit Guardians', level: 3, school: 'Conjuration', time: '1 Action', range: 'Self (15 ft.)', comp: 'V, S, M', duration: '10 min (Concentration)', classes: 'Cleric', short: 'Geister um dich. Feinde im 15-ft-Radius: halbe Speed, WIS Save oder 3d8 radiant/necrotic. Upcast: +1d8 pro Slot über 3.' }
+];
 
 // D&D 5e SRD 5.1 Conditions (Creative Commons CC BY 4.0)
 // Source: https://dnd.wizards.com/resources/systems-reference-document
@@ -3358,47 +3554,108 @@ function newCharacter() {
   renderChars();
 }
 
-// Conditions Quick-Reference Modal — zeigt alle SRD 5.1 Zustände mit Regel-Text
-function openConditionsModal() {
-  const existing = document.querySelector('.cond-modal');
+// SRD 5.1 Rules Browser Modal — Multi-Tab mit Zuständen, Zaubern, Aktionen, Regeln, Skills
+const RULES_TABS = [
+  { id: 'conditions', label: 'Zustände',  icon: '🎭', data: () => CONDITIONS,    render: renderCondCard,    count: () => CONDITIONS.length },
+  { id: 'actions',    label: 'Aktionen',  icon: '⚔️', data: () => SRD_ACTIONS,   render: renderRuleCard,    count: () => SRD_ACTIONS.length },
+  { id: 'reactions',  label: 'Reaktionen',icon: '⚡', data: () => SRD_REACTIONS, render: renderRuleCard,    count: () => SRD_REACTIONS.length },
+  { id: 'rules',      label: 'Regeln',    icon: '📜', data: () => SRD_RULES,     render: renderRuleCard,    count: () => SRD_RULES.length },
+  { id: 'skills',     label: 'Skills',    icon: '🎯', data: () => SRD_SKILLS,    render: renderRuleCard,    count: () => SRD_SKILLS.length },
+  { id: 'spells',     label: 'Zauber',    icon: '✨', data: () => SRD_SPELLS,    render: renderSpellCard,   count: () => SRD_SPELLS.length }
+];
+
+function renderCondCard(c) {
+  return `
+    <div class="rules-card" data-search="${escapeAttr((c.name + ' ' + c.desc).toLowerCase())}">
+      <div class="rules-card-h">${escapeHtml(c.name)}</div>
+      <div class="rules-card-b">${escapeHtml(c.desc)}</div>
+    </div>`;
+}
+function renderRuleCard(r) {
+  const searchStr = (r.name + ' ' + (r.short || '') + ' ' + (r.desc || '')).toLowerCase();
+  return `
+    <div class="rules-card" data-search="${escapeAttr(searchStr)}">
+      <div class="rules-card-h">${escapeHtml(r.name)}</div>
+      <div class="rules-card-b">${escapeHtml(r.short || r.desc || '')}</div>
+    </div>`;
+}
+function renderSpellCard(s) {
+  const searchStr = (s.name + ' ' + s.school + ' ' + s.classes + ' ' + s.short).toLowerCase();
+  const levelBadge = s.level === 0 ? 'Cantrip' : `Lvl ${s.level}`;
+  return `
+    <div class="rules-card rules-spell" data-search="${escapeAttr(searchStr)}" data-level="${s.level}">
+      <div class="rules-card-h" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <span>${escapeHtml(s.name)}</span>
+        <span style="font-size:10px;color:var(--gold);background:var(--gold-dim);padding:2px 8px;border-radius:3px;font-weight:700;letter-spacing:1px;">${escapeHtml(levelBadge)}</span>
+      </div>
+      <div class="rules-card-meta">
+        <span><strong>School:</strong> ${escapeHtml(s.school)}</span>
+        <span><strong>Casting:</strong> ${escapeHtml(s.time)}</span>
+        <span><strong>Range:</strong> ${escapeHtml(s.range)}</span>
+        <span><strong>Comp:</strong> ${escapeHtml(s.comp)}</span>
+        <span><strong>Duration:</strong> ${escapeHtml(s.duration)}</span>
+        <span><strong>Classes:</strong> ${escapeHtml(s.classes)}</span>
+      </div>
+      <div class="rules-card-b">${escapeHtml(s.short)}</div>
+    </div>`;
+}
+
+function openConditionsModal(initialTab) {
+  const existing = document.querySelector('.rules-modal');
   if (existing) { existing.remove(); return; }
+  state.rulesActiveTab = initialTab || state.rulesActiveTab || 'conditions';
   const modal = document.createElement('div');
-  modal.className = 'srd-modal cond-modal';
+  modal.className = 'srd-modal rules-modal';
   modal.innerHTML = `
     <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
-    <div class="srd-modal-inner" style="max-width:920px;">
+    <div class="srd-modal-inner" style="max-width:1100px;">
       <div class="srd-modal-h">
         <div>
           <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;">D&D 5e · Systems Reference Document 5.1</div>
-          <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);margin-top:4px;letter-spacing:.5px;text-transform:uppercase;">Zustände · Quick Reference</div>
+          <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--ink);margin-top:4px;letter-spacing:.5px;text-transform:uppercase;">Regel-Referenz</div>
         </div>
-        <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:26px;color:var(--text-dim);cursor:pointer;padding:4px 12px;">×</button>
+        <button onclick="this.closest('.rules-modal').remove()" style="background:transparent;border:none;font-size:26px;color:var(--text-dim);cursor:pointer;padding:4px 12px;">×</button>
       </div>
-      <div style="padding:12px 22px 10px;">
-        <input id="condSearch" type="text" placeholder="Suchen … (Name oder Effekt)" style="width:100%;padding:10px 14px;border:1px solid var(--border-strong);border-radius:6px;background:#fbf6e6;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;" oninput="filterConditions(this.value)">
-      </div>
-      <div class="cond-modal-body" id="condModalBody" style="flex:1;overflow-y:auto;padding:8px 22px 22px;display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;">
-        ${CONDITIONS.map(c => `
-          <div class="cond-ref-card" data-name="${escapeAttr(c.name.toLowerCase())}" data-desc="${escapeAttr(c.desc.toLowerCase())}" style="background:#fbf6e6;border:1px solid #d9c89a;border-radius:4px;padding:14px 18px;box-shadow:0 1px 3px rgba(91,61,24,0.06);">
-            <div style="font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--crimson);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(168,35,24,0.2);">${escapeHtml(c.name)}</div>
-            <div style="font-family:'EB Garamond',Georgia,serif;font-size:15px;line-height:1.6;color:var(--ink);font-style:italic;">${escapeHtml(c.desc)}</div>
-          </div>
+      <div class="rules-tabs">
+        ${RULES_TABS.map(t => `
+          <button class="rules-tab ${state.rulesActiveTab === t.id ? 'active' : ''}" onclick="switchRulesTab('${t.id}')">
+            <span>${t.icon}</span><span>${t.label}</span><span class="rules-tab-count">${t.count()}</span>
+          </button>
         `).join('')}
       </div>
-      <div class="srd-modal-foot">SRD 5.1 · CC BY 4.0 Wizards of the Coast · ${CONDITIONS.length} Zustände</div>
+      <div style="padding:12px 22px 10px;">
+        <input id="rulesSearch" type="text" placeholder="Suchen … (Name oder Effekt)" style="width:100%;padding:10px 14px;border:1px solid var(--border-strong);border-radius:6px;background:#fbf6e6;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;" oninput="filterRules(this.value)">
+      </div>
+      <div class="rules-body" id="rulesModalBody">${renderRulesTabContent(state.rulesActiveTab)}</div>
+      <div class="srd-modal-foot">SRD 5.1 · CC BY 4.0 Wizards of the Coast</div>
     </div>
   `;
   document.body.appendChild(modal);
-  setTimeout(() => document.getElementById('condSearch')?.focus(), 50);
+  setTimeout(() => document.getElementById('rulesSearch')?.focus(), 50);
 }
 
-function filterConditions(query) {
+function renderRulesTabContent(tabId) {
+  const tab = RULES_TABS.find(t => t.id === tabId); if (!tab) return '';
+  const data = tab.data();
+  return data.map(item => tab.render(item)).join('');
+}
+
+function switchRulesTab(tabId) {
+  state.rulesActiveTab = tabId; saveState();
+  document.querySelectorAll('.rules-tab').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${tabId}'`));
+  });
+  const body = document.getElementById('rulesModalBody');
+  if (body) body.innerHTML = renderRulesTabContent(tabId);
+  const search = document.getElementById('rulesSearch');
+  if (search) search.value = '';
+}
+
+function filterRules(query) {
   const q = String(query || '').trim().toLowerCase();
-  document.querySelectorAll('.cond-ref-card').forEach(card => {
-    const name = card.dataset.name;
-    const desc = card.dataset.desc;
-    const show = !q || name.includes(q) || desc.includes(q);
-    card.style.display = show ? '' : 'none';
+  document.querySelectorAll('.rules-card').forEach(card => {
+    const searchStr = card.dataset.search || '';
+    card.style.display = !q || searchStr.includes(q) ? '' : 'none';
   });
 }
 
