@@ -528,6 +528,14 @@ body{
 .session-rt-head{padding:12px 16px 8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;flex-shrink:0;}
 .session-rt-scene{padding:0 16px 16px;}
 .session-rt-music{padding:4px 10px 16px;overflow-y:auto;flex:1;}
+.music-player-wrap{margin:0 6px 12px;border-radius:8px;overflow:hidden;box-shadow:var(--shadow-md);}
+.music-player-wrap iframe{width:100%;aspect-ratio:16/9;border:none;background:#000;display:block;}
+.music-item.playing{background:rgba(168,35,24,0.1);border-left:3px solid var(--crimson);padding-left:7px;}
+.music-actions{display:flex;gap:4px;flex-shrink:0;}
+.music-action-btn{background:transparent;border:1px solid transparent;cursor:pointer;color:var(--text-dim);padding:4px 8px;font-size:13px;border-radius:5px;transition:all .12s;font-family:inherit;}
+.music-action-btn:hover{color:var(--crimson);background:rgba(168,35,24,0.08);border-color:rgba(168,35,24,0.2);}
+.music-info{cursor:pointer;}
+.music-url-badge{display:inline-block;background:rgba(168,35,24,0.15);color:var(--crimson);padding:1px 6px;border-radius:3px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;font-weight:700;margin-left:4px;}
 .session-rt-chat-head{padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .session-rt-chat-head strong{color:var(--accent);font-weight:700;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;}
 .music-item{padding:6px 10px;display:flex;gap:9px;align-items:center;cursor:pointer;border-radius:6px;transition:background .1s;}
@@ -1997,14 +2005,18 @@ W15 Teleportationskreis · 30s-Entscheidung<br>
           </div>
           <div class="briefing-card-b">
             ${(loc?.music || []).length
-              ? loc.music.map(m => `
-                <div class="briefing-music-row">
-                  <div class="briefing-music-ico">${m.icon || '🎵'}</div>
-                  <div style="flex:1;">
-                    <div class="briefing-music-title">${escapeHtml(m.title)}</div>
-                    <div class="briefing-music-sub">${escapeHtml(m.sub || '')}</div>
-                  </div>
-                </div>`).join('')
+              ? loc.music.map((m, idx) => {
+                  const hasUrl = !!(m.url && extractYouTubeId(m.url));
+                  return `
+                    <div class="briefing-music-row" ${hasUrl ? `onclick="state.currentLocationId='${state.currentLocationId}';switchView('session');setTimeout(()=>playMusic(${idx}),100);" style="cursor:pointer;"` : ''}>
+                      <div class="briefing-music-ico">${m.icon || '🎵'}</div>
+                      <div style="flex:1;">
+                        <div class="briefing-music-title">${escapeHtml(m.title)}${hasUrl ? ' <span class="music-url-badge">YT</span>' : ''}</div>
+                        <div class="briefing-music-sub">${escapeHtml(m.sub || '')}</div>
+                      </div>
+                      ${hasUrl ? '<span style="color:var(--crimson);font-size:14px;">▶</span>' : ''}
+                    </div>`;
+                }).join('')
               : '<em style="color:var(--text-dim);font-size:13px;">Keine Musik für diese Location. Im Prep-Tab unter der Location nachtragen.</em>'}
           </div>
         </div>
@@ -2921,20 +2933,91 @@ function renderSessSceneImage() {
     : `<div class="scene-img-placeholder"><div class="ico">🏛️</div><span>Kein Bild</span></div>`;
 }
 
+// YouTube Video-ID aus URL extrahieren (watch?v=, youtu.be/, embed/, shorts/)
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+  ];
+  for (const p of patterns) { const m = String(url).match(p); if (m) return m[1]; }
+  return null;
+}
+
 function renderSessMusic(loc) {
   const host = document.getElementById('sessMusic');
   const music = loc.music || [];
-  host.innerHTML = music.length
-    ? music.map(m => `
-      <div class="music-item">
+  const playing = state.playingMusic;
+  const showingPlayer = playing && playing.locId === state.currentLocationId;
+
+  const playerHtml = showingPlayer ? `
+    <div class="music-player-wrap">
+      <iframe src="https://www.youtube.com/embed/${playing.videoId}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    </div>
+    <div style="text-align:center;margin-bottom:10px;">
+      <button class="music-action-btn" onclick="stopMusic()" style="font-size:11px;padding:4px 12px;">⏹ Player schließen</button>
+    </div>
+  ` : '';
+
+  if (!music.length) {
+    host.innerHTML = playerHtml + '<div style="padding:6px 12px;font-size:11px;color:var(--text-dim);font-style:italic;">Keine Musik-Empfehlungen für diese Szene.</div>';
+    return;
+  }
+
+  host.innerHTML = playerHtml + music.map((m, idx) => {
+    const isPlaying = showingPlayer && playing.idx === idx;
+    const hasUrl = !!(m.url && extractYouTubeId(m.url));
+    return `
+      <div class="music-item ${isPlaying ? 'playing' : ''}">
         <div class="music-disc">${m.icon || '🎵'}</div>
-        <div class="music-info">
-          <div class="music-title">${escapeHtml(m.title)}</div>
+        <div class="music-info" onclick="playMusic(${idx})">
+          <div class="music-title">${escapeHtml(m.title)}${hasUrl ? ' <span class="music-url-badge">YT</span>' : ''}</div>
           <div class="music-sub">${escapeHtml(m.sub || '')}</div>
         </div>
-        <div class="music-play">▶</div>
-      </div>`).join('')
-    : '<div style="padding:6px 10px;font-size:11px;color:var(--text-dim);font-style:italic;">Keine Musik-Empfehlungen für diese Szene.</div>';
+        <div class="music-actions">
+          <button class="music-action-btn" onclick="playMusic(${idx})" title="${hasUrl ? 'Im Player abspielen' : 'YouTube-Suche öffnen'}">${hasUrl ? '▶' : '🔍'}</button>
+          <button class="music-action-btn" onclick="setMusicUrl(${idx})" title="YouTube-URL setzen/ändern">✎</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function playMusic(idx) {
+  const loc = currentLoc(); if (!loc?.music?.[idx]) return;
+  const item = loc.music[idx];
+  const vid = extractYouTubeId(item.url);
+  if (vid) {
+    state.playingMusic = { locId: state.currentLocationId, idx, videoId: vid };
+    saveState();
+    renderSessMusic(loc);
+    switchSessionRT('music');
+  } else {
+    // Keine gültige YouTube-URL → Suche öffnen
+    const q = encodeURIComponent(`${item.title} ${item.sub || ''} ttrpg ambient`);
+    window.open(`https://www.youtube.com/results?search_query=${q}`, '_blank');
+    toast('YouTube-Suche geöffnet — URL per ✎ speichern für One-Click-Play');
+  }
+}
+
+function stopMusic() {
+  state.playingMusic = null; saveState();
+  const loc = currentLoc(); if (loc) renderSessMusic(loc);
+}
+
+function setMusicUrl(idx) {
+  const loc = currentLoc(); if (!loc?.music?.[idx]) return;
+  const item = loc.music[idx];
+  const url = prompt(`YouTube-URL für "${item.title}":\n(watch?v=... oder youtu.be/... Format)`, item.url || '');
+  if (url === null) return;
+  const trimmed = url.trim();
+  if (trimmed && !extractYouTubeId(trimmed)) {
+    if (!confirm('Das sieht nicht wie eine YouTube-URL aus. Trotzdem speichern?')) return;
+  }
+  item.url = trimmed;
+  saveState();
+  renderSessMusic(loc);
+  toast(trimmed ? '✓ URL gespeichert' : 'URL entfernt');
 }
 
 function renderInitiative() {
