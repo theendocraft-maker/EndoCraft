@@ -283,12 +283,10 @@ body{
 .chat-empty{padding:20px 10px;text-align:center;color:var(--text-dim);font-size:12px;font-style:italic;line-height:1.6;}
 .chat-empty strong{display:block;color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;margin-bottom:8px;font-style:normal;font-weight:700;}
 
-.chat-msg{display:flex;gap:12px;align-items:flex-start;}
-.chat-msg-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:11px;margin-top:1px;}
+/* Duplicate .chat-msg entfernt — Grid-Layout oben gilt. Nur Avatar-Style + Color-Variants bleiben. */
+.chat-msg-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:11px;margin-top:1px;flex-shrink:0;}
 .chat-msg.user .chat-msg-av{background:var(--surface);border:1px solid var(--border-strong);color:var(--text-dim);}
 .chat-msg.ai .chat-msg-av{background:linear-gradient(135deg,var(--accent) 0%,#9488f4 100%);color:#fff;box-shadow:0 2px 8px rgba(108,93,228,0.3);}
-.chat-msg-body{flex:1;font-size:14.5px;line-height:1.6;}
-.chat-msg-role{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.8px;color:var(--text-dimmer);margin-bottom:4px;text-transform:uppercase;}
 .chat-msg.ai .chat-msg-role{color:var(--gold);}
 .chat-msg-content p{margin-bottom:8px;}
 .chat-msg-content p:last-child{margin-bottom:0;}
@@ -1618,6 +1616,338 @@ const DEFAULT_CAMPAIGN = {
     'vallaki-blue-water': { name: 'Blue Water Inn', meta: 'Vallaki · Safe hub', imagePrompt: '', readAloud: '', dmNote: 'Rumours, Ismark, rest.', scenarios: [], dialogs: [], statblocks: [], music: [], history: '', log: '' }
   }
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SRD 5.1 CHARACTER BUILDER DATA — Rassen, Klassen, Subklassen, Backgrounds
+// Creative Commons CC BY 4.0 · Wizards of the Coast
+// ═══════════════════════════════════════════════════════════════════════════
+
+const SRD_RACES = [
+  { id: 'dwarf-hill', name: 'Hill Dwarf', baseRace: 'Dwarf',
+    abilityBonuses: { con: 2, wis: 1 }, speed: 25, size: 'Medium',
+    languages: 'Common, Dwarvish', darkvision: 60,
+    traits: [
+      { name: 'Darkvision', text: 'Sicht bis 60 ft. in Dämmerung (dunkler) wie hell beleuchtet, in Dunkelheit wie Dämmerung (nur in Graustufen).' },
+      { name: 'Dwarven Resilience', text: 'Advantage auf Saves gegen Gift. Resistance gegen Poison-Damage.' },
+      { name: 'Dwarven Combat Training', text: 'Proficient mit Battleaxe, Handaxe, Light Hammer, Warhammer.' },
+      { name: 'Tool Proficiency', text: 'Ein Artisan Tool nach Wahl: Smiths, Brewers, Masons.' },
+      { name: 'Stonecunning', text: 'Intelligence (History) Checks zu Steinmetzarbeiten: Proficiency Bonus doppelt.' },
+      { name: 'Dwarven Toughness', text: 'Max HP +1 pro Level (Hill Dwarf).' }
+    ] },
+  { id: 'elf-high', name: 'High Elf', baseRace: 'Elf',
+    abilityBonuses: { dex: 2, int: 1 }, speed: 30, size: 'Medium',
+    languages: 'Common, Elvish + 1 weitere', darkvision: 60,
+    traits: [
+      { name: 'Darkvision', text: 'Sicht bis 60 ft. in Dämmerung wie hell beleuchtet.' },
+      { name: 'Keen Senses', text: 'Proficient in Perception.' },
+      { name: 'Fey Ancestry', text: 'Advantage auf Saves gegen charmed. Sleep-Magie kann dich nicht einschläfern.' },
+      { name: 'Trance', text: '4h Meditation statt 8h Schlaf für Long Rest.' },
+      { name: 'Elf Weapon Training', text: 'Proficient mit Longsword, Shortsword, Shortbow, Longbow.' },
+      { name: 'Cantrip', text: 'Ein Cantrip aus Wizard-Liste, INT als Spellcasting-Ability.' }
+    ] },
+  { id: 'halfling-lightfoot', name: 'Lightfoot Halfling', baseRace: 'Halfling',
+    abilityBonuses: { dex: 2, cha: 1 }, speed: 25, size: 'Small',
+    languages: 'Common, Halfling', darkvision: 0,
+    traits: [
+      { name: 'Lucky', text: 'Wenn du eine 1 auf Attack-Roll, Ability Check oder Save würfelst: noch einmal würfeln, zweites Ergebnis nutzen.' },
+      { name: 'Brave', text: 'Advantage auf Saves gegen frightened.' },
+      { name: 'Halfling Nimbleness', text: 'Kannst durch Raum einer Kreatur ziehen die eine Größe größer ist als du.' },
+      { name: 'Naturally Stealthy', text: 'Kannst versuchen dich zu verstecken wenn du von einer Kreatur verdeckt wirst die mindestens eine Größe größer ist.' }
+    ] },
+  { id: 'human', name: 'Human (Standard)', baseRace: 'Human',
+    abilityBonuses: { all: 1 }, speed: 30, size: 'Medium',
+    languages: 'Common + 1 weitere', darkvision: 0,
+    traits: [] },
+  { id: 'dragonborn', name: 'Dragonborn', baseRace: 'Dragonborn',
+    abilityBonuses: { str: 2, cha: 1 }, speed: 30, size: 'Medium',
+    languages: 'Common, Draconic', darkvision: 0,
+    traits: [
+      { name: 'Draconic Ancestry', text: 'Wähle einen Draco-Typ (Black/Blue/Brass/Bronze/Copper/Gold/Green/Red/Silver/White) → Damage-Type + Breath-Form.' },
+      { name: 'Breath Weapon', text: 'Action: 5-ft x 30-ft Linie oder 15-ft Kegel (je nach Ancestry). DEX oder CON Save (halb bei Erfolg). 2d6 Damage. Level 6: 3d6, 11: 4d6, 16: 5d6. Einmal pro Short/Long Rest.' },
+      { name: 'Damage Resistance', text: 'Resistance gegen Damage-Type deiner Draconic Ancestry.' }
+    ] },
+  { id: 'gnome-rock', name: 'Rock Gnome', baseRace: 'Gnome',
+    abilityBonuses: { int: 2, con: 1 }, speed: 25, size: 'Small',
+    languages: 'Common, Gnomish', darkvision: 60,
+    traits: [
+      { name: 'Darkvision', text: 'Sicht bis 60 ft. in Dämmerung wie hell beleuchtet.' },
+      { name: 'Gnome Cunning', text: 'Advantage auf alle INT/WIS/CHA Saves gegen Magie.' },
+      { name: 'Artificer\'s Lore', text: 'History Checks zu magischen, alchemischen oder technologischen Objekten: Proficiency-Bonus doppelt.' },
+      { name: 'Tinker', text: 'Proficient mit Tinker\'s Tools. 1h + 10 gp → kleines Uhrwerk-Gerät (Clockwork Toy, Fire Starter, Music Box).' }
+    ] },
+  { id: 'halfelf', name: 'Half-Elf', baseRace: 'Half-Elf',
+    abilityBonuses: { cha: 2, choice: 2 }, speed: 30, size: 'Medium',
+    languages: 'Common, Elvish + 1 weitere', darkvision: 60,
+    traits: [
+      { name: 'Darkvision', text: 'Sicht bis 60 ft. in Dämmerung wie hell beleuchtet.' },
+      { name: 'Fey Ancestry', text: 'Advantage auf Saves gegen charmed. Sleep kann dich nicht einschläfern.' },
+      { name: 'Skill Versatility', text: 'Proficiency in zwei Skills deiner Wahl.' }
+    ] },
+  { id: 'halforc', name: 'Half-Orc', baseRace: 'Half-Orc',
+    abilityBonuses: { str: 2, con: 1 }, speed: 30, size: 'Medium',
+    languages: 'Common, Orc', darkvision: 60,
+    traits: [
+      { name: 'Darkvision', text: 'Sicht bis 60 ft. in Dämmerung wie hell beleuchtet.' },
+      { name: 'Menacing', text: 'Proficient in Intimidation.' },
+      { name: 'Relentless Endurance', text: 'Wenn du auf 0 HP gebracht wirst (nicht instant-kill): drop to 1 HP stattdessen. Einmal pro Long Rest.' },
+      { name: 'Savage Attacks', text: 'Bei Crit mit Melee-Weapon: eine zusätzliche Weapon-Damage-Die würfeln.' }
+    ] },
+  { id: 'tiefling', name: 'Tiefling', baseRace: 'Tiefling',
+    abilityBonuses: { cha: 2, int: 1 }, speed: 30, size: 'Medium',
+    languages: 'Common, Infernal', darkvision: 60,
+    traits: [
+      { name: 'Darkvision', text: 'Sicht bis 60 ft. in Dämmerung wie hell beleuchtet.' },
+      { name: 'Hellish Resistance', text: 'Resistance gegen Fire-Damage.' },
+      { name: 'Infernal Legacy', text: 'Cantrip *Thaumaturgy*. Lvl 3: *Hellish Rebuke* 1/day (als 2nd-level). Lvl 5: *Darkness* 1/day. CHA = Spellcasting-Ability.' }
+    ] }
+];
+
+const SRD_CLASSES = [
+  { id: 'barbarian', name: 'Barbarian', hitDie: 12, primaryAbility: 'STR',
+    savingThrows: ['str','con'], armorProf: 'Light, Medium, Shields', weaponProf: 'Simple + Martial',
+    skills: { pick: 2, from: ['Animal Handling','Athletics','Intimidation','Nature','Perception','Survival'] },
+    spellcasting: null, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Rage', text: 'Bonus Action. +Rage-Damage (STR-Attack), Advantage auf STR-Checks/Saves, Resistance gegen bludgeoning/piercing/slashing. 1 min oder bis KO. 2x/rest Lvl 1, skaliert bis 6x/unlimited.' },
+          { name: 'Unarmored Defense', text: 'Ohne Rüstung: AC = 10 + DEX-Mod + CON-Mod. Shield erlaubt.' }],
+      2: [{ name: 'Reckless Attack', text: 'Advantage auf STR-Melee-Attacks diese Runde, aber Angriffe gegen dich bis zu deinem nächsten Zug auch mit Advantage.' },
+          { name: 'Danger Sense', text: 'Advantage auf DEX-Saves gegen Effekte die du sehen kannst.' }]
+    } },
+  { id: 'bard', name: 'Bard', hitDie: 8, primaryAbility: 'CHA',
+    savingThrows: ['dex','cha'], armorProf: 'Light', weaponProf: 'Simple, Hand Crossbow, Longsword, Rapier, Shortsword',
+    skills: { pick: 3, from: 'Any' },
+    spellcasting: { ability: 'CHA', type: 'full' }, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Bardic Inspiration', text: 'Bonus Action: verleihe einer Kreatur (in 60 ft., die dich hören kann) einen Inspiration-d6 für 10 min. Kann auf Ability Check, Attack Roll oder Save addiert werden (nach dem Würfeln). Anzahl = CHA-Mod pro Long Rest. Skaliert zu d8/d10/d12.' },
+          { name: 'Spellcasting', text: 'Cantrips + Spells. Spellcasting = CHA. Ritual-Casting.' }]
+    } },
+  { id: 'cleric', name: 'Cleric', hitDie: 8, primaryAbility: 'WIS',
+    savingThrows: ['wis','cha'], armorProf: 'Light, Medium, Shields', weaponProf: 'Simple',
+    skills: { pick: 2, from: ['History','Insight','Medicine','Persuasion','Religion'] },
+    spellcasting: { ability: 'WIS', type: 'full', ritual: true, prepared: true }, subclassLevel: 1,
+    features: {
+      1: [{ name: 'Spellcasting', text: 'Prepared-Spellcaster (WIS-Mod + Level viele Spells). DC = 8 + ProfBonus + WIS-Mod. Ritual-Casting.' },
+          { name: 'Divine Domain', text: 'Wähl eine Domain bei Level 1 (Life Domain im SRD): bestimmt zusätzliche Spells + Features.' }],
+      2: [{ name: 'Channel Divinity (1/rest)', text: 'Action: Turn Undead ODER Domain-Feature. Skaliert zu 2x/rest bei Lvl 6, 3x bei Lvl 18.' }]
+    } },
+  { id: 'druid', name: 'Druid', hitDie: 8, primaryAbility: 'WIS',
+    savingThrows: ['int','wis'], armorProf: 'Light, Medium, Shields (nicht-metallisch)', weaponProf: 'Clubs, Daggers, Darts, Javelins, Maces, Quarterstaffs, Scimitars, Sickles, Slings, Spears',
+    skills: { pick: 2, from: ['Arcana','Animal Handling','Insight','Medicine','Nature','Perception','Religion','Survival'] },
+    spellcasting: { ability: 'WIS', type: 'full', ritual: true, prepared: true }, subclassLevel: 2,
+    features: {
+      1: [{ name: 'Druidic', text: 'Geheimsprache der Druiden. Verborgene Nachrichten (WIS Perception DC 15 um zu bemerken). Erkennbar für andere Druiden.' },
+          { name: 'Spellcasting', text: 'Prepared-Spellcaster, WIS-basiert. Ritual-Casting.' }],
+      2: [{ name: 'Wild Shape', text: 'Action: Verwandle dich in ein Tier das du gesehen hast (CR ≤ 1/4 bei Lvl 2, ≤1/2 bei Lvl 4, ≤1 bei Lvl 8). 2x/rest. Dauer = halbes Druid-Level in Stunden.' }]
+    } },
+  { id: 'fighter', name: 'Fighter', hitDie: 10, primaryAbility: 'STR oder DEX',
+    savingThrows: ['str','con'], armorProf: 'All armor, Shields', weaponProf: 'Simple + Martial',
+    skills: { pick: 2, from: ['Acrobatics','Animal Handling','Athletics','History','Insight','Intimidation','Perception','Survival'] },
+    spellcasting: null, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Fighting Style', text: 'Wähl: Archery (+2 Ranged), Defense (+1 AC mit Rüstung), Dueling (+2 Damage 1-hand), Great Weapon Fighting (reroll 1/2 on 2-hand), Protection (Shield-Reaction), Two-Weapon Fighting (Ability-Mod auf Off-Hand).' },
+          { name: 'Second Wind', text: 'Bonus Action: heile 1d10+Level HP. 1x pro Short/Long Rest.' }],
+      2: [{ name: 'Action Surge (1/rest)', text: 'Auf deinem Zug: eine zusätzliche Action (nicht Bonus Action). Lvl 17: 2x/rest.' }]
+    } },
+  { id: 'monk', name: 'Monk', hitDie: 8, primaryAbility: 'DEX & WIS',
+    savingThrows: ['str','dex'], armorProf: 'Keine', weaponProf: 'Simple, Shortsword',
+    skills: { pick: 2, from: ['Acrobatics','Athletics','History','Insight','Religion','Stealth'] },
+    spellcasting: null, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Unarmored Defense', text: 'Ohne Rüstung/Shield: AC = 10 + DEX-Mod + WIS-Mod.' },
+          { name: 'Martial Arts', text: 'Unarmed Strikes/Monk-Weapons: DEX statt STR, d4-d10 Schaden je Level, Bonus Action für Extra-Unarmed-Strike.' }],
+      2: [{ name: 'Ki', text: 'Monk-Level viele Ki-Punkte pro Short Rest. Flurry of Blows (1 Ki), Patient Defense (1 Ki), Step of the Wind (1 Ki).' },
+          { name: 'Unarmored Movement', text: '+10 ft. Speed ohne Rüstung/Shield. Skaliert hoch.' }]
+    } },
+  { id: 'paladin', name: 'Paladin', hitDie: 10, primaryAbility: 'STR & CHA',
+    savingThrows: ['wis','cha'], armorProf: 'All armor, Shields', weaponProf: 'Simple + Martial',
+    skills: { pick: 2, from: ['Athletics','Insight','Intimidation','Medicine','Persuasion','Religion'] },
+    spellcasting: { ability: 'CHA', type: 'half', prepared: true }, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Divine Sense', text: 'Action: 60 ft. um dich herum Celestial/Fiend/Undead erkennen. 1 + CHA-Mod pro Long Rest.' },
+          { name: 'Lay on Hands', text: 'Heile-Pool = 5 x Level HP. Action: heile bis zu Pool-Wert. Kann auch Disease/Poison (5 Pool-Punkte) heilen.' }],
+      2: [{ name: 'Fighting Style', text: 'Defense, Dueling, Great Weapon Fighting oder Protection.' },
+          { name: 'Spellcasting', text: 'Half-Caster (CHA-basiert). Prepared-Spells.' },
+          { name: 'Divine Smite', text: 'Bei Melee-Hit: Spell-Slot verbrauchen → Extra-Radiant-Damage. 2d8 (1st slot) + 1d8 pro höherem Slot. +1d8 gegen Undead/Fiend.' }]
+    } },
+  { id: 'ranger', name: 'Ranger', hitDie: 10, primaryAbility: 'DEX & WIS',
+    savingThrows: ['str','dex'], armorProf: 'Light, Medium, Shields', weaponProf: 'Simple + Martial',
+    skills: { pick: 3, from: ['Animal Handling','Athletics','Insight','Investigation','Nature','Perception','Stealth','Survival'] },
+    spellcasting: { ability: 'WIS', type: 'half', known: true }, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Favored Enemy', text: 'Wähle einen Typ (Aberrations, Beasts, Celestials, Constructs, Dragons, Elementals, Fey, Fiends, Giants, Monstrosities, Oozes, Plants, Undead) oder 2 Humanoid-Rassen. Advantage auf Survival zum Tracken, INT-Checks zum Erinnern. Eine zusätzliche Sprache deiner Wahl (falls deine Beute eine spricht).' },
+          { name: 'Natural Explorer', text: 'Wähle ein Terrain (Arctic, Coast, Desert, Forest, Grassland, Mountain, Swamp, Underdark). Doppelter Proficiency-Bonus auf INT/WIS-Checks zu diesem Terrain + diverse Travel-Vorteile.' }],
+      2: [{ name: 'Fighting Style', text: 'Archery, Defense, Dueling oder Two-Weapon Fighting.' },
+          { name: 'Spellcasting', text: 'Half-Caster, WIS-basiert, Known Spells.' }]
+    } },
+  { id: 'rogue', name: 'Rogue', hitDie: 8, primaryAbility: 'DEX',
+    savingThrows: ['dex','int'], armorProf: 'Light', weaponProf: 'Simple, Hand Crossbow, Longsword, Rapier, Shortsword',
+    skills: { pick: 4, from: ['Acrobatics','Athletics','Deception','Insight','Intimidation','Investigation','Perception','Performance','Persuasion','Sleight of Hand','Stealth'] },
+    spellcasting: null, subclassLevel: 3,
+    features: {
+      1: [{ name: 'Expertise', text: 'Wähle 2 Skill-Proficiencies (oder 1 Skill + Thieves\' Tools): Proficiency-Bonus doppelt. Skaliert zu 4 bei Lvl 6.' },
+          { name: 'Sneak Attack', text: '1x pro Runde: Extra-Damage wenn du Advantage hast ODER ein Ally in 5 ft. des Ziels ist (und du nicht Disadvantage hast). 1d6 auf Lvl 1, skaliert zu 10d6 bei Lvl 19.' },
+          { name: 'Thieves\' Cant', text: 'Geheimsprache der Schurken.' }],
+      2: [{ name: 'Cunning Action', text: 'Bonus Action: Dash, Disengage oder Hide.' }]
+    } },
+  { id: 'sorcerer', name: 'Sorcerer', hitDie: 6, primaryAbility: 'CHA',
+    savingThrows: ['con','cha'], armorProf: 'Keine', weaponProf: 'Daggers, Darts, Slings, Quarterstaffs, Light Crossbows',
+    skills: { pick: 2, from: ['Arcana','Deception','Insight','Intimidation','Persuasion','Religion'] },
+    spellcasting: { ability: 'CHA', type: 'full', known: true }, subclassLevel: 1,
+    features: {
+      1: [{ name: 'Spellcasting', text: 'Full-Caster, CHA-basiert, Known Spells (nicht prepared).' },
+          { name: 'Sorcerous Origin', text: 'Wähl Draconic Bloodline (oder anderes) bei Lvl 1. Bestimmt zusätzliche Features.' }],
+      2: [{ name: 'Font of Magic', text: 'Sorcery Points = Level. Flexibel umwandelbar in Spell Slots + umgekehrt.' }]
+    } },
+  { id: 'warlock', name: 'Warlock', hitDie: 8, primaryAbility: 'CHA',
+    savingThrows: ['wis','cha'], armorProf: 'Light', weaponProf: 'Simple',
+    skills: { pick: 2, from: ['Arcana','Deception','History','Intimidation','Investigation','Nature','Religion'] },
+    spellcasting: { ability: 'CHA', type: 'pact', known: true }, subclassLevel: 1,
+    features: {
+      1: [{ name: 'Otherworldly Patron', text: 'Wähl Patron: Fiend (SRD), Archfey, Great Old One u.a. Bestimmt Expanded Spells + Features.' },
+          { name: 'Pact Magic', text: 'Spell Slots wenige (1-4), aber Short-Rest-Recharge. Alle Slots immer auf höchstem Level. DC = 8 + Prof + CHA.' }]
+    } },
+  { id: 'wizard', name: 'Wizard', hitDie: 6, primaryAbility: 'INT',
+    savingThrows: ['int','wis'], armorProf: 'Keine', weaponProf: 'Daggers, Darts, Slings, Quarterstaffs, Light Crossbows',
+    skills: { pick: 2, from: ['Arcana','History','Insight','Investigation','Medicine','Religion'] },
+    spellcasting: { ability: 'INT', type: 'full', ritual: true, prepared: true, book: true }, subclassLevel: 2,
+    features: {
+      1: [{ name: 'Spellcasting', text: 'Full-Caster, INT-basiert. Spellbook mit verfügbaren Spells. Rituals castbar ohne Slot.' },
+          { name: 'Arcane Recovery', text: 'Einmal pro Tag bei Short Rest: Spell-Slots zurückholen (Summe Level = halber Wizard-Level, aufgerundet). Keine 6th+ Level Slots.' }],
+      2: [{ name: 'Arcane Tradition', text: 'Wähl Schule bei Lvl 2: Evocation (SRD), oder andere. Bestimmt Features.' }]
+    } }
+];
+
+const SRD_BACKGROUNDS = [
+  { id: 'acolyte', name: 'Acolyte',
+    skillProfs: ['Insight', 'Religion'], toolProfs: [], languages: 2,
+    equipment: 'Heiliges Symbol, Prayer Book oder Beads, 5 Sticks of Incense, Vestments, Common Clothes, Belt Pouch 15 gp',
+    feature: { name: 'Shelter of the Faithful', text: 'Du und deine Gefährten werden kostenlos in Tempeln deines Glaubens beherbergt + geheilt. Du hast Zugang zu politischen/gesellschaftlichen Kreisen deiner Religion.' } },
+  { id: 'criminal', name: 'Criminal',
+    skillProfs: ['Deception', 'Stealth'], toolProfs: ['Einen Gaming Set', 'Thieves\' Tools'], languages: 0,
+    equipment: 'Crowbar, dunkle Kleidung mit Kapuze, Belt Pouch 15 gp',
+    feature: { name: 'Criminal Contact', text: 'Du hast einen zuverlässigen Kontakt zum kriminellen Untergrund — weiß wie Nachrichten weiterleiten, auch über weite Distanzen.' } },
+  { id: 'folk-hero', name: 'Folk Hero',
+    skillProfs: ['Animal Handling', 'Survival'], toolProfs: ['Ein Artisan\'s Tool', 'Vehicles (Land)'], languages: 0,
+    equipment: 'Artisan\'s Tools, Shovel, Iron Pot, Common Clothes, Belt Pouch 10 gp',
+    feature: { name: 'Rustic Hospitality', text: 'Unter Common Folk findest du immer Zuflucht und Verpflegung — sie verbergen dich auch (aber riskieren nicht ihr Leben).' } },
+  { id: 'noble', name: 'Noble',
+    skillProfs: ['History', 'Persuasion'], toolProfs: ['Ein Gaming Set'], languages: 1,
+    equipment: 'Feine Kleidung, Signet Ring, Scroll of Pedigree, Purse 25 gp',
+    feature: { name: 'Position of Privilege', text: 'Du wirst als Adliger behandelt. Kannst Audienzen mit lokalen Herrschern erhalten. Common Folk geben sich Mühe dich zu gefallen.' } },
+  { id: 'sage', name: 'Sage',
+    skillProfs: ['Arcana', 'History'], toolProfs: [], languages: 2,
+    equipment: 'Bottle of Black Ink, Quill, Small Knife, Letter from Dead Colleague, Common Clothes, Belt Pouch 10 gp',
+    feature: { name: 'Researcher', text: 'Wenn du versuchst dich an ein Detail zu erinnern das du nicht weißt: du weißt wo du es nachschlagen kannst (Bibliothek, Weise, alter Gelehrter, etc.).' } },
+  { id: 'soldier', name: 'Soldier',
+    skillProfs: ['Athletics', 'Intimidation'], toolProfs: ['Ein Gaming Set', 'Vehicles (Land)'], languages: 0,
+    equipment: 'Rank Insignia, Trophy, Gaming Set, Common Clothes, Belt Pouch 10 gp',
+    feature: { name: 'Military Rank', text: 'Du hast militärischen Rang aus deiner Dienstzeit. Soldaten niedrigerer Ränge gehorchen wenn möglich. Du kannst Zugang zu militärischen Einrichtungen bekommen.' } }
+];
+
+// Helper: Ability-Mod berechnen
+function abilityModifier(score) { return Math.floor((score - 10) / 2); }
+function formatMod(n) { return (n >= 0 ? '+' : '') + n; }
+function calcProfBonus(level) { return Math.ceil(level / 4) + 1; }  // Lvl 1-4: +2, 5-8: +3, 9-12: +4, 13-16: +5, 17-20: +6
+
+// Apply SRD-Race-Template auf aktuellen Charakter
+function applyRaceTemplate(raceId) {
+  const c = currentChar(); if (!c) return;
+  const race = SRD_RACES.find(r => r.id === raceId); if (!race) return;
+
+  if (!confirm(`"${race.name}" anwenden?\n\nDas fügt Traits hinzu und passt Speed/Size an. Ability-Score-Bonuses werden ADDIERT (nicht gesetzt). Bestehende Traits bleiben — Race-Traits werden ergänzt.`)) return;
+
+  c.race = race.name;
+  c.size = race.size;
+  c.speed = race.speed + ' ft.';
+
+  // Ability bonuses addieren
+  const b = race.abilityBonuses;
+  if (b.all) {
+    ['str','dex','con','int','wis','cha'].forEach(s => { c.stats[s] += b.all; });
+  } else {
+    ['str','dex','con','int','wis','cha'].forEach(s => { if (b[s]) c.stats[s] += b[s]; });
+  }
+
+  // Senses (Darkvision)
+  if (race.darkvision) {
+    const dvText = `darkvision ${race.darkvision} ft.`;
+    c.senses = c.senses?.includes('darkvision') ? c.senses : (c.senses ? c.senses + ', ' + dvText : dvText + ', passive Perception ' + (10 + abilityModifier(c.stats.wis)));
+  }
+
+  // Languages
+  c.languages = race.languages;
+
+  // Traits ergänzen (nicht duplizieren)
+  c.traits = c.traits || [];
+  race.traits.forEach(t => {
+    if (!c.traits.some(ex => ex.name === t.name)) c.traits.push({ ...t });
+  });
+
+  saveState();
+  renderCharEditor();
+  toast(`✓ ${race.name} angewendet · ${race.traits.length} Traits + Bonus`);
+}
+
+function applyClassTemplate(classId) {
+  const c = currentChar(); if (!c) return;
+  const cls = SRD_CLASSES.find(x => x.id === classId); if (!cls) return;
+
+  if (!confirm(`"${cls.name}" anwenden?\n\nSetzt Hit Die, Saving-Throw-Proficiencies, fügt Features ein. Level bleibt wie eingestellt.`)) return;
+
+  c.class = cls.name;
+  c.hitDice = c.level + 'd' + cls.hitDie + (cls.hitDie === 6 ? '' : '+' + (abilityModifier(c.stats.con) * c.level));
+
+  // Saving Throws setzen
+  const saves = cls.savingThrows.map(s => s.toUpperCase() + ' +' + (abilityModifier(c.stats[s]) + calcProfBonus(c.level)));
+  c.savingThrows = saves.join(', ');
+
+  // Proficiency-Bonus
+  c.proficiency = formatMod(calcProfBonus(c.level));
+
+  // Features aus Level 1 bis current Level eintragen
+  c.traits = c.traits || [];
+  for (let lvl = 1; lvl <= c.level; lvl++) {
+    const feats = cls.features[lvl] || [];
+    feats.forEach(f => {
+      if (!c.traits.some(ex => ex.name === f.name)) c.traits.push({ ...f });
+    });
+  }
+
+  saveState();
+  renderCharEditor();
+  toast(`✓ ${cls.name} angewendet · Saves + Features bis Lvl ${c.level}`);
+}
+
+function applyBackgroundTemplate(bgId) {
+  const c = currentChar(); if (!c) return;
+  const bg = SRD_BACKGROUNDS.find(x => x.id === bgId); if (!bg) return;
+
+  if (!confirm(`Background "${bg.name}" anwenden?\n\nFügt Background-Feature zu Traits hinzu. Skills musst du manuell in "Skills" ergänzen (${bg.skillProfs.join(', ')}).`)) return;
+
+  c.traits = c.traits || [];
+  const feat = { name: `${bg.name} · ${bg.feature.name}`, text: bg.feature.text };
+  if (!c.traits.some(ex => ex.name === feat.name)) c.traits.push(feat);
+
+  // Skills zum bestehenden Skills-String hinzufügen (mit Bonus)
+  const skillAdditions = bg.skillProfs.map(s => {
+    const profBonus = calcProfBonus(c.level);
+    // Skill → Ability-Mapping (vereinfacht — SRD-standard)
+    const skillAbility = {
+      'Acrobatics':'dex','Animal Handling':'wis','Arcana':'int','Athletics':'str',
+      'Deception':'cha','History':'int','Insight':'wis','Intimidation':'cha',
+      'Investigation':'int','Medicine':'wis','Nature':'int','Perception':'wis',
+      'Performance':'cha','Persuasion':'cha','Religion':'int','Sleight of Hand':'dex',
+      'Stealth':'dex','Survival':'wis'
+    }[s] || 'wis';
+    const mod = abilityModifier(c.stats[skillAbility]) + profBonus;
+    return `${s} ${formatMod(mod)}`;
+  }).join(', ');
+  c.skills = c.skills ? c.skills + ', ' + skillAdditions : skillAdditions;
+
+  saveState();
+  renderCharEditor();
+  toast(`✓ ${bg.name} angewendet · Feature + Skills +${bg.skillProfs.length}`);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // D&D 5e SRD 5.1 CONTENT LIBRARY
