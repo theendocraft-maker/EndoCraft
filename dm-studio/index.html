@@ -47,11 +47,11 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:'DM Sans',sans-serif;
-  font-size:15px;line-height:1.55;
+  font-size:16px;line-height:1.6;
   display:flex;flex-direction:column;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  min-width:1100px;  /* PC-optimized — mobile support comes later */
+  min-width:1100px;
 }
 
 /* ═══════ TOP BAR ═══════ */
@@ -296,18 +296,145 @@ body{
 
 .session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
 
-.session-read-pane{flex:1;overflow-y:auto;padding:22px 30px 30px;min-width:0;}
-.session-read-aloud{
-  background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--crimson);
-  border-radius:0 12px 12px 0;padding:28px 36px;margin-bottom:20px;
-  font-family:'EB Garamond',serif;font-size:23px;font-style:italic;color:var(--ink);line-height:1.55;
-  box-shadow:var(--shadow-md);
+.session-read-pane{flex:1;overflow-y:auto;padding:28px 40px 40px;min-width:0;}
+
+/* ══════ MODULE-STYLE ROOM HEADER ══════ */
+.mod-room-header{margin-bottom:22px;}
+.mod-breadcrumb{
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--text-dim);
+  text-transform:uppercase;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;
 }
-.session-read-aloud p{margin-bottom:12px;}
-.session-read-aloud p:last-child{margin-bottom:0;}
-.session-read-aloud.empty{background:var(--bg2);color:var(--text-dim);font-style:italic;border-left-color:var(--border-strong);font-size:15px;}
-.session-read-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);margin-bottom:12px;font-style:normal;font-weight:700;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
-.session-read-label::before{content:'';width:22px;height:1.5px;background:var(--crimson);}
+.mod-breadcrumb .sep{color:var(--text-dimmer);}
+.mod-room-title{
+  font-family:'Cinzel',serif;font-size:34px;font-weight:700;color:var(--crimson);
+  line-height:1.05;letter-spacing:.01em;text-transform:uppercase;
+  padding-bottom:14px;margin-bottom:4px;
+  border-bottom:2px solid var(--crimson);
+  position:relative;
+}
+.mod-room-title::after{
+  content:'✦';position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);
+  color:var(--crimson);background:var(--bg);padding:0 10px;font-size:14px;
+}
+.mod-room-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--text-dim);margin-top:10px;}
+
+/* ══════ READ-ALOUD · Pyram-King-Style Drop-Cap Box ══════ */
+.mod-readaloud{
+  background:#fdf6e8;
+  border-top:5px solid #e8c890;border-bottom:5px solid #e8c890;
+  padding:24px 30px;margin-bottom:22px;
+  position:relative;box-shadow:var(--shadow-sm);
+}
+.mod-readaloud-label{
+  position:absolute;top:-11px;left:24px;
+  background:#fdf6e8;padding:0 12px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--crimson);
+  text-transform:uppercase;font-weight:700;
+}
+.mod-readaloud-body{
+  font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.7;color:var(--ink);
+  font-style:italic;
+}
+.mod-readaloud-body p{margin-bottom:12px;}
+.mod-readaloud-body p:last-child{margin-bottom:0;}
+.mod-readaloud-body p:first-child::first-letter{
+  font-family:'Cinzel Decorative',Cinzel,serif;font-size:64px;font-weight:700;color:var(--crimson);
+  float:left;line-height:0.85;padding:6px 8px 0 0;font-style:normal;
+}
+.mod-readaloud.empty{background:var(--bg2);border-color:var(--border-strong);color:var(--text-dim);}
+.mod-readaloud.empty .mod-readaloud-body{font-size:14px;font-style:italic;}
+
+/* ══════ COLLAPSIBLE MODULE SECTIONS ══════ */
+.mod-section{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.mod-section-head{
+  padding:12px 18px;background:var(--surface-2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;
+  transition:background .1s;
+}
+.mod-section-head:hover{background:#ebe8e0;}
+.mod-section-chev{font-size:13px;color:var(--text-dim);transition:transform .2s;flex-shrink:0;}
+.mod-section.collapsed .mod-section-chev{transform:rotate(-90deg);}
+.mod-section.collapsed .mod-section-body{display:none;}
+.mod-section.collapsed .mod-section-head{border-bottom-color:transparent;}
+.mod-section-title{
+  font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--ink);
+  text-transform:uppercase;font-weight:700;flex:1;
+}
+.mod-section-count{
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);
+  background:var(--bg2);padding:2px 8px;border-radius:10px;
+}
+.mod-section-icon{font-size:16px;flex-shrink:0;}
+.mod-section-body{padding:18px 22px;}
+.mod-section-summary{font-size:14px;color:var(--text-dim);padding:0 18px 10px;font-style:italic;}
+
+/* ══════ DM NOTE BLOCK (gold-accented) ══════ */
+.mod-dmnote{
+  background:rgba(147,110,30,0.06);border-left:3px solid var(--gold);
+  padding:14px 18px;border-radius:0 8px 8px 0;
+  font-size:15px;line-height:1.65;color:var(--ink);
+}
+.mod-dmnote strong{color:var(--gold);font-weight:700;}
+.mod-dmnote em{font-style:italic;color:var(--text-dim);}
+
+/* ══════ SCENARIOS — farbkodiert nach Wahrscheinlichkeit ══════ */
+.mod-scen{
+  border:1px solid var(--border-strong);border-radius:8px;padding:14px 16px;
+  margin-bottom:10px;background:var(--surface);
+  position:relative;border-left-width:4px;
+}
+.mod-scen:last-child{margin-bottom:0;}
+.mod-scen.prob-likely{border-left-color:var(--forest);}
+.mod-scen.prob-possible{border-left-color:var(--gold-br);}
+.mod-scen.prob-unlikely{border-left-color:var(--text-dimmer);}
+.mod-scen-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;}
+.mod-scen-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--ink);line-height:1.3;flex:1;}
+.mod-scen-prob{
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  font-weight:700;padding:3px 9px;border-radius:4px;flex-shrink:0;
+}
+.mod-scen.prob-likely .mod-scen-prob{background:rgba(45,122,95,0.12);color:var(--forest);}
+.mod-scen.prob-possible .mod-scen-prob{background:var(--gold-dim);color:var(--gold);}
+.mod-scen.prob-unlikely .mod-scen-prob{background:rgba(0,0,0,0.05);color:var(--text-dimmer);}
+.mod-scen-body{font-size:14px;line-height:1.6;color:var(--text);}
+
+/* ══════ DIALOGUES — Speaker + Italic-Quote ══════ */
+.mod-dialog{
+  background:linear-gradient(to right,rgba(168,35,24,0.04),transparent 70%);
+  border-left:3px solid var(--crimson);
+  padding:12px 18px;margin-bottom:10px;border-radius:0 8px 8px 0;
+  position:relative;
+}
+.mod-dialog:last-child{margin-bottom:0;}
+.mod-dialog-speaker{
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--crimson);
+  font-weight:700;text-transform:uppercase;margin-bottom:6px;
+}
+.mod-dialog-quote{
+  font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:16px;line-height:1.55;
+  color:var(--ink);position:relative;padding-left:20px;
+}
+.mod-dialog-quote::before{
+  content:'"';position:absolute;left:0;top:-6px;
+  font-family:'Cinzel Decorative',serif;font-size:34px;color:var(--crimson);
+  opacity:.55;line-height:1;
+}
+
+/* ══════ STATBLOCK INLINE REFERENCE ══════ */
+.mod-statblock-wrap{margin-bottom:14px;}
+.mod-statblock-wrap:last-child{margin-bottom:0;}
+
+/* ══════ CHECK BOXES (DC / Save references) ══════ */
+.mod-check{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 10px;
+  background:var(--surface-2);border:1px solid var(--border-strong);border-radius:4px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);margin:2px 4px 2px 0;
+}
+.mod-check-dc{color:var(--accent);font-weight:700;}
+.mod-check-type{color:var(--text-dim);text-transform:uppercase;font-size:10px;letter-spacing:1px;}
 
 .session-quickgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
 .sq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
@@ -2219,61 +2346,173 @@ function renderSessionLocation() {
   document.getElementById('sessLocName').textContent = loc.name;
   document.getElementById('sessLocMeta').textContent = loc.meta || '';
 
+  // Find parent tree-group for breadcrumb
+  let groupLabel = '';
+  for (const g of campaign().tree) {
+    if (g.locations.some(l => l.id === state.currentLocationId)) { groupLabel = g.label; break; }
+  }
+
+  // Probability CSS-Class Mapping
+  const probClass = (p) => {
+    const s = (p || 'möglich').toLowerCase();
+    if (s.includes('wahrscheinlich') && !s.includes('unwahr')) return 'prob-likely';
+    if (s.includes('unwahr')) return 'prob-unlikely';
+    return 'prob-possible';
+  };
+
+  // Find NPCs relevant to this location
+  const relevantNpcs = state.characters.filter(c => {
+    if (c.type !== 'npc') return false;
+    const hay = `${loc.name} ${loc.meta || ''} ${loc.dmNote || ''} ${JSON.stringify(loc.dialogs || [])}`.toLowerCase();
+    return hay.includes(c.name.toLowerCase().split(' ')[0]);
+  });
+
+  // Collapsed state per-section stored in state.sessionSectionsCollapsed
+  state.sessionSectionsCollapsed = state.sessionSectionsCollapsed || {};
+  const collapsed = state.sessionSectionsCollapsed;
+  const cls = (k) => collapsed[k] ? 'collapsed' : '';
+
   const host = document.getElementById('sessReadPane');
   host.innerHTML = `
     ${renderRecapBlock()}
 
-    ${loc.readAloud
-      ? `<div class="session-read-aloud">
-          <div class="session-read-label">Vorlesen</div>
-          ${loc.readAloud.split('\n\n').filter(x => x.trim()).map(p => `<p>${escapeHtml(p)}</p>`).join('')}
-        </div>`
-      : `<div class="session-read-aloud empty">
-          <div class="session-read-label">Vorlesen</div>
-          <p>Kein Vorlese-Text hinterlegt — im <strong>Vorbereitung</strong>-Tab editieren.</p>
-        </div>`}
-
-    ${state.initiative.length ? renderCombatOverview() : ''}
-
-    <div class="session-quickgrid">
-      <div class="sq-card">
-        <div class="sq-card-h"><span>⚔️</span><span>Mögliche Szenarien</span></div>
-        <div class="sq-card-b">
-          ${(loc.scenarios || []).length
-            ? loc.scenarios.map(s => `
-              <div class="sq-scen">
-                <div class="sq-scen-h"><span class="sq-scen-t">${escapeHtml(s.title)}</span><span class="sq-scen-p">${escapeHtml(s.probability || 'Möglich')}</span></div>
-                <div class="sq-scen-b">${escapeHtml(s.body || '')}</div>
-              </div>`).join('')
-            : '<em style="color:var(--text-dim);">Keine Szenarien.</em>'}
-        </div>
-      </div>
-
-      <div class="sq-card">
-        <div class="sq-card-h"><span>💬</span><span>Dialoge</span></div>
-        <div class="sq-card-b">
-          ${(loc.dialogs || []).length
-            ? loc.dialogs.map(d => `
-              <div class="sq-dialog">
-                <div class="sq-dialog-sp">${escapeHtml(d.speaker)}</div>
-                <div class="sq-dialog-tx">${escapeHtml(d.text)}</div>
-              </div>`).join('')
-            : '<em style="color:var(--text-dim);">Keine Dialoge.</em>'}
-        </div>
-      </div>
+    <!-- ROOM HEADER · D&D-Module style -->
+    <div class="mod-room-header">
+      ${groupLabel ? `<div class="mod-breadcrumb">${escapeHtml(groupLabel)}<span class="sep">›</span>Session ${campaign().session?.number || ''}</div>` : ''}
+      <div class="mod-room-title">${escapeHtml(loc.name)}</div>
+      ${loc.meta ? `<div class="mod-room-sub">${escapeHtml(loc.meta)}</div>` : ''}
     </div>
 
+    <!-- READ-ALOUD · Drop-cap Box -->
+    ${loc.readAloud
+      ? `<div class="mod-readaloud">
+          <div class="mod-readaloud-label">✦ Read Aloud ✦</div>
+          <div class="mod-readaloud-body">
+            ${loc.readAloud.split('\n\n').filter(x => x.trim()).map(p => `<p>${escapeHtml(p)}</p>`).join('')}
+          </div>
+        </div>`
+      : `<div class="mod-readaloud empty">
+          <div class="mod-readaloud-label">Read Aloud</div>
+          <div class="mod-readaloud-body">Kein Vorlese-Text hinterlegt. Im Vorbereitung-Tab editieren.</div>
+        </div>`}
+
+    <!-- Combat Overview — nur wenn Initiative aktiv, full-width prominent -->
+    ${state.initiative.length ? renderCombatOverview() : ''}
+
+    <!-- DM NOTE — Primary, default open -->
     ${loc.dmNote ? `
-      <div class="sq-card" style="margin-bottom:18px;">
-        <div class="sq-card-h"><span>📋</span><span>DM-Notiz</span></div>
-        <div class="sq-card-b" style="font-style:italic;color:var(--text-dim);">${escapeHtml(loc.dmNote)}</div>
+      <div class="mod-section ${cls('dmnote')}">
+        <div class="mod-section-head" onclick="toggleSessionSection('dmnote', this)">
+          <span class="mod-section-icon">📋</span>
+          <span class="mod-section-title">DM-Notiz · Nur für dich</span>
+          <span class="mod-section-chev">▾</span>
+        </div>
+        <div class="mod-section-body">
+          <div class="mod-dmnote">${escapeHtml(loc.dmNote).replace(/\n/g,'<br>')}</div>
+        </div>
       </div>` : ''}
 
-    ${!state.initiative.length ? renderLocRelatedStats(loc) : ''}
+    <!-- SCENARIOS — Default open, farbkodiert -->
+    ${(loc.scenarios || []).length ? `
+      <div class="mod-section ${cls('scenarios')}">
+        <div class="mod-section-head" onclick="toggleSessionSection('scenarios', this)">
+          <span class="mod-section-icon">⚔️</span>
+          <span class="mod-section-title">Was kann passieren</span>
+          <span class="mod-section-count">${loc.scenarios.length}</span>
+          <span class="mod-section-chev">▾</span>
+        </div>
+        <div class="mod-section-body">
+          ${loc.scenarios.map(s => `
+            <div class="mod-scen ${probClass(s.probability)}">
+              <div class="mod-scen-head">
+                <div class="mod-scen-title">${escapeHtml(s.title)}</div>
+                <div class="mod-scen-prob">${escapeHtml(s.probability || 'Möglich')}</div>
+              </div>
+              <div class="mod-scen-body">${escapeHtml(s.body || '').replace(/\n/g,'<br>')}</div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    <!-- DIALOGUES — Default open -->
+    ${(loc.dialogs || []).length ? `
+      <div class="mod-section ${cls('dialogs')}">
+        <div class="mod-section-head" onclick="toggleSessionSection('dialogs', this)">
+          <span class="mod-section-icon">💬</span>
+          <span class="mod-section-title">NPC-Dialoge</span>
+          <span class="mod-section-count">${loc.dialogs.length}</span>
+          <span class="mod-section-chev">▾</span>
+        </div>
+        <div class="mod-section-body">
+          ${loc.dialogs.map(d => `
+            <div class="mod-dialog">
+              <div class="mod-dialog-speaker">${escapeHtml(d.speaker)}</div>
+              <div class="mod-dialog-quote">${escapeHtml(d.text).replace(/\n/g,'<br>')}</div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    <!-- RELATED STATBLOCKS — Default COLLAPSED (progressive disclosure) -->
+    ${!state.initiative.length && relevantNpcs.length ? `
+      <div class="mod-section ${collapsed.statblocks === undefined ? 'collapsed' : cls('statblocks')}">
+        <div class="mod-section-head" onclick="toggleSessionSection('statblocks', this)">
+          <span class="mod-section-icon">🗡️</span>
+          <span class="mod-section-title">Statblöcke · Referenz</span>
+          <span class="mod-section-count">${relevantNpcs.length}</span>
+          <span class="mod-section-chev">▾</span>
+        </div>
+        <div class="mod-section-body">
+          <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start;">
+            ${relevantNpcs.map(c => renderStatblock(c)).join('')}
+          </div>
+        </div>
+      </div>` : ''}
+
+    <!-- HISTORY — Default COLLAPSED -->
+    ${loc.history ? `
+      <div class="mod-section collapsed">
+        <div class="mod-section-head" onclick="toggleSessionSection('history', this)">
+          <span class="mod-section-icon">📜</span>
+          <span class="mod-section-title">Geschichte · Kontext</span>
+          <span class="mod-section-chev">▾</span>
+        </div>
+        <div class="mod-section-body">
+          <div class="mod-dmnote" style="border-left-color:var(--text-dim);background:rgba(0,0,0,0.02);color:var(--text);">${escapeHtml(loc.history).replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>` : ''}
+
+    <!-- SESSION LOG (Live-Notizen) — Default COLLAPSED -->
+    ${loc.log ? `
+      <div class="mod-section collapsed">
+        <div class="mod-section-head" onclick="toggleSessionSection('loclog', this)">
+          <span class="mod-section-icon">📝</span>
+          <span class="mod-section-title">Live-Notizen diese Session</span>
+          <span class="mod-section-chev">▾</span>
+        </div>
+        <div class="mod-section-body">
+          <pre style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;background:var(--surface-2);padding:14px;border-radius:6px;margin:0;">${escapeHtml(loc.log)}</pre>
+        </div>
+      </div>` : ''}
   `;
 
   renderSessSceneImage();
   renderSessMusic(loc);
+}
+
+function toggleSessionSection(key, el) {
+  state.sessionSectionsCollapsed = state.sessionSectionsCollapsed || {};
+  state.sessionSectionsCollapsed[key] = !state.sessionSectionsCollapsed[key];
+  saveState();
+  // Toggle directly on the clicked element's parent section
+  if (el) {
+    const section = el.closest('.mod-section');
+    if (section) section.classList.toggle('collapsed');
+  } else {
+    // Fallback: search by onclick match
+    document.querySelectorAll('.mod-section').forEach(s => {
+      const head = s.querySelector('.mod-section-head');
+      if (head?.getAttribute('onclick')?.includes(`'${key}'`)) s.classList.toggle('collapsed');
+    });
+  }
 }
 
 // ═══════════ SESSION RECAPS (Multi-Session Array) ═══════════
