@@ -14,47 +14,46 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
-/* ═══════ PARCHMENT / BOOK THEME ═══════ */
+/* ═══════ PROFESSIONAL LIGHT THEME · 2nd-screen DM tool ═══════ */
 :root{
-  --bg:#f5ecd9;
-  --bg2:#ede2c4;
-  --surface:#fbf6e6;
-  --surface-2:#f0e6cf;
-  --text:#2a1e12;
-  --text-dim:rgba(42,30,18,0.62);
-  --text-dimmer:rgba(42,30,18,0.35);
-  --border:rgba(91,61,24,0.16);
-  --border-strong:rgba(91,61,24,0.28);
-  --accent:#6c5de4;
-  --accent-dim:rgba(108,93,228,0.12);
-  --gold:#a47626;
-  --gold-dim:rgba(164,118,38,0.15);
-  --gold-br:#c89340;
-  --crimson:#8B1A1A;
-  --crimson-dim:rgba(139,26,26,0.1);
-  --forest:#3a6b3a;
-  --ink:#1f1509;
-  --shadow-sm:0 1px 3px rgba(91,61,24,0.08);
-  --shadow-md:0 4px 14px rgba(91,61,24,0.12);
-  --shadow-lg:0 10px 40px rgba(91,61,24,0.18);
+  --bg:#f7f6f3;               /* warm off-white — softer than pure white for long sessions */
+  --bg2:#eeeceb;              /* panel bg — subtle differentiation */
+  --surface:#ffffff;          /* cards, crisp */
+  --surface-2:#f4f3f0;        /* input/secondary surface */
+  --text:#1a1a1a;             /* near-black for headline readability */
+  --text-dim:#5a5956;         /* readable mid-gray */
+  --text-dimmer:#949390;      /* labels / tertiary */
+  --border:rgba(0,0,0,0.07);  /* hairlines */
+  --border-strong:rgba(0,0,0,0.14);
+  --accent:#6c5de4;           /* EndoCraft purple — CTA */
+  --accent-dim:rgba(108,93,228,0.1);
+  --gold:#a37d25;
+  --gold-dim:rgba(163,125,37,0.11);
+  --gold-br:#c8983b;
+  --crimson:#b82a20;
+  --crimson-dim:rgba(184,42,32,0.07);
+  --forest:#2d7a5f;
+  --ink:#0a0a0a;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg:0 8px 28px rgba(0,0,0,0.1);
 }
 
 html,body{height:100%;overflow:hidden;}
 body{
   background:var(--bg);
-  background-image:
-    radial-gradient(ellipse at top left, rgba(164,118,38,0.08) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom right, rgba(91,61,24,0.06) 0%, transparent 55%);
   color:var(--text);
   font-family:'DM Sans',sans-serif;
   font-size:14px;line-height:1.55;
   display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
 /* ═══════ TOP BAR ═══════ */
 .topbar{
-  height:60px;flex-shrink:0;display:flex;align-items:center;padding:0 22px;gap:16px;
-  background:rgba(245,236,217,0.92);backdrop-filter:blur(18px);
+  height:56px;flex-shrink:0;display:flex;align-items:center;padding:0 20px;gap:14px;
+  background:rgba(247,246,243,0.92);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);z-index:20;
 }
 .logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--ink);text-decoration:none;}
@@ -293,15 +292,17 @@ body{
 
 .session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
 
-.session-read-pane{flex:1;overflow-y:auto;padding:24px 32px;min-width:0;}
+.session-read-pane{flex:1;overflow-y:auto;padding:22px 30px 30px;min-width:0;}
 .session-read-aloud{
-  background:var(--surface);border:1px solid var(--border-strong);border-left:4px solid var(--crimson);
-  border-radius:0 14px 14px 0;padding:24px 28px;margin-bottom:20px;
-  font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink);line-height:1.65;
-  box-shadow:var(--shadow-md);
+  background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--crimson);
+  border-radius:0 12px 12px 0;padding:26px 32px;margin-bottom:18px;
+  font-family:'EB Garamond',serif;font-size:21px;font-style:italic;color:var(--ink);line-height:1.55;
+  box-shadow:var(--shadow-sm);
 }
-.session-read-aloud.empty{background:var(--bg2);color:var(--text-dim);font-style:italic;border-left-color:var(--border-strong);}
-.session-read-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);margin-bottom:10px;font-style:normal;font-weight:700;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.session-read-aloud p{margin-bottom:12px;}
+.session-read-aloud p:last-child{margin-bottom:0;}
+.session-read-aloud.empty{background:var(--bg2);color:var(--text-dim);font-style:italic;border-left-color:var(--border-strong);font-size:15px;}
+.session-read-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);margin-bottom:12px;font-style:normal;font-weight:700;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
 .session-read-label::before{content:'';width:22px;height:1.5px;background:var(--crimson);}
 
 .session-quickgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
@@ -401,6 +402,123 @@ body{
 .char-delete{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);text-align:right;}
 .char-delete button{background:transparent;border:1px solid var(--crimson);color:var(--crimson);padding:7px 16px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .1s;}
 .char-delete button:hover{background:var(--crimson);color:#fff;}
+
+/* ═══════ D&D 5e CLASSIC STATBLOCK · Monster-Manual-Card Format ═══════
+   Narrow card (max 460px) with orange-beige book-plate bars top/bottom,
+   cream background, crimson hairline rules between sections. */
+.statblock{
+  max-width:460px;
+  background:#fdf6e8;
+  padding:16px 22px;
+  font-family:'EB Garamond',Georgia,serif;color:var(--ink);
+  line-height:1.4;
+  border-top:6px solid #e8c890;
+  border-bottom:6px solid #e8c890;
+  box-shadow:var(--shadow-sm);
+  position:relative;
+}
+.sb-head{margin-bottom:4px;}
+.sb-name{
+  font-family:'Cinzel',serif;font-size:26px;font-weight:700;
+  color:var(--crimson);letter-spacing:.01em;line-height:1.05;
+  text-transform:uppercase;
+}
+.sb-sub{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink);margin-top:1px;}
+.sb-rule{
+  height:3px;background:var(--crimson);margin:7px 0;
+  clip-path:polygon(0 50%, 5px 0, calc(100% - 5px) 0, 100% 50%, calc(100% - 5px) 100%, 5px 100%);
+}
+.sb-top{font-size:14.5px;color:var(--ink);padding:2px 0;}
+.sb-line{padding:1px 0;font-size:14px;color:var(--ink);}
+.sb-line strong{font-weight:700;color:var(--ink);}
+.sb-abilities{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin:4px 0 2px;text-align:center;padding:2px 0;}
+.sb-ab-l{font-family:'EB Garamond',serif;font-size:12px;font-weight:700;color:var(--crimson);letter-spacing:.04em;text-transform:uppercase;}
+.sb-ab-v{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);line-height:1.1;margin-top:2px;}
+.sb-meta{font-size:14px;color:var(--ink);}
+.sb-section{margin-top:8px;}
+.sb-section-h{
+  font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--crimson);
+  letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;padding-bottom:2px;
+  border-bottom:1px solid var(--crimson);
+}
+.sb-item{font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.45;}
+.sb-item:last-child{margin-bottom:0;}
+.sb-item strong{font-weight:600;font-style:italic;}
+.sb-item em{font-style:italic;}
+
+/* Statblock with HP-tracker header (used in Combat Overview) */
+.sb-hp-tracker{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:#f4eadc;border-radius:6px;margin-bottom:10px;
+  border:1px solid #e8c890;
+}
+.sb-hp-tracker .label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--crimson);font-weight:700;}
+.sb-hp-tracker input{width:54px;background:#fff;border:1px solid var(--border-strong);border-radius:5px;padding:4px 7px;font-family:'EB Garamond',serif;font-size:15px;font-weight:700;color:var(--ink);text-align:center;outline:none;}
+.sb-hp-tracker input:focus{border-color:var(--crimson);}
+.sb-hp-tracker .max{font-size:13px;color:var(--text-dim);}
+.sb-hp-tracker .hp-btn{background:#fff;border:1px solid var(--border-strong);color:var(--text);padding:3px 8px;border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .1s;}
+.sb-hp-tracker .hp-btn:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+.sb-hp-tracker .hp-btn.heal:hover{background:var(--forest);border-color:var(--forest);}
+.sb-hp-tracker .cond-badge{background:var(--gold-dim);color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;padding:2px 7px;border-radius:3px;font-weight:700;}
+.sb-hp-tracker.down{opacity:.5;background:repeating-linear-gradient(45deg,#f4eadc,#f4eadc 6px,#e8d9c0 6px,#e8d9c0 12px);}
+
+/* Combat Overview — horizontal scrollable lane of statblocks with tracker heads */
+.combat-overview{
+  margin:18px 0;padding:16px 0;
+  background:linear-gradient(to bottom,rgba(184,42,32,0.04),transparent);
+  border-top:2px solid var(--crimson);border-bottom:1px solid var(--border);
+}
+.combat-overview-h{
+  padding:0 4px 12px;display:flex;align-items:center;justify-content:space-between;
+}
+.combat-overview-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2.5px;color:var(--crimson);text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:10px;}
+.combat-overview-title::before{content:'⚔️';font-size:15px;}
+.combat-lane{display:flex;gap:16px;overflow-x:auto;padding:4px 4px 12px;scroll-snap-type:x proximity;}
+.combat-lane .statblock-wrap{flex-shrink:0;scroll-snap-align:start;width:460px;}
+.combat-lane::-webkit-scrollbar{height:10px;}
+.combat-lane::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:6px;}
+
+/* ═══════ SESSION RECAP BLOCK ═══════ */
+.recap-block{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:4px solid var(--gold);border-radius:0 10px 10px 0;
+  margin-bottom:18px;box-shadow:var(--shadow-sm);overflow:hidden;
+}
+.recap-head{
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--gold-dim);cursor:pointer;user-select:none;
+}
+.recap-head-l{display:flex;align-items:center;gap:10px;}
+.recap-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;font-weight:700;}
+.recap-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--ink);}
+.recap-toggle{color:var(--text-dim);font-size:13px;}
+.recap-body{padding:14px 18px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.65;color:var(--ink);font-style:italic;}
+.recap-body.edit-mode{padding:10px;font-style:normal;}
+.recap-block.collapsed .recap-body{display:none;}
+.recap-textarea{width:100%;min-height:100px;background:var(--bg);border:1px solid var(--border-strong);border-radius:6px;padding:10px 12px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;color:var(--ink);outline:none;resize:vertical;font-style:italic;}
+.recap-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.recap-edit-btn{background:transparent;border:1px solid var(--border-strong);color:var(--text-dim);padding:3px 8px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all .1s;}
+.recap-edit-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* D&D Statblock Editor Fields */
+.sb-edit{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+.sb-edit-h{padding:10px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:8px;}
+.sb-edit-h-ico{font-size:13px;}
+.sb-edit-b{padding:12px 14px;}
+.sb-edit-row{display:grid;gap:10px;margin-bottom:10px;}
+.sb-edit-row:last-child{margin-bottom:0;}
+.sb-edit-row.c2{grid-template-columns:1fr 1fr;}
+.sb-edit-row.c3{grid-template-columns:1fr 1fr 1fr;}
+.sb-edit-row.c4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.sb-edit-row.ac{grid-template-columns:90px 1fr;}
+.sb-edit-row.hp{grid-template-columns:80px 80px 1fr;}
+
+.action-block{background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:10px 12px;margin-bottom:8px;position:relative;}
+.action-block:last-child{margin-bottom:0;}
+.action-block input{width:100%;background:transparent;border:none;outline:none;font-family:'EB Garamond',serif;font-size:14px;font-weight:600;color:var(--ink);font-style:italic;padding:2px 0;margin-bottom:4px;}
+.action-block textarea{width:100%;background:transparent;border:none;outline:none;font-family:'EB Garamond',serif;font-size:13.5px;color:var(--text);line-height:1.5;resize:vertical;min-height:40px;padding:2px 0;}
+.action-block-remove{position:absolute;top:6px;right:8px;background:transparent;border:none;color:var(--text-dimmer);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px;transition:all .1s;}
+.action-block-remove:hover{background:var(--crimson);color:#fff;}
 
 /* ═══════ MODALS & TOAST ═══════ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-lg);font-weight:500;}
@@ -610,6 +728,7 @@ const DEFAULT_CAMPAIGN = {
   id: 'cos',
   name: 'Curse of Strahd',
   session: { number: 14, title: 'Orden des Silvanus', level: '5–6' },
+  lastSessionRecap: 'Session 13: Die Party erreichte das Wizard of Wines über den Svalich-Wald. Sie klärten W4 Loading Dock (zwei Giant Spiders erledigt — Gattok trug eine Wunde davon, die später infiziert wurde) und W9 Fermentation Vats. Sie trafen den Druid Naturalist, der ihnen von Yester Hill und dem Gulthias-Baum erzählte. Am Ende der Session folgten sie blutigen Spuren in den Keller — Cliffhanger vor W14.',
   party: ['Larrymäus', 'Akseth', 'Gattok', 'Telro'],
   tree: [
     { id: 'wow', label: 'Wizard of Wines', locations: [
@@ -681,48 +800,253 @@ const DEFAULT_CAMPAIGN = {
   }
 };
 
+// D&D 5e Statblock schema (NPC + PC compatible).
+// Classic sourcebook layout: Size/Type/Alignment header → AC/HP/Speed → 6 abilities with mods →
+// Saves/Skills/Resistances/Senses/Languages/CR → Traits → Actions → Reactions → Legendary Actions.
+const BLANK_CHAR = () => ({
+  type: 'npc', name: '', race: '', class: '', level: 1,
+  size: 'Medium', creatureType: '', alignment: 'neutral',
+  ac: 10, acType: '', hp: 10, maxHp: 10, hitDice: '',
+  speed: '30 ft.', initiative: 0, proficiency: '+2',
+  stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+  savingThrows: '', skills: '',
+  damageResistances: '', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: '',
+  senses: 'passive Perception 10', languages: '—',
+  cr: '', xp: '',
+  traits: [], actions: [], bonusActions: [], reactions: [], legendaryActions: [],
+  backstory: '', personality: '', notes: '',
+  portraitUrl: '', portraitSource: '', imagePrompt: ''
+});
+
 const DEFAULT_CHARACTERS = [
-  { id: 'larrymaeus', type: 'pc', name: 'Larrymäus', race: 'Human', class: 'Kleriker', level: 5, hp: 38, maxHp: 38, ac: 16,
-    stats: { str: 12, dex: 10, con: 14, int: 11, wis: 15, cha: 13 }, portraitUrl: '', portraitSource: '',
+  { id: 'larrymaeus', type: 'pc', name: 'Larrymäus', race: 'Human', class: 'Cleric (Life Domain)', level: 5,
+    size: 'Medium', creatureType: 'humanoid (human)', alignment: 'lawful good',
+    ac: 16, acType: 'chain mail', hp: 38, maxHp: 38, hitDice: '5d8+10', speed: '30 ft.', initiative: 0, proficiency: '+3',
+    stats: { str: 12, dex: 10, con: 14, int: 11, wis: 15, cha: 13 },
+    savingThrows: 'Wis +5, Cha +4', skills: 'Medicine +5, Religion +3, Insight +5',
+    damageResistances: '', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: '',
+    senses: 'passive Perception 12', languages: 'Common, Celestial',
+    traits: [
+      { name: 'Spellcasting', text: '5th-level spellcaster. Spell save DC 13, spell attack +5. Prepared: *bless, cure wounds, guiding bolt, healing word, lesser restoration, spiritual weapon, mass healing word, revivify, beacon of hope, spirit guardians, death ward*.' },
+      { name: 'Divine Domain: Life', text: 'When casting a healing spell of 1st level or higher, the target regains additional HP equal to 2 + spell level.' }
+    ],
+    actions: [
+      { name: 'Mace', text: '*Melee Weapon Attack:* +4 to hit, reach 5 ft., one target. *Hit:* 4 (1d6+1) bludgeoning damage.' },
+      { name: 'Guiding Bolt (1st-lvl)', text: '*Ranged Spell Attack:* +5 to hit, range 120 ft. *Hit:* 4d6 radiant damage, next attack vs target has advantage.' }
+    ],
+    bonusActions: [
+      { name: 'Healing Word (1st-lvl)', text: 'One creature within 60 ft. regains 1d4+3 HP.' }
+    ],
+    reactions: [], legendaryActions: [],
     backstory: 'Priester des Silvanus, hat sein Kloster verlassen um Strahd aufzuspüren.',
     personality: 'Ruhig, besonnen, aber stur. Kein Verhandlungsgeschick.',
-    notes: 'Mittlere WIS (15) → Deathly-Choir DC 16 ist ein echtes Risiko.',
-    initiative: 14 },
-  { id: 'akseth', type: 'pc', name: 'Akseth', race: 'Half-Elf', class: 'Druide', level: 5, hp: 34, maxHp: 34, ac: 14,
-    stats: { str: 10, dex: 14, con: 13, int: 12, wis: 16, cha: 11 }, portraitUrl: '', portraitSource: '',
+    notes: 'Mittlere WIS (15) → Deathly-Choir DC 16 Save ist ein echtes Risiko (Roll +3).',
+    portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+  { id: 'akseth', type: 'pc', name: 'Akseth', race: 'Half-Elf', class: 'Druid (Circle of the Moon)', level: 5,
+    size: 'Medium', creatureType: 'humanoid (half-elf)', alignment: 'chaotic good',
+    ac: 14, acType: 'leather armor', hp: 34, maxHp: 34, hitDice: '5d8+5', speed: '30 ft.', initiative: 2, proficiency: '+3',
+    stats: { str: 10, dex: 14, con: 13, int: 12, wis: 16, cha: 11 },
+    savingThrows: 'Int +4, Wis +6', skills: 'Nature +4, Perception +6, Survival +6, Animal Handling +6',
+    damageResistances: '', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: 'charmed',
+    senses: 'darkvision 60 ft., passive Perception 16', languages: 'Common, Elvish, Druidic, Sylvan',
+    traits: [
+      { name: 'Wild Shape (2/rest)', text: 'As a bonus action, transform into a beast of CR 1 or less. Circle of the Moon: CR up to 1 at level 5.' },
+      { name: 'Spellcasting', text: '5th-level druid. Spell save DC 14, spell attack +6. Prepared: *entangle, faerie fire, healing word, moonbeam, pass without trace, call lightning, conjure animals*.' }
+    ],
+    actions: [
+      { name: 'Scimitar', text: '*Melee:* +5 to hit, 1d6+2 slashing.' },
+      { name: 'Moonbeam (2nd-lvl concentration)', text: '5-ft-radius 40-ft-high cylinder. DC 14 CON save or 2d10 radiant.' }
+    ],
+    bonusActions: [{ name: 'Wild Shape (Dire Wolf)', text: 'Become dire wolf: HP 37, AC 14, Bite +5 (2d6+3 + knockdown DC 13 STR).' }],
+    reactions: [], legendaryActions: [],
     backstory: 'Circle of the Moon Druide aus dem Svalich Woods.',
     personality: 'Neugierig, impulsiv, vertraut auf Tierinstinkte.',
-    notes: 'Wildshape-Möglichkeiten limitiert in engen Räumen (Keller!).',
-    initiative: 16 },
-  { id: 'gattok', type: 'pc', name: 'Gattok', race: 'Half-Orc', class: 'Barbar', level: 6, hp: 62, maxHp: 62, ac: 14,
-    stats: { str: 17, dex: 13, con: 16, int: 9, wis: 11, cha: 10 }, portraitUrl: '', portraitSource: '',
+    notes: 'Wildshape eingeschränkt in engen Räumen (Keller, W14!). Dire Wolf passt gerade so durch.',
+    portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+  { id: 'gattok', type: 'pc', name: 'Gattok', race: 'Half-Orc', class: 'Barbarian (Path of the Berserker)', level: 6,
+    size: 'Medium', creatureType: 'humanoid (half-orc)', alignment: 'chaotic neutral',
+    ac: 14, acType: 'unarmored defense (13 + CON)', hp: 62, maxHp: 62, hitDice: '6d12+18', speed: '40 ft.', initiative: 1, proficiency: '+3',
+    stats: { str: 17, dex: 13, con: 16, int: 9, wis: 11, cha: 10 },
+    savingThrows: 'Str +6, Con +6', skills: 'Athletics +6, Intimidation +3, Survival +3',
+    damageResistances: 'bludgeoning, piercing, slashing (while raging)', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: '',
+    senses: 'darkvision 60 ft., passive Perception 10', languages: 'Common, Orc',
+    traits: [
+      { name: 'Rage (4/rest)', text: 'Bonus action. +2 damage on Str attacks, advantage on Str checks/saves, resistance to bludgeoning/piercing/slashing. 1 minute.' },
+      { name: 'Relentless Endurance (1/long rest)', text: 'When reduced to 0 HP (not killed outright), drop to 1 instead.' },
+      { name: 'Savage Attacks', text: 'On crit with melee weapon, add one extra weapon die to damage.' },
+      { name: 'Frenzy', text: 'Rage option: can make one melee weapon attack as bonus action each turn. After: 1 level exhaustion.' }
+    ],
+    actions: [
+      { name: 'Multiattack', text: 'Gattok makes two greataxe attacks.' },
+      { name: 'Greataxe', text: '*Melee:* +6 to hit, 1d12+3 slashing (+2 if raging).' }
+    ],
+    bonusActions: [{ name: 'Rage / Frenzy-Attack', text: 'See traits.' }],
+    reactions: [], legendaryActions: [],
     backstory: 'Stammeskrieger, in Barovia gestrandet.',
     personality: 'Direkt, loyal, ungeduldig. Rennt oft zuerst rein.',
-    notes: 'Wunde aus W4 — Infection-Risk. DC 12 CON am Morgen.',
-    initiative: 13 },
-  { id: 'telro', type: 'pc', name: 'Telro', race: 'Halfling', class: 'Schurke', level: 5, hp: 32, maxHp: 32, ac: 15,
-    stats: { str: 9, dex: 18, con: 12, int: 13, wis: 12, cha: 14 }, portraitUrl: '', portraitSource: '',
+    notes: 'Wunde aus W4 — Infection-Risk. DC 12 CON am Morgen sonst 1 Level Exhaustion.',
+    portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+  { id: 'telro', type: 'pc', name: 'Telro', race: 'Halfling (Lightfoot)', class: 'Rogue (Thief)', level: 5,
+    size: 'Small', creatureType: 'humanoid (halfling)', alignment: 'chaotic good',
+    ac: 15, acType: 'studded leather', hp: 32, maxHp: 32, hitDice: '5d8+5', speed: '25 ft.', initiative: 4, proficiency: '+3',
+    stats: { str: 9, dex: 18, con: 12, int: 13, wis: 12, cha: 14 },
+    savingThrows: 'Dex +7, Int +4', skills: 'Stealth +10, Perception +4, Sleight of Hand +7, Acrobatics +7, Deception +5',
+    damageResistances: '', damageImmunities: '', damageVulnerabilities: '', conditionImmunities: '',
+    senses: 'passive Perception 14', languages: 'Common, Halfling, Thieves\' Cant',
+    traits: [
+      { name: 'Sneak Attack (3d6)', text: '1/turn, extra 3d6 damage when advantage or ally within 5 ft. of target.' },
+      { name: 'Cunning Action', text: 'Bonus action to Dash, Disengage, or Hide.' },
+      { name: 'Fast Hands', text: 'Use bonus action to Use an Object, Disable Device, or Sleight of Hand.' },
+      { name: 'Lucky', text: 'Reroll any 1 on d20 attacks/checks/saves.' }
+    ],
+    actions: [
+      { name: 'Rapier', text: '*Melee:* +7 to hit, 1d8+4 piercing.' },
+      { name: 'Hand Crossbow', text: '*Ranged:* +7 to hit, range 30/120, 1d6+4 piercing.' }
+    ],
+    bonusActions: [{ name: 'Cunning Action / Fast Hands', text: 'See traits.' }],
+    reactions: [{ name: 'Uncanny Dodge', text: 'Halve damage from attacker you can see.' }],
+    legendaryActions: [],
     backstory: 'Langfinger aus Vallaki, kennt die Stadt wie seine Westentasche.',
     personality: 'Vorsichtig, humorvoll, auf eigenen Vorteil bedacht aber loyal zur Party.',
-    notes: '',
-    initiative: 18 },
-  { id: 'rahadin', type: 'npc', name: 'Rahadin', race: 'Dusk Elf', class: 'Kammerherr', level: 10, hp: 135, maxHp: 135, ac: 18,
+    notes: 'Initiative 18 (+4 DEX, Alert-Feat evtl.). Macht erste Züge taktisch entscheidend.',
+    portraitUrl: '', portraitSource: '', imagePrompt: '' },
+
+  { id: 'rahadin', type: 'npc', name: 'Rahadin',
+    size: 'Medium', creatureType: 'humanoid (dusk elf)', alignment: 'lawful evil',
+    race: 'Dusk Elf', class: 'Chamberlain of Strahd',
+    ac: 18, acType: 'studded leather', hp: 135, maxHp: 135, hitDice: '18d8+54', speed: '35 ft.', initiative: 5, proficiency: '+4',
     stats: { str: 15, dex: 20, con: 16, int: 14, wis: 16, cha: 12 },
+    savingThrows: 'Con +7, Wis +7', skills: 'Perception +7, Stealth +9',
+    damageResistances: 'necrotic; bludgeoning, piercing, slashing from nonmagical weapons',
+    damageImmunities: '', damageVulnerabilities: '',
+    conditionImmunities: 'charmed, exhaustion, frightened',
+    senses: 'darkvision 120 ft., passive Perception 17',
+    languages: 'Common, Elvish',
+    cr: '10', xp: '5,900', level: 10,
+    traits: [
+      { name: 'Fey Ancestry', text: 'Advantage on saves vs charmed, magic can\'t put Rahadin to sleep.' },
+      { name: 'Innate Spellcasting (Psionics)', text: 'Rahadin\'s innate spellcasting ability is Charisma (spell save DC 11). He can cast the following spells, requiring no components: At will: *detect thoughts*. 3/day each: *charm person, command*. 1/day each: *dominate person, hold person*.' },
+      { name: 'Sneak Attack (2d6)', text: 'Once per turn, Rahadin deals an extra 2d6 damage when he hits with a weapon attack and has advantage, or when another enemy of the target is within 5 feet.' }
+    ],
+    actions: [
+      { name: 'Multiattack', text: 'Rahadin makes two scimitar attacks.' },
+      { name: 'Scimitar', text: '*Melee Weapon Attack:* +9 to hit, reach 5 ft., one target. *Hit:* 8 (1d6+5) slashing damage plus 7 (2d6) necrotic damage.' },
+      { name: 'Deathly Choir (1/day)', text: 'Rahadin magically summons a chorus of screaming souls. Each creature within 60 feet that can hear him must make a DC 16 Wisdom saving throw. On a failed save, the creature takes 10 (3d6) psychic damage and is **frightened** for 1 minute. The target can repeat the save at the end of each of its turns.' }
+    ],
+    bonusActions: [], reactions: [
+      { name: 'Parry', text: 'Rahadin adds 3 to his AC against one melee attack that would hit him. He must see the attacker and wield a melee weapon.' }
+    ], legendaryActions: [],
+    backstory: 'Dusk-Elf, Jahrhunderte alt. Gefallener Mentor Strahds. Loyal bis zum Tod.',
+    personality: 'Kalt, verachtend. Spricht wenig, tötet effizient. Betrachtet alle "niederen" Rassen als wertlos.',
+    notes: 'Fokussiert Larrymäus (Kleriker, WIS 15 → DC 16 Choir verwundbar, Save +3). Flieht unter 50% HP zum Teleportationskreis W15.',
     portraitUrl: '', portraitSource: '',
-    backstory: 'Dusk-Elf, Jahrhunderte alt, gefallener Mentor Strahds. Loyal bis zum Tod.',
-    personality: 'Kalt, verachtend gegenüber "niederen" Rassen. Spricht wenig, tötet effizient.',
-    notes: 'CR 10. Deathly Choir DC 16 WIS (3d6 psychic + frightened 1min). Scimitar +9, 1d6+5 slashing + 2d6 necrotic.',
-    initiative: 15,
-    imagePrompt: 'Medium-close portrait of Rahadin, Strahd\'s chamberlain, tall slender elven humanoid with pale ashen-grey skin, long white-silver hair, sharp angular features with high cheekbones, haunted dark eyes with contempt, dark studded leather armor with ancient Dusk-Elf motifs, crimson cloak with faded gold trim, cold disdainful expression, torchlight dramatic shadows, gothic wine cellar background, cinematic chiaroscuro, Ravenloft aesthetic, photorealistic, 8K, sharp focus, no text, no deformed hands' },
-  { id: 'strahd', type: 'npc', name: 'Strahd von Zarovich', race: 'Vampire', class: 'Archmage/Warrior', level: 15, hp: 200, maxHp: 200, ac: 16,
+    imagePrompt: 'Medium-close portrait of Rahadin, Strahd\'s chamberlain, tall slender elven humanoid with pale ashen-grey skin, long white-silver hair, sharp angular features with high cheekbones, haunted dark eyes filled with contempt, dark studded leather armor with ancient Dusk-Elf motifs, crimson cloak with faded gold trim, cold disdainful expression, torchlight dramatic shadows, gothic wine cellar background, cinematic chiaroscuro, Ravenloft aesthetic, photorealistic, 8K, sharp focus, no text, no deformed hands' },
+
+  { id: 'strahd', type: 'npc', name: 'Strahd von Zarovich',
+    size: 'Medium', creatureType: 'undead (shapechanger)', alignment: 'lawful evil',
+    race: 'Vampire', class: 'Dark Lord of Barovia',
+    ac: 16, acType: 'natural armor', hp: 200, maxHp: 200, hitDice: '21d8+105', speed: '30 ft.', initiative: 4, proficiency: '+5',
     stats: { str: 18, dex: 18, con: 18, int: 20, wis: 15, cha: 18 },
+    savingThrows: 'Dex +9, Wis +7, Cha +9', skills: 'Arcana +13, Perception +12, Religion +8, Stealth +14',
+    damageResistances: 'necrotic; bludgeoning, piercing, slashing from nonmagical attacks',
+    damageImmunities: '', damageVulnerabilities: '',
+    conditionImmunities: 'charmed, exhaustion, frightened',
+    senses: 'darkvision 120 ft., passive Perception 22',
+    languages: 'Abyssal, Common, Draconic, Elvish, Giant, Infernal',
+    cr: '15', xp: '13,000', level: 15,
+    traits: [
+      { name: 'Shapechanger', text: 'If not in sunlight or running water, Strahd can use a bonus action to polymorph into a Tiny bat, a Medium wolf, or mist, or back into his true form.' },
+      { name: 'Regeneration', text: 'Regains 20 HP at the start of his turn if he has at least 1 HP and isn\'t in sunlight or running water.' },
+      { name: 'Spellcasting', text: '9th-level spellcaster. Int-based (save DC 18, +10 to hit). Spells: *mage hand, prestidigitation, ray of frost; detect magic, sleep; mirror image, ray of enfeeblement; animate dead, fireball, lightning bolt, nondetection; blight, polymorph; scrying*.' },
+      { name: 'Legendary Resistance (3/day)', text: 'If Strahd fails a saving throw, he can choose to succeed instead.' },
+      { name: 'Vampire Weaknesses', text: 'Forbidden: cannot enter a residence without invitation. Sunlight: disadvantage on attacks/ability/saves while in sunlight; 20 fire damage at start of turn if in sunlight. Running water: 20 acid damage at start of turn if in running water. Stake to the heart: if pierced through heart while incapacitated in resting place, paralyzed until stake removed.' }
+    ],
+    actions: [
+      { name: 'Multiattack (Vampire Form)', text: 'Makes two attacks, only one of which can be a bite.' },
+      { name: 'Unarmed Strike', text: '*Melee:* +12 to hit, 8 (1d8+4) bludgeoning + Grapple (escape DC 18).' },
+      { name: 'Bite', text: '*Melee:* +12 to hit, willing creature or grappled/restrained. *Hit:* 7 (1d6+4) piercing + 10 (3d6) necrotic, max HP reduced by necrotic. Strahd regains HP equal to necrotic dealt.' },
+      { name: 'Charm', text: 'One humanoid within 30 ft. must succeed DC 17 WIS save or be charmed. Target regards Strahd as trusted friend.' }
+    ],
+    bonusActions: [{ name: 'Shapechange', text: 'Bat / Wolf / Mist form.' }],
+    reactions: [],
+    legendaryActions: [
+      { name: 'Move', text: 'Strahd moves up to his speed without provoking opportunity attacks.' },
+      { name: 'Unarmed Strike (Costs 1)', text: 'Strahd makes one unarmed strike.' },
+      { name: 'Bite (Costs 2)', text: 'Strahd makes one bite attack.' }
+    ],
+    backstory: 'Dark Lord of Barovia. Vampire seit Jahrhunderten ans Land gefesselt durch sein eigenes Paktbündnis mit dem Dunklen.',
+    personality: 'Charmant aber unendlich grausam. Spielt mit Opfern wie eine Katze mit Mäusen. Obsessiert mit Tatyana-Wiedergeburten.',
+    notes: 'Erscheint in Dinner with Strahd. Kennt jeden Partymitglied beim Namen durch Rahadins Spione. Beginnt freundlich — eskaliert nur bei Beleidigung.',
     portraitUrl: '', portraitSource: '',
-    backstory: 'Dark Lord of Barovia. Vampire, seit Jahrhunderten ans Land gefesselt.',
-    personality: 'Charmant aber unendlich grausam. Spielt mit Opfern wie eine Katze mit Mäusen.',
-    notes: 'Erscheint in Dinner with Strahd. Kennt jeden Partymitglied beim Namen durch Rahadins Spione.',
-    initiative: 18,
     imagePrompt: 'Portrait of Strahd von Zarovich, tall pale aristocratic vampire with sharp widow\'s peak hairline and piercing red eyes, high cheekbones, cold amused half-smile revealing subtle fangs, formal Victorian-era dark crimson velvet coat with gold trim, raven black hair swept back, ornate silver amulet, castle Ravenloft candlelit dining hall background, moody chiaroscuro lighting, Gothic horror aesthetic, cinematic photorealistic, 8K, no text, no deformed hands' }
 ];
+
+// ═══════════ STATBLOCK HELPERS ═══════════
+function abilityMod(score) { return Math.floor((score - 10) / 2); }
+function formatMod(n) { return (n >= 0 ? '+' : '') + n; }
+
+// Render D&D 5e classic sourcebook statblock (read-only display).
+// Used in Session Live + Character Editor preview.
+function renderStatblock(c, opts = {}) {
+  if (!c) return '';
+  const compact = opts.compact || false;
+  const modRow = ['str','dex','con','int','wis','cha'].map(s =>
+    `<div class="sb-ab"><div class="sb-ab-l">${s.toUpperCase()}</div><div class="sb-ab-v">${c.stats[s]}</div><div class="sb-ab-m">(${formatMod(abilityMod(c.stats[s]))})</div></div>`
+  ).join('');
+
+  const lineRows = [];
+  if (c.savingThrows) lineRows.push(`<div class="sb-line"><strong>Saving Throws</strong> ${c.savingThrows}</div>`);
+  if (c.skills) lineRows.push(`<div class="sb-line"><strong>Skills</strong> ${c.skills}</div>`);
+  if (c.damageVulnerabilities) lineRows.push(`<div class="sb-line"><strong>Damage Vulnerabilities</strong> ${c.damageVulnerabilities}</div>`);
+  if (c.damageResistances) lineRows.push(`<div class="sb-line"><strong>Damage Resistances</strong> ${c.damageResistances}</div>`);
+  if (c.damageImmunities) lineRows.push(`<div class="sb-line"><strong>Damage Immunities</strong> ${c.damageImmunities}</div>`);
+  if (c.conditionImmunities) lineRows.push(`<div class="sb-line"><strong>Condition Immunities</strong> ${c.conditionImmunities}</div>`);
+  lineRows.push(`<div class="sb-line"><strong>Senses</strong> ${c.senses || '—'}</div>`);
+  lineRows.push(`<div class="sb-line"><strong>Languages</strong> ${c.languages || '—'}</div>`);
+  if (c.type === 'npc') {
+    lineRows.push(`<div class="sb-line"><strong>Challenge</strong> ${c.cr || '—'}${c.xp ? ` (${c.xp} XP)` : ''}</div>`);
+  } else {
+    lineRows.push(`<div class="sb-line"><strong>Proficiency Bonus</strong> ${c.proficiency || formatMod(2 + Math.floor((c.level-1)/4))}</div>`);
+  }
+
+  const section = (title, items) => {
+    if (!items || !items.length) return '';
+    return `<div class="sb-section">
+      <div class="sb-section-h">${title}</div>
+      ${items.map(it => `<div class="sb-item"><strong>${escapeHtml(it.name)}.</strong> ${mdInline(it.text || '')}</div>`).join('')}
+    </div>`;
+  };
+
+  const typeLine = [c.size, c.creatureType].filter(Boolean).join(' ');
+  return `
+    <div class="statblock">
+      <div class="sb-head">
+        <div class="sb-name">${escapeHtml(c.name || '—')}</div>
+        <div class="sb-sub">${typeLine ? escapeHtml(typeLine) : (c.race + ' ' + c.class)}${c.alignment ? ', ' + escapeHtml(c.alignment) : ''}</div>
+      </div>
+      <div class="sb-rule"></div>
+      <div class="sb-top">
+        <div class="sb-line"><strong>Armor Class</strong> ${c.ac}${c.acType ? ` (${escapeHtml(c.acType)})` : ''}</div>
+        <div class="sb-line"><strong>Hit Points</strong> ${c.hp}/${c.maxHp}${c.hitDice ? ` (${escapeHtml(c.hitDice)})` : ''}</div>
+        <div class="sb-line"><strong>Speed</strong> ${escapeHtml(c.speed || '30 ft.')}</div>
+      </div>
+      <div class="sb-rule"></div>
+      <div class="sb-abilities">${modRow}</div>
+      <div class="sb-rule"></div>
+      <div class="sb-meta">${lineRows.join('')}</div>
+      ${!compact ? `
+        ${section('Traits', c.traits)}
+        ${section('Actions', c.actions)}
+        ${section('Bonus Actions', c.bonusActions)}
+        ${section('Reactions', c.reactions)}
+        ${section('Legendary Actions', c.legendaryActions)}
+      ` : ''}
+    </div>
+  `;
+}
 
 // ═══════════ STATE ═══════════
 let state = loadState();
@@ -1037,6 +1361,8 @@ function renderSessionLocation() {
 
   const host = document.getElementById('sessReadPane');
   host.innerHTML = `
+    ${renderRecapBlock()}
+
     ${loc.readAloud
       ? `<div class="session-read-aloud">
           <div class="session-read-label">Vorlesen</div>
@@ -1046,6 +1372,8 @@ function renderSessionLocation() {
           <div class="session-read-label">Vorlesen</div>
           <p>Kein Vorlese-Text hinterlegt — im <strong>Vorbereitung</strong>-Tab editieren.</p>
         </div>`}
+
+    ${state.initiative.length ? renderCombatOverview() : ''}
 
     <div class="session-quickgrid">
       <div class="sq-card">
@@ -1081,16 +1409,116 @@ function renderSessionLocation() {
         <div class="sq-card-b" style="font-style:italic;color:var(--text-dim);">${escapeHtml(loc.dmNote)}</div>
       </div>` : ''}
 
-    ${renderLocRelatedStats(loc)}
+    ${!state.initiative.length ? renderLocRelatedStats(loc) : ''}
   `;
 
   renderSessSceneImage();
   renderSessMusic(loc);
 }
 
+// ═══════════ SESSION RECAP ═══════════
+function renderRecapBlock() {
+  const c = campaign();
+  const sessNum = c.session?.number ? c.session.number - 1 : '—';
+  const recap = c.lastSessionRecap || '';
+  const collapsed = state.recapCollapsed ? 'collapsed' : '';
+  const editMode = state.recapEditing;
+  return `
+    <div class="recap-block ${collapsed}" id="recapBlock">
+      <div class="recap-head" onclick="toggleRecap(event)">
+        <div class="recap-head-l">
+          <span class="recap-tag">Last Session · #${sessNum}</span>
+          <span class="recap-title">Recap</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="recap-edit-btn" onclick="event.stopPropagation();toggleRecapEdit()">${editMode ? 'Fertig' : '✎ Bearbeiten'}</button>
+          <span class="recap-toggle">${collapsed ? '▸' : '▾'}</span>
+        </div>
+      </div>
+      <div class="recap-body ${editMode ? 'edit-mode' : ''}">
+        ${editMode
+          ? `<textarea class="recap-textarea" id="recapTextarea" onblur="saveRecap(this.value)">${escapeHtml(recap)}</textarea>`
+          : recap
+            ? escapeHtml(recap).replace(/\n/g, '<br>')
+            : '<em style="color:var(--text-dim);">Noch kein Recap. Klick <strong>✎ Bearbeiten</strong> um den Recap der letzten Session festzuhalten — wird im System-Prompt der KI genutzt.</em>'
+        }
+      </div>
+    </div>
+  `;
+}
+
+function toggleRecap(e) {
+  if (e && e.target.closest('.recap-edit-btn')) return;
+  state.recapCollapsed = !state.recapCollapsed; saveState();
+  renderSessionLocation();
+}
+function toggleRecapEdit() {
+  state.recapEditing = !state.recapEditing; saveState();
+  renderSessionLocation();
+  if (state.recapEditing) setTimeout(() => document.getElementById('recapTextarea')?.focus(), 50);
+}
+function saveRecap(value) {
+  campaign().lastSessionRecap = value; saveState();
+}
+
+// ═══════════ COMBAT OVERVIEW — full statblocks with HP trackers for every combatant ═══════════
+function renderCombatOverview() {
+  if (!state.initiative.length) return '';
+  const stats = state.initiative.map(e => {
+    const c = state.characters.find(x => x.id === e.id); if (!c) return '';
+    const damageBtn = `<button class="hp-btn" onclick="damageHP(${state.initiative.indexOf(e)})" title="-5 HP">−5</button>`;
+    const healBtn = `<button class="hp-btn heal" onclick="healHP(${state.initiative.indexOf(e)})" title="+5 HP">+5</button>`;
+    const condBadges = (e.conditions || []).map(cd => `<span class="cond-badge">${escapeHtml(cd)}</span>`).join('');
+    const turnIndicator = e.turn ? '<span style="color:var(--accent);font-weight:700;font-family:\'Cinzel\',serif;font-size:10px;letter-spacing:2px;">● AKTIV</span>' : '';
+    const downed = e.down ? 'down' : '';
+    return `
+      <div class="statblock-wrap">
+        <div class="sb-hp-tracker ${downed}">
+          <span class="label">HP</span>
+          <input type="number" value="${e.hp}" onblur="setCombatHP(${state.initiative.indexOf(e)}, this.value)">
+          <span class="max">/ ${c.maxHp}</span>
+          ${damageBtn}${healBtn}
+          ${condBadges}
+          <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+            ${turnIndicator}
+            <button class="hp-btn" onclick="toggleDown(${state.initiative.indexOf(e)})" title="${e.down ? 'Aufstehen' : 'KO'}">${e.down ? '↑' : '💀'}</button>
+          </div>
+        </div>
+        ${renderStatblock(c)}
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="combat-overview">
+      <div class="combat-overview-h">
+        <div class="combat-overview-title">Combat Overview · ${state.initiative.length} Combatants</div>
+        <div style="font-size:11px;color:var(--text-dim);">← horizontal scrollen →</div>
+      </div>
+      <div class="combat-lane">${stats}</div>
+    </div>
+  `;
+}
+
+function setCombatHP(i, val) {
+  state.initiative[i].hp = Math.max(0, parseInt(val) || 0);
+  if (state.initiative[i].hp === 0) state.initiative[i].down = true;
+  saveState(); renderInitiative(); renderSessionLocation();
+}
+function damageHP(i) {
+  state.initiative[i].hp = Math.max(0, state.initiative[i].hp - 5);
+  if (state.initiative[i].hp === 0) state.initiative[i].down = true;
+  saveState(); renderInitiative(); renderSessionLocation();
+}
+function healHP(i) {
+  const c = state.characters.find(x => x.id === state.initiative[i].id);
+  const max = c ? c.maxHp : 999;
+  state.initiative[i].hp = Math.min(max, state.initiative[i].hp + 5);
+  if (state.initiative[i].hp > 0) state.initiative[i].down = false;
+  saveState(); renderInitiative(); renderSessionLocation();
+}
+
 function renderLocRelatedStats(loc) {
-  // Show NPC statblocks for characters tagged relevant to this location
-  // Simple heuristic: if location name/dmNote mentions character name, show their stats
+  // Show full D&D 5e statblocks for NPCs tagged relevant to this location
   const relevantNpcs = state.characters.filter(c => {
     if (c.type !== 'npc') return false;
     const ln = (loc.name + ' ' + (loc.dmNote || '') + ' ' + (loc.meta || '')).toLowerCase();
@@ -1098,17 +1526,8 @@ function renderLocRelatedStats(loc) {
   });
   if (!relevantNpcs.length) return '';
   return `
-    <div class="sq-card">
-      <div class="sq-card-h"><span>🗡️</span><span>Relevante Stats</span></div>
-      <div class="sq-card-b">
-        ${relevantNpcs.map(c => `
-          <div class="sq-stat">
-            <div class="sq-stat-n">${escapeHtml(c.name)}</div>
-            <div class="sq-stat-row"><span>HP / AC</span><span>${c.hp}/${c.maxHp} · AC ${c.ac}</span></div>
-            <div class="sq-stat-row"><span>CR / Init</span><span>${c.level} · ${c.initiative || '—'}</span></div>
-            ${c.notes ? `<div class="sq-stat-row"><span>Notes</span><span>${escapeHtml(c.notes.slice(0, 70))}${c.notes.length > 70 ? '…' : ''}</span></div>` : ''}
-          </div>`).join('')}
-      </div>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:14px;">
+      ${relevantNpcs.map(c => renderStatblock(c)).join('')}
     </div>
   `;
 }
@@ -1171,7 +1590,7 @@ function rollInitiative() {
   }));
   combined.sort((a, b) => b.init - a.init);
   if (combined.length) combined[0].turn = true;
-  state.initiative = combined; saveState(); renderInitiative();
+  state.initiative = combined; saveState(); renderInitiative(); renderSessionLocation();
 }
 function nextTurn() {
   if (!state.initiative.length) { rollInitiative(); return; }
@@ -1180,11 +1599,12 @@ function nextTurn() {
   let next = (curIdx + 1) % state.initiative.length;
   while (state.initiative[next].down && next !== curIdx) next = (next + 1) % state.initiative.length;
   state.initiative[next].turn = true;
-  saveState(); renderInitiative();
+  saveState(); renderInitiative(); renderSessionLocation();
 }
-function toggleDown(i) { state.initiative[i].down = !state.initiative[i].down; saveState(); renderInitiative(); }
-function updateInitHP(i, val) { state.initiative[i].hp = parseInt(val) || 0; saveState(); }
-function clearInitiative() { state.initiative = []; saveState(); renderInitiative(); }
+function rollInitiativeUpdated() { rollInitiative(); renderSessionLocation(); }
+function toggleDown(i) { state.initiative[i].down = !state.initiative[i].down; saveState(); renderInitiative(); renderSessionLocation(); }
+function updateInitHP(i, val) { state.initiative[i].hp = parseInt(val) || 0; saveState(); renderSessionLocation(); }
+function clearInitiative() { state.initiative = []; saveState(); renderInitiative(); renderSessionLocation(); }
 
 // ═══════════ CHARACTERS VIEW ═══════════
 function renderChars() {
@@ -1237,12 +1657,7 @@ function newCharacter() {
   const type = confirm('Spieler-Charakter? (OK = Spieler, Abbrechen = NPC)') ? 'pc' : 'npc';
   const name = prompt(`Name für neuen ${type === 'pc' ? 'Charakter' : 'NPC'}:`); if (!name) return;
   const id = 'c_' + Date.now().toString(36);
-  const c = {
-    id, type, name, race: '', class: '', level: 1, hp: 10, maxHp: 10, ac: 10,
-    stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-    portraitUrl: '', portraitSource: '', backstory: '', personality: '', notes: '', initiative: 10
-  };
-  if (type === 'npc') c.imagePrompt = '';
+  const c = { ...BLANK_CHAR(), id, type, name };
   state.characters.push(c);
   state.currentCharId = id; saveState();
   renderChars();
@@ -1255,18 +1670,30 @@ function renderCharEditor() {
     host.innerHTML = `
       <div class="char-empty-state">
         <h2>Wähl einen <em>Charakter</em></h2>
-        <p>Der Charakter-Builder verwaltet Spieler-Charaktere und NPCs. Spieler können Fotos hochladen, NPCs können AI-Portraits generieren. Die Daten fließen direkt in den Co-DM-Context.</p>
+        <p>Der Charakter-Builder verwendet das klassische D&D 5e Statblock-Format — kompatibel mit SRD/Monster Manual. Spieler laden Fotos hoch, NPCs bekommen AI-Portraits. Die kompletten Stats fließen in den Co-DM-Context.</p>
       </div>`;
     return;
   }
+
+  // Action list renderer (traits/actions/bonus/reactions/legendary all share this structure)
+  const actionList = (listName, items) => `
+    ${(items || []).map((it, i) => `
+      <div class="action-block" data-list="${listName}" data-idx="${i}">
+        <input value="${escapeAttr(it.name)}" placeholder="Name (z.B. 'Multiattack', 'Scimitar', 'Deathly Choir (1/day)')" onblur="updateCharAction('${listName}', ${i}, 'name', this.value)">
+        <textarea placeholder="Beschreibung — z.B. '*Melee Weapon Attack:* +9 to hit, reach 5 ft., one target. *Hit:* 8 (1d6+5) slashing.'" onblur="updateCharAction('${listName}', ${i}, 'text', this.value)">${escapeHtml(it.text || '')}</textarea>
+        <button class="action-block-remove" onclick="removeCharAction('${listName}', ${i})" title="Löschen">×</button>
+      </div>
+    `).join('')}
+    <button class="add-row" onclick="addCharAction('${listName}')">+ ${listName === 'traits' ? 'Trait' : listName === 'actions' ? 'Action' : listName === 'bonusActions' ? 'Bonus Action' : listName === 'reactions' ? 'Reaction' : 'Legendary Action'} hinzufügen</button>
+  `;
+
   host.innerHTML = `
     <div class="char-form">
+      <!-- Portrait + Header -->
       <div class="char-form-head">
         <div>
           <div class="char-portrait" id="charPortrait">
-            ${c.portraitUrl
-              ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">`
-              : `<div class="empty">Kein Portrait</div>`}
+            ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<div class="empty">Kein Portrait</div>`}
           </div>
           <div class="char-portrait-actions">
             ${c.type === 'pc'
@@ -1280,62 +1707,144 @@ function renderCharEditor() {
         <div class="char-form-body">
           <div class="char-form-tag">
             <span class="badge ${c.type}">${c.type.toUpperCase()}</span>
-            ${c.type === 'pc' ? 'SPIELER-CHARAKTER' : 'NICHT-SPIELER-CHARAKTER'}
+            ${c.type === 'pc' ? 'SPIELER-CHARAKTER' : 'NON-PLAYER CHARACTER'}
           </div>
           <input class="char-form-name" value="${escapeAttr(c.name)}" placeholder="Name" onblur="updateCharField('name', this.value)">
           <div class="char-form-row">
-            <div class="field">
-              <div class="field-lbl">Rasse</div>
-              <input class="field-in" value="${escapeAttr(c.race || '')}" onblur="updateCharField('race', this.value)">
+            <div class="field"><div class="field-lbl">Size</div>
+              <select class="field-in" onchange="updateCharField('size', this.value)">
+                ${['Tiny','Small','Medium','Large','Huge','Gargantuan'].map(s => `<option ${c.size===s?'selected':''}>${s}</option>`).join('')}
+              </select>
             </div>
-            <div class="field">
-              <div class="field-lbl">${c.type === 'pc' ? 'Klasse' : 'Rolle'}</div>
-              <input class="field-in" value="${escapeAttr(c.class || '')}" onblur="updateCharField('class', this.value)">
+            <div class="field"><div class="field-lbl">Creature Type</div>
+              <input class="field-in" value="${escapeAttr(c.creatureType || '')}" placeholder="humanoid (elf)" onblur="updateCharField('creatureType', this.value)">
             </div>
-            <div class="field">
-              <div class="field-lbl">${c.type === 'pc' ? 'Level' : 'CR'}</div>
-              <input class="field-in" type="number" value="${c.level || 1}" onblur="updateCharField('level', parseInt(this.value) || 1)">
+            <div class="field"><div class="field-lbl">Alignment</div>
+              <input class="field-in" value="${escapeAttr(c.alignment || '')}" placeholder="lawful evil" onblur="updateCharField('alignment', this.value)">
             </div>
+          </div>
+          <div class="char-form-row">
+            <div class="field"><div class="field-lbl">Race</div><input class="field-in" value="${escapeAttr(c.race || '')}" onblur="updateCharField('race', this.value)"></div>
+            <div class="field"><div class="field-lbl">${c.type === 'pc' ? 'Class / Subclass' : 'Role'}</div><input class="field-in" value="${escapeAttr(c.class || '')}" onblur="updateCharField('class', this.value)"></div>
+            <div class="field"><div class="field-lbl">${c.type === 'pc' ? 'Level' : 'CR (numeric)'}</div><input class="field-in" type="number" value="${c.level || 1}" onblur="updateCharField('level', parseInt(this.value) || 1)"></div>
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-h"><span class="card-h-ico">❤️</span><span class="card-h-title">Combat Stats</span></div>
-        <div class="card-b">
-          <div class="char-form-row">
-            <div class="field"><div class="field-lbl">HP</div><input class="field-in" type="number" value="${c.hp}" onblur="updateCharField('hp', parseInt(this.value) || 0)"></div>
-            <div class="field"><div class="field-lbl">Max HP</div><input class="field-in" type="number" value="${c.maxHp}" onblur="updateCharField('maxHp', parseInt(this.value) || 0)"></div>
-            <div class="field"><div class="field-lbl">AC</div><input class="field-in" type="number" value="${c.ac}" onblur="updateCharField('ac', parseInt(this.value) || 10)"></div>
+      <!-- AC / HP / Speed -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">🛡️</span>Armor · Hit Points · Speed</div>
+        <div class="sb-edit-b">
+          <div class="sb-edit-row ac">
+            <div class="field" style="margin:0"><div class="field-lbl">Armor Class</div><input class="field-in" type="number" value="${c.ac}" onblur="updateCharField('ac', parseInt(this.value) || 10)"></div>
+            <div class="field" style="margin:0"><div class="field-lbl">AC Description (z.B. "studded leather")</div><input class="field-in" value="${escapeAttr(c.acType || '')}" onblur="updateCharField('acType', this.value)"></div>
           </div>
-          <div class="stats-grid" style="margin-top:12px;">
+          <div class="sb-edit-row hp">
+            <div class="field" style="margin:0"><div class="field-lbl">HP</div><input class="field-in" type="number" value="${c.hp}" onblur="updateCharField('hp', parseInt(this.value) || 0)"></div>
+            <div class="field" style="margin:0"><div class="field-lbl">Max HP</div><input class="field-in" type="number" value="${c.maxHp}" onblur="updateCharField('maxHp', parseInt(this.value) || 0)"></div>
+            <div class="field" style="margin:0"><div class="field-lbl">Hit Dice (z.B. "18d8+54")</div><input class="field-in" value="${escapeAttr(c.hitDice || '')}" onblur="updateCharField('hitDice', this.value)"></div>
+          </div>
+          <div class="sb-edit-row c2">
+            <div class="field" style="margin:0"><div class="field-lbl">Speed</div><input class="field-in" value="${escapeAttr(c.speed || '30 ft.')}" placeholder="30 ft., fly 60 ft." onblur="updateCharField('speed', this.value)"></div>
+            <div class="field" style="margin:0"><div class="field-lbl">Initiative (0 = würfeln)</div><input class="field-in" type="number" value="${c.initiative || 0}" onblur="updateCharField('initiative', parseInt(this.value) || 0)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abilities -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">💪</span>Ability Scores</div>
+        <div class="sb-edit-b">
+          <div class="stats-grid">
             ${['str','dex','con','int','wis','cha'].map(s => `
               <div class="stat-block">
                 <div class="stat-block-l">${s.toUpperCase()}</div>
                 <input class="stat-block-v" type="number" value="${c.stats[s]}" onblur="updateCharStat('${s}', parseInt(this.value) || 10)">
+                <div style="font-family:'EB Garamond',serif;font-size:12px;color:var(--text-dim);margin-top:2px;">(${formatMod(abilityMod(c.stats[s]))})</div>
               </div>
             `).join('')}
-          </div>
-          <div class="field" style="margin-top:12px;">
-            <div class="field-lbl">Initiative (Fix — 0 = würfeln)</div>
-            <input class="field-in" type="number" value="${c.initiative || 0}" onblur="updateCharField('initiative', parseInt(this.value) || 0)" style="max-width:100px;">
           </div>
         </div>
       </div>
 
+      <!-- Saves, Skills, Resistances -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">📜</span>Saves · Skills · Resistances</div>
+        <div class="sb-edit-b">
+          <div class="field"><div class="field-lbl">Saving Throws</div><input class="field-in" value="${escapeAttr(c.savingThrows || '')}" placeholder="Con +7, Wis +7" onblur="updateCharField('savingThrows', this.value)"></div>
+          <div class="field"><div class="field-lbl">Skills</div><input class="field-in" value="${escapeAttr(c.skills || '')}" placeholder="Perception +7, Stealth +9" onblur="updateCharField('skills', this.value)"></div>
+          <div class="sb-edit-row c2">
+            <div class="field" style="margin:0"><div class="field-lbl">Damage Vulnerabilities</div><input class="field-in" value="${escapeAttr(c.damageVulnerabilities || '')}" onblur="updateCharField('damageVulnerabilities', this.value)"></div>
+            <div class="field" style="margin:0"><div class="field-lbl">Damage Resistances</div><input class="field-in" value="${escapeAttr(c.damageResistances || '')}" placeholder="necrotic; bludgeoning from nonmagical..." onblur="updateCharField('damageResistances', this.value)"></div>
+          </div>
+          <div class="sb-edit-row c2">
+            <div class="field" style="margin:0"><div class="field-lbl">Damage Immunities</div><input class="field-in" value="${escapeAttr(c.damageImmunities || '')}" onblur="updateCharField('damageImmunities', this.value)"></div>
+            <div class="field" style="margin:0"><div class="field-lbl">Condition Immunities</div><input class="field-in" value="${escapeAttr(c.conditionImmunities || '')}" placeholder="charmed, exhaustion, frightened" onblur="updateCharField('conditionImmunities', this.value)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Senses, Languages, CR/Proficiency -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">👁️</span>Senses · Languages · ${c.type === 'npc' ? 'Challenge' : 'Proficiency'}</div>
+        <div class="sb-edit-b">
+          <div class="field"><div class="field-lbl">Senses</div><input class="field-in" value="${escapeAttr(c.senses || '')}" placeholder="darkvision 60 ft., passive Perception 17" onblur="updateCharField('senses', this.value)"></div>
+          <div class="field"><div class="field-lbl">Languages</div><input class="field-in" value="${escapeAttr(c.languages || '')}" placeholder="Common, Elvish" onblur="updateCharField('languages', this.value)"></div>
+          ${c.type === 'npc'
+            ? `<div class="sb-edit-row c2">
+                <div class="field" style="margin:0"><div class="field-lbl">Challenge Rating</div><input class="field-in" value="${escapeAttr(c.cr || '')}" placeholder="10" onblur="updateCharField('cr', this.value)"></div>
+                <div class="field" style="margin:0"><div class="field-lbl">XP</div><input class="field-in" value="${escapeAttr(c.xp || '')}" placeholder="5,900" onblur="updateCharField('xp', this.value)"></div>
+              </div>`
+            : `<div class="field"><div class="field-lbl">Proficiency Bonus</div><input class="field-in" value="${escapeAttr(c.proficiency || formatMod(2 + Math.floor((c.level-1)/4)))}" onblur="updateCharField('proficiency', this.value)" style="max-width:100px;"></div>`
+          }
+        </div>
+      </div>
+
+      <!-- Traits -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">✨</span>Traits (passive features)</div>
+        <div class="sb-edit-b">${actionList('traits', c.traits)}</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">⚔️</span>Actions</div>
+        <div class="sb-edit-b">${actionList('actions', c.actions)}</div>
+      </div>
+
+      <!-- Bonus Actions -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">⚡</span>Bonus Actions</div>
+        <div class="sb-edit-b">${actionList('bonusActions', c.bonusActions)}</div>
+      </div>
+
+      <!-- Reactions -->
+      <div class="sb-edit">
+        <div class="sb-edit-h"><span class="sb-edit-h-ico">🛡️</span>Reactions</div>
+        <div class="sb-edit-b">${actionList('reactions', c.reactions)}</div>
+      </div>
+
+      <!-- Legendary Actions (only show for NPCs) -->
+      ${c.type === 'npc' ? `
+        <div class="sb-edit">
+          <div class="sb-edit-h"><span class="sb-edit-h-ico">👑</span>Legendary Actions</div>
+          <div class="sb-edit-b">${actionList('legendaryActions', c.legendaryActions)}</div>
+        </div>` : ''}
+
+      <!-- Narrative -->
       <div class="card">
-        <div class="card-h"><span class="card-h-ico">📖</span><span class="card-h-title">Hintergrund</span></div>
+        <div class="card-h"><span class="card-h-ico">📖</span><span class="card-h-title">Narrative</span></div>
         <div class="card-b">
           <div class="field">
             <div class="field-lbl">Backstory</div>
             <textarea class="field-ta" onblur="updateCharField('backstory', this.value)">${escapeHtml(c.backstory || '')}</textarea>
           </div>
           <div class="field">
-            <div class="field-lbl">Persönlichkeit</div>
+            <div class="field-lbl">Personality</div>
             <textarea class="field-ta" onblur="updateCharField('personality', this.value)">${escapeHtml(c.personality || '')}</textarea>
           </div>
           <div class="field">
-            <div class="field-lbl">DM-Notizen (privat)</div>
+            <div class="field-lbl">DM-Notes (privat — nur für dich)</div>
             <textarea class="field-ta" placeholder="Taktiken, Motive, Twists..." onblur="updateCharField('notes', this.value)">${escapeHtml(c.notes || '')}</textarea>
           </div>
         </div>
@@ -1345,15 +1854,37 @@ function renderCharEditor() {
         <div class="card">
           <div class="card-h"><span class="card-h-ico">🎨</span><span class="card-h-title">Portrait-Prompt (für AI-Generation)</span></div>
           <div class="card-b">
-            <textarea class="field-ta field-imgprompt" placeholder="Medium portrait, fantasy character, ..." onblur="updateCharField('imagePrompt', this.value)">${escapeHtml(c.imagePrompt || '')}</textarea>
+            <textarea class="field-ta field-imgprompt" placeholder="Medium portrait of [name], ..." onblur="updateCharField('imagePrompt', this.value)">${escapeHtml(c.imagePrompt || '')}</textarea>
           </div>
         </div>` : ''}
+
+      <!-- Preview: rendered statblock -->
+      <div class="card">
+        <div class="card-h"><span class="card-h-ico">👁️</span><span class="card-h-title">Preview (wie es im Session Live erscheint)</span></div>
+        <div class="card-b">${renderStatblock(c)}</div>
+      </div>
 
       <div class="char-delete">
         <button onclick="deleteChar()">Charakter löschen</button>
       </div>
     </div>
   `;
+}
+
+// ═══════════ ACTION-LIST CRUD ═══════════
+function updateCharAction(listName, i, field, value) {
+  const c = currentChar(); if (!c || !c[listName]?.[i]) return;
+  c[listName][i][field] = value; saveState();
+}
+function addCharAction(listName) {
+  const c = currentChar(); if (!c) return;
+  c[listName] = c[listName] || [];
+  c[listName].push({ name: '', text: '' });
+  saveState(); renderCharEditor();
+}
+function removeCharAction(listName, i) {
+  const c = currentChar(); if (!c?.[listName]) return;
+  c[listName].splice(i, 1); saveState(); renderCharEditor();
 }
 
 function updateCharField(field, value) {
