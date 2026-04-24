@@ -7303,8 +7303,7 @@ function sendHighlightToCardGenerator(h) {
   const campaignName = campaign()?.name || '';
   const sessionLbl = h.sessionNumber ? `Session ${h.sessionNumber}${h.sessionTitle ? ' · ' + h.sessionTitle : ''}` : '';
 
-  // Reicher strukturierter Story-Text — der Karten-Generator (endocraft.app/session) bekommt
-  // alles was er braucht um einen präzisen Seedream-Prompt zu bauen.
+  // Reicher strukturierter Story-Text für den Karten-Generator (endocraft.app/scroll)
   const storyParts = [];
   if (h.title) storyParts.push(`MOMENT: ${h.title}`);
   if (h.character) storyParts.push(`CHARAKTER: ${h.character}`);
@@ -7329,22 +7328,46 @@ function sendHighlightToCardGenerator(h) {
   }
 
   const story = storyParts.join('\n');
-  const params = new URLSearchParams({
+
+  // Payload über localStorage handoff (same-origin endocraft.app) — Portrait kann Base64 sein,
+  // passt in LS aber nicht in URL. Scroll-Generator liest die Payload bei Load aus LS.
+  const transferKey = 'ec_dmstudio_transfer_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+  const payload = {
+    version: 1,
     source: 'dm-studio',
-    story: story
-  });
-  if (h.character) params.set('character', h.character);
-  if (h.title) params.set('title', h.title);
-  if (h.rarity) params.set('rarity', h.rarity);
-  if (h.imageHint) params.set('image_hint', h.imageHint);
-  if (loc) params.set('location', loc);
-  if (campaignName) params.set('campaign', campaignName);
-  if (char?.portraitUrl && !char.portraitUrl.startsWith('data:')) {
-    params.set('portrait_url', char.portraitUrl);  // nur echte URLs, nicht base64 (zu lang)
+    createdAt: Date.now(),
+    story,
+    character: h.character || '',
+    characterName: h.character || '',
+    characterClass: char ? [char.race, char.class].filter(Boolean).join(' ') : '',
+    title: h.title || '',
+    moment: h.moment || '',
+    rarity: h.rarity || '',
+    imageHint: h.imageHint || '',
+    location: loc,
+    sessionNumber: h.sessionNumber || 0,
+    sessionTitle: h.sessionTitle || '',
+    campaign: campaignName,
+    portraitUrl: char?.portraitUrl || '',  // kann Base64 sein — LS ist same-origin shareable
+    portraitSource: char?.portraitSource || '',
+    backstory: char?.backstory || '',
+    personality: char?.personality || '',
+    imagePromptStyle: char?.imagePrompt || ''
+  };
+
+  try {
+    localStorage.setItem(transferKey, JSON.stringify(payload));
+  } catch (e) {
+    console.error('[DM→Scroll] localStorage full?', e);
+    toast('Payload zu groß — Portrait wird nicht übertragen', true);
+    // Fallback ohne Portrait
+    delete payload.portraitUrl;
+    try { localStorage.setItem(transferKey, JSON.stringify(payload)); } catch (e2) { return; }
   }
 
-  window.open(`https://endocraft.app/session/?${params.toString()}`, '_blank');
-  toast(`→ EndoCraft öffnet Karten-Generator für „${h.title || h.character}"`);
+  // Korrekter Endpoint: /scroll/ ist der Kartengenerator (nicht /session/ — das ist die Share-View)
+  window.open(`https://endocraft.app/scroll/?dmstudio=${transferKey}`, '_blank');
+  toast(`→ Karten-Generator öffnet für „${h.title || h.character}"`);
 
   // Highlight als "used" markieren
   if (h.id && state.savedHighlights) {

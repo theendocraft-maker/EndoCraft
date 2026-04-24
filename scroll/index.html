@@ -111,6 +111,33 @@ body {
   max-width: 520px;
 }
 
+/* ═══ DM STUDIO HANDOFF: Reference Panel ═══ */
+.dmstudio-ref-panel {
+  background: linear-gradient(135deg, rgba(123,108,246,0.12), rgba(232,184,109,0.08));
+  border: 1px solid rgba(123,108,246,0.35);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+.dmsref-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.dmsref-tag { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2.5px; color:#E8B86D; text-transform:uppercase; font-weight:700; }
+.dmsref-remove { background:transparent; border:none; color:rgba(255,255,255,0.4); font-size:22px; cursor:pointer; padding:0 6px; line-height:1; }
+.dmsref-remove:hover { color:#E8B86D; }
+.dmsref-body { display:flex; gap:14px; align-items:flex-start; }
+.dmsref-portrait { width:84px; height:84px; border-radius:10px; object-fit:cover; border:2px solid rgba(232,184,109,0.45); flex-shrink:0; box-shadow:0 4px 14px rgba(0,0,0,0.45); }
+.dmsref-meta { flex:1; min-width:0; }
+.dmsref-char-name { font-family:'Cinzel Decorative',serif; font-size:18px; font-weight:700; color:#fffbf0; line-height:1.1; }
+.dmsref-char-class { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:rgba(232,184,109,0.75); margin-top:3px; text-transform:uppercase; }
+.dmsref-title { font-family:'EB Garamond',serif; font-style:italic; font-size:14px; color:rgba(255,255,255,0.72); margin-top:6px; }
+.dmsref-rarity { display:inline-block; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1.8px; padding:3px 8px; border-radius:3px; color:#fff; margin-top:6px; font-weight:700; }
+.dmsref-rarity.rarity-common { background:#5a5a5a; }
+.dmsref-rarity.rarity-rare { background:#1e6fd9; }
+.dmsref-rarity.rarity-legendary { background:#b8851f; }
+.dmsref-hint { font-size:11px; color:rgba(255,255,255,0.55); line-height:1.5; margin-top:10px; font-style:italic; }
+.dmsref-hint strong { color:#E8B86D; font-style:normal; }
+.dmstudio-badge-simple { display:inline-block; margin-bottom:12px; padding:6px 12px; background:rgba(123,108,246,0.15); border:1px solid rgba(123,108,246,0.3); border-radius:8px; }
+
 .story-box {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1781,11 +1808,19 @@ async function generateSessionImage(data, story) {
     return RARITY_IMG_SUFFIX[data.rarity] || '';
   })()) + ', vertical portrait format, no text, no letters, no writing, no watermark';
 
+  // DM-Studio-Handoff: Portrait als Reference-Image für Seedream Image-to-Image
+  const bodyPayload = { prompt, model: 'bytedance/seedream-4-5' };
+  if (window._dmStudioImport?.portraitUrl) {
+    bodyPayload.image_url = window._dmStudioImport.portraitUrl;
+    bodyPayload.reference_mode = 'character';  // Semantisches Hint fürs Backend
+    console.log('[DM-Studio] Portrait als Visual Reference genutzt');
+  }
+
   try {
     const res = await fetch('https://endocraft-production.up.railway.app/api/image', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ prompt, model: 'bytedance/seedream-4-5' })
+      body: JSON.stringify(bodyPayload)
     });
     const d = await res.json();
     if (d.url) {
@@ -2453,8 +2488,88 @@ function surpriseStory(){
   if (idx > -1 && !isTouch) { ta.focus(); try { ta.setSelectionRange(idx, pick.story.length); } catch(_){} }
 }
 
+// ═══════ DM STUDIO HANDOFF ═══════
+// Wenn die URL ?dmstudio=KEY enthält: Payload aus localStorage lesen und story + character
+// + Portrait automatisch vorausfüllen. Portrait wird als Reference-Image für Seedream genutzt.
+window._dmStudioImport = null;  // globale Referenz für generateSessionImage
+function tryImportFromDMStudio() {
+  const params = new URLSearchParams(window.location.search);
+  const key = params.get('dmstudio');
+  if (!key) return;
+  let payload;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return;
+    payload = JSON.parse(raw);
+    localStorage.removeItem(key);  // Einmal-Verwendung
+  } catch (e) { console.error('[DM-Studio-Import] Parse-Fehler:', e); return; }
+
+  window._dmStudioImport = payload;
+
+  // Story in die Textarea
+  const ta = document.getElementById('storyInput');
+  if (ta) ta.value = payload.story || '';
+
+  // Portrait-Reference-Panel einblenden
+  if (payload.portraitUrl) {
+    showPortraitReferencePanel(payload);
+  } else {
+    showDMStudioBadge(payload);
+  }
+}
+
+function showPortraitReferencePanel(payload) {
+  const storyBox = document.querySelector('.story-box');
+  if (!storyBox) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'dmstudio-ref-panel';
+  panel.innerHTML = `
+    <div class="dmsref-head">
+      <span class="dmsref-tag">DM STUDIO · CARD BRIEFING</span>
+      <button class="dmsref-remove" onclick="removeDMStudioRef()" title="Reference entfernen">×</button>
+    </div>
+    <div class="dmsref-body">
+      <img class="dmsref-portrait" src="${payload.portraitUrl}" alt="${payload.character || ''}">
+      <div class="dmsref-meta">
+        <div class="dmsref-char-name">${escapeHtml(payload.character || 'Character')}</div>
+        ${payload.characterClass ? `<div class="dmsref-char-class">${escapeHtml(payload.characterClass)}</div>` : ''}
+        ${payload.title ? `<div class="dmsref-title">${escapeHtml(payload.title)}</div>` : ''}
+        ${payload.rarity ? `<div class="dmsref-rarity rarity-${payload.rarity}">${payload.rarity.toUpperCase()}</div>` : ''}
+        <div class="dmsref-hint">
+          ✦ Das Portrait wird als <strong>Visual Reference</strong> an den AI-Generator gegeben — die Karte übernimmt Gesicht, Rüstung und Stil aus dem Foto, zeigt aber den neuen Moment.
+        </div>
+      </div>
+    </div>
+  `;
+  storyBox.parentElement.insertBefore(panel, storyBox);
+
+  // Plausible-Track
+  try { window.plausible?.('DM Studio Import', { props: { rarity: payload.rarity || 'none', hasPortrait: 'yes' } }); } catch(e){}
+}
+
+function showDMStudioBadge(payload) {
+  const storyBox = document.querySelector('.story-box');
+  if (!storyBox) return;
+  const badge = document.createElement('div');
+  badge.className = 'dmstudio-badge-simple';
+  badge.innerHTML = `<span class="dmsref-tag">DM STUDIO · ${escapeHtml(payload.title || payload.character || 'Moment')}</span>`;
+  storyBox.parentElement.insertBefore(badge, storyBox);
+}
+
+function removeDMStudioRef() {
+  window._dmStudioImport = null;
+  document.querySelector('.dmstudio-ref-panel')?.remove();
+  document.querySelector('.dmstudio-badge-simple')?.remove();
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 // Pre-fill a random story on first page load (only if textarea is empty)
 document.addEventListener('DOMContentLoaded', () => {
+  tryImportFromDMStudio();  // zuerst — Import hat Vorrang vor Random-Story
   const ta = document.getElementById('storyInput');
   if (ta && !ta.value.trim()) surpriseStory();
 });
