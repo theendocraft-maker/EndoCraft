@@ -1329,6 +1329,39 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 .srd-card-stats{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);margin-top:6px;font-weight:600;}
 .srd-modal-foot{padding:10px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dimmer);font-style:italic;}
 
+/* ═══════ HIGHLIGHTS BOARD ═══════ */
+.highlight-board{padding:24px 28px;overflow-y:auto;}
+.highlight-board-head{margin-bottom:22px;}
+.highlight-board-head h2{font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin:0 0 4px;font-weight:800;}
+.highlight-board-head p{font-size:13px;color:var(--text-dim);margin:0;}
+.highlight-board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
+.hl-card{background:#fff;border:1.5px solid;border-radius:10px;padding:14px 16px;position:relative;box-shadow:0 2px 10px rgba(0,0,0,0.06);transition:transform .12s,box-shadow .12s;}
+.hl-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+.hl-card.used{opacity:.72;background:var(--surface-2);}
+.hl-used-badge{position:absolute;top:-8px;right:14px;background:var(--forest);color:#fff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;padding:3px 8px;border-radius:3px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.hl-card-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
+.hl-card-portrait{width:46px;height:46px;border-radius:6px;object-fit:cover;border:1px solid var(--border-strong);flex-shrink:0;}
+.hl-card-portrait-empty{width:46px;height:46px;border-radius:6px;background:var(--surface-2);border:1px dashed var(--border-strong);display:flex;align-items:center;justify-content:center;color:var(--text-dimmer);font-size:16px;flex-shrink:0;}
+.hl-card-meta{flex:1;min-width:0;}
+.hl-card-char{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;}
+.hl-card-title{font-family:'Cinzel',serif;font-size:14px;color:var(--ink);margin-top:2px;font-weight:700;line-height:1.25;}
+.hl-card-session{font-size:10.5px;color:var(--text-dim);margin-top:3px;font-style:italic;}
+.hl-card-rarity{background:#5a5a5a;color:#fff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;padding:3px 7px;border-radius:3px;font-weight:700;flex-shrink:0;align-self:flex-start;}
+.hl-card-moment{font-family:'EB Garamond',serif;font-size:13px;color:var(--text);line-height:1.5;font-style:italic;margin-bottom:10px;}
+.hl-card-hint{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dimmer);background:var(--surface-2);padding:6px 10px;border-radius:4px;margin-bottom:10px;line-height:1.45;}
+.hl-card-actions{display:flex;gap:6px;}
+.hl-btn-primary{flex:1;background:var(--gold);color:#fff;border:none;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.2px;padding:8px 10px;border-radius:4px;cursor:pointer;font-weight:700;text-transform:uppercase;transition:background .12s;}
+.hl-btn-primary:hover{background:#b48829;}
+.hl-btn-edit,.hl-btn-remove{background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:8px 10px;border-radius:4px;cursor:pointer;font-size:12px;}
+.hl-btn-edit:hover{border-color:var(--gold);color:var(--gold);}
+.hl-btn-remove:hover{border-color:var(--crimson);color:var(--crimson);}
+.highlight-side-meta{padding:14px;}
+.hl-meta-block{background:var(--surface-2);border-radius:6px;padding:10px 12px;margin-bottom:12px;text-align:center;}
+.hl-meta-h{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.8px;color:var(--text-dim);text-transform:uppercase;font-weight:700;}
+.hl-meta-big{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--ink);line-height:1;margin-top:4px;}
+.hl-meta-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:var(--text);}
+.hl-meta-row strong{color:var(--ink);font-weight:700;}
+
 /* ═══════ CHARACTER WIZARD ═══════ */
 .wizard-inner{max-width:780px;width:100%;max-height:90vh;display:flex;flex-direction:column;}
 .wiz-close-x{background:transparent;border:none;font-size:28px;line-height:1;color:var(--text-dim);cursor:pointer;padding:0 8px;}
@@ -1480,6 +1513,7 @@ body.gate-open{overflow:hidden;}
     <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
     <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
+    <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
   </div>
   <div class="topbar-right">
     <button class="btn-top" onclick="openConditionsModal()" title="SRD 5.1 Regel-Referenz">📖 Regeln</button>
@@ -1672,6 +1706,25 @@ body.gate-open{overflow:hidden;}
     </aside>
 
     <main class="char-editor" id="charEditor"></main>
+  </div>
+
+  <!-- ═══════ HIGHLIGHTS VIEW · Saved card proposals ═══════ -->
+  <div class="view" id="view-highlights">
+    <aside class="lpanel">
+      <div class="lp-header">
+        <span class="lp-title">Highlights</span>
+        <button class="lp-add" onclick="addManualHighlight()" title="Eigener Highlight-Eintrag">+ Neu</button>
+      </div>
+      <div class="char-filter" id="highlightFilter">
+        <button class="active" data-f="all" onclick="filterHighlights('all')">Alle</button>
+        <button data-f="unused" onclick="filterHighlights('unused')">Offen</button>
+        <button data-f="used" onclick="filterHighlights('used')">Erstellt</button>
+        <button data-f="legendary" onclick="filterHighlights('legendary')">★ Legendary</button>
+      </div>
+      <div class="highlight-side-meta" id="highlightSideMeta"></div>
+    </aside>
+
+    <main class="highlight-board" id="highlightBoard"></main>
   </div>
 
 </div>
@@ -2948,6 +3001,8 @@ if (!state.currentCharId) state.currentCharId = null;
 if (!state.images) state.images = {};
 if (!state.threads) state.threads = {};  // keyed by 'prep' or 'session'
 if (!state.initiative) state.initiative = [];  // [{id, hp, down}]
+if (!state.savedHighlights) state.savedHighlights = [];  // globaler Highlights-Pool für Dashboard
+if (!state.highlightFilter) state.highlightFilter = 'all';
 if (!state.charFilter) state.charFilter = 'all';
 if (!state.currentView) state.currentView = 'prep';
 if (!state.sessionMode) state.sessionMode = 'scene';
@@ -2968,6 +3023,7 @@ function switchView(view) {
   if (view === 'prep') renderPrep();
   if (view === 'session') renderSession();
   if (view === 'chars') renderChars();
+  if (view === 'highlights') renderHighlightsBoard();
   plausibleTrack('DMStudio · View', { view });
 }
 
@@ -6998,17 +7054,45 @@ function savePostSessionRecap() {
   });
   if (qaPairs.length) current.recapQA = qaPairs;
 
-  // Highlights auch in Session speichern (für späteren Zugriff)
+  // Highlights in Session + globalen Pool speichern
   const highlights = Array.from(document.querySelectorAll('[data-highlight-json]'))
     .map(el => { try { return JSON.parse(el.dataset.highlightJson); } catch (e) { return null; } })
     .filter(Boolean);
-  if (highlights.length) current.highlights = highlights;
+  if (highlights.length) {
+    current.highlights = highlights;
+    // Globaler Pool für Dashboard-View
+    if (!state.savedHighlights) state.savedHighlights = [];
+    highlights.forEach(h => {
+      // Duplikat-Check — gleicher character + title unter gleicher Session nicht nochmal
+      const exists = state.savedHighlights.some(sh =>
+        sh.sessionNumber === current.number && sh.character === h.character && sh.title === h.title
+      );
+      if (!exists) {
+        state.savedHighlights.push({
+          id: 'hl_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+          sessionNumber: current.number,
+          sessionTitle: current.title || '',
+          locationId: state.currentLocationId,
+          locationName: currentLoc()?.name || '',
+          campaignId: campaign().id,
+          character: h.character || '',
+          title: h.title || '',
+          moment: h.moment || '',
+          rarity: (h.rarity || 'common').toLowerCase(),
+          imageHint: h.imageHint || '',
+          createdAt: Date.now(),
+          used: false
+        });
+      }
+    });
+  }
 
   saveState();
   const modal = document.querySelector('.recap-modal');
   if (modal) { modal._savedCleanClose = true; modal.remove(); }
   toast(`✓ Recap ${highlights.length ? '+ ' + highlights.length + ' Highlights ' : ''}in Session #${current.number} gespeichert`);
   if (state.currentView === 'session') renderSession();
+  if (state.currentView === 'highlights') renderHighlightsBoard();
 }
 
 // Prüft ob ungespeicherter Content im Recap-Modal ist, fragt ggf. vor dem Schließen
@@ -7190,8 +7274,247 @@ function highlightToCardEl(cardEl) {
   if (!cardEl) return;
   let h;
   try { h = JSON.parse(cardEl.dataset.highlightJson); } catch (e) { toast('Highlight-Parse-Fehler', true); return; }
-  const momentText = `${h.character ? h.character + ' · ' : ''}${h.title ? h.title + '.\n\n' : ''}${h.moment || ''}${h.imageHint ? '\n\n[Image-Hint: ' + h.imageHint + ']' : ''}`;
-  turnMomentIntoCard(momentText);
+  sendHighlightToCardGenerator(h);
+}
+
+// ═══════════ HIGHLIGHT → ENDOCRAFT CARD-GENERATOR (reicher Prompt) ═══════════
+function buildCharacterDescriptionForCard(c) {
+  if (!c) return '';
+  const parts = [];
+  const basics = [];
+  if (c.race) basics.push(c.race);
+  if (c.class) basics.push(c.class);
+  if (c.level) basics.push(`Level ${c.level}`);
+  if (basics.length) parts.push(basics.join(' '));
+  if (c.alignment) parts.push('Gesinnung: ' + c.alignment);
+  if (c.personality) parts.push('Persönlichkeit: ' + c.personality.slice(0, 280));
+  if (c.backstory) parts.push('Backstory: ' + c.backstory.slice(0, 400));
+  if (c.imagePrompt) parts.push('Portrait-Style-Reference: ' + c.imagePrompt.slice(0, 220));
+  return parts.join('\n');
+}
+
+function sendHighlightToCardGenerator(h) {
+  // Charakter aus DM Studio rausziehen für vollen Kontext
+  const char = state.characters.find(c => c.name?.toLowerCase() === (h.character || '').toLowerCase())
+            || state.characters.find(c => c.type === 'pc' && c.name?.toLowerCase().startsWith((h.character || '').toLowerCase().split(' ')[0]));
+
+  const charDesc = buildCharacterDescriptionForCard(char);
+  const loc = h.locationName || (h.locationId && campaign()?.locations?.[h.locationId]?.name) || currentLoc()?.name || '';
+  const campaignName = campaign()?.name || '';
+  const sessionLbl = h.sessionNumber ? `Session ${h.sessionNumber}${h.sessionTitle ? ' · ' + h.sessionTitle : ''}` : '';
+
+  // Reicher strukturierter Story-Text — der Karten-Generator (endocraft.app/session) bekommt
+  // alles was er braucht um einen präzisen Seedream-Prompt zu bauen.
+  const storyParts = [];
+  if (h.title) storyParts.push(`MOMENT: ${h.title}`);
+  if (h.character) storyParts.push(`CHARAKTER: ${h.character}`);
+  storyParts.push('');
+  if (h.moment) storyParts.push(h.moment);
+  if (charDesc) {
+    storyParts.push('');
+    storyParts.push('— CHARACTER DETAILS —');
+    storyParts.push(charDesc);
+  }
+  if (h.imageHint) {
+    storyParts.push('');
+    storyParts.push('— VISUAL HINT —');
+    storyParts.push(h.imageHint);
+  }
+  if (loc || sessionLbl || campaignName) {
+    storyParts.push('');
+    storyParts.push('— CONTEXT —');
+    if (loc) storyParts.push(`Ort: ${loc}`);
+    if (sessionLbl) storyParts.push(sessionLbl);
+    if (campaignName) storyParts.push(`Kampagne: ${campaignName}`);
+  }
+
+  const story = storyParts.join('\n');
+  const params = new URLSearchParams({
+    source: 'dm-studio',
+    story: story
+  });
+  if (h.character) params.set('character', h.character);
+  if (h.title) params.set('title', h.title);
+  if (h.rarity) params.set('rarity', h.rarity);
+  if (h.imageHint) params.set('image_hint', h.imageHint);
+  if (loc) params.set('location', loc);
+  if (campaignName) params.set('campaign', campaignName);
+  if (char?.portraitUrl && !char.portraitUrl.startsWith('data:')) {
+    params.set('portrait_url', char.portraitUrl);  // nur echte URLs, nicht base64 (zu lang)
+  }
+
+  window.open(`https://endocraft.app/session/?${params.toString()}`, '_blank');
+  toast(`→ EndoCraft öffnet Karten-Generator für „${h.title || h.character}"`);
+
+  // Highlight als "used" markieren
+  if (h.id && state.savedHighlights) {
+    const saved = state.savedHighlights.find(sh => sh.id === h.id);
+    if (saved) { saved.used = true; saved.usedAt = Date.now(); saveState(); }
+  }
+  if (state.currentView === 'highlights') renderHighlightsBoard();
+  plausibleTrack && plausibleTrack('DMStudio · Highlight to Card', { rarity: h.rarity });
+}
+
+// ═══════════ HIGHLIGHTS DASHBOARD · Persistenter Pool ═══════════
+function filterHighlights(filter) {
+  state.highlightFilter = filter;
+  saveState();
+  document.querySelectorAll('#highlightFilter button').forEach(b => b.classList.toggle('active', b.dataset.f === filter));
+  renderHighlightsBoard();
+}
+
+function renderHighlightsBoard() {
+  const board = document.getElementById('highlightBoard');
+  const sideMeta = document.getElementById('highlightSideMeta');
+  if (!board) return;
+
+  const filter = state.highlightFilter || 'all';
+  const all = state.savedHighlights || [];
+  const filtered = all.filter(h => {
+    if (filter === 'all') return true;
+    if (filter === 'unused') return !h.used;
+    if (filter === 'used') return !!h.used;
+    if (filter === 'legendary') return h.rarity === 'legendary';
+    return true;
+  }).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  // Side-Meta
+  if (sideMeta) {
+    const byRarity = all.reduce((acc, h) => { acc[h.rarity || 'common'] = (acc[h.rarity || 'common'] || 0) + 1; return acc; }, {});
+    const usedCount = all.filter(h => h.used).length;
+    sideMeta.innerHTML = `
+      <div class="hl-meta-block">
+        <div class="hl-meta-h">Gesamt</div>
+        <div class="hl-meta-big">${all.length}</div>
+      </div>
+      <div class="hl-meta-row"><span>Common</span><strong>${byRarity.common || 0}</strong></div>
+      <div class="hl-meta-row"><span>Rare</span><strong>${byRarity.rare || 0}</strong></div>
+      <div class="hl-meta-row"><span>Legendary</span><strong>${byRarity.legendary || 0}</strong></div>
+      <div class="hl-meta-row" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+        <span>Als Karte erstellt</span><strong>${usedCount} / ${all.length}</strong>
+      </div>
+    `;
+  }
+
+  if (!filtered.length) {
+    board.innerHTML = `
+      <div style="max-width:520px;margin:80px auto;text-align:center;padding:40px 20px;">
+        <div style="font-size:48px;margin-bottom:14px;">🌟</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">Keine Highlights ${filter !== 'all' ? ' (in diesem Filter)' : 'gespeichert'}</h2>
+        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:20px;">
+          Nach einer Session: <strong style="color:var(--crimson);">📝 Session beenden</strong> in der Session-Live-Topbar klicken → Recap generieren → ✨ Highlights extrahieren → speichern. Die Vorschläge landen dann hier und können jederzeit in den EndoCraft-Karten-Generator gesendet werden.
+        </p>
+        <button class="btn-top primary" onclick="addManualHighlight()" style="background:var(--gold);color:#fff;border-color:var(--gold);">+ Manuell einen Highlight hinzufügen</button>
+      </div>
+    `;
+    return;
+  }
+
+  const rarityColor = { common: '#5a5a5a', rare: '#1e6fd9', legendary: '#b8851f' };
+  const rarityLabel = { common: 'COMMON', rare: 'RARE', legendary: 'LEGENDARY' };
+
+  board.innerHTML = `
+    <div class="highlight-board-head">
+      <div>
+        <h2>🌟 Highlights · Karten-Pool</h2>
+        <p>${filtered.length} Moment${filtered.length === 1 ? '' : 'e'} · Klick „→ Als Karte" öffnet den EndoCraft-Generator mit vollem Kontext (Charakter, Backstory, Image-Hint, Location)</p>
+      </div>
+    </div>
+    <div class="highlight-board-grid">
+      ${filtered.map(h => {
+        const r = (h.rarity || 'common').toLowerCase();
+        const color = rarityColor[r] || rarityColor.common;
+        const char = state.characters.find(c => c.name?.toLowerCase() === (h.character || '').toLowerCase());
+        const portrait = char?.portraitUrl || '';
+        return `
+          <div class="hl-card ${h.used ? 'used' : ''}" style="border-color:${color};">
+            ${h.used ? '<div class="hl-used-badge" title="Wurde schon als Karte erstellt">✓ ERSTELLT</div>' : ''}
+            <div class="hl-card-head">
+              ${portrait ? `<img class="hl-card-portrait" src="${escapeAttr(portrait)}" alt="">` : '<div class="hl-card-portrait-empty">—</div>'}
+              <div class="hl-card-meta">
+                <div class="hl-card-char" style="color:${color};">${escapeHtml(h.character || 'Party')}</div>
+                <div class="hl-card-title">${escapeHtml(h.title || '—')}</div>
+                <div class="hl-card-session">Session ${h.sessionNumber || '?'}${h.locationName ? ' · ' + escapeHtml(h.locationName) : ''}</div>
+              </div>
+              <span class="hl-card-rarity" style="background:${color};">${rarityLabel[r] || 'COMMON'}</span>
+            </div>
+            <div class="hl-card-moment">${escapeHtml(h.moment || '')}</div>
+            ${h.imageHint ? `<div class="hl-card-hint">🎨 ${escapeHtml(h.imageHint)}</div>` : ''}
+            <div class="hl-card-actions">
+              <button class="hl-btn-primary" onclick='sendHighlightById(${JSON.stringify(h.id)})'>→ ${h.used ? 'Nochmal als Karte' : 'Als Karte erstellen'}</button>
+              <button class="hl-btn-edit" onclick='editHighlight(${JSON.stringify(h.id)})' title="Bearbeiten">✎</button>
+              <button class="hl-btn-remove" onclick='removeHighlightById(${JSON.stringify(h.id)})' title="Löschen">×</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function sendHighlightById(id) {
+  const h = state.savedHighlights?.find(sh => sh.id === id);
+  if (!h) { toast('Highlight nicht gefunden', true); return; }
+  sendHighlightToCardGenerator(h);
+}
+
+function removeHighlightById(id) {
+  if (!confirm('Diesen Highlight wirklich löschen?')) return;
+  state.savedHighlights = (state.savedHighlights || []).filter(sh => sh.id !== id);
+  saveState();
+  renderHighlightsBoard();
+  toast('Highlight gelöscht');
+}
+
+function editHighlight(id) {
+  const h = state.savedHighlights?.find(sh => sh.id === id);
+  if (!h) return;
+  const newTitle = prompt('Titel:', h.title || '');
+  if (newTitle === null) return;
+  const newMoment = prompt('Moment-Text (1-2 Sätze):', h.moment || '');
+  if (newMoment === null) return;
+  const newHint = prompt('Image-Hint (visueller Tipp für die Karten-Illustration):', h.imageHint || '');
+  if (newHint === null) return;
+  h.title = newTitle.trim();
+  h.moment = newMoment.trim();
+  h.imageHint = newHint.trim();
+  saveState();
+  renderHighlightsBoard();
+  toast('Highlight aktualisiert');
+}
+
+function addManualHighlight() {
+  const pcs = state.characters.filter(c => c.type === 'pc').map(c => c.name);
+  const charName = prompt(`Charakter${pcs.length ? ' (' + pcs.join(', ') + ')' : ''}:`);
+  if (!charName) return;
+  const title = prompt('Titel (kurz, z.B. „Dem Tod knapp entkommen"):');
+  if (!title) return;
+  const moment = prompt('Moment-Text (1-2 Sätze, was genau passiert ist):');
+  if (!moment) return;
+  const rarityInput = prompt('Rarity: common · rare · legendary', 'rare');
+  const rarity = ['common','rare','legendary'].includes((rarityInput || '').toLowerCase()) ? rarityInput.toLowerCase() : 'common';
+  const imageHint = prompt('Image-Hint (optional, z.B. „Dark cellar, kneeling cleric, amber lantern"):', '') || '';
+
+  if (!state.savedHighlights) state.savedHighlights = [];
+  const currentSession = (campaign().sessions || []).slice(-1)[0];
+  state.savedHighlights.push({
+    id: 'hl_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+    sessionNumber: currentSession?.number || 0,
+    sessionTitle: currentSession?.title || '',
+    locationId: state.currentLocationId,
+    locationName: currentLoc()?.name || '',
+    campaignId: campaign().id,
+    character: charName.trim(),
+    title: title.trim(),
+    moment: moment.trim(),
+    rarity,
+    imageHint: imageHint.trim(),
+    createdAt: Date.now(),
+    used: false
+  });
+  saveState();
+  renderHighlightsBoard();
+  toast('✓ Highlight hinzugefügt');
 }
 
 function exportJSON() {
