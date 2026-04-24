@@ -6702,14 +6702,14 @@ function openPostSessionRecap() {
   const modal = document.createElement('div');
   modal.className = 'srd-modal recap-modal';
   modal.innerHTML = `
-    <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="srd-modal-backdrop" onclick="tryCloseRecapModal()"></div>
     <div class="srd-modal-inner" style="max-width:900px;max-height:90vh;">
       <div class="srd-modal-h">
         <div>
           <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;">Post-Session · Recap-Builder</div>
           <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">${escapeHtml(currentSession?.title || 'Session-Zusammenfassung')}</div>
         </div>
-        <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
+        <button onclick="tryCloseRecapModal()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
       </div>
 
       <div style="flex:1;overflow-y:auto;padding:18px 24px;">
@@ -6764,7 +6764,7 @@ function openPostSessionRecap() {
       <div class="srd-modal-foot" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
         <span style="font-size:11px;color:var(--text-dim);">Recap wird in Session #${currentSession?.number || '—'} gespeichert</span>
         <div style="display:flex;gap:8px;">
-          <button class="btn-top" onclick="this.closest('.srd-modal').remove()">Schließen</button>
+          <button class="btn-top" onclick="tryCloseRecapModal()">Schließen</button>
           <button class="btn-top primary" onclick="savePostSessionRecap()">💾 In Session speichern</button>
         </div>
       </div>
@@ -6989,6 +6989,15 @@ function savePostSessionRecap() {
 
   current.recap = text;
 
+  // Auch Fragen + Antworten speichern (für späteres Re-Öffnen)
+  const qaPairs = [];
+  document.querySelectorAll('#recapQuestionsHost .recap-q-row').forEach(row => {
+    const q = row.querySelector('.recap-q-text')?.value?.trim() || '';
+    const a = row.querySelector('.recap-q-answer')?.value?.trim() || '';
+    if (q || a) qaPairs.push({ question: q, answer: a });
+  });
+  if (qaPairs.length) current.recapQA = qaPairs;
+
   // Highlights auch in Session speichern (für späteren Zugriff)
   const highlights = Array.from(document.querySelectorAll('[data-highlight-json]'))
     .map(el => { try { return JSON.parse(el.dataset.highlightJson); } catch (e) { return null; } })
@@ -6996,9 +7005,40 @@ function savePostSessionRecap() {
   if (highlights.length) current.highlights = highlights;
 
   saveState();
-  document.querySelector('.recap-modal')?.remove();
+  const modal = document.querySelector('.recap-modal');
+  if (modal) { modal._savedCleanClose = true; modal.remove(); }
   toast(`✓ Recap ${highlights.length ? '+ ' + highlights.length + ' Highlights ' : ''}in Session #${current.number} gespeichert`);
   if (state.currentView === 'session') renderSession();
+}
+
+// Prüft ob ungespeicherter Content im Recap-Modal ist, fragt ggf. vor dem Schließen
+function tryCloseRecapModal() {
+  const modal = document.querySelector('.recap-modal');
+  if (!modal) return;
+
+  // Content-Check: Antworten · Recap-Text · Highlights?
+  let hasAnswers = false;
+  document.querySelectorAll('#recapQuestionsHost .recap-q-answer').forEach(ta => {
+    if (ta.value?.trim()) hasAnswers = true;
+  });
+  const recapText = document.getElementById('finalRecapTextarea')?.value?.trim() || '';
+  const hasRecap = recapText.length > 0 && !recapText.startsWith('[KI hat keinen Text zurückgegeben]');
+  const hasHighlights = document.querySelectorAll('.highlight-card').length > 0;
+
+  const hasDirtyContent = hasAnswers || hasRecap || hasHighlights;
+
+  if (hasDirtyContent) {
+    const parts = [];
+    if (hasAnswers) parts.push('deine Antworten auf die Fragen');
+    if (hasRecap) parts.push('den generierten Recap');
+    if (hasHighlights) parts.push('die Highlight-Vorschläge');
+    const detail = parts.join(', ').replace(/,([^,]*)$/, ' und$1');
+
+    const choice = confirm(`Ungespeicherte Änderungen!\n\nDu verlierst ${detail} wenn du jetzt schließt.\n\nOK = trotzdem schließen · Abbrechen = zurück zum Recap`);
+    if (!choice) return;  // bleibt offen
+  }
+
+  modal.remove();
 }
 
 // ═══════════ SESSION HIGHLIGHTS → SAMMELKARTEN ═══════════
