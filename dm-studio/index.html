@@ -72,7 +72,28 @@ body{
   display:flex;align-items:center;gap:10px;padding:6px 14px 6px 14px;border-radius:10px;
   background:var(--surface);border:1px solid var(--border-strong);cursor:pointer;transition:border-color .15s;
 }
+.campaign-pill{cursor:pointer;position:relative;}
 .campaign-pill:hover{border-color:rgba(164,118,38,0.55);}
+.campaign-pill-chev{color:var(--text-dim);font-size:10px;margin-left:6px;}
+.campaign-menu{position:absolute;top:60px;left:230px;z-index:500;background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;box-shadow:0 12px 48px rgba(0,0,0,0.28);min-width:320px;max-width:420px;overflow:hidden;}
+.cm-header{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border-bottom:1px solid var(--border);}
+.cm-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;}
+.cm-count{font-family:'Cinzel',serif;font-size:10px;color:var(--text-dim);background:#fff;padding:2px 7px;border-radius:10px;border:1px solid var(--border);}
+.cm-list{max-height:320px;overflow-y:auto;padding:6px;}
+.cm-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:6px;cursor:pointer;transition:background .12s;}
+.cm-item:hover{background:var(--surface-2);}
+.cm-item.active{background:rgba(147,110,30,0.08);}
+.cm-item-main{flex:1;min-width:0;}
+.cm-item-name{font-family:'Cinzel',serif;font-size:13px;color:var(--ink);font-weight:700;letter-spacing:.02em;}
+.cm-item.active .cm-item-name{color:var(--gold);}
+.cm-item-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.cm-item-active{color:var(--gold);font-size:12px;}
+.cm-item-edit,.cm-item-remove{background:transparent;border:none;color:var(--text-dimmer);cursor:pointer;padding:4px 7px;font-size:13px;border-radius:3px;}
+.cm-item-edit:hover{color:var(--gold);background:rgba(147,110,30,0.08);}
+.cm-item-remove:hover{color:var(--crimson);background:rgba(168,35,24,0.08);}
+.cm-actions{padding:8px 10px;border-top:1px solid var(--border);background:var(--surface-2);}
+.cm-new{width:100%;background:var(--crimson);color:#fdf6e8;border:none;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.8px;padding:9px 14px;border-radius:6px;cursor:pointer;font-weight:700;text-transform:uppercase;}
+.cm-new:hover{background:#941c12;}
 .campaign-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--forest);box-shadow:0 0 6px rgba(58,107,58,0.5);}
 .campaign-pill-name{font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:1.8px;color:var(--gold);text-transform:uppercase;}
 .campaign-pill-meta{font-size:11px;color:var(--text-dim);font-style:italic;}
@@ -1535,13 +1556,15 @@ body.gate-open{overflow:hidden;}
     EndoCraft <span class="sub">DM Studio</span>
   </a>
   <div class="topbar-sep"></div>
-  <div class="campaign-pill">
+  <div class="campaign-pill" onclick="toggleCampaignMenu(event)" title="Kampagne wechseln" id="campaignPill">
     <div class="dot"></div>
     <div>
-      <div class="campaign-pill-name" id="campName">Curse of Strahd</div>
-      <div class="campaign-pill-meta" id="campMeta">Session 14 · Level 5–6</div>
+      <div class="campaign-pill-name" id="campName">—</div>
+      <div class="campaign-pill-meta" id="campMeta">—</div>
     </div>
+    <span class="campaign-pill-chev">▾</span>
   </div>
+  <div class="campaign-menu" id="campaignMenu" style="display:none;"></div>
   <div class="tabnav">
     <div class="tab" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Briefing</span></div>
     <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
@@ -3045,23 +3068,124 @@ const EMPTY_CAMPAIGN = {
 
 // ═══════════ STATE ═══════════
 let state = loadState();
-if (!state.campaign) state.campaign = JSON.parse(JSON.stringify(EMPTY_CAMPAIGN));
-if (!state.characters) state.characters = [];
+
+// ─── Multi-Campaign Migration ───
+// Legacy: state.campaign (singular) + state.characters (global)
+// New:    state.campaigns[] (each with own data + characters + sessions + tree + meta)
+//         state.currentCampaignId (which one is active)
+// Migration läuft einmalig: wenn state.campaign existiert aber state.campaigns fehlt,
+// wird das single-campaign-Setup zu campaigns[0] konvertiert.
+if (!state.campaigns) state.campaigns = [];
+if (state.campaign && !state.campaigns.find(c => c.id === state.campaign.id)) {
+  // Legacy → Multi-Campaign
+  const migrated = {
+    ...state.campaign,
+    role: state.campaign.role || 'dm',  // old default: user ist DM
+    characters: state.characters || [],  // alte globale characters werden der ersten Kampagne zugeordnet
+    savedHighlights: state.savedHighlights || [],
+    threads: state.threads || {},
+    initiative: state.initiative || [],
+    images: state.images || {},
+    briefingChecks: state.briefingChecks || {},
+    briefingNotes: state.briefingNotes || '',
+    createdAt: state.campaign.createdAt || Date.now(),
+    updatedAt: Date.now()
+  };
+  state.campaigns.push(migrated);
+  state.currentCampaignId = migrated.id;
+  console.log('[Migration] Legacy-Campaign zu Multi-Campaign-Format migriert:', migrated.id);
+}
+if (!state.currentCampaignId && state.campaigns.length) {
+  state.currentCampaignId = state.campaigns[0].id;
+}
+
+// Wenn keine Kampagnen vorhanden: leere Default-Kampagne anlegen
+if (!state.campaigns.length) {
+  const empty = JSON.parse(JSON.stringify(EMPTY_CAMPAIGN));
+  empty.id = 'cmp_' + Date.now().toString(36);
+  empty.role = 'dm';
+  empty.characters = [];
+  empty.savedHighlights = [];
+  empty.threads = {};
+  empty.initiative = [];
+  empty.images = {};
+  empty.briefingChecks = {};
+  empty.briefingNotes = '';
+  empty.createdAt = Date.now();
+  empty.updatedAt = Date.now();
+  state.campaigns.push(empty);
+  state.currentCampaignId = empty.id;
+}
+
+// Legacy-Felder aufräumen (existieren nicht mehr direkt auf state — alles in campaign())
+// Nicht löschen falls Code sie noch referenziert — die campaign()-Funktion leitet um.
+
 if (!state.currentLocationId) state.currentLocationId = null;
 if (!state.currentCharId) state.currentCharId = null;
-if (!state.images) state.images = {};
-if (!state.threads) state.threads = {};  // keyed by 'prep' or 'session'
-if (!state.initiative) state.initiative = [];  // [{id, hp, down}]
-if (!state.savedHighlights) state.savedHighlights = [];  // globaler Highlights-Pool für Dashboard
 if (!state.highlightFilter) state.highlightFilter = 'all';
 if (!state.charFilter) state.charFilter = 'all';
-if (!state.currentView) state.currentView = 'briefing';  // empty-user startet im Briefing (Welcome-Page)
+if (!state.currentView) state.currentView = 'briefing';
 if (!state.sessionMode) state.sessionMode = 'scene';
 
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
 function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn(e); } }
 
-function campaign() { return state.campaign; }
+// campaign() liefert die aktive Kampagne
+function campaign() {
+  const c = state.campaigns?.find(c => c.id === state.currentCampaignId);
+  if (c) return c;
+  // Legacy-Fallback (sollte nach Migration nicht mehr greifen)
+  return state.campaign || EMPTY_CAMPAIGN;
+}
+
+// Proxy-Objects: state.characters, state.savedHighlights, state.threads, state.initiative, state.images
+// Diese müssen auf die aktive Kampagne umgeleitet werden. Getter/Setter pro Feld.
+// WICHTIG: Erst die Own-Properties löschen, dann defineProperty setzen — sonst wird direkt
+// das own-property zurückgegeben und die Campaign-Umleitung greift nicht.
+(function bindCampaignProxies() {
+  const CAMPAIGN_SCOPED = ['characters', 'savedHighlights', 'threads', 'initiative', 'images', 'briefingChecks', 'briefingNotes'];
+  CAMPAIGN_SCOPED.forEach(key => {
+    // Own-Property loswerden (Legacy-Daten sind bereits in campaign() drin durch die Migration)
+    if (Object.prototype.hasOwnProperty.call(state, key)) {
+      try { delete state[key]; } catch(e) { /* ignore non-configurable */ }
+    }
+    Object.defineProperty(state, key, {
+      get() {
+        const c = campaign();
+        if (!c[key]) {
+          if (key === 'briefingNotes') c[key] = '';
+          else if (key === 'threads' || key === 'images' || key === 'briefingChecks') c[key] = {};
+          else c[key] = [];
+        }
+        return c[key];
+      },
+      set(val) {
+        const c = campaign();
+        c[key] = val;
+      },
+      configurable: true
+    });
+  });
+})();
+
+// Own-Property löschen + als computed re-definieren
+try { delete state.campaign; } catch(e){}
+Object.defineProperty(state, 'campaign', {
+  get() { return campaign(); },
+  set(val) {
+    // Setter: wenn Legacy-Code state.campaign = X zuweist:
+    // Wenn die ID bereits in campaigns existiert → replace. Sonst → add + activate.
+    if (!val) return;
+    const idx = state.campaigns.findIndex(c => c.id === val.id);
+    if (idx >= 0) {
+      state.campaigns[idx] = val;
+    } else {
+      state.campaigns.push(val);
+    }
+    state.currentCampaignId = val.id;
+  },
+  configurable: true
+});
 function currentLoc() { return campaign().locations[state.currentLocationId]; }
 function currentChar() { return state.characters.find(c => c.id === state.currentCharId) || null; }
 
@@ -3403,9 +3527,155 @@ function saveBriefingNotes(text) {
 }
 
 function renderCampaignMeta() {
-  document.getElementById('campName').textContent = campaign().name;
-  const s = campaign().session;
-  document.getElementById('campMeta').textContent = `Session ${s.number} · Level ${s.level}`;
+  const c = campaign();
+  const nameEl = document.getElementById('campName');
+  const metaEl = document.getElementById('campMeta');
+  if (!nameEl || !metaEl) return;
+  nameEl.textContent = c.name || '—';
+  const s = c.session || { number: 0, level: '' };
+  const roleLabel = c.role === 'player' ? '🎭 Spieler' : '📖 DM';
+  metaEl.textContent = `${roleLabel} · Session ${s.number || '–'}${s.level ? ' · Lvl ' + s.level : ''}`;
+}
+
+// ═══════════ CAMPAIGN SWITCHER ═══════════
+function toggleCampaignMenu(ev) {
+  ev?.stopPropagation();
+  const menu = document.getElementById('campaignMenu');
+  if (!menu) return;
+  const isOpen = menu.style.display !== 'none';
+  if (isOpen) { menu.style.display = 'none'; return; }
+  renderCampaignMenu();
+  menu.style.display = 'block';
+  // Click-outside to close
+  setTimeout(() => {
+    const closer = (e) => {
+      if (!menu.contains(e.target) && !e.target.closest('#campaignPill')) {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closer);
+      }
+    };
+    document.addEventListener('click', closer);
+  }, 10);
+}
+
+function renderCampaignMenu() {
+  const menu = document.getElementById('campaignMenu');
+  if (!menu) return;
+  const campaigns = state.campaigns || [];
+  const current = campaign();
+
+  menu.innerHTML = `
+    <div class="cm-header">
+      <span class="cm-title">Deine Kampagnen</span>
+      <span class="cm-count">${campaigns.length}</span>
+    </div>
+    <div class="cm-list">
+      ${campaigns.map(c => {
+        const sessions = c.sessions?.length || 0;
+        const pcs = (c.characters || []).filter(ch => ch.type === 'pc').length;
+        const roleLabel = c.role === 'player' ? '🎭 Spieler' : '📖 DM';
+        const active = c.id === state.currentCampaignId;
+        return `
+          <div class="cm-item ${active ? 'active' : ''}" onclick="switchCampaign('${c.id}')">
+            <div class="cm-item-main">
+              <div class="cm-item-name">${escapeHtml(c.name || 'Unbenannt')}</div>
+              <div class="cm-item-meta">${roleLabel} · ${sessions} Session${sessions === 1 ? '' : 's'} · ${pcs} Charakter${pcs === 1 ? '' : 'e'}</div>
+            </div>
+            ${active ? '<span class="cm-item-active">●</span>' : ''}
+            <button class="cm-item-edit" onclick="event.stopPropagation();renameCampaign('${c.id}')" title="Umbenennen">✎</button>
+            ${campaigns.length > 1 ? `<button class="cm-item-remove" onclick="event.stopPropagation();deleteCampaign('${c.id}')" title="Löschen">×</button>` : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div class="cm-actions">
+      <button class="cm-new" onclick="createNewCampaign()">+ Neue Kampagne</button>
+    </div>
+  `;
+}
+
+function switchCampaign(id) {
+  if (id === state.currentCampaignId) { toggleCampaignMenu(); return; }
+  const target = state.campaigns.find(c => c.id === id);
+  if (!target) { toast('Kampagne nicht gefunden', true); return; }
+  state.currentCampaignId = id;
+  // Reset campaign-specific UI state
+  state.currentLocationId = null;
+  state.currentCharId = null;
+  state.viewingSessionIdx = undefined;
+  saveState();
+  toggleCampaignMenu();
+  renderCampaignMeta();
+  switchView(state.currentView || 'briefing');
+  toast(`Kampagne gewechselt: ${target.name}`);
+}
+
+function createNewCampaign() {
+  const name = prompt('Name der neuen Kampagne:');
+  if (!name || !name.trim()) return;
+  const roleAns = confirm(
+    `Deine Rolle in "${name.trim()}"?\n\n` +
+    `OK = 📖 DM (du leitest die Kampagne)\n` +
+    `Abbrechen = 🎭 Spieler (du spielst einen Charakter)`
+  );
+  const role = roleAns ? 'dm' : 'player';
+  const id = 'cmp_' + Date.now().toString(36);
+  const fresh = {
+    ...JSON.parse(JSON.stringify(EMPTY_CAMPAIGN)),
+    id,
+    name: name.trim(),
+    role,
+    characters: [],
+    savedHighlights: [],
+    threads: {},
+    initiative: [],
+    images: {},
+    briefingChecks: {},
+    briefingNotes: '',
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+  state.campaigns.push(fresh);
+  state.currentCampaignId = id;
+  state.currentLocationId = null;
+  state.currentCharId = null;
+  state.viewingSessionIdx = undefined;
+  saveState();
+  toggleCampaignMenu();
+  renderCampaignMeta();
+  switchView('briefing');
+  toast(`✓ „${name.trim()}" erstellt · Rolle: ${role === 'dm' ? 'DM' : 'Spieler'}`);
+}
+
+function renameCampaign(id) {
+  const c = state.campaigns.find(c => c.id === id);
+  if (!c) return;
+  const newName = prompt('Neuer Name:', c.name || '');
+  if (newName === null || !newName.trim()) return;
+  c.name = newName.trim();
+  c.updatedAt = Date.now();
+  saveState();
+  renderCampaignMeta();
+  renderCampaignMenu();
+  toast('Umbenannt');
+}
+
+function deleteCampaign(id) {
+  const c = state.campaigns.find(c => c.id === id);
+  if (!c) return;
+  if (state.campaigns.length <= 1) { toast('Letzte Kampagne kann nicht gelöscht werden', true); return; }
+  if (!confirm(`Kampagne „${c.name}" wirklich löschen?\n\nAlle Sessions, Charaktere, Highlights und Notizen dieser Kampagne gehen verloren.`)) return;
+  state.campaigns = state.campaigns.filter(cc => cc.id !== id);
+  if (state.currentCampaignId === id) {
+    state.currentCampaignId = state.campaigns[0].id;
+    state.currentLocationId = null;
+    state.currentCharId = null;
+  }
+  saveState();
+  renderCampaignMenu();
+  renderCampaignMeta();
+  switchView(state.currentView || 'briefing');
+  toast(`„${c.name}" gelöscht`);
 }
 
 // ═══════════ PREP VIEW ═══════════
@@ -6160,54 +6430,147 @@ function openSyncModal() {
 function updateSyncEmail(email) { syncSettings().email = email; saveState(); renderSyncStatus(); }
 function updateAutoSync(enabled) { syncSettings().autoSync = enabled; saveState(); renderSyncStatus(); }
 
+// Speichert NUR die aktive Kampagne zu Cloud — schnell, debounced-friendly
 async function syncNow() {
   const s = syncSettings();
   if (!s.email) { toast('Email angeben im Sync-Dialog', true); return; }
+  const active = campaign();
+  if (!active) return;
   setSyncStatus('syncing', 'Sync…');
   try {
+    // Nur die aktive Kampagne wird gepusht — nicht der ganze state (spart Bandbreite)
     const resp = await fetch(`${API_BASE}/api/dm-studio/save`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: s.email, campaignId: campaign().id, state })
+      body: JSON.stringify({
+        email: s.email,
+        campaignId: active.id,
+        state: {
+          campaign: active,  // die komplette Kampagnen-Daten
+          campaignMeta: { name: active.name, role: active.role || 'dm', updatedAt: active.updatedAt || Date.now() }
+        }
+      })
     });
     const data = await resp.json();
     if (!resp.ok || !data.ok) throw new Error(data.error || 'Save failed');
     s.lastSync = data.updated_at || new Date().toISOString(); s.lastError = null;
+    active.updatedAt = Date.now();
     saveState();
     setSyncStatus('synced', 'Synced ✓');
-    toast('Cloud-Sync erfolgreich');
   } catch (err) {
     s.lastError = err.message; saveState();
     setSyncStatus('error', 'Fehler');
-    toast('Sync-Fehler: ' + err.message, true);
+    console.error('[Sync] Fehler:', err);
   }
 }
 
+// Pushed ALLE Kampagnen zur Cloud — wird bei Login/Logout aufgerufen
+async function syncAllCampaigns() {
+  const s = syncSettings();
+  if (!s.email || !state.campaigns?.length) return;
+  setSyncStatus('syncing', 'Alle syncen…');
+  let errors = 0;
+  for (const c of state.campaigns) {
+    try {
+      const resp = await fetch(`${API_BASE}/api/dm-studio/save`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: s.email, campaignId: c.id,
+          state: { campaign: c, campaignMeta: { name: c.name, role: c.role || 'dm', updatedAt: c.updatedAt || Date.now() } }
+        })
+      });
+      if (!resp.ok) errors++;
+    } catch (e) { errors++; }
+  }
+  s.lastSync = new Date().toISOString();
+  saveState();
+  if (errors) { setSyncStatus('error', `${errors} Fehler`); toast(`${state.campaigns.length - errors}/${state.campaigns.length} Kampagnen synced`, true); }
+  else { setSyncStatus('synced', 'Alle synced ✓'); toast(`✓ ${state.campaigns.length} Kampagne${state.campaigns.length === 1 ? '' : 'n'} in Cloud`); }
+}
+
 async function loadFromCloud() {
+  return loadAllCampaignsFromCloud({ confirmOverwrite: true });
+}
+
+// Holt ALLE Kampagnen des Users aus Cloud und merged sie mit lokalen
+// - Lokale Kampagnen die in Cloud nicht existieren → bleiben erhalten (werden beim nächsten Sync gepusht)
+// - Cloud-Kampagnen die lokal nicht existieren → werden importiert
+// - Beide: newer updatedAt wins
+async function loadAllCampaignsFromCloud(opts = {}) {
   const s = syncSettings();
   if (!s.email) { toast('Email angeben', true); return; }
-  if (!confirm('Aktuellen lokalen Stand mit Cloud-Version überschreiben?')) return;
+
   setSyncStatus('syncing', 'Lade…');
   try {
-    const resp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(campaign().id)}`);
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Load failed');
-    if (!data.found) { toast('Keine Cloud-Version gefunden', true); setSyncStatus('', 'Sync'); return; }
-    // Restore but preserve syncSettings (don't overwrite email)
-    const preservedSync = s;
-    Object.assign(state, data.state);
-    state.syncSettings = preservedSync;
-    state.syncSettings.lastSync = data.updated_at;
+    // 1. Liste aller Kampagnen holen
+    const listResp = await fetch(`${API_BASE}/api/dm-studio/campaigns?email=${encodeURIComponent(s.email)}`);
+    const listData = await listResp.json();
+    if (!listResp.ok) throw new Error(listData.error || 'Campaigns-Liste fehlgeschlagen');
+    const cloudCampaigns = listData.campaigns || [];
+    if (!cloudCampaigns.length) {
+      setSyncStatus('', 'Sync');
+      if (opts.confirmOverwrite) toast('Keine Cloud-Kampagnen gefunden');
+      return { imported: 0, updated: 0, total: 0 };
+    }
+
+    if (opts.confirmOverwrite) {
+      if (!confirm(`${cloudCampaigns.length} Kampagne${cloudCampaigns.length === 1 ? '' : 'n'} in Cloud gefunden.\n\nDiese mit lokalen mergen?\n\nNeuere Version gewinnt bei Konflikten. Lokale Kampagnen die nicht in Cloud sind, bleiben bestehen.`)) {
+        setSyncStatus('', 'Sync');
+        return { imported: 0, updated: 0, total: 0 };
+      }
+    }
+
+    // 2. Pro Cloud-Campaign: Full-Load und merge
+    let imported = 0, updated = 0;
+    for (const cc of cloudCampaigns) {
+      try {
+        const loadResp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(cc.campaign_id)}`);
+        const loadData = await loadResp.json();
+        if (!loadResp.ok || !loadData.found) continue;
+        const cloudCampaign = loadData.state?.campaign;
+        if (!cloudCampaign || !cloudCampaign.id) continue;
+
+        const localIdx = state.campaigns.findIndex(c => c.id === cloudCampaign.id);
+        if (localIdx === -1) {
+          // Neue Kampagne aus Cloud — importieren
+          state.campaigns.push(cloudCampaign);
+          imported++;
+        } else {
+          // Merge: neuere wins
+          const local = state.campaigns[localIdx];
+          const localTs = local.updatedAt || 0;
+          const cloudTs = new Date(loadData.updated_at || 0).getTime() || cloudCampaign.updatedAt || 0;
+          if (cloudTs > localTs) {
+            state.campaigns[localIdx] = cloudCampaign;
+            updated++;
+          }
+        }
+      } catch (e) { console.warn('[Cloud-Load] Skip campaign', cc.campaign_id, e); }
+    }
+
+    // 3. Falls aktuelle currentCampaignId nicht mehr existiert → erste verfügbare wählen
+    if (!state.campaigns.find(c => c.id === state.currentCampaignId)) {
+      state.currentCampaignId = state.campaigns[0]?.id;
+    }
+
+    s.lastSync = new Date().toISOString();
+    s.lastError = null;
     saveState();
-    // Re-init UI
-    switchView(state.currentView || 'prep');
+    renderCampaignMeta();
+    switchView(state.currentView || 'briefing');
     setSyncStatus('synced', 'Loaded ✓');
-    toast('Aus Cloud geladen');
-    // Close modal
+    if (imported || updated) {
+      toast(`✓ ${imported} neu + ${updated} aktualisiert aus Cloud`);
+    } else if (opts.confirmOverwrite) {
+      toast('Alles schon aktuell');
+    }
     document.querySelector('.sync-modal')?.remove();
+    return { imported, updated, total: cloudCampaigns.length };
   } catch (err) {
+    console.error('[Cloud-Load] Fehler:', err);
     syncSettings().lastError = err.message; saveState();
     setSyncStatus('error', 'Fehler');
-    toast('Load-Fehler: ' + err.message, true);
+    if (opts.confirmOverwrite) toast('Load-Fehler: ' + err.message, true);
+    return { imported: 0, updated: 0, error: err.message };
   }
 }
 
@@ -7790,9 +8153,12 @@ initAuthState = async function() {
     state._lastSignedInEmail = session.user.email;
     syncSettings().email = session.user.email;
     syncSettings().googleAuth = true;
+    if (syncSettings().autoSync === undefined) syncSettings().autoSync = true;
     saveState(); renderSyncStatus();
     _wasSignedIn = true;
     hideLandingGate();
+    // Auto-Merge beim Page-Reload (schon eingeloggt) — silent, ohne Confirm
+    setTimeout(() => loadAllCampaignsFromCloud({ confirmOverwrite: false }), 800);
   } else if (!isGateUnlocked()) {
     showLandingGate();
   }
@@ -7811,13 +8177,23 @@ initAuthState = async function() {
       state._lastSignedInEmail = session.user.email;
       syncSettings().email = session.user.email;
       syncSettings().googleAuth = true;
+      // Auto-Sync by default — User muss nicht mehr manuell aktivieren
+      if (syncSettings().autoSync === undefined || syncSettings().autoSync === false) {
+        syncSettings().autoSync = true;
+      }
       saveState(); renderSyncStatus();
       hideLandingGate();
       if (freshLogin) {
-        toast('Eingeloggt als ' + session.user.email);
-        setTimeout(() => {
-          if (confirm('Erfolgreich eingeloggt. Cloud-State jetzt laden?')) loadFromCloud();
-        }, 400);
+        toast('Eingeloggt als ' + session.user.email + ' · Auto-Sync aktiv');
+        setTimeout(async () => {
+          // Automatisch Kampagnen aus Cloud mergen (ohne Confirm — silent merge)
+          const result = await loadAllCampaignsFromCloud({ confirmOverwrite: false });
+          if (result?.imported || result?.updated) {
+            toast(`✓ ${result.imported} neu + ${result.updated} aktualisiert aus Cloud geladen`);
+          }
+          // Danach lokale Kampagnen zu Cloud pushen (falls neu/nicht dort)
+          syncAllCampaigns();
+        }, 600);
       }
     } else if (event === 'SIGNED_OUT') {
       _wasSignedIn = false;
