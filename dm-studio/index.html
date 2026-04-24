@@ -6917,23 +6917,62 @@ async function generateFinalRecap() {
     if (q && a) qaBlocks.push(`FRAGE: ${q}\nANTWORT: ${a}`);
   });
 
+  // Loading-State in textarea selbst sichtbar machen (nicht nur im Button)
+  const prevPlaceholder = textarea.placeholder;
+  const prevValue = textarea.value;
+  textarea.placeholder = '🔮 KI schreibt den Recap... (basierend auf ' + allNotes.length + ' Notizen + ' + qaBlocks.length + ' beantworteten Fragen)';
+  textarea.value = '';
+
   try {
+    if (!allNotes.length && !qaBlocks.length) {
+      throw new Error('Keine Notizen und keine beantworteten Fragen — KI hat nichts zum Schreiben. Antworte erst auf die Fragen oben.');
+    }
+
     const prompt = `Du bist Co-DM und schreibst den finalen Session-Recap. Nutze die Live-Notizen + die Antworten auf die Stichpunkt-Fragen. Schreibe einen 4-6 Satz Narrativ-Recap im Präteritum, atmosphärisch, zum Vorlesen am Anfang der nächsten Session. Nur Storyrelevantes — Nebengespräche überspringen. Antworte AUSSCHLIESSLICH mit dem Recap-Text, kein Vorwort.\n\nLIVE-NOTIZEN:\n${allNotes.join('\n')}\n\n${qaBlocks.length ? 'ZUSATZ-INFO VOM DM:\n' + qaBlocks.join('\n\n') : ''}`;
+
+    console.log('[Recap] Sending prompt (' + prompt.length + ' chars)');
 
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
     });
+
+    if (!resp.ok) {
+      const bodyText = await resp.text().catch(() => '');
+      throw new Error(`API ${resp.status} ${resp.statusText}` + (bodyText ? ' · ' + bodyText.slice(0, 200) : ''));
+    }
+
     const data = await resp.json();
+    console.log('[Recap] Final-Recap API response:', data);
+
     let text = '';
     if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n\n').trim();
     else if (typeof data.content === 'string') text = data.content;
-    text = text.replace(/^["„"]|["""]$/g, '').trim();
+    text = text.replace(/^["„""]+|["„""]+$/g, '').trim();
 
+    if (!text) {
+      console.warn('[Recap] KI-Response hatte keinen Recap-Text. Raw:', data);
+      textarea.placeholder = prevPlaceholder;
+      textarea.value = prevValue;  // alten Content zurücksetzen
+      const rawPreview = JSON.stringify(data).slice(0, 300);
+      toast('KI-Response leer — siehe Console. Schreib manuell im Textfeld unten.', true);
+      textarea.value = `[KI hat keinen Text zurückgegeben]\n\nDebug-Info: ${rawPreview}\n\n— Du kannst diesen Text löschen und den Recap manuell schreiben.`;
+      return;
+    }
+
+    textarea.placeholder = prevPlaceholder;
     textarea.value = text;
     toast('✨ Recap generiert — editierbar');
   } catch (err) {
-    toast('Fehler: ' + err.message, true);
+    console.error('[Recap] Fehler beim Recap-Generieren:', err);
+    textarea.placeholder = prevPlaceholder;
+    textarea.value = prevValue;  // Content wiederherstellen
+    toast('KI-Fehler: ' + err.message, true);
+    // Fehler dauerhaft sichtbar machen — nicht nur Toast (die verschwindet nach 3sec)
+    const errEl = document.createElement('div');
+    errEl.style.cssText = 'background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;padding:10px 14px;margin-top:8px;font-size:12px;color:var(--crimson);';
+    errEl.innerHTML = `<strong>KI nicht erreichbar:</strong> ${escapeHtml(err.message)}<br><span style="font-size:11px;opacity:.8;">Du kannst den Recap manuell im Textfeld oben schreiben. Deine Antworten auf die Fragen bleiben erhalten.</span> <button onclick="this.parentElement.remove()" style="float:right;background:transparent;border:none;color:var(--crimson);cursor:pointer;font-weight:700;">×</button>`;
+    textarea.parentElement.appendChild(errEl);
   } finally {
     btn.disabled = false; btn.textContent = '🪄 Recap schreiben';
   }
@@ -7014,11 +7053,21 @@ ${recapText || '(Kein Recap-Text — nutze nur die Notizen)'}
 LIVE-NOTIZEN:
 ${allNotes.join('\n')}`;
 
+    console.log('[Highlights] Sending prompt (' + prompt.length + ' chars)');
+
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
     });
+
+    if (!resp.ok) {
+      const bodyText = await resp.text().catch(() => '');
+      throw new Error(`API ${resp.status} ${resp.statusText}` + (bodyText ? ' · ' + bodyText.slice(0, 200) : ''));
+    }
+
     const data = await resp.json();
+    console.log('[Highlights] API response:', data);
+
     let text = '';
     if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
     else if (typeof data.content === 'string') text = data.content;
@@ -7028,12 +7077,18 @@ ${allNotes.join('\n')}`;
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) {
       try { highlights = JSON.parse(jsonMatch[0]); } catch (e) {
-        console.error('Highlights-JSON parse failed', e, jsonMatch[0]);
+        console.error('[Highlights] JSON parse failed', e, jsonMatch[0]);
       }
     }
 
     if (!Array.isArray(highlights) || !highlights.length) {
-      host.innerHTML = `<em style="color:var(--crimson);">KI hat kein valides JSON zurückgegeben. Raw:</em><pre style="font-size:11px;color:var(--text-dim);white-space:pre-wrap;">${escapeHtml(text.slice(0, 500))}</pre>`;
+      host.innerHTML = `
+        <div style="background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:var(--crimson);">
+          <strong>KI hat kein valides JSON zurückgegeben.</strong> Raw-Response unten (für Debugging). Klick „Highlights extrahieren" nochmal.
+        </div>
+        <pre style="font-size:10.5px;color:var(--text-dim);white-space:pre-wrap;background:var(--surface-2);padding:10px;border-radius:4px;max-height:200px;overflow:auto;">${escapeHtml(text.slice(0, 800) || JSON.stringify(data).slice(0, 800))}</pre>
+        <button onclick="generateSessionHighlights()" style="background:transparent;border:1px dashed var(--gold);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;padding:7px 16px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:10px;">🔄 Nochmal versuchen</button>
+      `;
       return;
     }
 
@@ -7041,7 +7096,15 @@ ${allNotes.join('\n')}`;
     toast(`✨ ${highlights.length} Highlights extrahiert`);
     plausibleTrack && plausibleTrack('DMStudio · Highlights Generated', { count: highlights.length });
   } catch (err) {
-    host.innerHTML = `<em style="color:var(--crimson);">Fehler: ${escapeHtml(err.message)}</em>`;
+    console.error('[Highlights] Fehler:', err);
+    host.innerHTML = `
+      <div style="background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--crimson);">
+        <strong>KI nicht erreichbar:</strong> ${escapeHtml(err.message)}<br>
+        <span style="font-size:11px;opacity:.8;">API-Status prüfen (Railway down? Anthropic-Key expired?) oder später nochmal.</span>
+      </div>
+      <button onclick="generateSessionHighlights()" style="background:transparent;border:1px dashed var(--gold);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;padding:7px 16px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:10px;">🔄 Nochmal versuchen</button>
+    `;
+    toast('Highlights-Fehler · siehe Panel', true);
   } finally {
     btn.disabled = false; btn.textContent = '✨ Highlights extrahieren';
   }
