@@ -6403,8 +6403,23 @@ function openSyncModal() {
         </div>
 
         <div class="sync-row">
-          <button class="btn-top primary" onclick="syncNow()" style="flex:1;">☁️↑ Jetzt in Cloud speichern</button>
+          <button class="btn-top primary" onclick="syncNow()" style="flex:1;">☁️↑ Aktive Kampagne speichern</button>
           <button class="btn-top" onclick="loadFromCloud()" style="flex:1;">☁️↓ Aus Cloud laden</button>
+        </div>
+
+        <div class="sync-row" style="margin-top:8px;">
+          <button class="btn-top" onclick="forcePushAllCampaigns()" style="flex:1;background:var(--gold);color:#fff;border-color:var(--gold);">⇧ Alle ${state.campaigns?.length || 0} Kampagnen jetzt pushen</button>
+        </div>
+
+        <!-- Diagnose-Panel -->
+        <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-weight:700;">🔍 Diagnose</div>
+            <button class="btn-top" onclick="runCloudDiagnostics()" style="font-size:11px;padding:4px 10px;">Status prüfen</button>
+          </div>
+          <div id="cloudDiagOutput" style="font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;line-height:1.6;min-height:40px;">
+            <em>Klick „Status prüfen" — testet Supabase-Verbindung, Kampagnen in Cloud, Key-Konfiguration.</em>
+          </div>
         </div>
 
         ${s.lastSync ? `
@@ -6419,7 +6434,7 @@ function openSyncModal() {
           </div>` : ''}
       </div>
       <div class="sync-modal-foot">
-        <span style="font-size:11px;color:var(--text-dim);">Kampagnen-ID: <strong style="color:var(--ink);">${escapeHtml(campaign().id)}</strong></span>
+        <span style="font-size:11px;color:var(--text-dim);">Aktive: <strong style="color:var(--ink);">${escapeHtml(campaign().id)}</strong> · ${state.campaigns?.length || 0} Kampagne${state.campaigns?.length === 1 ? '' : 'n'} lokal</span>
         <button class="btn-top" onclick="this.closest('.sync-modal').remove()">Fertig</button>
       </div>
     </div>
@@ -6571,6 +6586,133 @@ async function loadAllCampaignsFromCloud(opts = {}) {
     setSyncStatus('error', 'Fehler');
     if (opts.confirmOverwrite) toast('Load-Fehler: ' + err.message, true);
     return { imported: 0, updated: 0, error: err.message };
+  }
+}
+
+// ═══════════ CLOUD DIAGNOSTICS + FORCE PUSH ═══════════
+async function runCloudDiagnostics() {
+  const host = document.getElementById('cloudDiagOutput');
+  if (!host) return;
+  const s = syncSettings();
+  host.innerHTML = '⏳ Teste Backend + Supabase...';
+
+  const results = [];
+  const ok = (msg) => results.push(`<div style="color:var(--forest);">✓ ${msg}</div>`);
+  const fail = (msg) => results.push(`<div style="color:var(--crimson);">✗ ${msg}</div>`);
+  const info = (msg) => results.push(`<div style="color:var(--text-dim);">○ ${msg}</div>`);
+
+  // 1. Email?
+  if (!s.email) {
+    fail('Keine Email konfiguriert — logge dich ein');
+    host.innerHTML = results.join('');
+    return;
+  }
+  ok(`Email: ${escapeHtml(s.email)}`);
+
+  // 2. Backend reachable?
+  try {
+    const healthResp = await fetch(`${API_BASE}/health`);
+    if (healthResp.ok) ok('Backend erreichbar (Railway)');
+    else fail(`Backend ${healthResp.status} ${healthResp.statusText}`);
+  } catch (e) {
+    fail('Backend nicht erreichbar — Railway down?');
+    host.innerHTML = results.join('');
+    return;
+  }
+
+  // 3. Campaigns-Liste vom Backend holen
+  let cloudCampaigns = null;
+  try {
+    const resp = await fetch(`${API_BASE}/api/dm-studio/campaigns?email=${encodeURIComponent(s.email)}`);
+    const txt = await resp.text();
+    let data;
+    try { data = JSON.parse(txt); } catch(e) { data = { error: txt.slice(0, 200) }; }
+    if (!resp.ok) {
+      fail(`Campaigns-API: ${resp.status} — ${data.error || 'unknown'}`);
+      if (resp.status === 500) info('→ Vermutlich: Supabase nicht konfiguriert in Railway, oder SUPABASE_KEY kein service_role');
+      if (resp.status === 404) info('→ Vermutlich: Tabelle dm_studio_state existiert nicht. SQL ausführen (siehe SUPABASE_SETUP.md)');
+      host.innerHTML = results.join('');
+      return;
+    }
+    cloudCampaigns = data.campaigns || [];
+    ok(`Supabase erreicht · ${cloudCampaigns.length} Kampagne${cloudCampaigns.length === 1 ? '' : 'n'} in Cloud`);
+    if (cloudCampaigns.length) {
+      cloudCampaigns.forEach(cc => {
+        const local = state.campaigns.find(lc => lc.id === cc.campaign_id);
+        info(`${cc.campaign_id}${local ? ' (lokal auch vorhanden)' : ' (nur in Cloud)'}`);
+      });
+    }
+  } catch (e) {
+    fail(`Campaigns-Call fehlgeschlagen: ${e.message}`);
+    host.innerHTML = results.join('');
+    return;
+  }
+
+  // 4. Lokale Kampagnen vs Cloud
+  const local = state.campaigns || [];
+  info(`Lokale Kampagnen: ${local.length}`);
+  local.forEach(lc => {
+    const inCloud = cloudCampaigns.find(cc => cc.campaign_id === lc.id);
+    if (!inCloud) fail(`  "${lc.name}" (${lc.id}) — NICHT in Cloud`);
+    else ok(`  "${lc.name}" (${lc.id}) — synced`);
+  });
+
+  if (local.length > cloudCampaigns.length) {
+    results.push(`<div style="margin-top:8px;color:var(--gold);">💡 ${local.length - cloudCampaigns.length} lokale Kampagne${local.length - cloudCampaigns.length === 1 ? '' : 'n'} fehlen in Cloud — klick "Alle jetzt pushen"</div>`);
+  }
+
+  host.innerHTML = results.join('');
+}
+
+async function forcePushAllCampaigns() {
+  const s = syncSettings();
+  if (!s.email) { toast('Keine Email — bitte einloggen', true); return; }
+  if (!state.campaigns?.length) { toast('Keine Kampagnen vorhanden', true); return; }
+
+  const host = document.getElementById('cloudDiagOutput');
+  const results = [];
+  const logLine = (html) => {
+    results.push(html);
+    if (host) host.innerHTML = results.join('');
+  };
+
+  setSyncStatus('syncing', 'Push alle...');
+  logLine(`⏳ Pushe ${state.campaigns.length} Kampagne${state.campaigns.length === 1 ? '' : 'n'} zu Cloud...`);
+
+  let ok = 0, fail = 0;
+  for (const c of state.campaigns) {
+    try {
+      const resp = await fetch(`${API_BASE}/api/dm-studio/save`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: s.email, campaignId: c.id,
+          state: { campaign: c, campaignMeta: { name: c.name, role: c.role || 'dm', updatedAt: c.updatedAt || Date.now() } }
+        })
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        logLine(`<div style="color:var(--crimson);">✗ "${escapeHtml(c.name)}" — ${resp.status} ${escapeHtml(data.error || '')}</div>`);
+        fail++;
+      } else {
+        logLine(`<div style="color:var(--forest);">✓ "${escapeHtml(c.name)}" gepusht</div>`);
+        ok++;
+      }
+    } catch (e) {
+      logLine(`<div style="color:var(--crimson);">✗ "${escapeHtml(c.name)}" — ${escapeHtml(e.message)}</div>`);
+      fail++;
+    }
+  }
+
+  s.lastSync = new Date().toISOString();
+  saveState();
+
+  if (fail === 0) {
+    setSyncStatus('synced', 'Alle synced ✓');
+    logLine(`<div style="margin-top:8px;color:var(--gold);font-weight:700;">🎉 Alles in Cloud! Du kannst jetzt in Incognito einloggen und sehen deine Kampagnen.</div>`);
+    toast(`✓ ${ok} Kampagne${ok === 1 ? '' : 'n'} gepusht`);
+  } else {
+    setSyncStatus('error', `${fail} Fehler`);
+    logLine(`<div style="margin-top:8px;color:var(--crimson);">${fail} Fehler — klick "Status prüfen" für Details zur Ursache</div>`);
   }
 }
 
