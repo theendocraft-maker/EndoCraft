@@ -6736,7 +6736,7 @@ function openPostSessionRecap() {
             <button class="btn-top primary" id="genQuestionsBtn" onclick="generateRecapQuestions()" style="font-size:11px;padding:5px 12px;">✨ Fragen generieren</button>
           </div>
           <div id="recapQuestionsHost" style="background:var(--surface-2);border:1px solid var(--border-strong);border-radius:6px;padding:14px 18px;min-height:100px;">
-            <em style="color:var(--text-dim);font-style:italic;font-size:13px;">Klick „✨ Fragen generieren" → KI erstellt 5-7 Stichpunkt-Fragen basierend auf deinen Notizen + Kampagnen-Context. Deine Antworten sind Input für den finalen Recap.</em>
+            <em style="color:var(--text-dim);font-style:italic;font-size:13px;">Klick „✨ Fragen generieren" → KI erstellt 5-7 präzise Stichpunkt-Fragen basierend auf deinen Live-Notizen. Unter jeder Frage erscheint ein Antwortfeld — da reichen 1-2 Stichpunkte. Deine Antworten sind dann Input für den finalen Recap.</em>
           </div>
         </div>
 
@@ -6773,10 +6773,64 @@ function openPostSessionRecap() {
   document.body.appendChild(modal);
 }
 
+// Fallback-Fragen falls KI nicht liefert — decken 80% der Standard-D&D-Session-Momente ab
+const FALLBACK_RECAP_QUESTIONS = [
+  'Welche Entscheidung hatte das größte Gewicht in der Session? Wer hat sie getroffen?',
+  'Welche NPCs wurden getroffen? Freund, Feind oder ambivalent?',
+  'Gab es einen Moment knapp am Tod (Death Saves, 1 HP, letzter Zauber-Slot)?',
+  'Wurde Loot / Information / Magie-Item gewonnen oder verloren?',
+  'Welcher emotionale Beat blieb hängen (Verrat, Opfer, Humor, Schmerz)?',
+  'Wo endet die Session — Cliffhanger, Rast, Ortswechsel, offener Konflikt?'
+];
+
+function renderRecapQuestionList(questions) {
+  const host = document.getElementById('recapQuestionsHost');
+  if (!host) return;
+  if (!questions.length) {
+    host.innerHTML = '<em style="color:var(--text-dim);font-style:italic;font-size:13px;">Keine Fragen. Klick „+ Eigene Frage".</em>';
+    return;
+  }
+  host.innerHTML = `
+    <div style="margin-bottom:10px;font-size:11px;color:var(--text-dim);font-style:italic;">💡 Antworten direkt in die Textfelder schreiben — Stichpunkte reichen. Die KI nutzt sie für den Recap.</div>
+    ${questions.map((q, i) => `
+      <div class="recap-q-row" data-qrow="${i}" style="margin-bottom:14px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
+          <span style="color:var(--crimson);font-weight:700;font-family:'Cinzel',serif;font-size:13px;">${i + 1}.</span>
+          <input class="recap-q-text" value="${escapeAttr(q)}" style="flex:1;border:none;background:transparent;font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--ink);font-weight:600;outline:none;padding:2px 0;">
+          <button onclick="this.closest('.recap-q-row').remove()" title="Frage löschen" style="background:transparent;border:none;color:var(--text-dim);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;">×</button>
+        </div>
+        <textarea class="recap-q-answer" placeholder="Deine Antwort · Stichpunkte reichen (z.B. „Larrymäus auf 3 HP, Telro hat mit cure wounds gerettet")" style="width:100%;min-height:50px;margin:0;background:#fdf9ec;border:1px solid #d9c89a;border-radius:4px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;color:var(--ink);outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+      </div>
+    `).join('')}
+    <button onclick="addRecapQuestion()" style="background:transparent;border:1px dashed var(--gold);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:4px;">+ Eigene Frage hinzufügen</button>
+  `;
+}
+
+function addRecapQuestion() {
+  const host = document.getElementById('recapQuestionsHost');
+  if (!host) return;
+  const current = Array.from(host.querySelectorAll('.recap-q-row')).map(row => ({
+    q: row.querySelector('.recap-q-text')?.value || '',
+    a: row.querySelector('.recap-q-answer')?.value || ''
+  }));
+  // Re-render with one more empty question, preserving existing answers
+  renderRecapQuestionList([...current.map(x => x.q), '']);
+  // Restore answers
+  const rows = host.querySelectorAll('.recap-q-row');
+  current.forEach((x, i) => {
+    const ta = rows[i]?.querySelector('.recap-q-answer');
+    if (ta) ta.value = x.a;
+  });
+  // Focus last (new) question text
+  const lastText = rows[rows.length - 1]?.querySelector('.recap-q-text');
+  if (lastText) { lastText.focus(); lastText.select(); }
+}
+
 async function generateRecapQuestions() {
   const btn = document.getElementById('genQuestionsBtn');
   const host = document.getElementById('recapQuestionsHost');
   btn.disabled = true; btn.textContent = 'KI denkt nach…';
+  host.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-dim);font-style:italic;font-size:13px;">🔮 KI formuliert Stichpunkt-Fragen…</div>';
 
   const allNotes = [];
   Object.entries(campaign().locations).forEach(([id, loc]) => {
@@ -6786,35 +6840,57 @@ async function generateRecapQuestions() {
     });
   });
 
+  // Wenn keine Notizen: direkt Fallback-Fragen rendern (der User kann trotzdem Recap bauen)
   if (!allNotes.length) {
-    host.innerHTML = '<em style="color:var(--crimson);font-style:italic;">Keine Live-Notizen vorhanden. KI kann ohne Anhaltspunkte keine gezielten Fragen stellen. Manuell im Textfeld unten schreiben.</em>';
+    renderRecapQuestionList(FALLBACK_RECAP_QUESTIONS);
     btn.disabled = false; btn.textContent = '✨ Fragen generieren';
+    toast('Keine Live-Notizen — Fallback-Fragen geladen. Du kannst sie editieren oder eigene hinzufügen.');
     return;
   }
 
   try {
-    const prompt = `Du bist Co-DM und hilfst beim Post-Session-Recap. Basierend auf diesen Live-Notizen des DMs, stelle 5-7 präzise Stichpunkt-Fragen die ihm helfen, den Recap zu vervollständigen. Frag nach Dingen die in den Notizen nur angedeutet aber nicht ausgeführt sind: welchen Weg haben die Spieler gewählt? Wer hat was entschieden? Welche NPCs wurden getroffen/getötet/befreundet? Welche Loot oder Info wurde gewonnen? Emotionale Höhepunkte?\n\nAntworte AUSSCHLIESSLICH mit den Fragen — je eine Frage pro Zeile, keine Aufzählungszeichen, keine Einleitung.\n\nLIVE-NOTIZEN:\n${allNotes.join('\n')}`;
+    const prompt = `Du bist Co-DM und hilfst beim Post-Session-Recap. Basierend auf diesen Live-Notizen des DMs, stelle 5-7 präzise Stichpunkt-Fragen die ihm helfen, den Recap zu vervollständigen. Frag nach Dingen die in den Notizen nur angedeutet aber nicht ausgeführt sind: welchen Weg haben die Spieler gewählt? Wer hat was entschieden? Welche NPCs wurden getroffen/getötet/befreundet? Welche Loot oder Info wurde gewonnen? Emotionale Höhepunkte?\n\nAntworte AUSSCHLIESSLICH mit den Fragen — je eine Frage pro Zeile, keine Aufzählungszeichen, keine Einleitung, kein Schluss-Satz.\n\nLIVE-NOTIZEN:\n${allNotes.join('\n')}`;
 
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
     });
+
+    if (!resp.ok) throw new Error(`API ${resp.status} ${resp.statusText}`);
     const data = await resp.json();
+    console.log('[Recap] Questions API response:', data);
+
     let text = '';
     if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
     else if (typeof data.content === 'string') text = data.content;
 
-    const questions = text.split('\n').filter(l => l.trim().length > 5);
-    host.innerHTML = questions.map((q, i) => `
-      <div style="margin-bottom:14px;">
-        <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--ink);font-weight:600;margin-bottom:4px;display:flex;gap:8px;">
-          <span style="color:var(--crimson);">${i + 1}.</span><span>${escapeHtml(q.replace(/^[\d.\-–—)\s]+/, ''))}</span>
-        </div>
-        <textarea data-question="${i}" placeholder="Kurze Antwort · Stichpunkte reichen" style="width:calc(100% - 4px);min-height:50px;margin-left:20px;background:#fdf9ec;border:1px solid #d9c89a;border-radius:4px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;color:var(--ink);outline:none;resize:vertical;"></textarea>
-      </div>
-    `).join('');
+    // Fragen extrahieren · Nummerierung + Bullet entfernen, Leerzeilen filtern
+    const questions = text
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 5 && l.includes('?'))  // echte Fragen mit "?"
+      .map(l => l.replace(/^[\d.\-–—•*)\s]+/, '').trim())
+      .slice(0, 8);
+
+    if (!questions.length) {
+      // Kein Parse-Ergebnis → Fallback + Raw-Text zum Debuggen anzeigen
+      console.warn('[Recap] KI-Response hatte keine parsebare Frage. Raw:', text);
+      renderRecapQuestionList(FALLBACK_RECAP_QUESTIONS);
+      toast('KI-Response unparseable — Fallback-Fragen geladen. Du kannst sie editieren.', true);
+      return;
+    }
+
+    renderRecapQuestionList(questions);
+    toast(`✨ ${questions.length} Fragen generiert · Antworten in die Textfelder`);
   } catch (err) {
-    host.innerHTML = `<em style="color:var(--crimson);">Fehler: ${escapeHtml(err.message)}</em>`;
+    console.error('[Recap] Fehler beim Fragen-Generieren:', err);
+    // Fallback-Fragen rendern + Fehlermeldung prepend
+    renderRecapQuestionList(FALLBACK_RECAP_QUESTIONS);
+    const errBanner = document.createElement('div');
+    errBanner.style.cssText = 'background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--crimson);';
+    errBanner.innerHTML = `<strong>KI nicht erreichbar:</strong> ${escapeHtml(err.message)} · Fallback-Fragen geladen, du kannst sie editieren.`;
+    host.insertBefore(errBanner, host.firstChild);
+    toast('KI-Fehler · Fallback-Fragen geladen', true);
   } finally {
     btn.disabled = false; btn.textContent = '✨ Fragen generieren';
   }
@@ -6835,10 +6911,9 @@ async function generateFinalRecap() {
   });
 
   const qaBlocks = [];
-  document.querySelectorAll('#recapQuestionsHost textarea[data-question]').forEach(ta => {
-    const questionEl = ta.previousElementSibling;
-    const q = questionEl?.textContent?.replace(/^\d+\.\s*/, '').trim() || '';
-    const a = ta.value.trim();
+  document.querySelectorAll('#recapQuestionsHost .recap-q-row').forEach(row => {
+    const q = row.querySelector('.recap-q-text')?.value?.trim() || '';
+    const a = row.querySelector('.recap-q-answer')?.value?.trim() || '';
     if (q && a) qaBlocks.push(`FRAGE: ${q}\nANTWORT: ${a}`);
   });
 
