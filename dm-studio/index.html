@@ -95,6 +95,10 @@ body{
   transition:all .15s;white-space:nowrap;
 }
 .btn-top:hover{background:var(--surface);border-color:var(--gold);}
+.btn-new-session{background:linear-gradient(to bottom,var(--gold),#7a5a18);border-color:var(--gold-br);color:#fff;font-weight:700;}
+.btn-new-session:hover{background:linear-gradient(to bottom,#b48829,var(--gold));border-color:var(--gold-br);color:#fff;}
+.btn-end-session{background:linear-gradient(to bottom,var(--crimson),#7a1810);border-color:#7a1810;color:#fdf6e8;font-weight:700;}
+.btn-end-session:hover{background:linear-gradient(to bottom,#c23428,var(--crimson));border-color:#7a1810;color:#fff;}
 .btn-top.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
 .btn-top.primary:hover{opacity:.92;}
 
@@ -1325,6 +1329,88 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 .srd-card-stats{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);margin-top:6px;font-weight:600;}
 .srd-modal-foot{padding:10px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dimmer);font-style:italic;}
 
+/* ═══════ CHARACTER WIZARD ═══════ */
+.wizard-inner{max-width:780px;width:100%;max-height:90vh;display:flex;flex-direction:column;}
+.wiz-close-x{background:transparent;border:none;font-size:28px;line-height:1;color:var(--text-dim);cursor:pointer;padding:0 8px;}
+.wiz-close-x:hover{color:var(--crimson);}
+.wizard-progress{display:flex;gap:4px;padding:0 22px 12px;flex-wrap:wrap;}
+.wiz-step{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;padding:6px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text-dimmer);font-weight:700;}
+.wiz-step.current{background:var(--crimson);color:#fdf6e8;border-color:var(--crimson);box-shadow:0 2px 8px rgba(168,35,24,0.3);}
+.wiz-step.done{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-br);}
+.wizard-body{flex:1;overflow-y:auto;padding:18px 22px;}
+.wizard-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;background:var(--surface-2);}
+.wiz-btn-back,.wiz-btn-next,.wiz-btn-finish{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:10px 18px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.wiz-btn-back{background:transparent;border:1px solid var(--border-strong);color:var(--text);}
+.wiz-btn-back:hover{border-color:var(--crimson);color:var(--crimson);}
+.wiz-btn-next{background:var(--crimson);border:1px solid var(--crimson);color:#fdf6e8;}
+.wiz-btn-next:hover{background:#941c12;}
+.wiz-btn-finish{background:var(--gold);border:1px solid var(--gold);color:#fff;box-shadow:0 2px 10px rgba(147,110,30,0.3);}
+.wiz-btn-finish:hover{background:#b48829;}
+.wiz-field{margin-bottom:18px;}
+.wiz-field > label{display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.8px;color:var(--crimson);text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.wiz-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s;}
+.wiz-input:focus{border-color:var(--crimson);box-shadow:0 0 0 3px rgba(168,35,24,0.12);}
+.wiz-radio-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.wiz-radio{display:flex;flex-direction:column;gap:3px;padding:12px 14px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .12s;}
+.wiz-radio input{display:none;}
+.wiz-radio:hover{border-color:var(--gold);}
+.wiz-radio.active{border-color:var(--crimson);background:#fef6e8;}
+.wiz-radio strong{font-family:'Cinzel',serif;font-size:13px;color:var(--ink);}
+.wiz-radio span{font-size:11px;color:var(--text-dim);}
+.wiz-hint{font-size:12px;color:var(--text-dim);font-style:italic;margin-top:14px;padding:10px 14px;background:var(--surface-2);border-left:3px solid var(--gold);border-radius:4px;}
+.wiz-grid-races,.wiz-grid-classes,.wiz-grid-bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.wiz-race-card,.wiz-class-card,.wiz-bg-card{padding:11px 13px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:7px;cursor:pointer;transition:all .12s;}
+.wiz-race-card:hover,.wiz-class-card:hover,.wiz-bg-card:hover{border-color:var(--gold);background:#fff;transform:translateY(-1px);}
+.wiz-race-card.selected,.wiz-class-card.selected,.wiz-bg-card.selected{border-color:var(--crimson);background:#fef6e8;box-shadow:0 2px 8px rgba(168,35,24,0.15);}
+.wiz-race-card.custom,.wiz-class-card.custom,.wiz-bg-card.custom{background:rgba(147,110,30,0.05);border-style:dashed;}
+.wiz-race-name,.wiz-class-name,.wiz-bg-name{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--crimson);letter-spacing:.02em;}
+.wiz-race-meta,.wiz-class-meta,.wiz-bg-meta{font-size:11px;color:var(--text-dim);margin-top:3px;}
+.wiz-race-bonus{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.5px;color:var(--gold);margin-top:4px;font-weight:700;}
+.wiz-bg-feat{font-size:11px;color:var(--text);font-style:italic;margin-top:4px;}
+.wiz-array-row{display:flex;gap:8px;flex-wrap:wrap;padding:8px;background:var(--surface-2);border-radius:6px;}
+.wiz-array-box{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--gold);border-radius:6px;font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--ink);}
+.wiz-array-box.used{background:var(--surface);border-color:var(--border);color:var(--text-dimmer);text-decoration:line-through;opacity:.5;}
+.wiz-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.wiz-stat-cell{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px;}
+.wiz-stat-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--crimson);text-transform:uppercase;font-weight:700;margin-bottom:6px;text-align:center;}
+.wiz-review{display:flex;flex-direction:column;gap:8px;}
+.wiz-review-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface-2);border-radius:6px;border-left:3px solid var(--gold);}
+.wiz-review-row span{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;font-weight:700;}
+.wiz-review-row strong{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);}
+.wiz-review-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px;}
+.wiz-review-stats > div{background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center;}
+.wiz-rs-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:var(--crimson);font-weight:700;}
+.wiz-rs-val{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);line-height:1;margin:4px 0;}
+.wiz-rs-mod{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+
+/* ═══════ LOGIN GATE · leere Landing-Page ═══════ */
+.landing-gate{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
+.landing-gate.show{display:flex;}
+.landing-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#1a1612 0%,#0a0908 70%);z-index:0;}
+.landing-bg::before{content:'';position:absolute;inset:0;background-image:url('https://endocraft.app/IMG_8431.PNG');background-size:cover;background-position:center;opacity:.08;filter:blur(2px) sepia(.3);}
+.landing-inner{position:relative;z-index:1;max-width:560px;width:100%;text-align:center;color:#fdf6e8;padding:40px 32px;}
+.landing-brand{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:34px;}
+.landing-logo{width:54px;height:54px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);box-shadow:0 4px 20px rgba(147,110,30,0.35);}
+.landing-brand-text{text-align:left;}
+.landing-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fdf6e8;letter-spacing:.01em;line-height:1;}
+.landing-sub{font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-top:4px;font-weight:700;}
+.landing-h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;line-height:1.2;margin:0 0 18px;color:#fdf6e8;letter-spacing:-.015em;}
+.landing-h1 em{font-style:italic;color:var(--gold);font-weight:800;}
+.landing-p{font-family:'EB Garamond',serif;font-size:16px;line-height:1.6;color:rgba(253,246,232,0.75);margin:0 0 32px;}
+.landing-actions{display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto;}
+.landing-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.8px;text-transform:uppercase;font-weight:700;padding:14px 22px;border-radius:8px;cursor:pointer;transition:all .18s;border:none;display:inline-flex;align-items:center;justify-content:center;}
+.landing-btn.primary{background:#fff;color:#1a1612;border:1px solid rgba(0,0,0,0.12);box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.landing-btn.primary:hover{background:#fdf6e8;transform:translateY(-1px);box-shadow:0 6px 24px rgba(147,110,30,0.4);}
+.landing-btn.secondary{background:transparent;color:rgba(253,246,232,0.7);border:1px solid rgba(253,246,232,0.2);}
+.landing-btn.secondary:hover{background:rgba(253,246,232,0.06);color:#fdf6e8;border-color:var(--gold);}
+.landing-foot{margin-top:28px;font-size:11px;color:rgba(253,246,232,0.4);font-style:italic;}
+body.gate-open{overflow:hidden;}
+@media (max-width:620px){
+  .landing-h1{font-size:26px;}
+  .landing-p{font-size:14px;}
+  .landing-inner{padding:30px 20px;}
+}
+
 /* ═══════ MODALS & TOAST ═══════ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-lg);font-weight:500;}
 .toast.show{opacity:1;}
@@ -1345,6 +1431,35 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 </style>
 </head>
 <body>
+
+<!-- ═══════════ LOGIN GATE · leere Landing bis Login ═══════════ -->
+<div id="landingGate" class="landing-gate">
+  <div class="landing-bg"></div>
+  <div class="landing-inner">
+    <div class="landing-brand">
+      <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" class="landing-logo" onerror="this.style.display='none'">
+      <div class="landing-brand-text">
+        <div class="landing-title">EndoCraft</div>
+        <div class="landing-sub">DM Studio</div>
+      </div>
+    </div>
+    <h1 class="landing-h1">Der <em>AI-gestützte Arbeitsplatz</em> für Dungeon Master</h1>
+    <p class="landing-p">
+      Kampagnen-Memory, Session-Vorbereitung, Live-Combat-Tracker, Co-DM-KI, Charakterbögen mit D&D-Beyond-Style-Rolls.
+      Einmal einloggen, alles bleibt in deinem Account synchronisiert.
+    </p>
+    <div class="landing-actions">
+      <button class="landing-btn primary" onclick="gateSignIn()">
+        <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right:10px;vertical-align:-3px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Mit Google einloggen
+      </button>
+      <button class="landing-btn secondary" onclick="gateContinueOffline()">Offline weiter · ohne Login</button>
+    </div>
+    <div class="landing-foot">
+      <span>Deine Kampagne bleibt privat · wird nur im eigenen Account gespeichert.</span>
+    </div>
+  </div>
+</div>
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -1478,6 +1593,8 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
           <button class="session-mode-btn" data-mode="social" onclick="setSessionMode('social')" title="Fokus: Dialoge + NPCs"><span class="ico">💬</span>Social</button>
         </div>
         <div class="initiative" id="initiative"></div>
+        <button class="btn-top btn-end-session" onclick="openPostSessionRecap()" title="Session beenden · KI-Recap + Highlights + Karten-Vorschläge">📝 Session beenden</button>
+        <button class="btn-top btn-new-session" onclick="startNewSession()" title="Neue Session beginnen · Recap anlegen + Session-Nummer +1">🎲 Neue Session</button>
         <button class="btn-top" onclick="nextTurn()" title="Keyboard: Space">▸ Nächster Zug<span class="kbd-hint">Space</span></button>
       </div>
       <div class="quick-notes">
@@ -1603,9 +1720,11 @@ async function signOut() {
   await sb.auth.signOut();
   syncSettings().email = '';
   syncSettings().googleAuth = false;
+  state._offlineAck = false;  // Gate wieder aktivieren nach Logout
   saveState(); renderSyncStatus();
   document.querySelector('.sync-modal')?.remove();
   toast('Abgemeldet');
+  if (typeof showLandingGate === 'function') showLandingGate();
 }
 
 // Track sign-in state — nur bei echtem neuem Login den Cloud-Load-Dialog triggern,
@@ -2085,89 +2204,211 @@ function ensureCharFields(c) {
   if (!c.spellSlots) c.spellSlots = {};  // { 1: { max: 4, used: 0 }, 2: { max: 2, used: 0 } }
 }
 
-// Apply SRD-Race-Template auf aktuellen Charakter
+// ─── Helper: apply/revert Race-Bonuses idempotent ──────────────────────
+function _applyRaceBonuses(c, race, sign) {
+  const b = race.abilityBonuses;
+  if (b.all) {
+    ['str','dex','con','int','wis','cha'].forEach(s => { c.stats[s] = (c.stats[s] || 10) + sign * b.all; });
+  } else {
+    ['str','dex','con','int','wis','cha'].forEach(s => { if (b[s]) c.stats[s] = (c.stats[s] || 10) + sign * b[s]; });
+  }
+}
+function _removeRaceTraits(c, race) {
+  const names = new Set((race.traits || []).map(t => t.name));
+  c.traits = (c.traits || []).filter(t => !names.has(t.name));
+}
+
+// Apply SRD-Race-Template auf aktuellen Charakter (idempotent — alte Race wird entfernt)
 function applyRaceTemplate(raceId) {
   const c = currentChar(); if (!c) return;
   const race = SRD_RACES.find(r => r.id === raceId); if (!race) return;
 
-  if (!confirm(`"${race.name}" anwenden?\n\nDas fügt Traits hinzu und passt Speed/Size an. Ability-Score-Bonuses werden ADDIERT (nicht gesetzt). Bestehende Traits bleiben — Race-Traits werden ergänzt.`)) return;
+  const wasApplied = c._lastRaceId && c._lastRaceId !== raceId;
+  const isReApply = c._lastRaceId === raceId;
+  if (isReApply) {
+    if (!confirm(`"${race.name}" ist bereits aktiv. Erneut anwenden?`)) return;
+    // Alte Version der GLEICHEN Race abziehen, dann neu rein
+    _applyRaceBonuses(c, race, -1);
+    _removeRaceTraits(c, race);
+  } else if (wasApplied) {
+    const oldRace = SRD_RACES.find(r => r.id === c._lastRaceId);
+    const oldName = oldRace?.name || c._lastRaceId;
+    if (!confirm(`Race wechseln: "${oldName}" → "${race.name}"?\n\nAlte Ability-Boni und Race-Traits werden automatisch entfernt, neue angewendet.`)) return;
+    if (oldRace) {
+      _applyRaceBonuses(c, oldRace, -1);
+      _removeRaceTraits(c, oldRace);
+    }
+  } else {
+    if (!confirm(`"${race.name}" anwenden?\n\nAbility-Boni werden addiert, Traits + Darkvision + Languages gesetzt.`)) return;
+  }
 
+  // Jetzt neue Race anwenden
   c.race = race.name;
   c.size = race.size;
   c.speed = race.speed + ' ft.';
+  _applyRaceBonuses(c, race, +1);
 
-  // Ability bonuses addieren
-  const b = race.abilityBonuses;
-  if (b.all) {
-    ['str','dex','con','int','wis','cha'].forEach(s => { c.stats[s] += b.all; });
-  } else {
-    ['str','dex','con','int','wis','cha'].forEach(s => { if (b[s]) c.stats[s] += b[s]; });
-  }
-
-  // Senses (Darkvision)
   if (race.darkvision) {
     const dvText = `darkvision ${race.darkvision} ft.`;
     c.senses = c.senses?.includes('darkvision') ? c.senses : (c.senses ? c.senses + ', ' + dvText : dvText + ', passive Perception ' + (10 + abilityModifier(c.stats.wis)));
   }
-
-  // Languages
   c.languages = race.languages;
-
-  // Traits ergänzen (nicht duplizieren)
   c.traits = c.traits || [];
-  race.traits.forEach(t => {
-    if (!c.traits.some(ex => ex.name === t.name)) c.traits.push({ ...t });
-  });
+  race.traits.forEach(t => { c.traits.push({ ...t }); });
+  c._lastRaceId = raceId;
 
-  saveState();
+  saveState();  // ← speichern BEFORE re-render
   renderCharEditor();
   toast(`✓ ${race.name} angewendet · ${race.traits.length} Traits + Bonus`);
+}
+
+// ─── 5e Spell-Slot-Tabelle (SRD) ───────────────────────────────────────
+// Full Caster (Bard, Cleric, Druid, Sorcerer, Wizard) · Levels 1-20
+const SPELL_SLOTS_FULL = [
+  /*L0*/[], /*L1*/[2], /*L2*/[3], /*L3*/[4,2], /*L4*/[4,3], /*L5*/[4,3,2],
+  /*L6*/[4,3,3], /*L7*/[4,3,3,1], /*L8*/[4,3,3,2], /*L9*/[4,3,3,3,1], /*L10*/[4,3,3,3,2],
+  /*L11*/[4,3,3,3,2,1], /*L12*/[4,3,3,3,2,1], /*L13*/[4,3,3,3,2,1,1], /*L14*/[4,3,3,3,2,1,1],
+  /*L15*/[4,3,3,3,2,1,1,1], /*L16*/[4,3,3,3,2,1,1,1], /*L17*/[4,3,3,3,2,1,1,1,1],
+  /*L18*/[4,3,3,3,3,1,1,1,1], /*L19*/[4,3,3,3,3,2,1,1,1], /*L20*/[4,3,3,3,3,2,2,1,1]
+];
+// Half Caster (Paladin, Ranger) · starts at level 2
+const SPELL_SLOTS_HALF = [
+  [], [], /*L2*/[2], /*L3*/[3], /*L4*/[3], /*L5*/[4,2], /*L6*/[4,2], /*L7*/[4,3],
+  [4,3], [4,3,2], [4,3,2], [4,3,3], [4,3,3], [4,3,3,1], [4,3,3,1], [4,3,3,2],
+  [4,3,3,2], [4,3,3,3,1], [4,3,3,3,1], [4,3,3,3,2], [4,3,3,3,2]
+];
+// Warlock · Pact Magic (separate, alle gleichen Levels)
+const SPELL_SLOTS_WARLOCK = [
+  [], /*L1*/[{slots:1,lvl:1}], [{slots:2,lvl:1}], [{slots:2,lvl:2}], [{slots:2,lvl:2}],
+  [{slots:2,lvl:3}], [{slots:2,lvl:3}], [{slots:2,lvl:4}], [{slots:2,lvl:4}],
+  [{slots:2,lvl:5}], [{slots:2,lvl:5}], [{slots:3,lvl:5}], [{slots:3,lvl:5}],
+  [{slots:3,lvl:5}], [{slots:3,lvl:5}], [{slots:3,lvl:5}], [{slots:3,lvl:5}],
+  [{slots:4,lvl:5}], [{slots:4,lvl:5}], [{slots:4,lvl:5}], [{slots:4,lvl:5}]
+];
+
+function computeSpellSlots(className, level) {
+  const slots = {};
+  const cls = SRD_CLASSES.find(c => c.name.toLowerCase() === (className || '').toLowerCase());
+  if (!cls || !cls.spellcasting) return slots;
+  const lvl = Math.max(1, Math.min(20, level || 1));
+  const type = cls.spellcasting.type;
+  if (type === 'full') {
+    const arr = SPELL_SLOTS_FULL[lvl] || [];
+    arr.forEach((count, i) => { slots[i + 1] = { max: count, used: 0 }; });
+  } else if (type === 'half') {
+    const arr = SPELL_SLOTS_HALF[lvl] || [];
+    arr.forEach((count, i) => { slots[i + 1] = { max: count, used: 0 }; });
+  } else if (type === 'pact') {
+    const pact = SPELL_SLOTS_WARLOCK[lvl] || [];
+    pact.forEach(p => { slots[p.lvl] = { max: p.slots, used: 0 }; });
+  }
+  return slots;
+}
+
+function _removeClassTraits(c, cls) {
+  if (!cls) return;
+  const names = new Set();
+  Object.values(cls.features || {}).forEach(arr => (arr || []).forEach(f => names.add(f.name)));
+  c.traits = (c.traits || []).filter(t => !names.has(t.name));
 }
 
 function applyClassTemplate(classId) {
   const c = currentChar(); if (!c) return;
   const cls = SRD_CLASSES.find(x => x.id === classId); if (!cls) return;
 
-  if (!confirm(`"${cls.name}" anwenden?\n\nSetzt Hit Die, Saving-Throw-Proficiencies, fügt Features ein. Level bleibt wie eingestellt.`)) return;
+  const wasApplied = c._lastClassId && c._lastClassId !== classId;
+  const isReApply = c._lastClassId === classId;
+  if (isReApply) {
+    if (!confirm(`"${cls.name}" ist bereits aktiv. Erneut anwenden (z.B. nach Level-Up)?`)) return;
+    _removeClassTraits(c, cls);
+  } else if (wasApplied) {
+    const oldCls = SRD_CLASSES.find(x => x.id === c._lastClassId);
+    if (!confirm(`Class wechseln: "${oldCls?.name || c._lastClassId}" → "${cls.name}"?\n\nAlte Class-Features werden entfernt, neue angewendet. Spell-Slots werden aus SRD-Tabelle neu gesetzt.`)) return;
+    _removeClassTraits(c, oldCls);
+  } else {
+    if (!confirm(`"${cls.name}" anwenden?\n\nSetzt Hit Die, Save-Profs (${cls.savingThrows.map(s => s.toUpperCase()).join('/')}), Class-Features bis Lvl ${c.level}. Bei Caster: Spell-Slots aus SRD-Tabelle.`)) return;
+  }
 
   c.class = cls.name;
-  c.hitDice = c.level + 'd' + cls.hitDie + (cls.hitDie === 6 ? '' : '+' + (abilityModifier(c.stats.con) * c.level));
+  const conMod = abilityModifier(c.stats.con);
+  c.hitDice = c.level + 'd' + cls.hitDie + (conMod ? (conMod >= 0 ? '+' : '') + (conMod * c.level) : '');
 
-  // Saving Throws setzen
+  // Saving Throws: interaktive-Sheet-Proficiencies setzen
+  ensureCharFields(c);
+  c.savingThrowProfs = c.savingThrowProfs || {};
+  cls.savingThrows.forEach(s => { c.savingThrowProfs[s] = true; });
+  // Legacy-String auch füllen
   const saves = cls.savingThrows.map(s => s.toUpperCase() + ' +' + (abilityModifier(c.stats[s]) + calcProfBonus(c.level)));
   c.savingThrows = saves.join(', ');
 
   // Proficiency-Bonus
   c.proficiency = formatMod(calcProfBonus(c.level));
 
-  // Features aus Level 1 bis current Level eintragen
+  // Features bis current Level
   c.traits = c.traits || [];
   for (let lvl = 1; lvl <= c.level; lvl++) {
     const feats = cls.features[lvl] || [];
-    feats.forEach(f => {
-      if (!c.traits.some(ex => ex.name === f.name)) c.traits.push({ ...f });
-    });
+    feats.forEach(f => { c.traits.push({ ...f }); });
   }
 
+  // Spell Slots aus SRD Class-Table
+  if (cls.spellcasting) {
+    const newSlots = computeSpellSlots(cls.name, c.level);
+    // Used-Werte erhalten wenn Max passt
+    Object.keys(newSlots).forEach(lvl => {
+      const old = c.spellSlots?.[lvl];
+      if (old && old.used <= newSlots[lvl].max) newSlots[lvl].used = old.used;
+    });
+    c.spellSlots = newSlots;
+  }
+
+  c._lastClassId = classId;
   saveState();
   renderCharEditor();
-  toast(`✓ ${cls.name} angewendet · Saves + Features bis Lvl ${c.level}`);
+  const slotInfo = cls.spellcasting ? ` + Spell-Slots` : '';
+  toast(`✓ ${cls.name} angewendet · Saves + Features bis Lvl ${c.level}${slotInfo}`);
 }
 
 function applyBackgroundTemplate(bgId) {
   const c = currentChar(); if (!c) return;
   const bg = SRD_BACKGROUNDS.find(x => x.id === bgId); if (!bg) return;
 
-  if (!confirm(`Background "${bg.name}" anwenden?\n\nFügt Background-Feature zu Traits hinzu. Skills musst du manuell in "Skills" ergänzen (${bg.skillProfs.join(', ')}).`)) return;
+  const oldBg = c._lastBackgroundId ? SRD_BACKGROUNDS.find(x => x.id === c._lastBackgroundId) : null;
+  const isReApply = c._lastBackgroundId === bgId;
+  if (isReApply) {
+    if (!confirm(`Background "${bg.name}" ist bereits aktiv. Erneut anwenden?`)) return;
+  } else if (oldBg) {
+    if (!confirm(`Background wechseln: "${oldBg.name}" → "${bg.name}"?\n\nAlte Skill-Profs und Feature werden entfernt.`)) return;
+  } else {
+    if (!confirm(`Background "${bg.name}" anwenden?\n\nSkills: ${bg.skillProfs.join(', ')} bekommen Proficiency. Feature wird als Trait hinzugefügt.`)) return;
+  }
 
+  // Altes Background-Feature + Skill-Profs entfernen
+  if (oldBg) {
+    const oldFeatName = `${oldBg.name} · ${oldBg.feature.name}`;
+    c.traits = (c.traits || []).filter(t => t.name !== oldFeatName);
+    ensureCharFields(c);
+    oldBg.skillProfs.forEach(s => {
+      // Nur abziehen wenn wir wirklich NUR durch Background prof sind (= level 1)
+      if (c.skillProfs[s] === 1) delete c.skillProfs[s];
+    });
+    c.background = '';
+  }
+
+  // Neues anwenden
+  c.background = bg.name;
   c.traits = c.traits || [];
   const feat = { name: `${bg.name} · ${bg.feature.name}`, text: bg.feature.text };
   if (!c.traits.some(ex => ex.name === feat.name)) c.traits.push(feat);
 
-  // Skills zum bestehenden Skills-String hinzufügen (mit Bonus)
+  // Skills als Proficiency in interaktives Sheet
+  ensureCharFields(c);
+  bg.skillProfs.forEach(s => {
+    if (!c.skillProfs[s]) c.skillProfs[s] = 1;  // nur setzen wenn nicht schon prof/expertise
+  });
+
+  // Legacy skills-String
   const skillAdditions = bg.skillProfs.map(s => {
-    const profBonus = calcProfBonus(c.level);
-    // Skill → Ability-Mapping (vereinfacht — SRD-standard)
     const skillAbility = {
       'Acrobatics':'dex','Animal Handling':'wis','Arcana':'int','Athletics':'str',
       'Deception':'cha','History':'int','Insight':'wis','Intimidation':'cha',
@@ -2175,14 +2416,15 @@ function applyBackgroundTemplate(bgId) {
       'Performance':'cha','Persuasion':'cha','Religion':'int','Sleight of Hand':'dex',
       'Stealth':'dex','Survival':'wis'
     }[s] || 'wis';
-    const mod = abilityModifier(c.stats[skillAbility]) + profBonus;
+    const mod = abilityModifier(c.stats[skillAbility]) + calcProfBonus(c.level);
     return `${s} ${formatMod(mod)}`;
   }).join(', ');
   c.skills = c.skills ? c.skills + ', ' + skillAdditions : skillAdditions;
 
+  c._lastBackgroundId = bgId;
   saveState();
   renderCharEditor();
-  toast(`✓ ${bg.name} angewendet · Feature + Skills +${bg.skillProfs.length}`);
+  toast(`✓ ${bg.name} angewendet · Feature + Skill-Profs +${bg.skillProfs.length}`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -3772,6 +4014,50 @@ function addSession() {
   state.recapEditing = true;
   saveState(); renderSessionLocation();
 }
+
+// "Neue Session" — vom Session-Live-Topbar aus. Legt neue Session an, setzt Session-Counter hoch,
+// leert Initiative + Quick-Notes-Buffer, öffnet optional Recap-Editor für Title/Notes.
+function startNewSession() {
+  const sessions = campaign().sessions || (campaign().sessions = []);
+  const lastNum = sessions.length ? sessions[sessions.length - 1].number : 0;
+  const nextNum = lastNum + 1;
+  const title = prompt(`Neue Session starten · Session #${nextNum}\n\nTitel (optional):`, '');
+  if (title === null) return;  // abgebrochen
+
+  sessions.push({
+    number: nextNum,
+    title: title.trim(),
+    date: new Date().toISOString().slice(0, 10),
+    recap: ''
+  });
+  state.viewingSessionIdx = sessions.length - 1;
+
+  // Session-Zähler auch im Campaign-Objekt hochsetzen (für andere Views die darauf zugreifen)
+  if (!campaign().session) campaign().session = { number: nextNum };
+  else campaign().session.number = nextNum;
+
+  // Initiative + Turn-Tracker zurücksetzen (neue Session = frische Kampfszene)
+  state.initiative = [];
+  state.activeTurn = 0;
+  state.round = 1;
+
+  // Alle Charaktere: HP nicht resetten (bleibt wie am Ende der letzten Session), aber Death-Saves löschen
+  state.characters.forEach(c => {
+    if (c.deathSaves) c.deathSaves = { success: 0, fail: 0 };
+    // Inspiration BLEIBT (Bard kann sie verteilen)
+    // Exhaustion BLEIBT (Long Rest = 1 Level runter, aber nicht automatisch)
+  });
+
+  saveState();
+
+  // UI updaten
+  if (typeof renderInitiative === 'function') renderInitiative();
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
+  if (typeof updateQuickNotesCount === 'function') updateQuickNotesCount();
+
+  toast(`✓ Session #${nextNum} gestartet${title.trim() ? ' · ' + title.trim() : ''}`);
+  plausibleTrack && plausibleTrack('DMStudio · New Session', { number: nextNum });
+}
 function deleteSession() {
   if (!confirm('Diese Session löschen?')) return;
   campaign().sessions.splice(state.viewingSessionIdx, 1);
@@ -4228,14 +4514,376 @@ function openChar(id) {
   else { renderCharList(); renderCharEditor(); }
 }
 
+// ═══════════ CHARACTER WIZARD (Guided Build) ═══════════
+let _wizardState = null;
+
 function newCharacter() {
-  const type = confirm('Spieler-Charakter? (OK = Spieler, Abbrechen = NPC)') ? 'pc' : 'npc';
-  const name = prompt(`Name für neuen ${type === 'pc' ? 'Charakter' : 'NPC'}:`); if (!name) return;
+  openCharWizard();
+}
+
+function openCharWizard() {
+  _wizardState = {
+    step: 0,  // 0=Type/Name, 1=Race, 2=Class+Level, 3=Background, 4=Abilities, 5=Review
+    type: 'pc',
+    name: '',
+    raceId: '',
+    raceCustom: '',
+    classId: '',
+    classCustom: '',
+    level: 1,
+    bgId: '',
+    bgCustom: '',
+    abilityMethod: 'standard',  // standard | manual
+    stats: { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 },  // default standard array
+    assignedStats: { str: null, dex: null, con: null, int: null, wis: null, cha: null }
+  };
+  renderWizard();
+}
+
+function closeWizard() {
+  _wizardState = null;
+  const m = document.getElementById('charWizardModal'); if (m) m.remove();
+}
+
+function renderWizard() {
+  let modal = document.getElementById('charWizardModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'charWizardModal';
+    modal.className = 'srd-modal';
+    modal.addEventListener('click', e => { if (e.target === modal) closeWizard(); });
+    document.body.appendChild(modal);
+  }
+  const w = _wizardState; if (!w) return;
+  const STEPS = ['Typ & Name', 'Race', 'Class & Level', 'Background', 'Ability Scores', 'Review'];
+
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop"></div>
+    <div class="srd-modal-inner wizard-inner">
+      <div class="srd-modal-h">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-size:18px;color:var(--ink);margin:0 0 3px 0;">✨ Character Wizard</h2>
+          <div style="font-size:12px;color:var(--text-dim);">Schritt ${w.step + 1} von ${STEPS.length}: <strong>${STEPS[w.step]}</strong></div>
+        </div>
+        <button class="wiz-close-x" onclick="closeWizard()" title="Schließen">×</button>
+      </div>
+      <div class="wizard-progress">
+        ${STEPS.map((label, i) => `<div class="wiz-step ${i === w.step ? 'current' : ''} ${i < w.step ? 'done' : ''}">${i + 1}. ${label}</div>`).join('')}
+      </div>
+      <div class="wizard-body">
+        ${renderWizardStep()}
+      </div>
+      <div class="wizard-foot">
+        ${w.step > 0 ? '<button class="wiz-btn-back" onclick="wizardBack()">← Zurück</button>' : '<button class="wiz-btn-back" onclick="wizardSkipToCustom()">Custom Build · Wizard überspringen</button>'}
+        <div style="flex:1"></div>
+        ${w.step < 5
+          ? `<button class="wiz-btn-next" onclick="wizardNext()">Weiter →</button>`
+          : `<button class="wiz-btn-finish" onclick="wizardFinish()">✓ Charakter erstellen</button>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderWizardStep() {
+  const w = _wizardState;
+  switch (w.step) {
+    case 0: return `
+      <div class="wiz-field">
+        <label>Charakter-Typ</label>
+        <div class="wiz-radio-row">
+          <label class="wiz-radio ${w.type === 'pc' ? 'active' : ''}">
+            <input type="radio" name="wtype" value="pc" ${w.type === 'pc' ? 'checked' : ''} onchange="_wizardState.type='pc';renderWizard()">
+            <strong>Spieler-Charakter (PC)</strong><span>Vollständiges Sheet mit Skills, Saves, Spell-Slots</span>
+          </label>
+          <label class="wiz-radio ${w.type === 'npc' ? 'active' : ''}">
+            <input type="radio" name="wtype" value="npc" ${w.type === 'npc' ? 'checked' : ''} onchange="_wizardState.type='npc';renderWizard()">
+            <strong>NPC / Monster</strong><span>Klassischer Statblock, AI-Portrait, CR statt Level</span>
+          </label>
+        </div>
+      </div>
+      <div class="wiz-field">
+        <label>Name</label>
+        <input class="wiz-input" id="wizNameInput" value="${escapeAttr(w.name)}" placeholder="z.B. Elara Nightwhisper" oninput="_wizardState.name=this.value">
+      </div>
+      <div class="wiz-hint">Der Wizard führt dich durch Race, Class, Background, Ability Scores. Du kannst später jedes Feld manuell ändern.</div>
+    `;
+    case 1: return `
+      <div class="wiz-field">
+        <label>Race auswählen</label>
+        <div class="wiz-grid-races">
+          ${SRD_RACES.map(r => `
+            <div class="wiz-race-card ${w.raceId === r.id ? 'selected' : ''}" onclick="_wizardState.raceId='${r.id}';_wizardState.raceCustom='';renderWizard()">
+              <div class="wiz-race-name">${escapeHtml(r.name)}</div>
+              <div class="wiz-race-meta">${escapeHtml(r.size)} · Speed ${r.speed}ft${r.darkvision ? ` · Darkvision ${r.darkvision}ft` : ''}</div>
+              <div class="wiz-race-bonus">${renderAbilityBonus(r.abilityBonuses)}</div>
+            </div>
+          `).join('')}
+          <div class="wiz-race-card custom ${w.raceCustom ? 'selected' : ''}" onclick="document.getElementById('wizRaceCustom').focus()">
+            <div class="wiz-race-name">⚡ Custom Race</div>
+            <div class="wiz-race-meta">Eigene Homebrew-Race · keine Auto-Boni</div>
+            <input class="wiz-input" id="wizRaceCustom" value="${escapeAttr(w.raceCustom)}" placeholder="z.B. Tabaxi, Firbolg, Homebrew..." oninput="_wizardState.raceId='';_wizardState.raceCustom=this.value">
+          </div>
+        </div>
+      </div>
+    `;
+    case 2: return `
+      <div class="wiz-field">
+        <label>Class auswählen</label>
+        <div class="wiz-grid-classes">
+          ${SRD_CLASSES.map(cl => `
+            <div class="wiz-class-card ${w.classId === cl.id ? 'selected' : ''}" onclick="_wizardState.classId='${cl.id}';_wizardState.classCustom='';renderWizard()">
+              <div class="wiz-class-name">${escapeHtml(cl.name)}</div>
+              <div class="wiz-class-meta">HD d${cl.hitDie} · Saves ${cl.savingThrows.map(s=>s.toUpperCase()).join('/')}${cl.spellcasting ? ` · ${cl.spellcasting.type === 'full' ? 'Full Caster' : cl.spellcasting.type === 'half' ? 'Half Caster' : 'Pact Magic'}` : ''}</div>
+            </div>
+          `).join('')}
+          <div class="wiz-class-card custom ${w.classCustom ? 'selected' : ''}" onclick="document.getElementById('wizClassCustom').focus()">
+            <div class="wiz-class-name">⚡ Custom Class</div>
+            <input class="wiz-input" id="wizClassCustom" value="${escapeAttr(w.classCustom)}" placeholder="Homebrew-Class..." oninput="_wizardState.classId='';_wizardState.classCustom=this.value">
+          </div>
+        </div>
+      </div>
+      <div class="wiz-field">
+        <label>Level</label>
+        <input class="wiz-input" type="number" min="1" max="20" value="${w.level}" style="max-width:120px;" oninput="_wizardState.level=Math.max(1,Math.min(20,parseInt(this.value)||1))">
+      </div>
+    `;
+    case 3: return `
+      <div class="wiz-field">
+        <label>Background auswählen (optional)</label>
+        <div class="wiz-grid-bgs">
+          <div class="wiz-bg-card ${!w.bgId && !w.bgCustom ? 'selected' : ''}" onclick="_wizardState.bgId='';_wizardState.bgCustom='';renderWizard()">
+            <div class="wiz-bg-name">— Kein Background —</div>
+            <div class="wiz-bg-meta">später ergänzen</div>
+          </div>
+          ${SRD_BACKGROUNDS.map(bg => `
+            <div class="wiz-bg-card ${w.bgId === bg.id ? 'selected' : ''}" onclick="_wizardState.bgId='${bg.id}';_wizardState.bgCustom='';renderWizard()">
+              <div class="wiz-bg-name">${escapeHtml(bg.name)}</div>
+              <div class="wiz-bg-meta">${bg.skillProfs.join(', ')}</div>
+              <div class="wiz-bg-feat">${escapeHtml(bg.feature.name)}</div>
+            </div>
+          `).join('')}
+          <div class="wiz-bg-card custom ${w.bgCustom ? 'selected' : ''}" onclick="document.getElementById('wizBgCustom').focus()">
+            <div class="wiz-bg-name">⚡ Custom</div>
+            <input class="wiz-input" id="wizBgCustom" value="${escapeAttr(w.bgCustom)}" placeholder="Eigener Background..." oninput="_wizardState.bgId='';_wizardState.bgCustom=this.value">
+          </div>
+        </div>
+      </div>
+    `;
+    case 4: return `
+      <div class="wiz-field">
+        <label>Methode</label>
+        <div class="wiz-radio-row">
+          <label class="wiz-radio ${w.abilityMethod === 'standard' ? 'active' : ''}">
+            <input type="radio" name="wabm" value="standard" ${w.abilityMethod === 'standard' ? 'checked' : ''} onchange="_wizardState.abilityMethod='standard';renderWizard()">
+            <strong>Standard Array</strong><span>15, 14, 13, 12, 10, 8 auf Abilities verteilen</span>
+          </label>
+          <label class="wiz-radio ${w.abilityMethod === 'manual' ? 'active' : ''}">
+            <input type="radio" name="wabm" value="manual" ${w.abilityMethod === 'manual' ? 'checked' : ''} onchange="_wizardState.abilityMethod='manual';renderWizard()">
+            <strong>Manuell</strong><span>Eigene Scores eingeben (z.B. für Rolled Stats)</span>
+          </label>
+        </div>
+      </div>
+      ${w.abilityMethod === 'standard' ? renderStandardArrayUI() : renderManualStatsUI()}
+      <div class="wiz-hint">Race-Boni werden am Ende automatisch draufaddiert (${w.raceId ? escapeHtml(SRD_RACES.find(r => r.id === w.raceId)?.name || '') : 'noch keine Race gewählt'}).</div>
+    `;
+    case 5: {
+      const race = SRD_RACES.find(r => r.id === w.raceId);
+      const cls = SRD_CLASSES.find(c => c.id === w.classId);
+      const bg = SRD_BACKGROUNDS.find(b => b.id === w.bgId);
+      const finalStats = computeWizardFinalStats();
+      return `
+        <div class="wiz-review">
+          <div class="wiz-review-row"><span>Name</span><strong>${escapeHtml(w.name || '— kein Name —')}</strong></div>
+          <div class="wiz-review-row"><span>Typ</span><strong>${w.type === 'pc' ? 'Spieler-Charakter' : 'NPC'}</strong></div>
+          <div class="wiz-review-row"><span>Race</span><strong>${escapeHtml(race?.name || w.raceCustom || '—')}</strong></div>
+          <div class="wiz-review-row"><span>Class</span><strong>${escapeHtml(cls?.name || w.classCustom || '—')} · Lvl ${w.level}</strong></div>
+          <div class="wiz-review-row"><span>Background</span><strong>${escapeHtml(bg?.name || w.bgCustom || '—')}</strong></div>
+          <div class="wiz-review-stats">
+            ${['str','dex','con','int','wis','cha'].map(s => `
+              <div><div class="wiz-rs-lbl">${s.toUpperCase()}</div><div class="wiz-rs-val">${finalStats[s]}</div><div class="wiz-rs-mod">${formatMod(abilityModifier(finalStats[s]))}</div></div>
+            `).join('')}
+          </div>
+          ${cls?.spellcasting ? `<div class="wiz-hint">✨ Spell-Slots werden automatisch aus SRD-Tabelle gesetzt (${cls.spellcasting.type === 'full' ? 'Full Caster' : cls.spellcasting.type === 'half' ? 'Half Caster' : 'Pact Magic'}).</div>` : ''}
+          <div class="wiz-hint">Nach "Erstellen" öffnet sich der Character Editor — dort kannst du Attacks, Spells, Notes und alles weitere ergänzen.</div>
+        </div>
+      `;
+    }
+  }
+}
+
+function renderAbilityBonus(b) {
+  if (b.all) return `+${b.all} zu allen Abilities`;
+  return Object.entries(b).map(([k, v]) => `${k.toUpperCase()} +${v}`).join(', ') || '—';
+}
+
+function renderStandardArrayUI() {
+  const w = _wizardState;
+  const ARRAY = [15, 14, 13, 12, 10, 8];
+  const assigned = w.assignedStats;
+  const used = new Set(Object.values(assigned).filter(v => v !== null));
+  return `
+    <div class="wiz-field">
+      <label>Jede Box 1x zuweisen: 15, 14, 13, 12, 10, 8</label>
+      <div class="wiz-array-row">
+        ${ARRAY.map(v => `<div class="wiz-array-box ${used.has(v) ? 'used' : ''}">${v}</div>`).join('')}
+      </div>
+    </div>
+    <div class="wiz-stats-grid">
+      ${['str','dex','con','int','wis','cha'].map(s => `
+        <div class="wiz-stat-cell">
+          <div class="wiz-stat-lbl">${s.toUpperCase()}</div>
+          <select class="wiz-input" onchange="assignWizardStat('${s}', this.value)">
+            <option value="">— wählen —</option>
+            ${ARRAY.map(v => `<option value="${v}" ${assigned[s] === v ? 'selected' : ''} ${used.has(v) && assigned[s] !== v ? 'disabled' : ''}>${v}</option>`).join('')}
+          </select>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderManualStatsUI() {
+  const w = _wizardState;
+  return `
+    <div class="wiz-stats-grid">
+      ${['str','dex','con','int','wis','cha'].map(s => `
+        <div class="wiz-stat-cell">
+          <div class="wiz-stat-lbl">${s.toUpperCase()}</div>
+          <input class="wiz-input" type="number" min="1" max="30" value="${w.stats[s]}" oninput="_wizardState.stats['${s}']=parseInt(this.value)||10">
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function assignWizardStat(stat, val) {
+  const v = val === '' ? null : parseInt(val, 10);
+  // If already assigned elsewhere, un-assign that slot
+  if (v !== null) {
+    Object.keys(_wizardState.assignedStats).forEach(s => {
+      if (_wizardState.assignedStats[s] === v && s !== stat) _wizardState.assignedStats[s] = null;
+    });
+  }
+  _wizardState.assignedStats[stat] = v;
+  _wizardState.stats[stat] = v || 10;
+  renderWizard();
+}
+
+function computeWizardFinalStats() {
+  const w = _wizardState;
+  const base = w.abilityMethod === 'standard'
+    ? { str: w.assignedStats.str || 10, dex: w.assignedStats.dex || 10, con: w.assignedStats.con || 10, int: w.assignedStats.int || 10, wis: w.assignedStats.wis || 10, cha: w.assignedStats.cha || 10 }
+    : { ...w.stats };
+  const race = SRD_RACES.find(r => r.id === w.raceId);
+  if (race) {
+    const b = race.abilityBonuses;
+    if (b.all) ['str','dex','con','int','wis','cha'].forEach(s => { base[s] += b.all; });
+    else ['str','dex','con','int','wis','cha'].forEach(s => { if (b[s]) base[s] += b[s]; });
+  }
+  return base;
+}
+
+function wizardBack() { if (_wizardState.step > 0) { _wizardState.step--; renderWizard(); } }
+function wizardNext() {
+  const w = _wizardState;
+  // Validation
+  if (w.step === 0 && !w.name.trim()) { toast('Name fehlt', true); return; }
+  if (w.step === 4 && w.abilityMethod === 'standard') {
+    const assigned = Object.values(w.assignedStats).filter(v => v !== null);
+    if (assigned.length < 6) { toast('Alle 6 Abilities müssen zugewiesen sein', true); return; }
+  }
+  if (w.step < 5) { w.step++; renderWizard(); }
+}
+
+function wizardSkipToCustom() {
+  const name = _wizardState.name || prompt('Name für Custom-Charakter:');
+  if (!name) return;
+  const type = _wizardState.type;
   const id = 'c_' + Date.now().toString(36);
   const c = { ...BLANK_CHAR(), id, type, name };
   state.characters.push(c);
   state.currentCharId = id; saveState();
+  closeWizard();
   renderChars();
+  toast('Custom-Build · alle Felder manuell bearbeitbar');
+}
+
+function wizardFinish() {
+  const w = _wizardState;
+  const id = 'c_' + Date.now().toString(36);
+  const c = { ...BLANK_CHAR(), id, type: w.type, name: w.name, level: w.level };
+
+  // Base stats from wizard
+  const finalStats = computeWizardFinalStats();
+  c.stats = finalStats;
+
+  // Race (custom or SRD)
+  if (w.raceId) {
+    const race = SRD_RACES.find(r => r.id === w.raceId);
+    if (race) {
+      c.race = race.name;
+      c.size = race.size;
+      c.speed = race.speed + ' ft.';
+      if (race.darkvision) c.senses = `darkvision ${race.darkvision} ft., passive Perception ${10 + abilityModifier(finalStats.wis)}`;
+      c.languages = race.languages;
+      c.traits = race.traits.map(t => ({ ...t }));
+      c._lastRaceId = w.raceId;
+    }
+  } else if (w.raceCustom) {
+    c.race = w.raceCustom;
+  }
+
+  // Class (custom or SRD)
+  if (w.classId) {
+    const cls = SRD_CLASSES.find(x => x.id === w.classId);
+    if (cls) {
+      c.class = cls.name;
+      const conMod = abilityModifier(finalStats.con);
+      c.hitDice = c.level + 'd' + cls.hitDie + (conMod ? (conMod >= 0 ? '+' : '') + (conMod * c.level) : '');
+      c.savingThrowProfs = {};
+      cls.savingThrows.forEach(s => { c.savingThrowProfs[s] = true; });
+      c.savingThrows = cls.savingThrows.map(s => s.toUpperCase() + ' +' + (abilityModifier(finalStats[s]) + calcProfBonus(c.level))).join(', ');
+      c.proficiency = formatMod(calcProfBonus(c.level));
+      c.traits = c.traits || [];
+      for (let lvl = 1; lvl <= c.level; lvl++) {
+        (cls.features[lvl] || []).forEach(f => { c.traits.push({ ...f }); });
+      }
+      if (cls.spellcasting) c.spellSlots = computeSpellSlots(cls.name, c.level);
+      c._lastClassId = w.classId;
+      // HP aus Hit Die + Con (klassisch: Lvl1 max, dann average)
+      const conBonus = abilityModifier(finalStats.con);
+      let hp = cls.hitDie + conBonus;
+      for (let lvl = 2; lvl <= c.level; lvl++) hp += Math.ceil((cls.hitDie + 1) / 2) + conBonus;
+      c.hp = Math.max(1, hp);
+      c.maxHp = c.hp;
+    }
+  } else if (w.classCustom) {
+    c.class = w.classCustom;
+  }
+
+  // Background
+  if (w.bgId) {
+    const bg = SRD_BACKGROUNDS.find(x => x.id === w.bgId);
+    if (bg) {
+      c.background = bg.name;
+      c.traits = c.traits || [];
+      c.traits.push({ name: `${bg.name} · ${bg.feature.name}`, text: bg.feature.text });
+      c.skillProfs = c.skillProfs || {};
+      bg.skillProfs.forEach(s => { c.skillProfs[s] = 1; });
+      c._lastBackgroundId = w.bgId;
+    }
+  } else if (w.bgCustom) {
+    c.background = w.bgCustom;
+  }
+
+  ensureCharFields(c);
+
+  state.characters.push(c);
+  state.currentCharId = id;
+  saveState();
+  closeWizard();
+  renderChars();
+  toast(`✓ ${c.name} erstellt · alle Felder editierbar`);
 }
 
 // SRD 5.1 Rules Browser Modal — Multi-Tab mit Zuständen, Zaubern, Aktionen, Regeln, Skills
@@ -6093,12 +6741,23 @@ function openPostSessionRecap() {
         </div>
 
         <!-- Final-Recap-Generator -->
-        <div>
+        <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">📖 Generierter Recap</div>
             <button class="btn-top primary" id="genRecapBtn" onclick="generateFinalRecap()" style="font-size:11px;padding:5px 12px;">🪄 Recap schreiben</button>
           </div>
           <textarea id="finalRecapTextarea" placeholder="Hier erscheint der KI-generierte Recap. Du kannst direkt editieren bevor du ihn in die Session speicherst." style="width:100%;min-height:180px;background:#fbf6e6;border:1px solid #d9c89a;border-radius:6px;padding:14px 16px;font-family:'EB Garamond',Georgia,serif;font-size:16px;line-height:1.65;color:var(--ink);font-style:italic;outline:none;resize:vertical;"></textarea>
+        </div>
+
+        <!-- Highlights-Generator · Karten-Vorschläge -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">🌟 Highlights · Karten-Vorschläge</div>
+            <button class="btn-top primary" id="genHighlightsBtn" onclick="generateSessionHighlights()" style="font-size:11px;padding:5px 12px;background:var(--gold);color:#fff;border-color:var(--gold);">✨ Highlights extrahieren</button>
+          </div>
+          <div id="highlightsHost" style="background:#fdf9ec;border:1px solid #d9c89a;border-radius:6px;padding:14px 18px;min-height:80px;">
+            <em style="color:var(--text-dim);font-style:italic;font-size:13px;">Nach dem Recap: KI extrahiert 5-8 Moments aus deinen Notizen die sich als Sammelkarte eignen — knapper Tod, legendärer Würfelwurf, emotionaler Beat, unerwartete NPC-Reaktion. Klick „→ Als Sammelkarte" öffnet EndoCraft mit vorausgefülltem Moment.</em>
+          </div>
         </div>
       </div>
 
@@ -6215,10 +6874,146 @@ function savePostSessionRecap() {
   if (!current) { toast('Keine aktuelle Session gefunden', true); return; }
 
   current.recap = text;
+
+  // Highlights auch in Session speichern (für späteren Zugriff)
+  const highlights = Array.from(document.querySelectorAll('[data-highlight-json]'))
+    .map(el => { try { return JSON.parse(el.dataset.highlightJson); } catch (e) { return null; } })
+    .filter(Boolean);
+  if (highlights.length) current.highlights = highlights;
+
   saveState();
   document.querySelector('.recap-modal')?.remove();
-  toast('✓ Recap in Session #' + current.number + ' gespeichert');
+  toast(`✓ Recap ${highlights.length ? '+ ' + highlights.length + ' Highlights ' : ''}in Session #${current.number} gespeichert`);
   if (state.currentView === 'session') renderSession();
+}
+
+// ═══════════ SESSION HIGHLIGHTS → SAMMELKARTEN ═══════════
+async function generateSessionHighlights() {
+  const btn = document.getElementById('genHighlightsBtn');
+  const host = document.getElementById('highlightsHost');
+  const recapText = document.getElementById('finalRecapTextarea')?.value?.trim();
+
+  // Notes collection
+  const allNotes = [];
+  Object.entries(campaign().locations).forEach(([id, loc]) => {
+    if (!loc.log?.trim()) return;
+    loc.log.split('\n').filter(l => l.trim()).forEach(line => {
+      allNotes.push(`[${loc.name}] ${line}`);
+    });
+  });
+
+  if (!recapText && !allNotes.length) {
+    host.innerHTML = '<em style="color:var(--crimson);font-style:italic;">Keine Notizen und kein Recap vorhanden. Erst Recap generieren → dann Highlights.</em>';
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'KI sucht Highlights…';
+  host.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-dim);font-style:italic;">🔮 KI analysiert Recap + Notizen auf card-würdige Momente…</div>';
+
+  const pcs = state.characters.filter(c => c.type === 'pc').map(c => `${c.name} (${c.race} ${c.class})`).join(', ');
+
+  try {
+    const prompt = `Du bist Kurator für "Session Scroll" — eine TTRPG-Trading-Card-Produktlinie die legendäre D&D-Spielmomente als Sammelkarten festhält. Deine Aufgabe: aus dem Session-Recap + Live-Notizen des DMs 5-8 konkrete Moments extrahieren die sich als Einzelkarte eignen.
+
+KRITERIEN für einen card-würdigen Moment:
+• Eng auf EINEN Charakter oder EINE klare Aktion fokussiert (nicht: "die Party tat X")
+• Emotional aufgeladen: knapper Tod, legendärer Wurf, heroisches Opfer, moralische Entscheidung, unerwartete Nähe zu NPC, komische Katastrophe
+• Visualisierbar: es lässt sich eine Karten-Illustration vorstellen (Szene · Subject · Licht)
+• Authentisch zum D&D-Tisch: nicht hochtrabend, sondern das "echte" was passiert ist
+
+PARTY-KONTEXT: ${pcs}
+
+ANTWORT-FORMAT: Gib AUSSCHLIESSLICH gültiges JSON zurück (kein Vorwort, kein Markdown, keine Kommentare). Ein Array von 5-8 Objekten mit dieser Struktur:
+[
+  {"character":"Larrymäus","title":"Dem Tod knapp entkommen","moment":"Kurzer 1-2-Satz-Moment für die Karten-Rückseite. Präsens. Emotional konkret. KEIN Allgemeinplatz.","rarity":"rare","imageHint":"Dark cellar light, kneeling cleric, hand pressed against bleeding side, amber lantern glow, single tear on dusty face"}
+]
+
+RARITY-WAHL:
+- "common" = alltäglicher aber memorabler Moment
+- "rare" = emotionaler Höhepunkt, knapper Tod, wichtige Entscheidung
+- "legendary" = einmaliger wegweisender Moment (max 1-2 pro Session)
+
+RECAP:
+${recapText || '(Kein Recap-Text — nutze nur die Notizen)'}
+
+LIVE-NOTIZEN:
+${allNotes.join('\n')}`;
+
+    const resp = await fetch(`${API_BASE}/api/dm-chat`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await resp.json();
+    let text = '';
+    if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
+    else if (typeof data.content === 'string') text = data.content;
+
+    // Extract JSON (KI kann Markdown-Fences oder Text drumherum einfügen)
+    let highlights = [];
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+      try { highlights = JSON.parse(jsonMatch[0]); } catch (e) {
+        console.error('Highlights-JSON parse failed', e, jsonMatch[0]);
+      }
+    }
+
+    if (!Array.isArray(highlights) || !highlights.length) {
+      host.innerHTML = `<em style="color:var(--crimson);">KI hat kein valides JSON zurückgegeben. Raw:</em><pre style="font-size:11px;color:var(--text-dim);white-space:pre-wrap;">${escapeHtml(text.slice(0, 500))}</pre>`;
+      return;
+    }
+
+    renderHighlightCards(highlights);
+    toast(`✨ ${highlights.length} Highlights extrahiert`);
+    plausibleTrack && plausibleTrack('DMStudio · Highlights Generated', { count: highlights.length });
+  } catch (err) {
+    host.innerHTML = `<em style="color:var(--crimson);">Fehler: ${escapeHtml(err.message)}</em>`;
+  } finally {
+    btn.disabled = false; btn.textContent = '✨ Highlights extrahieren';
+  }
+}
+
+function renderHighlightCards(highlights) {
+  const host = document.getElementById('highlightsHost');
+  if (!host) return;
+  const rarityColor = { common: '#5a5a5a', rare: '#1e6fd9', legendary: '#b8851f' };
+  const rarityLabel = { common: 'COMMON', rare: 'RARE', legendary: 'LEGENDARY' };
+
+  host.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">
+      ${highlights.map((h, i) => {
+        const r = (h.rarity || 'common').toLowerCase();
+        const color = rarityColor[r] || rarityColor.common;
+        return `
+          <div class="highlight-card" data-highlight-json='${escapeAttr(JSON.stringify(h))}' style="background:#fff;border:1.5px solid ${color};border-radius:8px;padding:12px 14px;position:relative;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+              <div>
+                <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.2px;color:${color};text-transform:uppercase;font-weight:700;">${escapeHtml(h.character || 'Party')}</div>
+                <div style="font-family:'Cinzel',serif;font-size:13.5px;color:var(--ink);margin-top:2px;font-weight:700;line-height:1.25;">${escapeHtml(h.title || '—')}</div>
+              </div>
+              <span style="background:${color};color:#fff;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;padding:3px 7px;border-radius:3px;font-weight:700;flex-shrink:0;">${rarityLabel[r] || 'COMMON'}</span>
+            </div>
+            <div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--text);line-height:1.5;font-style:italic;margin-bottom:10px;">${escapeHtml(h.moment || '')}</div>
+            ${h.imageHint ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dimmer);background:var(--surface-2);padding:6px 8px;border-radius:4px;margin-bottom:10px;line-height:1.4;">🎨 ${escapeHtml(h.imageHint)}</div>` : ''}
+            <div style="display:flex;gap:6px;">
+              <button onclick="highlightToCardEl(this.closest('.highlight-card'))" style="flex:1;background:var(--gold);color:#fff;border:none;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.2px;padding:7px 10px;border-radius:4px;cursor:pointer;font-weight:700;text-transform:uppercase;">→ Als Sammelkarte</button>
+              <button onclick="this.closest('.highlight-card').remove()" title="Entfernen" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:7px 10px;border-radius:4px;cursor:pointer;font-size:12px;">×</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <div style="text-align:center;margin-top:14px;">
+      <button onclick="generateSessionHighlights()" style="background:transparent;border:1px dashed var(--gold);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;padding:7px 16px;border-radius:4px;cursor:pointer;font-weight:700;">🔄 Neu generieren</button>
+    </div>
+  `;
+}
+
+function highlightToCardEl(cardEl) {
+  if (!cardEl) return;
+  let h;
+  try { h = JSON.parse(cardEl.dataset.highlightJson); } catch (e) { toast('Highlight-Parse-Fehler', true); return; }
+  const momentText = `${h.character ? h.character + ' · ' : ''}${h.title ? h.title + '.\n\n' : ''}${h.moment || ''}${h.imageHint ? '\n\n[Image-Hint: ' + h.imageHint + ']' : ''}`;
+  turnMomentIntoCard(momentText);
 }
 
 function exportJSON() {
@@ -6231,6 +7026,96 @@ function exportJSON() {
 }
 
 // ═══════════ INIT ═══════════
+
+// ─── LOGIN GATE: leere Landing bis Login / Offline-Decision ──────────
+function isGateUnlocked() {
+  const s = syncSettings();
+  return !!(s.email || state._offlineAck);
+}
+function showLandingGate() {
+  const gate = document.getElementById('landingGate');
+  if (!gate) return;
+  gate.classList.add('show');
+  document.body.classList.add('gate-open');
+}
+function hideLandingGate() {
+  const gate = document.getElementById('landingGate');
+  if (!gate) return;
+  gate.classList.remove('show');
+  document.body.classList.remove('gate-open');
+}
+async function gateSignIn() {
+  if (typeof signInWithGoogle === 'function') {
+    await signInWithGoogle();
+    // Gate wird durch onAuthStateChange-Hook automatisch geschlossen
+  } else {
+    toast('Google-Login nicht verfügbar', true);
+  }
+}
+function gateContinueOffline() {
+  state._offlineAck = true;
+  saveState();
+  hideLandingGate();
+  toast('Offline-Modus · deine Daten bleiben lokal');
+}
+
+// Hook: Wenn User sich einloggt → Gate schließen + evtl. User-Wechsel detecten
+initAuthState = async function() {
+  const sb = initSupabaseClient(); if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user?.email) {
+    // Prüfen ob User gewechselt hat — wenn ja, state zurücksetzen
+    if (state._lastSignedInEmail && state._lastSignedInEmail !== session.user.email) {
+      if (confirm(`Du bist jetzt als ${session.user.email} eingeloggt, vorher war es ${state._lastSignedInEmail}.\n\nLokale Kampagnen-Daten zurücksetzen und aus Cloud laden?\n\nOK = Ja, Reset · Abbrechen = Lokale Daten behalten`)) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+        return;
+      }
+    }
+    state._lastSignedInEmail = session.user.email;
+    syncSettings().email = session.user.email;
+    syncSettings().googleAuth = true;
+    saveState(); renderSyncStatus();
+    _wasSignedIn = true;
+    hideLandingGate();
+  } else if (!isGateUnlocked()) {
+    showLandingGate();
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session?.user?.email) {
+      const freshLogin = !_wasSignedIn;
+      _wasSignedIn = true;
+      // User-Wechsel-Check auch hier
+      if (state._lastSignedInEmail && state._lastSignedInEmail !== session.user.email) {
+        if (confirm(`User-Wechsel: ${state._lastSignedInEmail} → ${session.user.email}\n\nLokale Kampagnen zurücksetzen und aus Cloud laden?`)) {
+          localStorage.removeItem(STORAGE_KEY);
+          location.reload();
+          return;
+        }
+      }
+      state._lastSignedInEmail = session.user.email;
+      syncSettings().email = session.user.email;
+      syncSettings().googleAuth = true;
+      saveState(); renderSyncStatus();
+      hideLandingGate();
+      if (freshLogin) {
+        toast('Eingeloggt als ' + session.user.email);
+        setTimeout(() => {
+          if (confirm('Erfolgreich eingeloggt. Cloud-State jetzt laden?')) loadFromCloud();
+        }, 400);
+      }
+    } else if (event === 'SIGNED_OUT') {
+      _wasSignedIn = false;
+      state._offlineAck = false;
+      saveState();
+      showLandingGate();
+    }
+  });
+};
+
+// Initial-Gate-Decision: Wenn weder email noch offline-ack → Gate zeigen
+if (!isGateUnlocked()) showLandingGate();
+
 renderCampaignMeta();
 switchView(state.currentView || 'prep');
 renderChat('prep'); renderChat('session');
