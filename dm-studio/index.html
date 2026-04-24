@@ -1329,6 +1329,22 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 .srd-card-stats{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);margin-top:6px;font-weight:600;}
 .srd-modal-foot{padding:10px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dimmer);font-style:italic;}
 
+/* ═══════ SESSION-ARCHIV im Briefing ═══════ */
+.session-archive{display:flex;flex-direction:column;gap:10px;}
+.sa-row{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .12s;}
+.sa-row:hover{border-color:var(--gold);background:#fef6e8;transform:translateX(3px);box-shadow:0 2px 10px rgba(147,110,30,0.1);}
+.sa-row.latest{border-color:var(--crimson);background:rgba(168,35,24,0.03);}
+.sa-row.empty{opacity:.75;background:var(--surface-2);}
+.sa-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:10px;}
+.sa-num{font-family:'Cinzel',serif;font-size:14px;color:var(--crimson);letter-spacing:.02em;font-weight:700;}
+.sa-badge-last{background:var(--crimson);color:#fdf6e8;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:2px;padding:2px 7px;border-radius:3px;margin-left:8px;font-weight:700;}
+.sa-badge-empty{background:var(--surface-2);color:var(--text-dimmer);border:1px solid var(--border);font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1.5px;padding:2px 7px;border-radius:3px;margin-left:8px;font-weight:700;}
+.sa-badge-hl{background:var(--gold);color:#fff;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;padding:2px 7px;border-radius:3px;margin-left:8px;font-weight:700;}
+.sa-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
+.sa-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px;}
+.sa-preview{font-family:'EB Garamond',serif;font-size:13px;color:var(--text);line-height:1.55;font-style:italic;}
+.sa-preview-empty{font-family:'EB Garamond',serif;font-size:12px;color:var(--text-dimmer);font-style:italic;}
+
 /* ═══════ HIGHLIGHTS BOARD ═══════ */
 .highlight-board{padding:24px 28px;overflow-y:auto;}
 .highlight-board-head{margin-bottom:22px;}
@@ -3080,13 +3096,13 @@ function renderBriefing() {
         <div class="briefing-card">
           <div class="briefing-card-h">
             <div class="briefing-card-h-l"><span class="ico">📜</span>Letzter Recap${lastSession ? ' · #' + lastSession.number : ''}</div>
-            <button class="recap-edit-btn" onclick="switchView('session');toggleRecapEdit();">✎ Bearbeiten</button>
+            <button class="recap-edit-btn" onclick="openSessionInView(${sessions.length - 1})">→ Öffnen</button>
           </div>
           <div class="briefing-card-b">
             ${lastSession?.recap
               ? `<div class="briefing-recap">${escapeHtml(lastSession.recap).replace(/\n/g,'<br>')}</div>
-                 <div class="briefing-recap-meta">${escapeHtml(lastSession.title || '')} · ${escapeHtml(lastSession.date || '')}</div>`
-              : '<em style="color:var(--text-dim);">Noch kein Recap der letzten Session. Im <strong>Session Live</strong>-Tab unter Recap-Block eintragen.</em>'}
+                 <div class="briefing-recap-meta">${escapeHtml(lastSession.title || '')} · ${escapeHtml(lastSession.date || '')}${lastSession.highlights?.length ? ' · ' + lastSession.highlights.length + ' Highlight' + (lastSession.highlights.length === 1 ? '' : 's') : ''}</div>`
+              : '<em style="color:var(--text-dim);">Noch kein Recap der letzten Session. Im <strong>Session Live</strong>-Tab auf <strong>📝 Session beenden</strong> klicken.</em>'}
           </div>
         </div>
 
@@ -3235,8 +3251,55 @@ W15 Teleportationskreis · 30s-Entscheidung<br>
         </div>
       </div>
 
+      <!-- SESSION-ARCHIV · alle gespeicherten Sessions chronologisch -->
+      <div class="briefing-card" style="margin-top:18px;">
+        <div class="briefing-card-h">
+          <div class="briefing-card-h-l"><span class="ico">📚</span>Session-Archiv · ${sessions.length} Session${sessions.length === 1 ? '' : 's'}</div>
+          <span style="font-size:11px;color:var(--text-dim);font-style:italic;">Klick auf Session öffnet Recap im Session-Live-Tab</span>
+        </div>
+        <div class="briefing-card-b">
+          ${sessions.length ? `
+            <div class="session-archive">
+              ${sessions.slice().reverse().map((s, revIdx) => {
+                const actualIdx = sessions.length - 1 - revIdx;
+                const isLast = actualIdx === sessions.length - 1;
+                const hasRecap = !!s.recap?.trim();
+                const hlCount = s.highlights?.length || 0;
+                const preview = hasRecap ? s.recap.trim().slice(0, 180) + (s.recap.length > 180 ? '…' : '') : '';
+                return `
+                  <div class="sa-row ${isLast ? 'latest' : ''} ${hasRecap ? '' : 'empty'}" onclick="openSessionInView(${actualIdx})">
+                    <div class="sa-row-head">
+                      <div>
+                        <span class="sa-num">#${s.number}</span>
+                        ${isLast ? '<span class="sa-badge-last">LATEST</span>' : ''}
+                        ${hasRecap ? '' : '<span class="sa-badge-empty">KEIN RECAP</span>'}
+                        ${hlCount ? `<span class="sa-badge-hl">${hlCount}★</span>` : ''}
+                      </div>
+                      <span class="sa-date">${escapeHtml(s.date || '—')}</span>
+                    </div>
+                    <div class="sa-title">${escapeHtml(s.title || 'Ohne Titel')}</div>
+                    ${preview ? `<div class="sa-preview">${escapeHtml(preview)}</div>` : '<div class="sa-preview-empty">— Klick „📝 Session beenden" im Session-Live-Tab um Recap zu schreiben —</div>'}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : '<em style="color:var(--text-dim);">Noch keine Sessions. Im <strong>Session Live</strong>-Tab unten auf <strong>🎲 Neue Session</strong> klicken um zu starten.</em>'}
+        </div>
+      </div>
+
     </div>
   `;
+}
+
+// Session direkt im Session-Live-Tab öffnen
+function openSessionInView(idx) {
+  const sessions = campaign().sessions || [];
+  if (idx < 0 || idx >= sessions.length) return;
+  state.viewingSessionIdx = idx;
+  state.recapEditing = false;
+  state.recapCollapsed = false;
+  saveState();
+  switchView('session');
 }
 
 function toggleBriefingCheck(id, checked) {
@@ -7087,12 +7150,31 @@ function savePostSessionRecap() {
     });
   }
 
+  // Automatisch auf die gerade gespeicherte Session navigieren — so landet der User direkt
+  // im Recap-Block der korrekten Session, statt eine ältere angezeigt zu bekommen.
+  state.viewingSessionIdx = sessions.length - 1;
+  state.recapEditing = false;  // Read-Mode, damit der User den Recap sieht
+  state.recapCollapsed = false;  // Recap-Block aufgeklappt
+
   saveState();
   const modal = document.querySelector('.recap-modal');
   if (modal) { modal._savedCleanClose = true; modal.remove(); }
-  toast(`✓ Recap ${highlights.length ? '+ ' + highlights.length + ' Highlights ' : ''}in Session #${current.number} gespeichert`);
-  if (state.currentView === 'session') renderSession();
-  if (state.currentView === 'highlights') renderHighlightsBoard();
+
+  const hlInfo = highlights.length ? ' + ' + highlights.length + ' Highlight' + (highlights.length === 1 ? '' : 's') : '';
+  toast(`✓ Session #${current.number} gespeichert${hlInfo} · Wechsle zu „Session Live" zum Anzeigen`);
+
+  // Nach Save: In die Session-Live-View wechseln damit der User den gespeicherten Recap direkt sieht
+  // (außer er ist gerade im Highlights-Tab — dort will er wahrscheinlich die Karten-Vorschläge sehen)
+  if (state.currentView === 'highlights') {
+    renderHighlightsBoard();
+  } else if (state.currentView !== 'session') {
+    setTimeout(() => switchView('session'), 400);  // kleine Verzögerung damit Toast noch kurz sichtbar ist
+  } else {
+    renderSession();
+  }
+
+  // Briefing neu rendern falls dort ein "Letzter Recap" angezeigt wird
+  if (state.currentView === 'briefing') renderBriefing();
 }
 
 // Prüft ob ungespeicherter Content im Recap-Modal ist, fragt ggf. vor dem Schließen
