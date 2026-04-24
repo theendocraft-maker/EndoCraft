@@ -1329,6 +1329,24 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 .srd-card-stats{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);margin-top:6px;font-weight:600;}
 .srd-modal-foot{padding:10px 22px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dimmer);font-style:italic;}
 
+/* ═══════ BRIEFING EMPTY STATE — Welcome für neue User ═══════ */
+.briefing-empty{min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.briefing-empty-inner{max-width:640px;width:100%;text-align:center;}
+.briefing-empty-crest{font-size:48px;color:var(--gold);margin-bottom:14px;filter:drop-shadow(0 2px 10px rgba(147,110,30,0.3));}
+.briefing-empty-title{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:var(--ink);line-height:1.1;margin:0 0 16px;letter-spacing:-.015em;}
+.briefing-empty-title em{color:var(--gold);font-style:italic;}
+.briefing-empty-sub{font-family:'EB Garamond',serif;font-size:17px;line-height:1.6;color:var(--text-dim);margin:0 auto 36px;max-width:560px;}
+.briefing-empty-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+.bes-card{display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px 22px;cursor:pointer;transition:all .15s;text-align:left;}
+.bes-card:hover{border-color:var(--gold);background:#fef6e8;transform:translateX(4px);box-shadow:0 6px 20px rgba(147,110,30,0.12);}
+.bes-num{width:38px;height:38px;border-radius:50%;background:var(--crimson);color:#fdf6e8;font-family:'Cinzel',serif;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bes-h{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.bes-p{font-family:'EB Garamond',serif;font-size:13px;color:var(--text-dim);line-height:1.45;}
+.bes-arrow{color:var(--gold);font-size:20px;font-weight:700;flex-shrink:0;}
+.briefing-empty-foot{font-size:13px;color:var(--text-dim);font-style:italic;padding:14px 18px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--gold);text-align:left;}
+.briefing-empty-foot strong{color:var(--ink);font-style:normal;}
+.briefing-empty-foot em{color:var(--gold);font-style:normal;font-weight:600;}
+
 /* ═══════ SESSION-ARCHIV im Briefing ═══════ */
 .session-archive{display:flex;flex-direction:column;gap:10px;}
 .sa-row{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;transition:all .12s;}
@@ -1534,7 +1552,7 @@ body.gate-open{overflow:hidden;}
   <div class="topbar-right">
     <button class="btn-top" onclick="openConditionsModal()" title="SRD 5.1 Regel-Referenz">📖 Regeln</button>
     <button class="btn-top" onclick="openPostSessionRecap()" title="Post-Session Recap · KI-gestützt">📝 Recap</button>
-    <button class="btn-top" onclick="loadSession14Prep()" title="Session 14 Prep-Daten laden" style="background:var(--crimson);color:#fff;border-color:var(--crimson);">🎲 Session 14 laden</button>
+    <button class="btn-top" onclick="loadSession14Prep()" title="Session 14 Prep-Daten laden · Ctrl+Shift+D toggles this" id="demoLoadBtn" style="background:var(--crimson);color:#fff;border-color:var(--crimson);display:none;">🎲 Demo laden</button>
     <button class="btn-top" id="syncStatusBtn" onclick="openSyncModal()" title="Cloud-Sync Status">☁️ <span id="syncStatusText">Sync</span></button>
     <button class="btn-top" onclick="exportJSON()">💾 Export</button>
   </div>
@@ -1756,6 +1774,10 @@ body.gate-open{overflow:hidden;}
 
 const API_BASE = 'https://endocraft-production.up.railway.app';
 const STORAGE_KEY = 'ec_dmstudio_v3';
+// Hinweis: Multi-User-Schutz läuft über die Email-Match-Prüfung in initAuthState.
+// Wenn der eingeloggte User nicht zum gespeicherten User passt, wird ein Dialog gezeigt
+// ("Reset oder behalten?") — das deckt den seltenen Fall "Freund loggt sich ein auf
+// meinem Browser" ab. Für echte Per-User-Trennung ist Cloud-First (Supabase) der Weg.
 
 // ═══════════ SUPABASE AUTH CONFIG ═══════════
 // Public anon key — safe to expose in frontend (RLS enforces permissions).
@@ -3008,11 +3030,24 @@ function renderStatblock(c, opts = {}) {
   `;
 }
 
+// ═══════════ EMPTY CAMPAIGN · Default für neue User ═══════════
+// Neuer User (kein Legacy, kein Cloud) bekommt leere Kampagnen-Hülle.
+// Curse of Strahd bleibt als Demo-Daten verfügbar via loadSession14Prep() (Keyboard-Shortcut Ctrl+Shift+D).
+const EMPTY_CAMPAIGN = {
+  id: 'my-campaign',
+  name: 'Meine Kampagne',
+  session: { number: 0, title: '', level: '' },
+  sessions: [],
+  party: [],
+  tree: [],
+  locations: {}
+};
+
 // ═══════════ STATE ═══════════
 let state = loadState();
-if (!state.campaign) state.campaign = DEFAULT_CAMPAIGN;
-if (!state.characters) state.characters = DEFAULT_CHARACTERS;
-if (!state.currentLocationId) state.currentLocationId = 'w14';
+if (!state.campaign) state.campaign = JSON.parse(JSON.stringify(EMPTY_CAMPAIGN));
+if (!state.characters) state.characters = [];
+if (!state.currentLocationId) state.currentLocationId = null;
 if (!state.currentCharId) state.currentCharId = null;
 if (!state.images) state.images = {};
 if (!state.threads) state.threads = {};  // keyed by 'prep' or 'session'
@@ -3020,7 +3055,7 @@ if (!state.initiative) state.initiative = [];  // [{id, hp, down}]
 if (!state.savedHighlights) state.savedHighlights = [];  // globaler Highlights-Pool für Dashboard
 if (!state.highlightFilter) state.highlightFilter = 'all';
 if (!state.charFilter) state.charFilter = 'all';
-if (!state.currentView) state.currentView = 'prep';
+if (!state.currentView) state.currentView = 'briefing';  // empty-user startet im Briefing (Welcome-Page)
 if (!state.sessionMode) state.sessionMode = 'scene';
 
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
@@ -3052,6 +3087,56 @@ function renderBriefing() {
   const loc = currentLoc();
   const pcs = state.characters.filter(ch => ch.type === 'pc');
   const npcs = state.characters.filter(ch => ch.type === 'npc');
+
+  // Empty-State: Neuer User mit leerer Kampagne → Welcome-Screen statt Live-Dashboard
+  const isEmpty = !sessions.length && !pcs.length && !npcs.length && (!c.tree || !c.tree.length);
+  if (isEmpty) {
+    host.innerHTML = `
+      <div class="briefing-empty">
+        <div class="briefing-empty-inner">
+          <div class="briefing-empty-crest">✦</div>
+          <h1 class="briefing-empty-title">Willkommen beim <em>DM Studio</em></h1>
+          <p class="briefing-empty-sub">
+            Dein privater Arbeitsplatz für D&D-Kampagnen. Charakter-Sheets mit D&D-Beyond-Style-Rolls,
+            Live-Combat-Tracker, KI-Co-DM, Session-Recaps mit automatischen Highlights, die sich direkt
+            in Sammelkarten verwandeln lassen.
+          </p>
+          <div class="briefing-empty-steps">
+            <div class="bes-card" onclick="switchView('chars');setTimeout(()=>newCharacter(),100)">
+              <div class="bes-num">1</div>
+              <div>
+                <div class="bes-h">Charakter anlegen</div>
+                <div class="bes-p">Spieler oder NPC. Der Wizard führt dich durch Race, Class, Background, Stats.</div>
+              </div>
+              <div class="bes-arrow">→</div>
+            </div>
+            <div class="bes-card" onclick="switchView('prep')">
+              <div class="bes-num">2</div>
+              <div>
+                <div class="bes-h">Locations & Szenen vorbereiten</div>
+                <div class="bes-p">Ort mit Read-Aloud, NPC-Dialogen und Szenarien füllen — wird dann im Live-Tab abrufbar.</div>
+              </div>
+              <div class="bes-arrow">→</div>
+            </div>
+            <div class="bes-card" onclick="switchView('session');setTimeout(()=>startNewSession(),100)">
+              <div class="bes-num">3</div>
+              <div>
+                <div class="bes-h">Session starten</div>
+                <div class="bes-p">Live-Log, Initiative-Tracker, KI-Co-DM parallel. Nach der Session auf "Session beenden" klicken für den Recap + Highlights.</div>
+              </div>
+              <div class="bes-arrow">→</div>
+            </div>
+          </div>
+          <div class="briefing-empty-foot">
+            <strong>Tipp:</strong> Alles wird lokal in deinem Browser gespeichert. ${state.syncSettings?.email
+              ? 'Du bist eingeloggt als <em>' + escapeHtml(state.syncSettings.email) + '</em> — Cloud-Sync aktivierbar.'
+              : 'Logge dich ein für Cloud-Sync über mehrere Geräte.'}
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
   // Detect NPCs relevant to current location (name match in dmNote/meta)
   const relevantNpcs = loc ? npcs.filter(n => {
@@ -7632,6 +7717,30 @@ function exportJSON() {
 }
 
 // ═══════════ INIT ═══════════
+
+// ─── DEMO-MODE: Curse-of-Strahd-Button toggle ──────────
+// Sichtbarmachen via ?demo=1 URL-Param oder Ctrl+Shift+D
+function toggleDemoButton(forceShow) {
+  const btn = document.getElementById('demoLoadBtn');
+  if (!btn) return;
+  const show = forceShow !== undefined ? forceShow : btn.style.display === 'none';
+  btn.style.display = show ? '' : 'none';
+  try { localStorage.setItem('_ec_showDemo', show ? '1' : '0'); } catch(e){}
+}
+// Init: Flag aus localStorage oder URL-Param lesen
+(function initDemoMode() {
+  const urlFlag = new URLSearchParams(window.location.search).get('demo') === '1';
+  const lsFlag = localStorage.getItem('_ec_showDemo') === '1';
+  if (urlFlag || lsFlag) toggleDemoButton(true);
+})();
+// Keyboard-Shortcut Ctrl+Shift+D
+window.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+    e.preventDefault();
+    toggleDemoButton();
+    toast(document.getElementById('demoLoadBtn')?.style.display === 'none' ? 'Demo-Button versteckt' : 'Demo-Button sichtbar');
+  }
+});
 
 // ─── LOGIN GATE: leere Landing bis Login / Offline-Decision ──────────
 function isGateUnlocked() {
