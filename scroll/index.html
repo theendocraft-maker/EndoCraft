@@ -1779,16 +1779,7 @@ async function generateSessionImage(data, story) {
   const summary = data.summary || story;
   const title = data.session_title || '';
   const moment = data.legendary_moment || '';
-  // Extract character description from story if mentioned
-  const storyText = document.getElementById('storyInput')?.value || story;
-  const charMatch = storyText.match(/[Mm]y character is ([^.]+)/);
-  const charInput = charMatch ? charMatch[1].trim() : '';
-  
-  // Build prompt: character always in foreground
-  // Use raw story for most accurate image — scene first
-  const rawStory = document.getElementById('storyInput')?.value || story;
-  const sceneDesc = rawStory.substring(0, 300);
-  
+
   const styleComposition = {
     photo: 'photorealistic, cinematic photography, dramatic lighting, 8k hyperdetailed, shallow depth of field',
     comic: 'comic book illustration, bold ink outlines, vibrant colors, dynamic action, Marvel fantasy art, no speech bubbles, no text, no captions, no words',
@@ -1796,17 +1787,44 @@ async function generateSessionImage(data, story) {
     mtg: 'Magic the Gathering card art, dark fantasy illustration, dramatic atmosphere, gothic, highly detailed'
   };
   const composition = styleComposition[currentImageStyle] || styleComposition.photo;
-  
-  const prompt = sceneDesc + ', ' + composition + ((() => {
-    const RARITY_IMG_SUFFIX = {
-      legendary: ', divine light, god-rays, transcendent power, mythic aura, ultra-epic',
-      epic: ', dramatic lighting, heroic pose, epic battle atmosphere',
-      rare: ', dynamic composition, detailed scene',
-      common: '',
-      misprint: ''
-    };
-    return RARITY_IMG_SUFFIX[data.rarity] || '';
-  })()) + ', vertical portrait format, no text, no letters, no writing, no watermark';
+
+  const RARITY_IMG_SUFFIX = {
+    legendary: ', divine light, god-rays, transcendent power, mythic aura, ultra-epic',
+    epic: ', dramatic lighting, heroic pose, epic battle atmosphere',
+    rare: ', dynamic composition, detailed scene',
+    common: '',
+    misprint: ''
+  };
+
+  // PRIMARY PROMPT: Claude's optimized image_prompt (3-layer structure: scene + authenticity + emotional hook).
+  // Fallback to raw story only if image_prompt missing. Rarity-suffix + style is appended regardless.
+  let basePrompt;
+  const claudePrompt = data.image_prompt || data.prompts?.[0]?.prompt || data.prompts?.[0]?.desc || '';
+  if (claudePrompt && claudePrompt.length > 50) {
+    // Claude-optimized prompt already contains scene + lighting + emotional hook + style end-tag.
+    // We only append rarity-suffix if not already implied in the prompt.
+    const rar = RARITY_IMG_SUFFIX[data.rarity] || '';
+    basePrompt = claudePrompt + (rar && !claudePrompt.toLowerCase().includes('god-ray') && !claudePrompt.toLowerCase().includes('divine') ? rar : '');
+    console.log('[Prompt] Using Claude-optimized image_prompt (' + claudePrompt.length + ' chars)');
+  } else {
+    // Fallback: rohen Story-Text mit Style-Stack kombinieren
+    const rawStory = document.getElementById('storyInput')?.value || story;
+    const sceneDesc = rawStory.substring(0, 300);
+    basePrompt = sceneDesc + ', ' + composition + (RARITY_IMG_SUFFIX[data.rarity] || '');
+    console.warn('[Prompt] Kein image_prompt von Claude — Fallback auf raw story. Prüfe Claude-Response.');
+  }
+
+  // DM-Studio-Handoff: Wenn Portrait als Reference → Character-Consistency-Hinweis in den Prompt injizieren.
+  // Das ist wichtig für Seedream Image-to-Image: Text-Prompt + Image-Reference ergibt bessere Consistency.
+  if (window._dmStudioImport?.portraitUrl && window._dmStudioImport?.character) {
+    const charName = window._dmStudioImport.character;
+    const charClass = window._dmStudioImport.characterClass || '';
+    const characterConsistencyNote = `Match the facial features, hair, and overall character design of ${charName}${charClass ? ' (' + charClass + ')' : ''} from the reference portrait image. Keep the same character identity but render them in this new scene.`;
+    basePrompt = characterConsistencyNote + ' ' + basePrompt;
+    console.log('[DM-Studio] Character-Consistency-Note für', charName, 'injiziert');
+  }
+
+  const prompt = basePrompt + ', vertical portrait format, no text, no letters, no writing, no watermark';
 
   // DM-Studio-Handoff: Portrait als Reference-Image für Seedream Image-to-Image
   const bodyPayload = { prompt, model: 'bytedance/seedream-4-5' };
