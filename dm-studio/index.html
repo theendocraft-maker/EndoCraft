@@ -9592,67 +9592,77 @@ function renderImporterStep3() {
     return;
   }
 
-  stepArea.innerHTML = `
-    <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">Vorschau · Auswahl</div>
-        <div style="font-size:13px;color:var(--text-dim);font-style:italic;margin-top:3px;">${locs.length} Location${locs.length === 1 ? '' : 's'} · ${npcs.length} NPC${npcs.length === 1 ? '' : 's'} aus „${escapeHtml(_importedFileName)}"</div>
-      </div>
-      <div style="display:flex;gap:4px;">
-        <button class="btn-top" onclick="toggleAllImporter(true)" style="font-size:10px;padding:4px 10px;">Alle ✓</button>
-        <button class="btn-top" onclick="toggleAllImporter(false)" style="font-size:10px;padding:4px 10px;">Alle ✕</button>
-      </div>
-    </div>
+  // HTML in chunks bauen — vermeidet tief verschachtelte template-literals
+  const locItemsHtml = locs.map((l, i) => {
+    const metaLine = l.meta ? '<div class="ii-meta">' + escapeHtml(l.meta) + '</div>' : '';
+    const dmNoteLine = l.dmNote ? '<div style="font-size:11.5px;color:var(--text);font-style:italic;margin-top:4px;line-height:1.45;">📋 ' + escapeHtml(l.dmNote) + '</div>' : '';
+    return '<label class="importer-item">' +
+      '<input type="checkbox" data-imp-loc="' + i + '" checked>' +
+      '<div class="ii-info">' +
+        '<div class="ii-name">' + escapeHtml(l.name || '(unbenannt)') + '</div>' +
+        metaLine + dmNoteLine +
+      '</div>' +
+    '</label>';
+  }).join('');
 
-    <div class="importer-grouplabel-row">
-      <label>Gruppen-Bezeichnung:</label>
-      <input id="importerGroupLabel" value="${escapeAttr(sug.groupLabel || _importedFileName.replace(/\.[^.]+$/, ''))}" placeholder="z.B. 🏰 Castle Ravenloft">
-    </div>
+  const locsSection = locs.length ?
+    '<div class="importer-section">' +
+      '<div class="importer-section-h">📍 Locations · ' + locs.length + '</div>' +
+      locItemsHtml +
+    '</div>' : '';
 
-    ${locs.length ? `
-      <div class="importer-section">
-        <div class="importer-section-h">📍 Locations · ${locs.length}</div>
-        ${locs.map((l, i) => `
-          <label class="importer-item">
-            <input type="checkbox" data-imp-loc="${i}" checked>
-            <div class="ii-info">
-              <div class="ii-name">${escapeHtml(l.name || '(unbenannt)')}</div>
-              ${l.meta ? `<div class="ii-meta">${escapeHtml(l.meta)}</div>` : ''}
-              ${l.dmNote ? `<div style="font-size:11.5px;color:var(--text);font-style:italic;margin-top:4px;line-height:1.45;">📋 ${escapeHtml(l.dmNote)}</div>` : ''}
-            </div>
-          </label>
-        `).join('')}
-      </div>
-    ` : ''}
+  const npcItemsHtml = npcs.map((n, i) => {
+    const cls = n.class || n['class'] || '';
+    const metaText = [n.race, cls, n.cr ? 'CR ' + n.cr : ''].filter(Boolean).join(' · ');
+    const hpBit = n.hp ? '<span class="ii-bit">HP ' + n.hp + '</span>' : '';
+    const acBit = n.ac ? '<span class="ii-bit">AC ' + n.ac + '</span>' : '';
+    return '<label class="importer-item">' +
+      '<input type="checkbox" data-imp-npc="' + i + '" checked>' +
+      '<div class="ii-info">' +
+        '<div class="ii-name">' + escapeHtml(n.name || '(unbenannt)') + '</div>' +
+        '<div class="ii-meta">' + escapeHtml(metaText) + '</div>' +
+        '<div class="ii-bits">' + hpBit + acBit + '</div>' +
+      '</div>' +
+    '</label>';
+  }).join('');
 
-    ${npcs.length ? `
-      <div class="importer-section">
-        <div class="importer-section-h">🎭 NPCs · ${npcs.length}</div>
-        ${npcs.map((n, i) => `
-          <label class="importer-item">
-            <input type="checkbox" data-imp-npc="${i}" checked>
-            <div class="ii-info">
-              <div class="ii-name">${escapeHtml(n.name || '(unbenannt)')}</div>
-              <div class="ii-meta">${escapeHtml([n.race, n.class, n.cr ? 'CR ' + n.cr : ''].filter(Boolean).join(' · '))}</div>
-              <div class="ii-bits">
-                ${n.hp ? `<span class="ii-bit">HP ${n.hp}</span>` : ''}
-                ${n.ac ? `<span class="ii-bit">AC ${n.ac}</span>` : ''}
-              </div>
-            </div>
-          </label>
-        `).join('')}
-      </div>
-    ` : ''}
+  const npcsSection = npcs.length ?
+    '<div class="importer-section">' +
+      '<div class="importer-section-h">🎭 NPCs · ' + npcs.length + '</div>' +
+      npcItemsHtml +
+    '</div>' : '';
 
-    <div style="margin-top:10px;padding:10px 14px;background:var(--surface-2);border-radius:6px;border-left:3px solid var(--gold);font-size:12px;color:var(--text-dim);line-height:1.5;">
-      <strong style="color:var(--ink);">Hinweis:</strong> Read-Aloud-Texte, Szenarien, Dialoge und volle NPC-Statblöcke ergänzt du selbst im Vorbereitungs- und Charaktere-Tab — der Importer legt nur das Grundgerüst an, damit der KI-Output nicht abreißt bei großen PDFs.
-    </div>`;
+  const groupLabelDefault = sug.groupLabel || _importedFileName.replace(/\.[^.]+$/, '');
 
-    <div style="text-align:center;margin-top:18px;">
-      <button class="btn-top primary" onclick="commitImport()" style="background:var(--crimson);border-color:var(--crimson);font-size:13px;padding:11px 22px;">⬇ Auswahl in Kampagne übernehmen</button>
-    </div>
-  `;
-  if (status) status.textContent = `Schritt 3: Auswahl prüfen · ${locs.length + npcs.length} Vorschläge`;
+  stepArea.innerHTML =
+    '<div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">' +
+      '<div>' +
+        '<div style="font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">Vorschau · Auswahl</div>' +
+        '<div style="font-size:13px;color:var(--text-dim);font-style:italic;margin-top:3px;">' +
+          locs.length + ' Location' + (locs.length === 1 ? '' : 's') + ' · ' +
+          npcs.length + ' NPC' + (npcs.length === 1 ? '' : 's') +
+          ' aus „' + escapeHtml(_importedFileName) + '"' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:4px;">' +
+        '<button class="btn-top" onclick="toggleAllImporter(true)" style="font-size:10px;padding:4px 10px;">Alle ✓</button>' +
+        '<button class="btn-top" onclick="toggleAllImporter(false)" style="font-size:10px;padding:4px 10px;">Alle ✕</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="importer-grouplabel-row">' +
+      '<label>Gruppen-Bezeichnung:</label>' +
+      '<input id="importerGroupLabel" value="' + escapeAttr(groupLabelDefault) + '" placeholder="z.B. 🏰 Castle Ravenloft">' +
+    '</div>' +
+    locsSection +
+    npcsSection +
+    '<div style="margin-top:10px;padding:10px 14px;background:var(--surface-2);border-radius:6px;border-left:3px solid var(--gold);font-size:12px;color:var(--text-dim);line-height:1.5;">' +
+      '<strong style="color:var(--ink);">Hinweis:</strong> Read-Aloud-Texte, Szenarien, Dialoge und volle NPC-Statblöcke werden parallel zur Skelett-Erkennung in Schritt 2/3 detailliert.' +
+    '</div>' +
+    '<div style="text-align:center;margin-top:18px;">' +
+      '<button class="btn-top primary" onclick="commitImport()" style="background:var(--crimson);border-color:var(--crimson);font-size:13px;padding:11px 22px;">⬇ Auswahl in Kampagne übernehmen</button>' +
+    '</div>';
+
+  if (status) status.textContent = 'Schritt 3: Auswahl prüfen · ' + (locs.length + npcs.length) + ' Vorschläge';
 }
 
 function toggleAllImporter(checked) {
