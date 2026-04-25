@@ -465,6 +465,91 @@ body{
 .cond-pick:hover{border-color:var(--gold);background:#fef6e8;}
 .cond-pick.on{background:var(--crimson);color:#fff;border-color:var(--crimson);}
 
+/* ═══════ CONTENT IMPORTER · LOADING ANIMATIONS ═══════ */
+.imp-scanner{padding:20px 0;}
+.imp-scanner-frame{
+  position:relative;background:linear-gradient(135deg,#1a0f03,#2a1505);
+  border:1.5px solid var(--gold);border-radius:14px;padding:36px 30px;
+  overflow:hidden;text-align:center;
+  box-shadow:0 8px 30px rgba(147,110,30,0.3),inset 0 0 60px rgba(147,110,30,0.15);
+}
+.imp-scanner-line{
+  position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--gold),transparent);
+  box-shadow:0 0 14px var(--gold),0 0 24px rgba(147,110,30,0.6);
+  animation:impScan 2.4s ease-in-out infinite;top:0;
+}
+@keyframes impScan{
+  0%,100%{top:10%;opacity:.3;}
+  50%{top:90%;opacity:1;}
+}
+.imp-scanner-text{position:relative;z-index:2;}
+.imp-scan-dots{display:flex;gap:6px;justify-content:center;margin-bottom:18px;}
+.imp-scan-dots span{width:8px;height:8px;border-radius:50%;background:var(--gold);opacity:.3;animation:impDot 1.2s ease-in-out infinite;}
+.imp-scan-dots span:nth-child(2){animation-delay:.2s;}
+.imp-scan-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes impDot{0%,100%{opacity:.3;transform:scale(1);}50%{opacity:1;transform:scale(1.4);box-shadow:0 0 10px var(--gold);}}
+.imp-scanner-label{font-family:'Cinzel',serif;font-size:14px;letter-spacing:2px;color:#fdf6e8;font-weight:700;text-shadow:0 0 12px rgba(147,110,30,0.5);}
+.imp-scanner-sub{font-family:'EB Garamond',serif;font-size:13px;color:rgba(253,246,232,0.7);margin-top:8px;font-style:italic;transition:opacity .35s;}
+.imp-quote{margin-top:18px;text-align:center;font-family:'EB Garamond',serif;font-size:14px;color:var(--gold);font-style:italic;opacity:.85;transition:opacity .5s;}
+
+/* Live-Items-Grid · Status pro Location/NPC */
+.imp-progress-wrap{padding:6px 0;}
+.imp-progress-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.imp-progress-tag{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.2px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.imp-progress-meta{font-size:12.5px;color:var(--text-dim);font-style:italic;margin-top:3px;}
+.imp-progress-bar{
+  height:8px;background:var(--surface-2);border-radius:4px;
+  overflow:hidden;border:1px solid var(--border);margin-bottom:18px;
+  position:relative;
+}
+.imp-progress-fill{
+  height:100%;
+  background:linear-gradient(to right,var(--gold),#b48829);
+  transition:width .4s ease-out;
+  box-shadow:0 0 10px rgba(147,110,30,0.4);
+  position:relative;overflow:hidden;
+}
+.imp-progress-fill::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
+  animation:impShimmer 1.6s linear infinite;
+}
+@keyframes impShimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+.imp-items-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.imp-items-section-h{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.imp-items-list{display:flex;flex-direction:column;gap:5px;}
+.imp-item{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;
+  background:#fff;border:1px solid var(--border);border-radius:6px;
+  transition:all .25s ease-out;
+}
+.imp-item.pending{opacity:.55;background:var(--surface-2);}
+.imp-item.loading{
+  border-color:var(--gold);background:#fdf9ec;
+  box-shadow:0 0 0 1px var(--gold),0 2px 10px rgba(147,110,30,0.18);
+  animation:impItemPulse 1.6s ease-in-out infinite;
+}
+@keyframes impItemPulse{
+  0%,100%{box-shadow:0 0 0 1px var(--gold),0 2px 10px rgba(147,110,30,0.18);}
+  50%{box-shadow:0 0 0 2px var(--gold),0 4px 18px rgba(147,110,30,0.32);}
+}
+.imp-item.done{border-color:rgba(39,104,79,0.5);background:rgba(39,104,79,0.05);}
+.imp-item.failed{border-color:rgba(168,35,24,0.5);background:rgba(168,35,24,0.04);}
+.imp-item-status{flex-shrink:0;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.imp-ico{font-family:'Cinzel',serif;font-size:14px;font-weight:700;}
+.imp-ico.pending{color:var(--text-dimmer);}
+.imp-ico.done{color:var(--forest);font-size:16px;animation:impDone .4s ease-out;}
+@keyframes impDone{from{transform:scale(0);}50%{transform:scale(1.4);}to{transform:scale(1);}}
+.imp-ico.failed{color:var(--crimson);font-size:16px;}
+.imp-mini-spinner{width:14px;height:14px;border:2px solid rgba(147,110,30,0.2);border-top-color:var(--gold);border-radius:50%;animation:tcSpin .8s linear infinite;display:inline-block;}
+.imp-item-info{flex:1;min-width:0;}
+.imp-item-name{font-family:'Cinzel',serif;font-size:12px;color:var(--ink);font-weight:700;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.imp-item.pending .imp-item-name{color:var(--text-dim);}
+.imp-item.done .imp-item-name{color:var(--forest);}
+.imp-item-meta{font-size:11px;color:var(--text-dim);margin-top:1px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
 /* ═══════ CONTENT IMPORTER ═══════ */
 .importer-dropzone{
   border:2.5px dashed var(--border-strong);
@@ -9097,118 +9182,395 @@ function parseAiJsonRobust(raw) {
   return null;
 }
 
+// ─── MULTI-STEP IMPORTER ───
+// Step 1: Skelett (alle IDs + Names + Basis-Meta) — kleiner Output, sicher in einem Call
+// Step 2: Parallel pro Location → Details (readAloud, scenarios, dialogs)
+// Step 3: Parallel pro NPC → Details (stats, traits, actions)
+// So kann jeder einzelne Call klein bleiben, aber am Ende sind ALLE Details drin.
+
+let _importerLastRawJson = '';
+const IMPORTER_PARALLEL_LIMIT = 4;  // max 4 gleichzeitig zu Anthropic — fair zu Rate-Limits
+
+// Concurrency-Helper: max N Promises parallel
+async function runWithLimit(items, limit, fn, onProgress) {
+  const results = new Array(items.length);
+  let idx = 0;
+  let done = 0;
+  async function worker() {
+    while (idx < items.length) {
+      const my = idx++;
+      try { results[my] = await fn(items[my], my); }
+      catch (e) { results[my] = { _error: e.message }; }
+      done++;
+      if (onProgress) onProgress(done, items.length);
+    }
+  }
+  const workers = Array.from({ length: Math.min(limit, items.length) }, worker);
+  await Promise.all(workers);
+  return results;
+}
+
+// Single AI call helper — kleiner output, robust
+async function importerAiCall(systemPrompt, userPrompt, maxTokens = 2500) {
+  if (_importerAbortController?.signal.aborted) throw new Error('Aborted');
+  const resp = await fetch(`${API_BASE}/api/dm-chat`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    signal: _importerAbortController.signal,
+    body: JSON.stringify({
+      campaign: { id: campaign().id, name: campaign().name, characters: [] },
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: systemPrompt + '\n\n' + userPrompt }]
+    })
+  });
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => '');
+    throw new Error(`API ${resp.status}: ${body.slice(0, 100)}`);
+  }
+  const data = await resp.json();
+  let text = '';
+  if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
+  else if (typeof data.content === 'string') text = data.content;
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+  return parseAiJsonRobust(jsonMatch[0]);
+}
+
 async function processWithAI() {
   const stepArea = document.getElementById('importerStepArea');
   const status = document.getElementById('importerFootStatus');
-
-  // Loading-UI mit Live-Timer + Cancel-Button
   const startTime = Date.now();
-  if (stepArea) stepArea.innerHTML = `
-    <div style="text-align:center;padding:60px 20px;">
-      <div class="spinner" style="margin:0 auto 14px;"></div>
-      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">KI strukturiert ${(_importedRawText.length / 1000).toFixed(0)}k Zeichen...</div>
-      <div id="importerTimer" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-dim);margin-top:8px;">0:00</div>
-      <div id="importerSubMsg" style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">Anthropic Sonnet · kann bei großen PDFs 30-90s dauern</div>
-      <button class="btn-top" onclick="cancelImport()" style="margin-top:18px;border-color:var(--crimson);color:var(--crimson);">Abbrechen</button>
-    </div>
-  `;
+  let timerInterval;
 
-  // Live-Timer ticker
-  const timerInterval = setInterval(() => {
-    const el = document.getElementById('importerTimer');
-    if (!el) { clearInterval(timerInterval); return; }
-    const sec = Math.floor((Date.now() - startTime) / 1000);
-    el.textContent = `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`;
-    const sub = document.getElementById('importerSubMsg');
-    if (sub) {
-      if (sec > 90) sub.textContent = 'Über 90s — KI ist am Limit, bitte weiter warten oder abbrechen';
-      else if (sec > 45) sub.textContent = 'Großes PDF — KI arbeitet noch';
-      else if (sec > 20) sub.textContent = 'Anthropic Sonnet · KI denkt nach';
+  // ─── STEP 1 LOADING: Scanning-Animation mit pulsing Text ───
+  function showScanningUI() {
+    if (!stepArea) return;
+    stepArea.innerHTML = `
+      <div class="imp-scanner">
+        <div class="imp-scanner-frame">
+          <div class="imp-scanner-line"></div>
+          <div class="imp-scanner-text">
+            <div class="imp-scan-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="imp-scanner-label">📜 Claude liest „${escapeHtml(_importedFileName)}"</div>
+            <div class="imp-scanner-sub" id="impScanSub">Erkenne Locations · NPCs · Encounters · Lore...</div>
+          </div>
+        </div>
+        <div class="imp-quote">
+          <em id="impFlavorQuote">„Every adventure starts with the right map..."</em>
+        </div>
+        <div id="importerTimer" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);margin-top:14px;text-align:center;">0:00</div>
+        <button class="btn-top" onclick="cancelImport()" style="margin:14px auto 0;display:block;border-color:var(--crimson);color:var(--crimson);">Abbrechen</button>
+      </div>
+    `;
+    if (timerInterval) clearInterval(timerInterval);
+    const flavorQuotes = [
+      '„Every adventure starts with the right map..."',
+      '„The dice will fall as they may."',
+      '„A wise DM prepares; a great DM improvises."',
+      '„Story is what happens between the rolls."',
+      '„The party always finds the secret door — eventually."',
+      '„No plan survives contact with the players."'
+    ];
+    let qi = 0;
+    const subMessages = ['Erkenne Locations...', 'Identifiziere NPCs...', 'Sammle Encounters...', 'Verknüpfe Story-Threads...'];
+    let mi = 0;
+    timerInterval = setInterval(() => {
+      const el = document.getElementById('importerTimer');
+      if (!el) { clearInterval(timerInterval); return; }
+      const sec = Math.floor((Date.now() - startTime) / 1000);
+      el.textContent = `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`;
+      if (sec % 4 === 0) {
+        const sub = document.getElementById('impScanSub');
+        if (sub) sub.textContent = subMessages[mi++ % subMessages.length];
+        const q = document.getElementById('impFlavorQuote');
+        if (q && sec % 8 === 0) q.textContent = flavorQuotes[qi++ % flavorQuotes.length];
+      }
+    }, 1000);
+  }
+
+  // ─── STEP 2/3 LOADING: Live-Liste mit Status pro Item ───
+  function showItemsList(skeleton, currentPhase) {
+    if (!stepArea) return;
+    const locs = skeleton.locations || [];
+    const npcs = skeleton.npcs || [];
+    const total = locs.length + npcs.length;
+    const totalDone = locs.filter(l => l._status === 'done').length + npcs.filter(n => n._status === 'done').length;
+    const pct = total ? Math.round((totalDone / total) * 100) : 0;
+
+    stepArea.innerHTML = `
+      <div class="imp-progress-wrap">
+        <div class="imp-progress-h">
+          <div class="imp-progress-h-l">
+            <div class="imp-progress-tag">${escapeHtml(currentPhase)}</div>
+            <div class="imp-progress-meta">${totalDone} von ${total} verarbeitet · <span id="importerTimer" style="font-family:'JetBrains Mono',monospace;color:var(--text-dim);">0:00</span></div>
+          </div>
+          <button class="btn-top" onclick="cancelImport()" style="border-color:var(--crimson);color:var(--crimson);font-size:11px;padding:5px 10px;">Abbrechen</button>
+        </div>
+        <div class="imp-progress-bar">
+          <div class="imp-progress-fill" style="width:${pct}%;"></div>
+        </div>
+        <div class="imp-items-grid">
+          ${locs.length ? `
+            <div class="imp-items-section">
+              <div class="imp-items-section-h">📍 Locations · ${locs.length}</div>
+              <div class="imp-items-list">
+                ${locs.map(l => `
+                  <div class="imp-item ${l._status || 'pending'}" data-imp-loc-id="${escapeAttr(l.id || '')}">
+                    <div class="imp-item-status">${getStatusIcon(l._status)}</div>
+                    <div class="imp-item-info">
+                      <div class="imp-item-name">${escapeHtml(l.name || '?')}</div>
+                      <div class="imp-item-meta">${escapeHtml(l.meta || '—')}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+          ${npcs.length ? `
+            <div class="imp-items-section">
+              <div class="imp-items-section-h">🎭 NPCs · ${npcs.length}</div>
+              <div class="imp-items-list">
+                ${npcs.map(n => `
+                  <div class="imp-item ${n._status || 'pending'}" data-imp-npc-name="${escapeAttr(n.name || '')}">
+                    <div class="imp-item-status">${getStatusIcon(n._status)}</div>
+                    <div class="imp-item-info">
+                      <div class="imp-item-name">${escapeHtml(n.name || '?')}</div>
+                      <div class="imp-item-meta">${escapeHtml([n.race, n.class, n.cr ? 'CR ' + n.cr : ''].filter(Boolean).join(' · '))}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      const el = document.getElementById('importerTimer');
+      if (!el) { clearInterval(timerInterval); return; }
+      const sec = Math.floor((Date.now() - startTime) / 1000);
+      el.textContent = `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`;
+    }, 1000);
+  }
+
+  function getStatusIcon(s) {
+    if (s === 'done') return '<span class="imp-ico done">✓</span>';
+    if (s === 'loading') return '<span class="imp-ico loading"><span class="imp-mini-spinner"></span></span>';
+    if (s === 'failed') return '<span class="imp-ico failed">✕</span>';
+    return '<span class="imp-ico pending">◌</span>';
+  }
+
+  function updateItemStatus(skeleton, type, idx, newStatus) {
+    const arr = type === 'loc' ? skeleton.locations : skeleton.npcs;
+    if (!arr || !arr[idx]) return;
+    arr[idx]._status = newStatus;
+    // Update DOM-Element direkt statt komplettes Re-Render
+    const item = arr[idx];
+    const sel = type === 'loc' ? `[data-imp-loc-id="${item.id}"]` : `[data-imp-npc-name="${item.name?.replace(/"/g, '&quot;')}"]`;
+    const el = document.querySelector(sel);
+    if (el) {
+      el.className = `imp-item ${newStatus}`;
+      const statusEl = el.querySelector('.imp-item-status');
+      if (statusEl) statusEl.innerHTML = getStatusIcon(newStatus);
     }
-  }, 1000);
-
-  const sysPrompt = `Du bist ein D&D-Content-Strukturierer. Aus dem rohen Text eines Adventure-Moduls / Source-Materials extrahierst du Locations und NPCs für ein DM-Tool.
-
-KRITISCHE LIMITS — nicht überschreiten, sonst wird das JSON kaputt:
-- MAX 8 Locations (die wichtigsten — Räume mit konkretem Encounter / Story-Fokus, keine Filler)
-- MAX 6 NPCs (die am meisten wahrscheinlich gebraucht werden)
-- readAloud Texte: max 2 Sätze (knapp halten)
-- dmNote: max 1-2 Sätze
-- scenarios pro location: max 3
-- dialogs pro location: max 3, jeweils 1 Satz
-
-REGELN:
-- Locations mit id (kurz, lowercase, e.g. "yh1"), name, meta, readAloud (NUR wenn klar erkennbar), dmNote (NUR wenn da), scenarios (title+body+probability), dialogs (speaker+text)
-- NPCs mit name, type:"npc", race, class, ac, hp, maxHp, speed, stats, cr, traits, actions, notes — nur Felder die WIRKLICH im Text stehen
-- Felder die nicht im Text stehen → einfach weglassen, NICHT erfinden
-
-ANTWORT-FORMAT: Gültiges JSON, keine Markdown-Fences, kein Vorwort. Struktur:
-{
-  "groupLabel": "🍷 Yester Hill",
-  "locations": [
-    { "id": "yh1", "name": "Approach", "meta": "Forest path uphill", "readAloud": "Mist clings to twisted oaks.", "dmNote": "Druid ambush DC 15 Perception" }
-  ],
-  "npcs": [
-    { "name": "Yester Druid", "type": "npc", "race": "Human", "class": "Druid", "ac": 11, "hp": 27, "maxHp": 27, "cr": "2" }
-  ]
-}
-
-Wenn der Text NICHTS Verwertbares enthält: { "locations": [], "npcs": [], "note": "Kein D&D-Content erkennbar" }.`;
+    // Update progress-bar + counter
+    const total = (skeleton.locations?.length || 0) + (skeleton.npcs?.length || 0);
+    const done = (skeleton.locations?.filter(l => l._status === 'done').length || 0) +
+                 (skeleton.npcs?.filter(n => n._status === 'done').length || 0);
+    const fill = document.querySelector('.imp-progress-fill');
+    if (fill) fill.style.width = `${total ? Math.round((done / total) * 100) : 0}%`;
+    const meta = document.querySelector('.imp-progress-meta');
+    if (meta) {
+      const time = meta.querySelector('#importerTimer')?.textContent || '0:00';
+      meta.innerHTML = `${done} von ${total} verarbeitet · <span id="importerTimer" style="font-family:'JetBrains Mono',monospace;color:var(--text-dim);">${time}</span>`;
+    }
+  }
 
   _importerAbortController = new AbortController();
 
   try {
-    const resp = await fetch(`${API_BASE}/api/dm-chat`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      signal: _importerAbortController.signal,
-      body: JSON.stringify({
-        campaign: { id: campaign().id, name: campaign().name, characters: [] },  // Kontext minimal
-        max_tokens: 4000,  // moderater output — passt sicher in eine Response
-        messages: [{ role: 'user', content: sysPrompt + '\n\nROH-TEXT:\n' + _importedRawText }]
-      })
-    });
+    // ─── STEP 1: Skelett ───
+    showScanningUI();
+    if (status) status.textContent = 'Step 1: Skeleton';
+
+    const skeletonPrompt = `Aus dem rohen Adventure-Text extrahiere alle relevanten Locations und NPCs als KOMPAKTE Übersicht.
+
+REGELN:
+- Locations: jeder Raum / Ort / Encounter-Bereich mit eigener id (kurz, lowercase, e.g. "yh1", "w14"), name, meta (kurze Beschreibung max 80 Zeichen). KEINE Details — die kommen separat.
+- NPCs: alle relevanten Kreaturen. Mit name, race, class, ac, hp, cr falls erkennbar. Wieder OHNE Details.
+- KEIN Limit — extrahiere ALLE die du erkennst.
+
+ANTWORT: Gültiges JSON, kein Vorwort, keine Fences:
+{
+  "groupLabel": "🌿 Yester Hill",
+  "locations": [{ "id": "yh1", "name": "Druid Forest", "meta": "Overgrown southern road, effigies" }],
+  "npcs": [{ "name": "Yester Druid", "race": "Human", "class": "Druid", "ac": 11, "hp": 27, "cr": "2" }]
+}`;
+
+    const skeleton = await importerAiCall(skeletonPrompt, 'ROH-TEXT:\n' + _importedRawText, 3000);
+    if (!skeleton || (!skeleton.locations?.length && !skeleton.npcs?.length)) {
+      _importerSuggestions = skeleton || { locations: [], npcs: [], note: 'Kein Content erkennbar' };
+      clearInterval(timerInterval);
+      renderImporterStep3();
+      return;
+    }
+
+    const totalToDetail = (skeleton.locations?.length || 0) + (skeleton.npcs?.length || 0);
+
+    // Initialize alle Items als 'pending'
+    (skeleton.locations || []).forEach(l => l._status = 'pending');
+    (skeleton.npcs || []).forEach(n => n._status = 'pending');
+
+    // ─── STEP 2: Location-Details parallel ───
+    showItemsList(skeleton, '✦ Schritt 2/3 · Holst Location-Details');
+    if (status) status.textContent = `Step 2: Locations`;
+
+    const locDetailPrompt = `Aus dem rohen Adventure-Text extrahiere die DETAILS für EINE bestimmte Location.
+
+Du bekommst: (a) den Volltext, (b) die Location-Info {id, name}.
+Fokussier dich NUR auf diese eine Location. Extrahiere:
+- readAloud: atmosphärischer Vorlese-Text (2-4 Sätze, NUR wenn klar im Text)
+- dmNote: taktische DM-Notizen, Hinweise, Mechanik-Tipps (alle die du findest)
+- scenarios: was kann passieren — Array mit objects {title, body, probability "Wahrscheinlich"|"Möglich"|"Unwahrscheinlich"}
+- dialogs: NPC-Zitate für diese Location — Array mit {speaker, text}
+- history: Hintergrund-Lore zur Location, falls vorhanden
+
+ANTWORT als JSON, keine Fences:
+{
+  "id": "yh1",
+  "readAloud": "...",
+  "dmNote": "...",
+  "scenarios": [...],
+  "dialogs": [...],
+  "history": "..."
+}
+
+Falls ein Feld nicht im Text steht: weglassen oder leeren String. Nicht erfinden.`;
+
+    const locDetailResults = new Array((skeleton.locations || []).length);
+    await runWithLimit(
+      (skeleton.locations || []).map((l, i) => ({ loc: l, i })),
+      IMPORTER_PARALLEL_LIMIT,
+      async (entry) => {
+        const { loc, i } = entry;
+        updateItemStatus(skeleton, 'loc', i, 'loading');
+        try {
+          const result = await importerAiCall(locDetailPrompt,
+            `LOCATION: ${JSON.stringify({ id: loc.id, name: loc.name })}\n\nVOLLTEXT:\n${_importedRawText}`, 2500);
+          locDetailResults[i] = result;
+          updateItemStatus(skeleton, 'loc', i, result ? 'done' : 'failed');
+        } catch (e) {
+          locDetailResults[i] = { _error: e.message };
+          updateItemStatus(skeleton, 'loc', i, 'failed');
+        }
+      }
+    );
+
+    // ─── STEP 3: NPC-Details parallel ───
+    // Update header
+    const phaseEl = document.querySelector('.imp-progress-tag');
+    if (phaseEl) phaseEl.textContent = '✦ Schritt 3/3 · Holst NPC-Stats';
+    if (status) status.textContent = `Step 3: NPCs`;
+
+    const npcDetailPrompt = `Aus dem rohen Adventure-Text extrahiere die vollen STATS für EINEN NPC.
+
+Du bekommst: (a) den Volltext, (b) die NPC-Basics {name, race, class}.
+Fokussier auf diesen einen NPC. Extrahiere komplett:
+- size, creatureType (e.g. "humanoid (human)"), alignment
+- ac, hp, maxHp (=hp wenn nicht anders), speed (e.g. "30 ft.")
+- stats: { str, dex, con, int, wis, cha } — Zahlen
+- savingThrows, skills, damageResistances, damageImmunities, conditionImmunities, senses, languages, cr, xp
+- traits: passive Features mit {name, text}
+- actions: aktive Actions mit {name, text}
+- bonusActions, reactions, legendaryActions: falls vorhanden, mit {name, text}
+- notes: DM-only Tactics oder Backstory
+
+ANTWORT als JSON, keine Fences:
+{
+  "name": "Yester Druid",
+  "type": "npc",
+  "stats": {"str": 10, ...},
+  "traits": [{"name": "Spellcasting", "text": "..."}],
+  "actions": [...]
+}
+
+Was nicht im Text steht: weglassen. Nicht erfinden.`;
+
+    const npcDetailResults = new Array((skeleton.npcs || []).length);
+    await runWithLimit(
+      (skeleton.npcs || []).map((n, i) => ({ npc: n, i })),
+      IMPORTER_PARALLEL_LIMIT,
+      async (entry) => {
+        const { npc, i } = entry;
+        updateItemStatus(skeleton, 'npc', i, 'loading');
+        try {
+          const result = await importerAiCall(npcDetailPrompt,
+            `NPC: ${JSON.stringify({ name: npc.name, race: npc.race, class: npc.class })}\n\nVOLLTEXT:\n${_importedRawText}`, 2500);
+          npcDetailResults[i] = result;
+          updateItemStatus(skeleton, 'npc', i, result ? 'done' : 'failed');
+        } catch (e) {
+          npcDetailResults[i] = { _error: e.message };
+          updateItemStatus(skeleton, 'npc', i, 'failed');
+        }
+      }
+    );
+
     clearInterval(timerInterval);
-    if (!resp.ok) {
-      const body = await resp.text().catch(() => '');
-      throw new Error(`API ${resp.status} ${resp.statusText}` + (body ? ' · ' + body.slice(0, 200) : ''));
-    }
-    const data = await resp.json();
-    let text = '';
-    if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
-    else if (typeof data.content === 'string') text = data.content;
 
-    console.log('[Importer] Raw KI-Response:', text);  // für Debugging
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('KI lieferte kein JSON-Block. Output: ' + text.slice(0, 300));
-    _importerSuggestions = parseAiJsonRobust(jsonMatch[0]);
-    if (!_importerSuggestions) {
-      // Zeig Raw-Response damit Marco sehen kann was die KI gemacht hat
-      _importerLastRawJson = jsonMatch[0];
-      throw new Error('JSON konnte nicht geparsed werden. Klick „Raw zeigen" um den KI-Output zu sehen.');
-    }
+    // ─── MERGE Skeleton + Details ───
+    const mergedLocations = (skeleton.locations || []).map((loc, i) => {
+      const detail = locDetailResults[i];
+      if (!detail || detail._error) return loc;  // skeleton bleibt, falls detail-call gefailt
+      return {
+        ...loc,
+        readAloud: detail.readAloud || '',
+        dmNote: detail.dmNote || loc.dmNote || '',
+        scenarios: detail.scenarios || [],
+        dialogs: detail.dialogs || [],
+        history: detail.history || ''
+      };
+    });
 
+    const mergedNpcs = (skeleton.npcs || []).map((npc, i) => {
+      const detail = npcDetailResults[i];
+      if (!detail || detail._error) return npc;
+      return { ...npc, ...detail, type: 'npc' };  // detail überschreibt skeleton-basics + füllt Details
+    });
+
+    const failedLocs = locDetailResults.filter(r => r?._error).length;
+    const failedNpcs = npcDetailResults.filter(r => r?._error).length;
+
+    _importerSuggestions = {
+      groupLabel: skeleton.groupLabel,
+      locations: mergedLocations,
+      npcs: mergedNpcs,
+      _meta: {
+        elapsedSec: Math.floor((Date.now() - startTime) / 1000),
+        failedLocs, failedNpcs
+      }
+    };
+
+    if (failedLocs || failedNpcs) {
+      toast(`✓ ${mergedLocations.length} Locations + ${mergedNpcs.length} NPCs · ${failedLocs + failedNpcs} ohne Details`, true);
+    }
     renderImporterStep3();
   } catch (err) {
-    clearInterval(timerInterval);
-    if (err.name === 'AbortError') return;
+    if (timerInterval) clearInterval(timerInterval);
+    if (err.name === 'AbortError' || err.message === 'Aborted') return;
     console.error('[Importer] Fehler:', err);
     if (stepArea) stepArea.innerHTML = `
       <div style="padding:20px;background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;color:var(--crimson);">
         <strong>KI-Fehler:</strong> ${escapeHtml(err.message)}
       </div>
-      ${_importerLastRawJson ? `
-        <div style="margin-top:12px;">
-          <button class="btn-top" onclick="document.getElementById('rawDebug').style.display='block';this.style.display='none';" style="font-size:11px;">Raw KI-Response zeigen</button>
-          <pre id="rawDebug" style="display:none;margin-top:10px;background:var(--surface-2);padding:12px;border-radius:6px;font-size:10.5px;color:var(--text-dim);max-height:300px;overflow:auto;white-space:pre-wrap;">${escapeHtml(_importerLastRawJson)}</pre>
-        </div>` : ''}
       <div style="margin-top:12px;">${renderImporterStep1()}</div>
     `;
-    if (status) status.textContent = 'Fehler — bitte andere Datei oder kleineren Bereich probieren';
+    if (status) status.textContent = 'Fehler — bitte andere Datei probieren';
   } finally {
     _importerAbortController = null;
   }
 }
-let _importerLastRawJson = '';
 
 function renderImporterStep3() {
   const stepArea = document.getElementById('importerStepArea');
@@ -9256,12 +9618,7 @@ function renderImporterStep3() {
             <div class="ii-info">
               <div class="ii-name">${escapeHtml(l.name || '(unbenannt)')}</div>
               ${l.meta ? `<div class="ii-meta">${escapeHtml(l.meta)}</div>` : ''}
-              <div class="ii-bits">
-                ${l.readAloud ? '<span class="ii-bit">📖 Read-Aloud</span>' : ''}
-                ${l.dmNote ? '<span class="ii-bit">📋 DM-Notiz</span>' : ''}
-                ${(l.scenarios || []).length ? `<span class="ii-bit">⚔️ ${l.scenarios.length} Szenarien</span>` : ''}
-                ${(l.dialogs || []).length ? `<span class="ii-bit">💬 ${l.dialogs.length} Dialoge</span>` : ''}
-              </div>
+              ${l.dmNote ? `<div style="font-size:11.5px;color:var(--text);font-style:italic;margin-top:4px;line-height:1.45;">📋 ${escapeHtml(l.dmNote)}</div>` : ''}
             </div>
           </label>
         `).join('')}
@@ -9280,14 +9637,16 @@ function renderImporterStep3() {
               <div class="ii-bits">
                 ${n.hp ? `<span class="ii-bit">HP ${n.hp}</span>` : ''}
                 ${n.ac ? `<span class="ii-bit">AC ${n.ac}</span>` : ''}
-                ${(n.actions || []).length ? `<span class="ii-bit">⚔️ ${n.actions.length} Actions</span>` : ''}
-                ${(n.traits || []).length ? `<span class="ii-bit">✨ ${n.traits.length} Traits</span>` : ''}
               </div>
             </div>
           </label>
         `).join('')}
       </div>
     ` : ''}
+
+    <div style="margin-top:10px;padding:10px 14px;background:var(--surface-2);border-radius:6px;border-left:3px solid var(--gold);font-size:12px;color:var(--text-dim);line-height:1.5;">
+      <strong style="color:var(--ink);">Hinweis:</strong> Read-Aloud-Texte, Szenarien, Dialoge und volle NPC-Statblöcke ergänzt du selbst im Vorbereitungs- und Charaktere-Tab — der Importer legt nur das Grundgerüst an, damit der KI-Output nicht abreißt bei großen PDFs.
+    </div>`;
 
     <div style="text-align:center;margin-top:18px;">
       <button class="btn-top primary" onclick="commitImport()" style="background:var(--crimson);border-color:var(--crimson);font-size:13px;padding:11px 22px;">⬇ Auswahl in Kampagne übernehmen</button>
