@@ -9020,24 +9020,27 @@ let _importedRawText = '';
 let _importedFileName = '';
 let _importerSuggestions = null;
 
+let _importerLocked = false;  // wenn true, Backdrop/×/Schließen ignorieren oder fragen
+
 function openContentImporter() {
   const existing = document.querySelector('.content-importer-modal');
   if (existing) { existing.remove(); return; }
   _importedRawText = '';
   _importedFileName = '';
   _importerSuggestions = null;
+  _importerLocked = false;
 
   const modal = document.createElement('div');
   modal.className = 'srd-modal content-importer-modal';
   modal.innerHTML = `
-    <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="srd-modal-backdrop" onclick="tryCloseImporterModal()"></div>
     <div class="srd-modal-inner" style="max-width:760px;max-height:92vh;display:flex;flex-direction:column;">
       <div class="srd-modal-h">
         <div>
           <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;">📥 Content Import</div>
           <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-top:4px;letter-spacing:-.01em;">Externe Quellen einspielen</div>
         </div>
-        <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
+        <button onclick="tryCloseImporterModal()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
       </div>
       <div style="padding:10px 24px;font-size:13px;color:var(--text-dim);font-style:italic;line-height:1.5;">
         PDF, Markdown oder Textdatei hochladen — Claude extrahiert Locations, NPCs, Read-Aloud-Texte, Szenarien.
@@ -9048,7 +9051,7 @@ function openContentImporter() {
       </div>
       <div class="srd-modal-foot" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
         <span style="font-size:11px;color:var(--text-dim);" id="importerFootStatus">Schritt 1: Datei wählen</span>
-        <button class="btn-top" onclick="this.closest('.srd-modal').remove()">Schließen</button>
+        <button class="btn-top" onclick="tryCloseImporterModal()">Schließen</button>
       </div>
     </div>
   `;
@@ -9129,8 +9132,28 @@ async function handleImportFile(file) {
 function cancelImport() {
   if (_importerAbortController) _importerAbortController.abort();
   _importerAbortController = null;
+  _importerLocked = false;
   document.querySelector('.content-importer-modal')?.remove();
   toast('Import abgebrochen');
+}
+
+// Schließt das Importer-Modal — während laufender Import: Confirm. Sonst direkt zu.
+function tryCloseImporterModal() {
+  const modal = document.querySelector('.content-importer-modal');
+  if (!modal) return;
+  if (_importerLocked) {
+    if (!confirm('Import läuft gerade. Wirklich abbrechen?\n\nAlle bisherigen Fortschritte gehen verloren.')) return;
+    cancelImport();
+    return;
+  }
+  // Nicht gelockt: Wenn Suggestions schon da sind aber noch nicht commited, fragen
+  if (_importerSuggestions && !modal.dataset.committed) {
+    const total = (_importerSuggestions.locations?.length || 0) + (_importerSuggestions.npcs?.length || 0);
+    if (total > 0) {
+      if (!confirm(`Du hast ${total} Vorschläge bereit aber noch nicht übernommen. Wirklich verwerfen?`)) return;
+    }
+  }
+  modal.remove();
 }
 
 async function extractPdfText(file) {
@@ -9389,6 +9412,7 @@ async function processWithAI() {
   }
 
   _importerAbortController = new AbortController();
+  _importerLocked = true;  // Modal-Click-Lock aktivieren
 
   try {
     // ─── STEP 1: Skelett ───
@@ -9397,16 +9421,18 @@ async function processWithAI() {
 
     const skeletonPrompt = `Aus dem rohen Adventure-Text extrahiere alle relevanten Locations und NPCs als KOMPAKTE Übersicht.
 
+🇩🇪 SPRACHE: Alle generierten Texte (name, meta, groupLabel) werden ins DEUTSCHE übersetzt, falls die Quelle auf Englisch ist. EIGENNAMEN bleiben original (NPC-Namen, Charakter-Namen, Ortsbezeichnungen wie „Yester Hill" oder „Wizard of Wines") — nur beschreibende Texte werden übersetzt.
+
 REGELN:
-- Locations: jeder Raum / Ort / Encounter-Bereich mit eigener id (kurz, lowercase, e.g. "yh1", "w14"), name, meta (kurze Beschreibung max 80 Zeichen). KEINE Details — die kommen separat.
-- NPCs: alle relevanten Kreaturen. Mit name, race, class, ac, hp, cr falls erkennbar. Wieder OHNE Details.
+- Locations: jeder Raum / Ort / Encounter-Bereich mit eigener id (kurz, lowercase, e.g. "yh1", "w14"), name (Eigenname original, evtl. mit deutschem Untertitel), meta (kurze deutsche Beschreibung max 80 Zeichen). KEINE Details — die kommen separat.
+- NPCs: alle relevanten Kreaturen. Mit name (original), race, class (auf Deutsch wenn allgemein, original wenn spezifischer Klassenname), ac, hp, cr falls erkennbar. Wieder OHNE Details.
 - KEIN Limit — extrahiere ALLE die du erkennst.
 
 ANTWORT: Gültiges JSON, kein Vorwort, keine Fences:
 {
   "groupLabel": "🌿 Yester Hill",
-  "locations": [{ "id": "yh1", "name": "Druid Forest", "meta": "Overgrown southern road, effigies" }],
-  "npcs": [{ "name": "Yester Druid", "race": "Human", "class": "Druid", "ac": 11, "hp": 27, "cr": "2" }]
+  "locations": [{ "id": "yh1", "name": "Druidenwald", "meta": "Überwucherter Südweg, Strohpuppen und Schreine" }],
+  "npcs": [{ "name": "Yester Druid", "race": "Mensch", "class": "Druide", "ac": 11, "hp": 27, "cr": "2" }]
 }`;
 
     const skeleton = await importerAiCall(skeletonPrompt, 'ROH-TEXT:\n' + _importedRawText, 3000);
@@ -9429,13 +9455,15 @@ ANTWORT: Gültiges JSON, kein Vorwort, keine Fences:
 
     const locDetailPrompt = `Aus dem rohen Adventure-Text extrahiere die DETAILS für EINE bestimmte Location.
 
+🇩🇪 SPRACHE: ALLE Text-Inhalte werden ins DEUTSCHE übersetzt — readAloud, dmNote, scenario.title, scenario.body, dialog.text, history. Eigennamen (NPC-Namen, Ortsnamen, Spell-Namen, Item-Namen) bleiben original. D&D-Mechanik-Begriffe können auf Deutsch (DC = SG/Schwierigkeitsgrad, Saving Throw = Rettungswurf) ODER original bleiben — was natürlicher klingt. Bei DM-Notizen: knackiger deutscher DM-Slang.
+
 Du bekommst: (a) den Volltext, (b) die Location-Info {id, name}.
 Fokussier dich NUR auf diese eine Location. Extrahiere:
-- readAloud: atmosphärischer Vorlese-Text (2-4 Sätze, NUR wenn klar im Text)
-- dmNote: taktische DM-Notizen, Hinweise, Mechanik-Tipps (alle die du findest)
-- scenarios: was kann passieren — Array mit objects {title, body, probability "Wahrscheinlich"|"Möglich"|"Unwahrscheinlich"}
-- dialogs: NPC-Zitate für diese Location — Array mit {speaker, text}
-- history: Hintergrund-Lore zur Location, falls vorhanden
+- readAloud: atmosphärischer Vorlese-Text auf DEUTSCH (2-4 Sätze, NUR wenn klar im Text). Übersetz lebendig, nicht wortwörtlich.
+- dmNote: taktische DM-Notizen, Hinweise, Mechanik-Tipps auf DEUTSCH (alle die du findest)
+- scenarios: was kann passieren — Array mit objects {title (deutsch), body (deutsch), probability "Wahrscheinlich"|"Möglich"|"Unwahrscheinlich"}
+- dialogs: NPC-Zitate für diese Location — Array mit {speaker (Eigenname), text (auf DEUTSCH übersetzt — so wie der NPC im deutschen Sprachraum sprechen würde)}
+- history: Hintergrund-Lore zur Location auf DEUTSCH, falls vorhanden
 
 ANTWORT als JSON, keine Fences:
 {
@@ -9476,24 +9504,27 @@ Falls ein Feld nicht im Text steht: weglassen oder leeren String. Nicht erfinden
 
     const npcDetailPrompt = `Aus dem rohen Adventure-Text extrahiere die vollen STATS für EINEN NPC.
 
+🇩🇪 SPRACHE: Beschreibende Texte (traits.text, actions.text, notes, alignment) werden ins DEUTSCHE übersetzt. NAMEN (name, traits.name, actions.name z.B. "Multiattack", "Spellcasting", "Quarterstaff") bleiben original — diese sind D&D-Standard-Begriffe. Schaden-Typen können auf Deutsch (slashing → Hieb, piercing → Stich, bludgeoning → Wucht) ODER original bleiben. Mechanische Werte (AC, HP, +5 to hit, DC 13) bleiben original-Format.
+
 Du bekommst: (a) den Volltext, (b) die NPC-Basics {name, race, class}.
 Fokussier auf diesen einen NPC. Extrahiere komplett:
-- size, creatureType (e.g. "humanoid (human)"), alignment
-- ac, hp, maxHp (=hp wenn nicht anders), speed (e.g. "30 ft.")
+- size, creatureType (z.B. "humanoid (human)"), alignment (auf DEUTSCH: rechtschaffen gut, neutral böse, etc.)
+- ac, hp, maxHp (=hp wenn nicht anders), speed (z.B. "30 ft.")
 - stats: { str, dex, con, int, wis, cha } — Zahlen
 - savingThrows, skills, damageResistances, damageImmunities, conditionImmunities, senses, languages, cr, xp
-- traits: passive Features mit {name, text}
-- actions: aktive Actions mit {name, text}
-- bonusActions, reactions, legendaryActions: falls vorhanden, mit {name, text}
-- notes: DM-only Tactics oder Backstory
+- traits: passive Features mit {name (original Begriff), text (auf DEUTSCH übersetzt)}
+- actions: aktive Actions mit {name (original), text (DEUTSCH)}
+- bonusActions, reactions, legendaryActions: falls vorhanden, mit {name (original), text (DEUTSCH)}
+- notes: DM-only Tactics oder Backstory auf DEUTSCH
 
 ANTWORT als JSON, keine Fences:
 {
   "name": "Yester Druid",
   "type": "npc",
+  "alignment": "neutral böse",
   "stats": {"str": 10, ...},
-  "traits": [{"name": "Spellcasting", "text": "..."}],
-  "actions": [...]
+  "traits": [{"name": "Spellcasting", "text": "Der Druide ist ein Zauberwirker der 4. Stufe. Sein Zauber-Attribut ist Weisheit (Zauber-SG 13, +5 auf Zauberangriffe)."}],
+  "actions": [{"name": "Quarterstaff", "text": "Nahkampf-Waffenangriff: +2 auf Treffer, Reichweite 1,5 m, ein Ziel. Treffer: 3 (1W6) Wuchtschaden."}]
 }
 
 Was nicht im Text steht: weglassen. Nicht erfinden.`;
@@ -9569,6 +9600,7 @@ Was nicht im Text steht: weglassen. Nicht erfinden.`;
     if (status) status.textContent = 'Fehler — bitte andere Datei probieren';
   } finally {
     _importerAbortController = null;
+    _importerLocked = false;  // Lock nach Import-Ende (success/fail/abort) aufheben
   }
 }
 
@@ -9731,7 +9763,9 @@ function commitImport() {
 
   campaign().updatedAt = Date.now();
   saveState();
-  document.querySelector('.content-importer-modal')?.remove();
+  // Modal als "committed" markieren damit das Close-Confirm nicht greift
+  const modal = document.querySelector('.content-importer-modal');
+  if (modal) { modal.dataset.committed = '1'; modal.remove(); }
   if (state.currentView === 'prep') renderPrep();
   if (state.currentView === 'session') renderSession();
   if (state.currentView === 'chars') renderChars();
