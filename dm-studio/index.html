@@ -13,6 +13,9 @@
 
 <!-- Supabase JS SDK for Google OAuth — auth identity flows into Cloud Sync -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- PDF.js für Content-Import aus externen PDFs (Pyram King etc) — lazy nutzbar -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if (window.pdfjsLib) window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -461,6 +464,55 @@ body{
 .cond-pick{background:#fff;border:1px solid var(--border);padding:8px 10px;border-radius:6px;cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;font-weight:600;color:var(--text);}
 .cond-pick:hover{border-color:var(--gold);background:#fef6e8;}
 .cond-pick.on{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+
+/* ═══════ CONTENT IMPORTER ═══════ */
+.importer-dropzone{
+  border:2.5px dashed var(--border-strong);
+  border-radius:12px;padding:48px 24px;text-align:center;
+  background:var(--surface-2);cursor:pointer;
+  transition:all .15s;
+}
+.importer-dropzone:hover,.importer-dropzone.hover{
+  border-color:var(--gold);background:#fdf9ec;transform:translateY(-2px);
+  box-shadow:0 6px 22px rgba(147,110,30,0.15);
+}
+.idz-icon{font-size:42px;margin-bottom:10px;opacity:.7;}
+.idz-title{font-family:'Cinzel',serif;font-size:14px;color:var(--ink);font-weight:700;letter-spacing:.5px;}
+.idz-sub{font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;}
+.importer-grouplabel-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;background:var(--surface-2);border-radius:6px;}
+.importer-grouplabel-row label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;font-weight:700;flex-shrink:0;}
+.importer-grouplabel-row input{flex:1;padding:7px 12px;border:1px solid var(--border);border-radius:5px;background:#fff;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;}
+.importer-grouplabel-row input:focus{border-color:var(--gold);}
+.importer-section{margin-bottom:14px;}
+.importer-section-h{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;margin-bottom:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.importer-item{display:flex;align-items:flex-start;gap:11px;padding:9px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;margin-bottom:5px;cursor:pointer;transition:all .12s;}
+.importer-item:hover{border-color:var(--gold);}
+.importer-item input[type=checkbox]{flex-shrink:0;width:17px;height:17px;margin-top:2px;cursor:pointer;accent-color:var(--crimson);}
+.ii-info{flex:1;min-width:0;}
+.ii-name{font-family:'Cinzel',serif;font-size:13px;color:var(--ink);font-weight:700;letter-spacing:.02em;}
+.ii-meta{font-size:11.5px;color:var(--text-dim);margin-top:2px;font-style:italic;}
+.ii-bits{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.ii-bit{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;background:var(--surface-2);color:var(--text-dim);padding:2px 6px;border-radius:3px;font-weight:700;text-transform:uppercase;}
+
+/* ═══════ CHARACTER SLIDE-IN PANEL ═══════ */
+.char-slide-in{position:fixed;inset:0;z-index:300;pointer-events:none;}
+.char-slide-in.visible{pointer-events:auto;}
+.csi-backdrop{position:absolute;inset:0;background:rgba(10,10,10,0.45);backdrop-filter:blur(3px);opacity:0;transition:opacity .25s;}
+.char-slide-in.visible .csi-backdrop{opacity:1;}
+.csi-panel{position:absolute;top:0;right:0;bottom:0;width:min(560px,92vw);background:var(--surface);border-left:1px solid var(--border-strong);box-shadow:-12px 0 48px rgba(0,0,0,0.3);transform:translateX(100%);transition:transform .25s ease-out;display:flex;flex-direction:column;}
+.char-slide-in.visible .csi-panel{transform:translateX(0);}
+.csi-head{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-shrink:0;background:linear-gradient(to bottom,#fbf6e6,#f4ecd4);}
+.csi-head-info{display:flex;align-items:center;gap:14px;flex:1;min-width:0;}
+.csi-portrait{width:60px;height:60px;border-radius:50%;background:var(--surface-2);overflow:hidden;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--text-dim);}
+.csi-portrait img{width:100%;height:100%;object-fit:cover;}
+.csi-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.csi-tag.pc{color:#1e6fd9;}
+.csi-name{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-top:2px;letter-spacing:.02em;}
+.csi-sub{font-size:12.5px;color:var(--text-dim);font-style:italic;margin-top:2px;}
+.csi-close{background:transparent;border:none;font-size:26px;color:var(--text-dim);cursor:pointer;padding:0 8px;line-height:1;flex-shrink:0;}
+.csi-close:hover{color:var(--crimson);}
+.csi-body{flex:1;overflow-y:auto;padding:18px 22px;}
+.csi-foot{padding:12px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--surface-2);flex-shrink:0;}
 
 /* ═══════ INITIATIVE SETUP MODAL · Card-Layout mit Portraits ═══════ */
 .init-setup-grid{display:flex;flex-direction:column;gap:8px;}
@@ -1779,7 +1831,10 @@ body.gate-open{overflow:hidden;}
     <aside class="lpanel">
       <div class="lp-header">
         <span class="lp-title">Kampagnen-Struktur</span>
-        <button class="lp-add" onclick="addLocation()">+ Ort</button>
+        <div style="display:flex;gap:4px;">
+          <button class="lp-add" onclick="openContentImporter()" title="PDF/MD/TXT hochladen — KI extrahiert Locations, NPCs, etc">📥 Import</button>
+          <button class="lp-add" onclick="addLocation()">+ Ort</button>
+        </div>
       </div>
       <div class="lp-body" id="prepTree"></div>
       <div class="lp-footer">
@@ -1868,9 +1923,8 @@ body.gate-open{overflow:hidden;}
           <div class="session-strip-loc-meta" id="sessLocMeta"></div>
         </div>
         <div class="session-modes" id="sessionModes">
-          <button class="session-mode-btn active" data-mode="scene" onclick="setSessionMode('scene')" title="Fokus: Read-Aloud + Szenarien"><span class="ico">🎭</span>Szene</button>
-          <button class="session-mode-btn" data-mode="combat" onclick="setSessionMode('combat')" title="Fokus: Combat-Overview, Initiative"><span class="ico">⚔️</span>Kampf</button>
-          <button class="session-mode-btn" data-mode="social" onclick="setSessionMode('social')" title="Fokus: Dialoge + NPCs"><span class="ico">💬</span>Social</button>
+          <button class="session-mode-btn active" data-mode="scene" onclick="setSessionMode('scene')" title="Standard: Read-Aloud, NPCs, Dialoge, Szenarien"><span class="ico">🎭</span>Szene</button>
+          <button class="session-mode-btn" data-mode="combat" onclick="setSessionMode('combat')" title="Combat-Tracker prominent, Statblöcke aufgeklappt, Story-Sections versteckt"><span class="ico">⚔️</span>Kampf</button>
         </div>
         <div class="session-actions">
           <button class="btn-top btn-next-turn" id="btnNextTurn" onclick="nextTurn()" title="Keyboard: Space" style="display:none;">
@@ -1894,7 +1948,6 @@ body.gate-open{overflow:hidden;}
           <span class="qn-lbl">📝 Live-Log</span>
           <input class="qn-input" id="quickNotesInput" placeholder="Was passiert gerade... [Enter zum Speichern]" onkeydown="handleQuickNotesKey(event)">
           <button class="qn-btn primary" onclick="addQuickNote()" title="Speichern · Keyboard: N">+ Notiz</button>
-          <button class="qn-btn gold" onclick="saveNoteAsCard()" title="Als legendären Moment in Karten-Pool">🃏 Als Karte</button>
           <button class="qn-btn ghost" onclick="toggleQuickNotesHistory()" title="Notizen-Historie ein/ausblenden">
             <span id="qnCountBadge" class="qn-count-badge">0</span>
             <span id="qnHistoryChev">▾</span>
@@ -4325,9 +4378,6 @@ function renderQuickNotesHistory() {
       <span class="qn-h-time">${escapeHtml(n.time || '·')}</span>
       <span class="qn-h-loc">${escapeHtml(n.locName.split(' ')[0])}</span>
       <span class="qn-h-text">${escapeHtml(n.text)}</span>
-      <span class="qn-h-actions">
-        <button class="qn-h-card-btn" onclick="turnNoteIntoCardFromHistory('${escapeAttr(n.text)}')" title="Als legendärer Moment in Highlights/Karten">🃏</button>
-      </span>
     </div>
   `).join('');
 }
@@ -5197,10 +5247,13 @@ function endCombat() {
   });
   state.initiative = [];
   state.combatRound = 1;
+  // Zurück zum Szene-Modus
+  state.sessionMode = 'scene';
   saveState();
+  applySessionMode();
   renderInitiative();
   if (typeof renderSessionLocation === 'function') renderSessionLocation();
-  toast('⚔️ Kampf beendet · HP gespeichert');
+  toast('⚔️ Kampf beendet · zurück zur Szene');
 }
 
 // 5e Conditions für den Picker
@@ -5250,10 +5303,53 @@ function removeCondition(i, cond) {
   saveState(); renderInitiative();
   if (typeof renderSessionLocation === 'function') renderSessionLocation();
 }
+// Slide-In-Sheet: zeigt Statblock + Quick-Actions ohne View-Wechsel.
+// Klick auf "Vollständig bearbeiten" wechselt dann zum Charakter-Tab.
 function openInitCharSheet(charId) {
-  state.currentCharId = charId;
-  saveState();
-  switchView('chars');
+  const c = state.characters.find(x => x.id === charId); if (!c) return;
+  closeCharSlideIn();  // alte Instanz weg
+  const panel = document.createElement('div');
+  panel.id = 'charSlideIn';
+  panel.className = 'char-slide-in';
+  panel.innerHTML = `
+    <div class="csi-backdrop" onclick="closeCharSlideIn()"></div>
+    <aside class="csi-panel">
+      <div class="csi-head">
+        <div class="csi-head-info">
+          <div class="csi-portrait">
+            ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span>${c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase()}</span>`}
+          </div>
+          <div>
+            <div class="csi-tag ${c.type === 'pc' ? 'pc' : 'npc'}">${c.type === 'pc' ? 'SPIELER' : 'NPC'}</div>
+            <div class="csi-name">${escapeHtml(c.name)}</div>
+            <div class="csi-sub">${escapeHtml([c.race, c.class].filter(Boolean).join(' · ') || c.creatureType || '')}${c.level ? ' · Lv ' + c.level : ''}</div>
+          </div>
+        </div>
+        <button class="csi-close" onclick="closeCharSlideIn()" title="Schließen">×</button>
+      </div>
+      <div class="csi-body">
+        ${renderStatblock(c)}
+      </div>
+      <div class="csi-foot">
+        <button class="btn-top" onclick="closeCharSlideIn()">Schließen</button>
+        <button class="btn-top primary" onclick="closeCharSlideIn();state.currentCharId='${c.id}';saveState();switchView('chars');">✎ Vollständig bearbeiten →</button>
+      </div>
+    </aside>
+  `;
+  document.body.appendChild(panel);
+  requestAnimationFrame(() => panel.classList.add('visible'));
+  // ESC zum Schließen
+  document.addEventListener('keydown', _csiEscHandler);
+}
+function _csiEscHandler(e) {
+  if (e.key === 'Escape') closeCharSlideIn();
+}
+function closeCharSlideIn() {
+  const panel = document.getElementById('charSlideIn');
+  if (!panel) return;
+  panel.classList.remove('visible');
+  document.removeEventListener('keydown', _csiEscHandler);
+  setTimeout(() => panel.remove(), 250);
 }
 
 // Manual Initiative: Modal öffnet mit Eingabe-Feldern für jeden Combatant.
@@ -5367,11 +5463,15 @@ function submitManualInitiative() {
   entries.sort((a, b) => b.init - a.init);
   entries[0].turn = true;
   state.initiative = entries;
+  state.combatRound = 1;
+  // Auto-switch zu Combat-Mode wenn Initiative gestartet
+  state.sessionMode = 'combat';
   saveState();
   document.querySelector('.init-modal')?.remove();
+  applySessionMode();
   renderInitiative();
   renderSessionLocation();
-  toast('⚔️ Initiative gesetzt — ' + entries.length + ' Kombattanten');
+  toast('⚔️ Initiative gesetzt — ' + entries.length + ' Kombattanten · Modus: Kampf');
 }
 function nextTurn() {
   if (!state.initiative.length) { rollInitiative(); return; }
@@ -5458,10 +5558,10 @@ function renderSessionActionMenu() {
     </div>
     <div class="sam-section">
       <div class="sam-section-h">Modus</div>
-      ${['scene','combat','social'].map(m => `
+      ${['scene','combat'].map(m => `
         <button class="sam-item ${state.sessionMode === m ? 'active' : ''}" onclick="setSessionMode('${m}');closeSessionActionMenu()">
-          <span class="sam-ico">${m === 'scene' ? '🎭' : m === 'combat' ? '⚔️' : '💬'}</span>
-          <div><div class="sam-name">${m === 'scene' ? 'Szene' : m === 'combat' ? 'Kampf' : 'Social'}-Modus</div></div>
+          <span class="sam-ico">${m === 'scene' ? '🎭' : '⚔️'}</span>
+          <div><div class="sam-name">${m === 'scene' ? 'Szene' : 'Kampf'}-Modus</div></div>
         </button>
       `).join('')}
     </div>
@@ -6651,18 +6751,63 @@ function rollAttackDamage(i) {
 }
 
 function triggerPortraitUpload() { document.getElementById('portraitUploadInput').click(); }
-function handlePortraitUpload(e) {
+// Resize-Helper: liest Bild, skaliert auf max 1024x1024 + JPEG quality 0.85.
+// Resultat ist immer < 1.5MB selbst bei großen Originalen. Liefert dataURL Promise.
+function resizeImageFile(file, maxSize = 1024, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxSize || height > maxSize) {
+          if (width > height) { height = Math.round(height * maxSize / width); width = maxSize; }
+          else { width = Math.round(width * maxSize / height); height = maxSize; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        // JPEG für Foto-Inhalte (kleiner als PNG); falls Original PNG mit transparency war, fallback PNG
+        const isPng = file.type === 'image/png' && _hasTransparency(ctx, width, height);
+        const dataUrl = canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', quality);
+        resolve({ dataUrl, originalSize: file.size, newSize: Math.round(dataUrl.length * 0.75) });  // base64 ist ~33% overhead
+      };
+      img.onerror = () => reject(new Error('Bild konnte nicht geladen werden'));
+      img.src = reader.result;
+    };
+    reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden'));
+    reader.readAsDataURL(file);
+  });
+}
+// Quick-Check ob PNG transparency hat (samples 4 Eckpixel)
+function _hasTransparency(ctx, w, h) {
+  try {
+    const samples = [[0, 0], [w-1, 0], [0, h-1], [w-1, h-1]];
+    for (const [x, y] of samples) {
+      const data = ctx.getImageData(x, y, 1, 1).data;
+      if (data[3] < 255) return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+async function handlePortraitUpload(e) {
   const file = e.target.files?.[0]; if (!file) return;
   const c = currentChar(); if (!c) return;
-  if (file.size > 2 * 1024 * 1024) { toast('Max 2 MB bitte (für localStorage-Speicherung)', true); return; }
-  const reader = new FileReader();
-  reader.onload = () => {
-    c.portraitUrl = reader.result;  // base64
+  // Auto-Resize: Egal wie groß das Original ist, wir skalieren auf max 1024px + JPEG q85
+  const wasLarge = file.size > 2 * 1024 * 1024;
+  if (wasLarge) toast('🖼️ Bild wird auf < 2MB skaliert...', false);
+  try {
+    const { dataUrl, newSize } = await resizeImageFile(file, 1024, 0.85);
+    c.portraitUrl = dataUrl;
     c.portraitSource = 'upload';
     saveState(); renderCharEditor(); renderCharList(); renderPartyChips('prepPartyChips'); renderPartyChips('sessionPartyChips');
-    toast('Portrait hochgeladen');
-  };
-  reader.readAsDataURL(file);
+    const kb = Math.round(newSize / 1024);
+    toast(`Portrait gespeichert · ${kb < 1024 ? kb + ' KB' : (kb / 1024).toFixed(1) + ' MB'}`);
+  } catch (err) {
+    toast('Upload-Fehler: ' + err.message, true);
+  }
   e.target.value = '';
 }
 async function generateCharPortrait() {
@@ -6713,11 +6858,19 @@ document.querySelectorAll('.chat-panel').forEach(panel => {
 function clearChat(host) {
   const t = chatThread(host);
   if (!t.messages.length) { toast('Chat ist schon leer'); return; }
-  if (!confirm(`Chat-Verlauf für „${host === 'session' ? 'Session' : 'Vorbereitung'}" wirklich löschen?\n\n${t.messages.length} Nachricht${t.messages.length === 1 ? '' : 'en'} werden entfernt. Der Co-DM weiß ab jetzt nur noch was im Kampagnen-Kontext steht.`)) return;
-  state.threads[host] = { messages: [] };
+  // Verschiebe messages ins Archiv statt sie zu löschen — Kampagnen-Context bleibt für KI sowieso erhalten
+  // (kommt aus campaign(), nicht aus messages). Dies macht nur die Ansicht clean.
+  t.archive = t.archive || [];
+  t.archive.push({
+    archivedAt: Date.now(),
+    messages: t.messages
+  });
+  // Limit: max 10 archives behalten (sonst LocalStorage volläuft)
+  if (t.archive.length > 10) t.archive = t.archive.slice(-10);
+  t.messages = [];
   saveState();
   renderChat(host);
-  toast(`✓ Chat geleert`);
+  toast(`Chat-Ansicht zurückgesetzt · ${t.archive[t.archive.length - 1].messages.length} Nachrichten archiviert`);
 }
 function chatThread(host) {
   if (!state.threads[host]) state.threads[host] = { messages: [] };
@@ -8761,6 +8914,346 @@ function addManualHighlight() {
   saveState();
   renderHighlightsBoard();
   toast('✓ Highlight hinzugefügt');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTENT IMPORTER — externe Quellen (PDF/MD/TXT) → KI-Strukturierung → Kampagne
+// ═══════════════════════════════════════════════════════════════════════════
+let _importedRawText = '';
+let _importedFileName = '';
+let _importerSuggestions = null;
+
+function openContentImporter() {
+  const existing = document.querySelector('.content-importer-modal');
+  if (existing) { existing.remove(); return; }
+  _importedRawText = '';
+  _importedFileName = '';
+  _importerSuggestions = null;
+
+  const modal = document.createElement('div');
+  modal.className = 'srd-modal content-importer-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="srd-modal-inner" style="max-width:760px;max-height:92vh;display:flex;flex-direction:column;">
+      <div class="srd-modal-h">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;">📥 Content Import</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-top:4px;letter-spacing:-.01em;">Externe Quellen einspielen</div>
+        </div>
+        <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
+      </div>
+      <div style="padding:10px 24px;font-size:13px;color:var(--text-dim);font-style:italic;line-height:1.5;">
+        PDF, Markdown oder Textdatei hochladen — Claude extrahiert Locations, NPCs, Read-Aloud-Texte, Szenarien.
+        Du wählst pro Vorschlag was in deine Kampagne übernommen wird.
+      </div>
+      <div id="importerStepArea" style="flex:1;overflow-y:auto;padding:8px 24px 18px;">
+        ${renderImporterStep1()}
+      </div>
+      <div class="srd-modal-foot" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <span style="font-size:11px;color:var(--text-dim);" id="importerFootStatus">Schritt 1: Datei wählen</span>
+        <button class="btn-top" onclick="this.closest('.srd-modal').remove()">Schließen</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Drag & Drop Listener auf das Drop-Zone-Element
+  setTimeout(() => {
+    const dz = document.getElementById('importerDropZone');
+    if (!dz) return;
+    ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('hover'); }));
+    ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('hover'); }));
+    dz.addEventListener('drop', e => { handleImportFile(e.dataTransfer.files?.[0]); });
+  }, 50);
+}
+
+function renderImporterStep1() {
+  return `
+    <div id="importerDropZone" class="importer-dropzone" onclick="document.getElementById('importerFileInput').click()">
+      <div class="idz-icon">📄</div>
+      <div class="idz-title">Datei hier ablegen oder klicken</div>
+      <div class="idz-sub">PDF · Markdown (.md) · Textdatei (.txt) · max ~10 MB</div>
+      <input type="file" id="importerFileInput" accept=".pdf,.md,.txt,.markdown" style="display:none" onchange="handleImportFile(this.files[0])">
+    </div>
+    <div style="margin-top:14px;padding:10px 14px;background:var(--surface-2);border-radius:6px;border-left:3px solid var(--gold);font-size:12px;color:var(--text-dim);line-height:1.5;">
+      <strong style="color:var(--ink);">Tipp:</strong> Funktioniert besonders gut mit strukturierten Adventure-Modulen
+      (Pyram King, DMs Guild, eigene Markdowns). Claude erkennt Room-Header, Read-Aloud-Boxes,
+      DM-Notizen und NPC-Dialoge automatisch.
+    </div>
+  `;
+}
+
+async function handleImportFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { toast('Max 10 MB bitte', true); return; }
+  _importedFileName = file.name;
+  const stepArea = document.getElementById('importerStepArea');
+  const status = document.getElementById('importerFootStatus');
+  if (stepArea) stepArea.innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div class="spinner" style="margin:0 auto 14px;"></div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">Extrahiere Text...</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">${escapeHtml(file.name)}</div>
+    </div>
+  `;
+  if (status) status.textContent = 'Schritt 2: Text wird gelesen';
+
+  try {
+    let text = '';
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'pdf') {
+      text = await extractPdfText(file);
+    } else {
+      text = await file.text();
+    }
+    if (!text.trim()) throw new Error('Datei ist leer oder enthält keinen extrahierbaren Text');
+    if (text.length > 100000) {
+      // Truncate auf erste 100k Zeichen — Claude schafft das gut
+      text = text.slice(0, 100000) + '\n\n[... Datei zu lang, abgeschnitten bei 100k chars]';
+    }
+    _importedRawText = text;
+    if (status) status.textContent = `Text gelesen · ${(text.length / 1000).toFixed(1)}k Zeichen · KI strukturiert...`;
+    await processWithAI();
+  } catch (err) {
+    if (stepArea) stepArea.innerHTML = `
+      <div style="padding:20px;background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;color:var(--crimson);">
+        <strong>Fehler:</strong> ${escapeHtml(err.message)}
+      </div>
+      <div style="margin-top:12px;">${renderImporterStep1()}</div>
+    `;
+  }
+}
+
+async function extractPdfText(file) {
+  if (!window.pdfjsLib) throw new Error('PDF-Library nicht geladen');
+  const arrayBuf = await file.arrayBuffer();
+  const pdf = await window.pdfjsLib.getDocument({ data: arrayBuf }).promise;
+  let fullText = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(it => it.str).join(' ');
+    fullText += `\n\n— Seite ${i} —\n${pageText}`;
+  }
+  return fullText.trim();
+}
+
+async function processWithAI() {
+  const stepArea = document.getElementById('importerStepArea');
+  const status = document.getElementById('importerFootStatus');
+
+  const sysPrompt = `Du bist ein D&D-Content-Strukturierer. Aus dem rohen Text eines Adventure-Moduls / Source-Materials extrahierst du einzelne Locations und NPCs für ein DM-Tool.
+
+WICHTIGE REGELN:
+- Locations: Räume, Orte, Encounter-Bereiche. Jede mit eigener id (kurz, lowercase, e.g. "w14"), name, meta (kurze Beschreibung), readAloud (atmosphärischer Text zum Vorlesen, 2-4 Sätze, nur wenn klar erkennbar), dmNote (taktische Notizen für DM, nur wenn da), scenarios (was kann passieren, mit title + body + probability "Wahrscheinlich"/"Möglich"/"Unwahrscheinlich"), dialogs (NPC-Zitate mit speaker + text)
+- NPCs: Kreaturen die einem Encounter zugeordnet sind oder eine eigene Rolle haben. Mit name, type (immer "npc"), race, class (oder Rolle wie "Wine Merchant"), creatureType, alignment, ac, hp, maxHp, speed, stats (str/dex/con/int/wis/cha), savingThrows, skills, senses, languages, cr, traits (passive abilities), actions, notes (DM-only Tactics). Nur die Felder befüllen die WIRKLICH im Text stehen, sonst weglassen.
+- Group-Vorschlag: Schlage eine sinnvolle Gruppen-Bezeichnung für die Locations vor (z.B. "🏰 Castle Ravenloft", "🍷 Wizard of Wines")
+
+ANTWORT-FORMAT: Gültiges JSON, keine Markdown-Fences, kein Vorwort. Struktur:
+{
+  "groupLabel": "🍷 Yester Hill Quest",
+  "locations": [
+    { "id": "yh1", "name": "Yester Hill Approach", "meta": "Forest path uphill", "readAloud": "Mist clings to twisted oaks...", "dmNote": "Druid ambush DC 15 Perception", "scenarios": [{"title": "Druid Ambush", "probability": "Wahrscheinlich", "body": "..."}], "dialogs": [{"speaker": "Yester Druid", "text": "Leave this hill or burn"}] }
+  ],
+  "npcs": [
+    { "name": "Yester Druid", "type": "npc", "race": "Human", "class": "Druid", "ac": 11, "hp": 27, "maxHp": 27, "speed": "30 ft.", "stats": {"str": 10, "dex": 12, "con": 12, "int": 11, "wis": 16, "cha": 11}, "cr": "2", "traits": [{"name": "Spellcasting", "text": "..."}], "actions": [{"name": "Quarterstaff", "text": "+2 to hit, 1d6+0 bludgeoning"}] }
+  ]
+}
+
+Wenn der Text NICHTS Verwertbares enthält: { "locations": [], "npcs": [], "note": "Kein D&D-Content erkennbar" }.`;
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/dm-chat`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaign: { ...campaign(), characters: [] },  // Kontext minimieren — Importer braucht keine bestehenden Daten
+        messages: [{ role: 'user', content: sysPrompt + '\n\nROH-TEXT:\n' + _importedRawText }]
+      })
+    });
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => '');
+      throw new Error(`API ${resp.status} ${resp.statusText}` + (body ? ' · ' + body.slice(0, 200) : ''));
+    }
+    const data = await resp.json();
+    let text = '';
+    if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
+    else if (typeof data.content === 'string') text = data.content;
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('KI lieferte kein gültiges JSON. Raw: ' + text.slice(0, 200));
+    _importerSuggestions = JSON.parse(jsonMatch[0]);
+
+    renderImporterStep3();
+  } catch (err) {
+    console.error('[Importer] Fehler:', err);
+    if (stepArea) stepArea.innerHTML = `
+      <div style="padding:20px;background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;color:var(--crimson);">
+        <strong>KI-Fehler:</strong> ${escapeHtml(err.message)}
+      </div>
+      <div style="margin-top:12px;">${renderImporterStep1()}</div>
+    `;
+    if (status) status.textContent = 'Fehler — bitte andere Datei probieren';
+  }
+}
+
+function renderImporterStep3() {
+  const stepArea = document.getElementById('importerStepArea');
+  const status = document.getElementById('importerFootStatus');
+  const sug = _importerSuggestions;
+  if (!stepArea || !sug) return;
+
+  const locs = sug.locations || [];
+  const npcs = sug.npcs || [];
+  if (!locs.length && !npcs.length) {
+    stepArea.innerHTML = `
+      <div style="padding:20px;background:var(--surface-2);border-radius:6px;text-align:center;color:var(--text-dim);">
+        <div style="font-size:30px;margin-bottom:10px;">🤔</div>
+        <strong style="color:var(--ink);">Keine Inhalte erkannt.</strong>
+        <div style="font-size:12px;margin-top:8px;font-style:italic;">${escapeHtml(sug.note || 'Die Datei enthält wahrscheinlich keinen strukturierten D&D-Content. Probier eine andere oder bearbeite manuell.')}</div>
+      </div>
+    `;
+    if (status) status.textContent = 'Nichts zu importieren';
+    return;
+  }
+
+  stepArea.innerHTML = `
+    <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">Vorschau · Auswahl</div>
+        <div style="font-size:13px;color:var(--text-dim);font-style:italic;margin-top:3px;">${locs.length} Location${locs.length === 1 ? '' : 's'} · ${npcs.length} NPC${npcs.length === 1 ? '' : 's'} aus „${escapeHtml(_importedFileName)}"</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn-top" onclick="toggleAllImporter(true)" style="font-size:10px;padding:4px 10px;">Alle ✓</button>
+        <button class="btn-top" onclick="toggleAllImporter(false)" style="font-size:10px;padding:4px 10px;">Alle ✕</button>
+      </div>
+    </div>
+
+    <div class="importer-grouplabel-row">
+      <label>Gruppen-Bezeichnung:</label>
+      <input id="importerGroupLabel" value="${escapeAttr(sug.groupLabel || _importedFileName.replace(/\.[^.]+$/, ''))}" placeholder="z.B. 🏰 Castle Ravenloft">
+    </div>
+
+    ${locs.length ? `
+      <div class="importer-section">
+        <div class="importer-section-h">📍 Locations · ${locs.length}</div>
+        ${locs.map((l, i) => `
+          <label class="importer-item">
+            <input type="checkbox" data-imp-loc="${i}" checked>
+            <div class="ii-info">
+              <div class="ii-name">${escapeHtml(l.name || '(unbenannt)')}</div>
+              ${l.meta ? `<div class="ii-meta">${escapeHtml(l.meta)}</div>` : ''}
+              <div class="ii-bits">
+                ${l.readAloud ? '<span class="ii-bit">📖 Read-Aloud</span>' : ''}
+                ${l.dmNote ? '<span class="ii-bit">📋 DM-Notiz</span>' : ''}
+                ${(l.scenarios || []).length ? `<span class="ii-bit">⚔️ ${l.scenarios.length} Szenarien</span>` : ''}
+                ${(l.dialogs || []).length ? `<span class="ii-bit">💬 ${l.dialogs.length} Dialoge</span>` : ''}
+              </div>
+            </div>
+          </label>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    ${npcs.length ? `
+      <div class="importer-section">
+        <div class="importer-section-h">🎭 NPCs · ${npcs.length}</div>
+        ${npcs.map((n, i) => `
+          <label class="importer-item">
+            <input type="checkbox" data-imp-npc="${i}" checked>
+            <div class="ii-info">
+              <div class="ii-name">${escapeHtml(n.name || '(unbenannt)')}</div>
+              <div class="ii-meta">${escapeHtml([n.race, n.class, n.cr ? 'CR ' + n.cr : ''].filter(Boolean).join(' · '))}</div>
+              <div class="ii-bits">
+                ${n.hp ? `<span class="ii-bit">HP ${n.hp}</span>` : ''}
+                ${n.ac ? `<span class="ii-bit">AC ${n.ac}</span>` : ''}
+                ${(n.actions || []).length ? `<span class="ii-bit">⚔️ ${n.actions.length} Actions</span>` : ''}
+                ${(n.traits || []).length ? `<span class="ii-bit">✨ ${n.traits.length} Traits</span>` : ''}
+              </div>
+            </div>
+          </label>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <div style="text-align:center;margin-top:18px;">
+      <button class="btn-top primary" onclick="commitImport()" style="background:var(--crimson);border-color:var(--crimson);font-size:13px;padding:11px 22px;">⬇ Auswahl in Kampagne übernehmen</button>
+    </div>
+  `;
+  if (status) status.textContent = `Schritt 3: Auswahl prüfen · ${locs.length + npcs.length} Vorschläge`;
+}
+
+function toggleAllImporter(checked) {
+  document.querySelectorAll('[data-imp-loc],[data-imp-npc]').forEach(cb => cb.checked = checked);
+}
+
+function commitImport() {
+  if (!_importerSuggestions) return;
+  const groupLabel = document.getElementById('importerGroupLabel')?.value?.trim() || 'Importiert';
+  const sug = _importerSuggestions;
+  const c = campaign();
+
+  // Locations: pro angekreuzte → in tree-group + locations
+  const locsToImport = (sug.locations || []).filter((_, i) =>
+    document.querySelector(`[data-imp-loc="${i}"]`)?.checked
+  );
+  const npcsToImport = (sug.npcs || []).filter((_, i) =>
+    document.querySelector(`[data-imp-npc="${i}"]`)?.checked
+  );
+
+  if (!locsToImport.length && !npcsToImport.length) {
+    toast('Nichts ausgewählt', true);
+    return;
+  }
+
+  // Locations: id-Konflikte vermeiden
+  c.locations = c.locations || {};
+  c.tree = c.tree || [];
+  const existingIds = new Set(Object.keys(c.locations));
+
+  const groupId = 'g_' + Date.now().toString(36);
+  const newGroup = { id: groupId, label: groupLabel, locations: [] };
+
+  locsToImport.forEach(l => {
+    let id = l.id || ('loc_' + Math.random().toString(36).slice(2, 8));
+    while (existingIds.has(id)) id = id + '_' + Math.random().toString(36).slice(2, 4);
+    existingIds.add(id);
+    c.locations[id] = {
+      name: l.name || 'Ohne Name',
+      meta: l.meta || '',
+      readAloud: l.readAloud || '',
+      dmNote: l.dmNote || '',
+      scenarios: l.scenarios || [],
+      dialogs: l.dialogs || [],
+      statblocks: [],
+      music: [],
+      log: '',
+      status: 'pending'
+    };
+    newGroup.locations.push({ id, name: l.name, status: 'pending' });
+  });
+
+  if (newGroup.locations.length) c.tree.push(newGroup);
+
+  // NPCs
+  if (!state.characters) state.characters = [];
+  npcsToImport.forEach(n => {
+    state.characters.push({
+      ...BLANK_CHAR(),
+      ...n,
+      id: 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+      type: 'npc',
+      stats: n.stats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }
+    });
+  });
+
+  campaign().updatedAt = Date.now();
+  saveState();
+  document.querySelector('.content-importer-modal')?.remove();
+  if (state.currentView === 'prep') renderPrep();
+  if (state.currentView === 'session') renderSession();
+  if (state.currentView === 'chars') renderChars();
+  toast(`✓ ${locsToImport.length} Location${locsToImport.length === 1 ? '' : 's'} + ${npcsToImport.length} NPC${npcsToImport.length === 1 ? '' : 's'} importiert`);
+  plausibleTrack && plausibleTrack('DMStudio · Content Imported', { locs: locsToImport.length, npcs: npcsToImport.length });
 }
 
 function exportJSON() {
