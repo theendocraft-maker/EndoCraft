@@ -456,8 +456,8 @@ body{
 .ct-conditions{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-height:18px;}
 .ct-cond{background:rgba(147,110,30,0.14);border:1px solid rgba(147,110,30,0.3);color:#7a5a18;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.8px;padding:1px 5px;border-radius:9px;cursor:pointer;font-weight:700;text-transform:uppercase;}
 .ct-cond:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
-.ct-cond-add{background:transparent;border:1px dashed var(--border-strong);color:var(--text-dimmer);font-family:'Cinzel',serif;font-size:11px;padding:0px 7px;border-radius:9px;cursor:pointer;font-weight:700;line-height:1.4;height:18px;}
-.ct-cond-add:hover{border-color:var(--gold);color:var(--gold);}
+.ct-cond-add{background:transparent;border:1px dashed var(--border-strong);color:var(--text-dim);font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.8px;padding:1px 7px;border-radius:9px;cursor:pointer;font-weight:700;text-transform:uppercase;line-height:1.6;height:18px;}
+.ct-cond-add:hover{border-color:var(--gold);color:var(--gold);background:rgba(147,110,30,0.06);}
 .ct-act-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);width:22px;height:22px;border-radius:3px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ct-act-btn:hover{border-color:var(--gold);color:var(--gold);}
 .ct-act-btn.on{background:rgba(168,35,24,0.12);border-color:var(--crimson);color:var(--crimson);}
@@ -550,18 +550,12 @@ body{
 
 .session-read-pane{flex:1;overflow-y:auto;padding:28px 36px 40px;min-width:0;}
 .session-content-inner{
-  max-width:1180px;margin:0 auto;
-  display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:30px;align-items:start;
+  max-width:920px;margin:0 auto;
 }
 .session-content-main{min-width:0;}
-.session-content-side{
-  position:sticky;top:0;align-self:start;
-  display:flex;flex-direction:column;gap:14px;
-  max-height:calc(100vh - 200px);overflow-y:auto;
-  padding-right:4px;
-}
+/* legacy: session-content-side wurde entfernt — Read-Pane ist jetzt full-width */
 .session-content-inner > .session-content-main > .combat-overview{
-  margin-left:calc(-1 * 36px);margin-right:calc(-1 * (260px + 30px + 36px));max-width:none;
+  margin-left:calc(-1 * 36px);margin-right:calc(-1 * 36px);max-width:none;
 }
 
 /* ══════ SIDE-COLUMN WIDGETS · Pyram-King Margin-Boxes ══════ */
@@ -1851,8 +1845,9 @@ body.gate-open{overflow:hidden;}
           <div class="prep-head-meta" id="prepMeta" contenteditable="true" onblur="updateLocField('meta', this.innerText)"></div>
         </div>
         <div class="prep-head-actions">
-          <button class="btn-top" onclick="markLocStatus('done')">✓ Abgeschlossen</button>
-          <button class="btn-top" onclick="markLocStatus('active')">● Aktuell</button>
+          <button class="btn-top" onclick="markLocStatus('active')" title="Diesen Ort in der Tree-Navigation als 'aktuell' markieren — gold-pulsierender Punkt zeigt wo die Party gerade ist">● Als aktueller Ort</button>
+          <button class="btn-top" onclick="markLocStatus('done')" title="Ort als abgeschlossen markieren — Tree-Punkt wird grau, sodass du auf einen Blick siehst was schon durch ist">✓ Als abgehakt</button>
+          <button class="btn-top" onclick="markLocStatus('pending')" title="Status zurücksetzen — Ort ist wieder offen / steht noch an">↺ Zurücksetzen</button>
         </div>
       </div>
 
@@ -4315,6 +4310,10 @@ function setSessionMode(mode) {
   applySessionMode();
   // Re-render damit statblocks/sections korrekt expanded/hidden sind je nach mode
   if (typeof renderSessionLocation === 'function') renderSessionLocation();
+  // Wenn User auf Kampf wechselt aber noch keine Initiative aktiv → Setup-Modal öffnen
+  if (mode === 'combat' && !state.initiative?.length && typeof rollInitiative === 'function') {
+    setTimeout(() => rollInitiative(), 200);
+  }
   // Auto-scroll to top when mode changes (fresh focus)
   const pane = document.getElementById('sessReadPane');
   if (pane) pane.scrollTop = 0;
@@ -4579,9 +4578,6 @@ function renderSessionLocation() {
         </div>
       </div>` : ''}
     </div>
-    <aside class="session-content-side">
-      ${renderSideWidgets(loc, relevantNpcs)}
-    </aside>
   </div>`;
 
   renderSessSceneImage();
@@ -5198,11 +5194,10 @@ function renderInitiative() {
               <button class="ct-act-btn ${isDown ? 'on' : ''}" onclick="toggleDown(${i})" title="Bewusstlos togglen">${isDown ? '💀' : '◐'}</button>
               <button class="ct-act-btn" onclick="setActiveTurn(${i})" title="Auf diesen setzen">▸</button>
             </div>
-            ${conditions.length || true ? `
-              <div class="ct-conditions" onclick="event.stopPropagation()">
-                ${conditions.map(cn => `<span class="ct-cond" onclick="removeCondition(${i}, '${escapeAttr(cn)}')" title="Klick = entfernen">${escapeHtml(cn)} ×</span>`).join('')}
-                <button class="ct-cond-add" onclick="openConditionPicker(${i})" title="Zustand hinzufügen">+</button>
-              </div>` : ''}
+            <div class="ct-conditions" onclick="event.stopPropagation()">
+              ${conditions.map(cn => `<span class="ct-cond" onclick="removeCondition(${i}, '${escapeAttr(cn)}')" title="Klick = Zustand entfernen">${escapeHtml(cn)} ×</span>`).join('')}
+              <button class="ct-cond-add" onclick="openConditionPicker(${i})" title="Zustand hinzufügen — z.B. Stunned, Prone, Blinded">+ Zustand</button>
+            </div>
           </div>
         `;
       }).join('')}
@@ -6882,6 +6877,27 @@ function renderChat(host) {
   const scroll = panel.querySelector('.chat-scroll');
   const t = chatThread(host);
   if (!t.messages.length) {
+    // Dynamische Beispielfragen aus aktueller Kampagne (statt hardcoded Curse-of-Strahd)
+    const c = campaign();
+    const pcs = state.characters.filter(ch => ch.type === 'pc');
+    const npcs = state.characters.filter(ch => ch.type === 'npc');
+    const sessions = c.sessions || [];
+    const samplePc = pcs[Math.floor(Math.random() * pcs.length)];
+    const sampleNpc = npcs[Math.floor(Math.random() * npcs.length)];
+    const lastSession = sessions[sessions.length - 1];
+
+    const examples = [];
+    if (lastSession) examples.push(`„Was passierte in Session ${lastSession.number} nochmal?"`);
+    if (sampleNpc) examples.push(`„Welche Reaktion passt zu ${sampleNpc.name.split(' ')[0]} in dieser Situation?"`);
+    if (samplePc) examples.push(`„Was würde ${samplePc.name.split(' ')[0]} hier denken?"`);
+    examples.push('„Wie funktioniert Paralyzed nochmal genau?"');
+    examples.push('„Was sind plausible Konsequenzen wenn die Party X tut?"');
+    if (!pcs.length && !npcs.length) {
+      // Wirklich leerer State — keine Charaktere
+      examples.length = 0;
+      examples.push('„Generier mir 3 NPCs für eine Hafenstadt"', '„Wie strukturiere ich einen Dungeon-Crawl?"', '„Was sind Tipps für ersten DM-Auftritt?"');
+    }
+
     scroll.innerHTML = host === 'prep'
       ? `<div class="chat-empty">
           <strong>CO-DM · VORBEREITUNG</strong>
@@ -6889,13 +6905,9 @@ function renderChat(host) {
         </div>`
       : `<div class="chat-empty">
           <strong>CO-DM · LIVE SESSION</strong>
-          Ich kenne die komplette Kampagne — Party-Stats, alle Session-Recaps, NPCs, Lore.<br><br>
+          ${pcs.length || npcs.length || sessions.length ? 'Ich kenne deine Kampagne — Party, Sessions, NPCs, Locations.' : 'Frag mich zu D&D-Regeln, Story-Generation, NPC-Ideen.'}<br><br>
           <strong style="display:block;margin-bottom:6px;">Frag mich zum Beispiel:</strong>
-          <span style="font-style:italic;color:var(--text);">„Was wissen wir über Strahds Bruder Sergei?"<br>
-          „Was passierte in Session 11 nochmal?"<br>
-          „Welche Reaktion passt zu Rahadin wenn Gattok ihn beleidigt?"<br>
-          „Wie funktioniert Paralyzed nochmal genau?"<br>
-          „Was würde Larrymäus' Kleriker-Training hier sagen?"</span>
+          <span style="font-style:italic;color:var(--text);">${examples.slice(0, 4).map(q => q).join('<br>')}</span>
         </div>`;
     return;
   }
@@ -9038,6 +9050,41 @@ async function extractPdfText(file) {
   return fullText.trim();
 }
 
+// Robust JSON-Parser für KI-Output — fixt typische Probleme wie:
+// - Trailing commas vor ] oder }
+// - Abgeschnittene Output (versucht ein partial-parse durch Truncation)
+// - Smart-Quotes ("" statt "")
+function parseAiJsonRobust(raw) {
+  if (!raw) return null;
+  // Try 1: direkt parsen
+  try { return JSON.parse(raw); } catch (e) { /* fall through */ }
+  // Try 2: smart-quotes normalisieren + trailing commas entfernen
+  let cleaned = raw
+    .replace(/[""]/g, '"')
+    .replace(/['']/g, "'")
+    .replace(/,(\s*[\]}])/g, '$1');  // trailing comma fix
+  try { return JSON.parse(cleaned); } catch (e) { console.warn('[parseAiJsonRobust] try-2 failed:', e.message); }
+  // Try 3: bei Truncation — letztes komplettes Objekt im locations-array suchen, danach abschneiden
+  // Sucht den letzten validen Punkt — typisch nach "}," in einem Array
+  const lastValidEnd = cleaned.lastIndexOf('},');
+  if (lastValidEnd > 0) {
+    // Trim alles nach diesem Punkt + close arrays/braces
+    let attempt = cleaned.slice(0, lastValidEnd + 1);  // bis zum '}'
+    // Zähle offene { und [ vs. } und ]
+    const opens = (attempt.match(/[{[]/g) || []).length;
+    const closes = (attempt.match(/[}\]]/g) || []).length;
+    const missing = opens - closes;
+    if (missing > 0) {
+      // Append closing brackets — preferiere ] vor } (locations array first)
+      attempt += '\n  ]\n}'.slice(0, missing * 2);
+    }
+    try { return JSON.parse(attempt); } catch (e) { console.warn('[parseAiJsonRobust] try-3 failed:', e.message); }
+  }
+  // Try 4: Komplettausfall — log raw
+  console.error('[parseAiJsonRobust] All attempts failed. Raw:', raw.slice(0, 500));
+  return null;
+}
+
 async function processWithAI() {
   const stepArea = document.getElementById('importerStepArea');
   const status = document.getElementById('importerFootStatus');
@@ -9067,6 +9114,7 @@ Wenn der Text NICHTS Verwertbares enthält: { "locations": [], "npcs": [], "note
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         campaign: { ...campaign(), characters: [] },  // Kontext minimieren — Importer braucht keine bestehenden Daten
+        max_tokens: 8000,  // mehr Tokens damit JSON nicht abgeschnitten wird
         messages: [{ role: 'user', content: sysPrompt + '\n\nROH-TEXT:\n' + _importedRawText }]
       })
     });
@@ -9081,7 +9129,8 @@ Wenn der Text NICHTS Verwertbares enthält: { "locations": [], "npcs": [], "note
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('KI lieferte kein gültiges JSON. Raw: ' + text.slice(0, 200));
-    _importerSuggestions = JSON.parse(jsonMatch[0]);
+    _importerSuggestions = parseAiJsonRobust(jsonMatch[0]);
+    if (!_importerSuggestions) throw new Error('JSON konnte nicht geparsed werden — Datei evtl. zu groß. Versuch eine kleinere Auswahl oder splitte das Material.');
 
     renderImporterStep3();
   } catch (err) {
