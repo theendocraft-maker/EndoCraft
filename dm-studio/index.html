@@ -406,60 +406,93 @@ body{
 .ct-h-btn:hover{border-color:var(--crimson);color:var(--crimson);}
 .ct-h-btn-end:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
 .ct-h-btn-rerole:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
-.ct-body{padding:8px 14px 14px;display:flex;flex-direction:column;gap:6px;max-height:48vh;overflow-y:auto;}
-.ct-row{
-  display:flex;align-items:center;gap:12px;
-  background:#fff;border:2px solid transparent;border-left:4px solid var(--border-strong);
-  border-radius:8px;padding:8px 10px;
-  transition:all .15s;cursor:pointer;
-  position:relative;
+.ct-grid{padding:10px 14px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;max-height:48vh;overflow-y:auto;}
+.ct-card{
+  background:#fff;border:1.5px solid var(--border-strong);
+  border-radius:9px;padding:8px 10px;
+  display:flex;flex-direction:column;gap:6px;
+  transition:all .15s;position:relative;
+  border-left:3px solid var(--border-strong);
 }
-.ct-row:hover{border-color:rgba(147,110,30,0.4);transform:translateX(2px);}
-.ct-row.pc{border-left-color:#1e6fd9;}
-.ct-row.npc{border-left-color:var(--crimson);}
-.ct-row.active{border-color:var(--gold);background:linear-gradient(to right,#fffbe8,#fff);box-shadow:0 4px 16px rgba(147,110,30,0.25);transform:translateX(4px);}
-.ct-row.down{opacity:.55;background:#f5f5f5;}
-.ct-row.down .ct-name{text-decoration:line-through;}
-.ct-init-num{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--ink);min-width:36px;text-align:center;flex-shrink:0;}
-.ct-row.active .ct-init-num{color:var(--gold);}
-.ct-portrait{width:48px;height:48px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;border:2px solid var(--border-strong);position:relative;display:flex;align-items:center;justify-content:center;}
-.ct-row.active .ct-portrait{border-color:var(--gold);}
+.ct-card:hover{border-color:rgba(147,110,30,0.5);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+.ct-card.pc{border-left-color:#1e6fd9;}
+.ct-card.npc{border-left-color:var(--crimson);}
+.ct-card.active{border-color:var(--gold);background:linear-gradient(135deg,#fffbe8,#fff);box-shadow:0 6px 18px rgba(147,110,30,0.25);}
+.ct-card.down{opacity:.55;background:#f5f5f5;}
+.ct-card.down .ct-name{text-decoration:line-through;}
+.ct-card-head{display:flex;align-items:center;gap:9px;cursor:pointer;}
+.ct-portrait{width:38px;height:38px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;border:2px solid var(--border-strong);position:relative;display:flex;align-items:center;justify-content:center;}
+.ct-card.active .ct-portrait{border-color:var(--gold);}
 .ct-portrait img{width:100%;height:100%;object-fit:cover;}
-.ct-initials{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--text-dim);}
+.ct-initials{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--text-dim);}
 .ct-active-pulse{position:absolute;inset:-3px;border:2px solid var(--gold);border-radius:50%;animation:ctActivePulse 1.6s ease-in-out infinite;}
-@keyframes ctActivePulse{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
-.ct-info{flex:1;min-width:0;}
-.ct-name-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.ct-name{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.02em;}
-.ct-tag{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1.5px;padding:2px 5px;border-radius:3px;font-weight:700;}
+@keyframes ctActivePulse{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.1);}}
+.ct-init-badge{position:absolute;bottom:-3px;right:-5px;background:var(--ink);color:#fff;font-family:'Cinzel',serif;font-size:9.5px;font-weight:700;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff;}
+.ct-card.active .ct-init-badge{background:var(--gold);}
+.ct-card-info{flex:1;min-width:0;}
+.ct-name{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.02em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ct-name-rest{font-weight:400;color:var(--text-dim);font-size:11px;}
+.ct-hp-line{display:flex;align-items:center;gap:6px;margin-top:2px;}
+.ct-hp-num{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-dim);}
+.ct-hp-num strong{color:var(--ink);font-size:13px;font-weight:700;}
+.ct-tag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;padding:1px 4px;border-radius:2px;font-weight:700;}
 .ct-tag.pc{background:rgba(30,111,217,0.12);color:#1e6fd9;}
 .ct-tag.npc{background:rgba(168,35,24,0.1);color:var(--crimson);}
-.ct-hp-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.ct-hp-bar{flex:1;height:8px;background:#e8d8b8;border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.08);min-width:80px;max-width:160px;}
+.ct-hp-bar{height:6px;background:#e8d8b8;border-radius:3px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);}
 .ct-hp-fill{height:100%;transition:width .25s,background .25s;}
 .ct-hp-fill.high{background:linear-gradient(to right,#3a8d5f,#2d7a4f);}
 .ct-hp-fill.mid{background:linear-gradient(to right,#d9a83a,#c2942a);}
 .ct-hp-fill.low{background:linear-gradient(to right,#d94c2e,#a52f1a);}
-.ct-hp-buttons{display:flex;align-items:center;gap:3px;}
-.ct-hp-btn{background:rgba(168,35,24,0.08);border:1px solid rgba(168,35,24,0.2);color:var(--crimson);font-family:'Cinzel',serif;font-size:10px;font-weight:700;padding:3px 6px;border-radius:3px;cursor:pointer;min-width:26px;}
+.ct-card-controls{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;justify-content:space-between;}
+.ct-hp-btn{background:rgba(168,35,24,0.08);border:1px solid rgba(168,35,24,0.2);color:var(--crimson);font-family:'Cinzel',serif;font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:3px;cursor:pointer;min-width:24px;height:22px;}
 .ct-hp-btn:hover{background:var(--crimson);color:#fff;}
 .ct-hp-btn.plus{background:rgba(39,104,79,0.08);border-color:rgba(39,104,79,0.2);color:var(--forest);}
 .ct-hp-btn.plus:hover{background:var(--forest);color:#fff;}
-.ct-hp-input{width:46px;background:#fff;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);text-align:center;outline:none;padding:3px 4px;border-radius:3px;font-weight:700;}
+.ct-hp-input{width:38px;background:#fff;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);text-align:center;outline:none;padding:2px 3px;border-radius:3px;font-weight:700;height:22px;}
 .ct-hp-input:focus{border-color:var(--crimson);}
-.ct-hp-max{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
-.ct-conditions{display:flex;flex-wrap:wrap;gap:4px;}
-.ct-cond{background:rgba(147,110,30,0.12);border:1px solid rgba(147,110,30,0.28);color:#7a5a18;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;padding:2px 7px;border-radius:10px;cursor:pointer;font-weight:700;text-transform:uppercase;}
+.ct-conditions{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-height:18px;}
+.ct-cond{background:rgba(147,110,30,0.14);border:1px solid rgba(147,110,30,0.3);color:#7a5a18;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.8px;padding:1px 5px;border-radius:9px;cursor:pointer;font-weight:700;text-transform:uppercase;}
 .ct-cond:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
-.ct-cond-add{background:transparent;border:1px dashed var(--border-strong);color:var(--text-dim);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;padding:2px 7px;border-radius:10px;cursor:pointer;font-weight:700;text-transform:uppercase;}
+.ct-cond-add{background:transparent;border:1px dashed var(--border-strong);color:var(--text-dimmer);font-family:'Cinzel',serif;font-size:11px;padding:0px 7px;border-radius:9px;cursor:pointer;font-weight:700;line-height:1.4;height:18px;}
 .ct-cond-add:hover{border-color:var(--gold);color:var(--gold);}
-.ct-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
-.ct-act-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);width:30px;height:30px;border-radius:5px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.ct-act-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);width:22px;height:22px;border-radius:3px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ct-act-btn:hover{border-color:var(--gold);color:var(--gold);}
 .ct-act-btn.on{background:rgba(168,35,24,0.12);border-color:var(--crimson);color:var(--crimson);}
 .cond-pick{background:#fff;border:1px solid var(--border);padding:8px 10px;border-radius:6px;cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;font-weight:600;color:var(--text);}
 .cond-pick:hover{border-color:var(--gold);background:#fef6e8;}
 .cond-pick.on{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+
+/* ═══════ INITIATIVE SETUP MODAL · Card-Layout mit Portraits ═══════ */
+.init-setup-grid{display:flex;flex-direction:column;gap:8px;}
+.init-setup-card{
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+  background:#fff;border:1.5px solid var(--border);border-left:4px solid var(--border-strong);
+  border-radius:8px;padding:10px 14px;
+  transition:all .18s;
+}
+.init-setup-card.pc{border-left-color:#1e6fd9;}
+.init-setup-card.npc{border-left-color:var(--crimson);}
+.init-setup-card.included{border-color:var(--gold);background:linear-gradient(to right,#fffbe8,#fff);box-shadow:0 3px 10px rgba(147,110,30,0.12);}
+.init-setup-card.skipped{opacity:.45;background:#f7f5f0;border-style:dashed;}
+.init-setup-card.skipped .isc-portrait{filter:grayscale(85%);}
+.isc-portrait{width:50px;height:50px;border-radius:50%;background:var(--surface-2);overflow:hidden;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.init-setup-card.included .isc-portrait{border-color:var(--gold);}
+.isc-portrait img{width:100%;height:100%;object-fit:cover;}
+.isc-initials{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--text-dim);}
+.isc-info{min-width:0;}
+.isc-name{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.02em;line-height:1.2;}
+.isc-meta{display:flex;align-items:center;gap:8px;margin-top:4px;}
+.isc-tag{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1.5px;padding:2px 6px;border-radius:3px;font-weight:700;}
+.isc-tag.pc{background:rgba(30,111,217,0.12);color:#1e6fd9;}
+.isc-tag.npc{background:rgba(168,35,24,0.1);color:var(--crimson);}
+.isc-dex{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
+.isc-input-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.isc-input{width:80px;padding:9px 10px;border:1.5px solid var(--border-strong);border-radius:6px;background:#fdf9ec;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--ink);text-align:center;outline:none;transition:all .15s;}
+.isc-input:focus{border-color:var(--crimson);background:#fff;box-shadow:0 0 0 3px rgba(168,35,24,0.1);}
+.init-setup-card.included .isc-input{border-color:var(--gold);background:#fff;}
+.isc-hint{font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--text-dimmer);}
+.init-setup-card.included .isc-hint{color:var(--gold);}
+.init-setup-card.skipped .isc-hint{color:var(--text-dim);}
 
 .session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
 
@@ -756,6 +789,10 @@ body{
 .music-url-badge{display:inline-block;background:rgba(168,35,24,0.15);color:var(--crimson);padding:1px 6px;border-radius:3px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;font-weight:700;margin-left:4px;}
 .session-rt-chat-head{padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
 .session-rt-chat-head strong{color:var(--accent);font-weight:700;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;}
+.prep-chat-head{padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.prep-chat-head strong{color:var(--accent);font-weight:700;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;}
+.chat-clear-btn{background:transparent;border:1px solid var(--border);color:var(--text-dimmer);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:13px;margin-left:auto;transition:all .12s;}
+.chat-clear-btn:hover{border-color:var(--crimson);color:var(--crimson);background:rgba(168,35,24,0.06);}
 .music-item{padding:6px 10px;display:flex;gap:9px;align-items:center;cursor:pointer;border-radius:6px;transition:background .1s;}
 .music-item:hover{background:var(--surface);}
 .music-disc{width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
@@ -1243,11 +1280,46 @@ body{
 .session-mode-btn .ico{font-size:13px;}
 
 /* Layout shifts per mode — hide/prominent different content */
-.mode-combat .session-read-aloud{font-size:16px;padding:14px 20px;margin-bottom:10px;opacity:.75;}
-.mode-combat .session-quickgrid{display:none;}
+/* ═══════ SESSION-MODI · echte Layout-Logik ═══════
+   scene  = alles sichtbar (default)
+   combat = Statblöcke der Combatants groß, Read-Aloud klein, Szenarien/Dialoge versteckt (lenken ab)
+   social = Dialoge groß, NPCs prominent, Combat-Sections versteckt
+*/
+/* SCENE — default, alles wie es ist */
+
+/* COMBAT MODE */
+.mode-combat .mod-readaloud{font-size:13px;padding:10px 14px;opacity:.65;}
+.mode-combat .mod-readaloud .mod-readaloud-body{font-size:14px;line-height:1.5;}
+.mode-combat .mod-readaloud-body p:nth-child(n+2){display:none;}  /* nur erster Absatz */
 .mode-combat .recap-block{display:none;}
+.mode-combat [data-mod-section="scenarios"]{display:none;}
+.mode-combat [data-mod-section="dialogs"]{display:none;}
+.mode-combat [data-mod-section="combat-stats"]{
+  border:2px solid var(--crimson);
+  background:linear-gradient(to bottom,#fff,#fef2e4);
+  box-shadow:0 4px 18px rgba(168,35,24,0.15);
+}
+.mode-combat [data-mod-section="combat-stats"] .mod-section-head{
+  background:linear-gradient(to bottom,var(--crimson),#7a1810);color:#fdf6e8;
+}
+.mode-combat [data-mod-section="combat-stats"] .mod-section-title{color:#fdf6e8;}
+
+/* SOCIAL MODE */
+.mode-social [data-mod-section="combat-stats"]{display:none;}
+.mode-social [data-mod-section="scenarios"]{display:none;}
 .mode-social .combat-overview{display:none;}
-.mode-social .session-quickgrid .sq-card:first-child{display:none;}
+.mode-social [data-mod-section="dialogs"]{
+  border:2px solid #1e6fd9;
+  background:linear-gradient(to bottom,#fff,#e8f1fc);
+  box-shadow:0 4px 14px rgba(30,111,217,0.12);
+}
+.mode-social [data-mod-section="dialogs"] .mod-section-head{
+  background:linear-gradient(to bottom,#1e6fd9,#1554a8);color:#fff;
+}
+.mode-social [data-mod-section="dialogs"] .mod-section-title{color:#fff;}
+.mode-social .mod-readaloud{font-size:14px;padding:11px 16px;}
+
+/* SCENE MODE */
 .mode-scene .combat-overview{display:none;}
 
 /* ═══════ QUICK NOTES BAR ═══════ */
@@ -1757,6 +1829,10 @@ body.gate-open{overflow:hidden;}
           </div>
         </div>
         <div class="prep-right-pane" data-rt="chat">
+          <div class="prep-chat-head">
+            <strong>Co-DM</strong> · Vorbereitung
+            <button class="chat-clear-btn" onclick="clearChat('prep')" title="Chat-Verlauf leeren">🗑️</button>
+          </div>
           <div class="chat-panel" data-chat-host="prep">
             <div class="chat-scroll"></div>
             <div class="chat-input-wrap">
@@ -1838,7 +1914,8 @@ body.gate-open{overflow:hidden;}
           <div class="session-rt-pane active" data-srt="chat">
             <div class="session-rt-chat-head">
               <strong>Co-DM</strong> · Frag nach Lore, Regeln, Konsequenzen
-              <span class="kbd-hint" style="margin-left:auto;">C</span>
+              <button class="chat-clear-btn" onclick="clearChat('session')" title="Chat-Verlauf leeren">🗑️</button>
+              <span class="kbd-hint">C</span>
             </div>
             <div class="chat-panel" data-chat-host="session">
               <div class="chat-scroll"></div>
@@ -4183,6 +4260,8 @@ function setSessionMode(mode) {
   state.sessionMode = mode; saveState();
   document.querySelectorAll('.session-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   applySessionMode();
+  // Re-render damit statblocks/sections korrekt expanded/hidden sind je nach mode
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
   // Auto-scroll to top when mode changes (fresh focus)
   const pane = document.getElementById('sessReadPane');
   if (pane) pane.scrollTop = 0;
@@ -4371,7 +4450,7 @@ function renderSessionLocation() {
 
     <!-- SCENARIOS — Default open, farbkodiert -->
     ${(loc.scenarios || []).length ? `
-      <div class="mod-section ${cls('scenarios')}">
+      <div class="mod-section ${cls('scenarios')}" data-mod-section="scenarios">
         <div class="mod-section-head" onclick="toggleSessionSection('scenarios', this)">
           <span class="mod-section-icon">⚔️</span>
           <span class="mod-section-title">Was kann passieren</span>
@@ -4392,7 +4471,7 @@ function renderSessionLocation() {
 
     <!-- DIALOGUES — Default open -->
     ${(loc.dialogs || []).length ? `
-      <div class="mod-section ${cls('dialogs')}">
+      <div class="mod-section ${cls('dialogs')}" data-mod-section="dialogs">
         <div class="mod-section-head" onclick="toggleSessionSection('dialogs', this)">
           <span class="mod-section-icon">💬</span>
           <span class="mod-section-title">NPC-Dialoge</span>
@@ -4408,12 +4487,12 @@ function renderSessionLocation() {
         </div>
       </div>` : ''}
 
-    <!-- RELATED STATBLOCKS — Default COLLAPSED (progressive disclosure) -->
-    ${!state.initiative.length && relevantNpcs.length ? `
-      <div class="mod-section ${collapsed.statblocks === undefined ? 'collapsed' : cls('statblocks')}">
+    <!-- RELATED STATBLOCKS — Default COLLAPSED (in scene/social) — auto-EXPAND in combat-mode -->
+    ${relevantNpcs.length ? `
+      <div class="mod-section ${state.sessionMode === 'combat' ? '' : (collapsed.statblocks === undefined ? 'collapsed' : cls('statblocks'))}" data-mod-section="combat-stats">
         <div class="mod-section-head" onclick="toggleSessionSection('statblocks', this)">
           <span class="mod-section-icon">🗡️</span>
-          <span class="mod-section-title">Statblöcke · Referenz</span>
+          <span class="mod-section-title">${state.sessionMode === 'combat' ? 'Combatant-Statblöcke' : 'Statblöcke · Referenz'}</span>
           <span class="mod-section-count">${relevantNpcs.length}</span>
           <span class="mod-section-chev">▾</span>
         </div>
@@ -5030,7 +5109,7 @@ function renderInitiative() {
       </div>
     </div>
 
-    <div class="ct-body">
+    <div class="ct-grid">
       ${state.initiative.map((e, i) => {
         const c = state.characters.find(x => x.id === e.id);
         if (!c) return '';
@@ -5043,39 +5122,37 @@ function renderInitiative() {
         const isActive = !!e.turn;
         const isDown = !!e.down;
         return `
-          <div class="ct-row ${isActive ? 'active' : ''} ${isDown ? 'down' : ''} ${isPC ? 'pc' : 'npc'}"
-               data-init-idx="${i}"
-               onclick="openInitCharSheet('${c.id}')">
-            <div class="ct-init-num">${e.init || '–'}</div>
-            <div class="ct-portrait">
-              ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span class="ct-initials">${initials}</span>`}
-              ${isActive ? '<div class="ct-active-pulse"></div>' : ''}
-            </div>
-            <div class="ct-info">
-              <div class="ct-name-row">
-                <span class="ct-name">${escapeHtml(c.name)}</span>
-                <span class="ct-tag ${isPC ? 'pc' : 'npc'}">${isPC ? 'PC' : 'NPC'}</span>
+          <div class="ct-card ${isActive ? 'active' : ''} ${isDown ? 'down' : ''} ${isPC ? 'pc' : 'npc'}"
+               data-init-idx="${i}">
+            <div class="ct-card-head" onclick="openInitCharSheet('${c.id}')">
+              <div class="ct-portrait">
+                ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span class="ct-initials">${initials}</span>`}
+                ${isActive ? '<div class="ct-active-pulse"></div>' : ''}
+                <span class="ct-init-badge">${e.init ?? '–'}</span>
               </div>
-              <div class="ct-hp-row">
-                <div class="ct-hp-bar"><div class="ct-hp-fill ${hpColor}" style="width:${hpPercent}%;"></div></div>
-                <div class="ct-hp-buttons" onclick="event.stopPropagation()">
-                  <button class="ct-hp-btn" onclick="adjustInitHP(${i}, -5)" title="−5">−5</button>
-                  <button class="ct-hp-btn" onclick="adjustInitHP(${i}, -1)" title="−1">−1</button>
-                  <input class="ct-hp-input" type="number" value="${e.hp}" onblur="updateInitHP(${i}, this.value)" onclick="event.stopPropagation()" title="HP">
-                  <span class="ct-hp-max">/ ${maxHp}</span>
-                  <button class="ct-hp-btn plus" onclick="adjustInitHP(${i}, 1)" title="+1">+1</button>
-                  <button class="ct-hp-btn plus" onclick="adjustInitHP(${i}, 5)" title="+5">+5</button>
+              <div class="ct-card-info">
+                <div class="ct-name">${escapeHtml(c.name.split(' ')[0])}${c.name.includes(' ') ? '<span class="ct-name-rest">&nbsp;' + escapeHtml(c.name.substring(c.name.indexOf(' ') + 1)) + '</span>' : ''}</div>
+                <div class="ct-hp-line">
+                  <span class="ct-hp-num"><strong>${e.hp}</strong>/${maxHp}</span>
+                  ${isPC ? '<span class="ct-tag pc">PC</span>' : '<span class="ct-tag npc">NPC</span>'}
                 </div>
               </div>
-              <div class="ct-conditions" onclick="event.stopPropagation()">
-                ${conditions.map(cn => `<span class="ct-cond" onclick="removeCondition(${i}, '${escapeAttr(cn)}')" title="Klick = entfernen">${escapeHtml(cn)} ×</span>`).join('')}
-                <button class="ct-cond-add" onclick="openConditionPicker(${i})" title="Zustand hinzufügen">+ Zustand</button>
-              </div>
             </div>
-            <div class="ct-actions" onclick="event.stopPropagation()">
+            <div class="ct-hp-bar"><div class="ct-hp-fill ${hpColor}" style="width:${hpPercent}%;"></div></div>
+            <div class="ct-card-controls" onclick="event.stopPropagation()">
+              <button class="ct-hp-btn" onclick="adjustInitHP(${i}, -5)" title="−5">−5</button>
+              <button class="ct-hp-btn" onclick="adjustInitHP(${i}, -1)" title="−1">−1</button>
+              <input class="ct-hp-input" type="number" value="${e.hp}" onblur="updateInitHP(${i}, this.value)" title="HP">
+              <button class="ct-hp-btn plus" onclick="adjustInitHP(${i}, 1)" title="+1">+1</button>
+              <button class="ct-hp-btn plus" onclick="adjustInitHP(${i}, 5)" title="+5">+5</button>
               <button class="ct-act-btn ${isDown ? 'on' : ''}" onclick="toggleDown(${i})" title="Bewusstlos togglen">${isDown ? '💀' : '◐'}</button>
               <button class="ct-act-btn" onclick="setActiveTurn(${i})" title="Auf diesen setzen">▸</button>
             </div>
+            ${conditions.length || true ? `
+              <div class="ct-conditions" onclick="event.stopPropagation()">
+                ${conditions.map(cn => `<span class="ct-cond" onclick="removeCondition(${i}, '${escapeAttr(cn)}')" title="Klick = entfernen">${escapeHtml(cn)} ×</span>`).join('')}
+                <button class="ct-cond-add" onclick="openConditionPicker(${i})" title="Zustand hinzufügen">+</button>
+              </div>` : ''}
           </div>
         `;
       }).join('')}
@@ -5196,46 +5273,50 @@ function rollInitiative() {
   modal.className = 'srd-modal init-modal';
   modal.innerHTML = `
     <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
-    <div class="srd-modal-inner" style="max-width:640px;">
+    <div class="srd-modal-inner" style="max-width:680px;max-height:90vh;display:flex;flex-direction:column;">
       <div class="srd-modal-h">
         <div>
           <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;">Kampf-Setup</div>
-          <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--ink);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Initiative eintragen</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink);margin-top:4px;letter-spacing:-.01em;">Wer kämpft mit?</div>
         </div>
         <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
       </div>
-      <div style="padding:14px 22px;font-size:13px;color:var(--text-dim);line-height:1.55;">
-        Am Tisch würfeln — Werte hier eintragen. Tab-Taste springt zum nächsten Feld. Bonus aus DEX-Mod wird als Platzhalter angezeigt.
+      <div style="padding:8px 22px 4px;font-size:12.5px;color:var(--text-dim);line-height:1.55;font-style:italic;">
+        Am Tisch würfeln — Initiative-Wert eintragen. <strong style="color:var(--ink);font-style:normal;">Leeres Feld = Charakter kämpft NICHT mit</strong> (z.B. Spieler abwesend, NPC nicht in der Szene).
       </div>
-      <div style="flex:1;overflow-y:auto;padding:4px 22px 18px;">
-        <table style="width:100%;border-collapse:collapse;">
-          <thead>
-            <tr style="border-bottom:2px solid var(--crimson);">
-              <th style="text-align:left;padding:8px 0;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;">Name</th>
-              <th style="text-align:left;padding:8px 0;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;">Typ</th>
-              <th style="text-align:center;padding:8px 0;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;">DEX-Mod</th>
-              <th style="text-align:right;padding:8px 0;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;">Init-Wurf</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${combatants.map((c, i) => {
-              const dexMod = c.stats?.dex ? Math.floor((c.stats.dex - 10) / 2) : 0;
-              return `
-                <tr style="border-bottom:1px dotted var(--border);">
-                  <td style="padding:10px 0;font-weight:600;color:var(--ink);">${escapeHtml(c.name)}</td>
-                  <td style="padding:10px 0;font-size:12px;color:${c.type === 'pc' ? 'var(--accent)' : 'var(--crimson)'};font-family:'Cinzel',serif;letter-spacing:1.5px;font-weight:700;">${c.type === 'pc' ? 'PC' : 'NPC'}</td>
-                  <td style="padding:10px 0;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--text-dim);">${dexMod >= 0 ? '+' : ''}${dexMod}</td>
-                  <td style="padding:10px 0;text-align:right;">
-                    <input id="init-input-${i}" type="number" data-char-id="${c.id}" placeholder="${10 + dexMod}" style="width:80px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:5px;background:#fbf6e6;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--ink);text-align:center;outline:none;" autofocus>
-                  </td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
+      <div style="flex:1;overflow-y:auto;padding:14px 22px 18px;">
+        <div class="init-setup-grid">
+          ${combatants.map((c, i) => {
+            const dexMod = c.stats?.dex ? Math.floor((c.stats.dex - 10) / 2) : 0;
+            const isPC = c.type === 'pc';
+            const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+            return `
+              <div class="init-setup-card ${isPC ? 'pc' : 'npc'}" data-init-card-idx="${i}">
+                <div class="isc-portrait">
+                  ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span class="isc-initials">${initials}</span>`}
+                </div>
+                <div class="isc-info">
+                  <div class="isc-name">${escapeHtml(c.name)}</div>
+                  <div class="isc-meta">
+                    <span class="isc-tag ${isPC ? 'pc' : 'npc'}">${isPC ? 'PC' : 'NPC'}</span>
+                    <span class="isc-dex">DEX ${dexMod >= 0 ? '+' : ''}${dexMod}</span>
+                  </div>
+                </div>
+                <div class="isc-input-wrap">
+                  <input id="init-input-${i}" type="number" data-char-id="${c.id}"
+                    placeholder="${10 + dexMod}"
+                    class="isc-input"
+                    oninput="updateInitSetupCard(${i})"
+                    onkeydown="if(event.key==='Enter')submitManualInitiative()">
+                  <span class="isc-hint" id="isc-hint-${i}">übersprungen</span>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
       <div class="srd-modal-foot" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-        <span style="font-size:11px;color:var(--text-dim);">Leere Felder = nicht in Initiative (skippen)</span>
+        <span style="font-size:11px;color:var(--text-dim);" id="iscSummary">0 Kombattanten · ${combatants.length} ausgegraut</span>
         <div style="display:flex;gap:8px;">
           <button class="btn-top" onclick="this.closest('.srd-modal').remove()">Abbrechen</button>
           <button class="btn-top primary" style="background:var(--crimson);border-color:var(--crimson);" onclick="submitManualInitiative()">⚔️ Kampf starten</button>
@@ -5245,6 +5326,27 @@ function rollInitiative() {
   `;
   document.body.appendChild(modal);
   setTimeout(() => document.getElementById('init-input-0')?.focus(), 50);
+  updateInitSetupSummary();
+}
+
+// Live-Feedback: Card sieht aktiv/grau aus je nach Eingabe
+function updateInitSetupCard(i) {
+  const input = document.getElementById('init-input-' + i);
+  const card = document.querySelector(`[data-init-card-idx="${i}"]`);
+  const hint = document.getElementById('isc-hint-' + i);
+  if (!input || !card) return;
+  const hasValue = input.value.trim() !== '';
+  card.classList.toggle('skipped', !hasValue);
+  card.classList.toggle('included', hasValue);
+  if (hint) hint.textContent = hasValue ? `Init ${input.value}` : 'übersprungen';
+  updateInitSetupSummary();
+}
+function updateInitSetupSummary() {
+  const cards = document.querySelectorAll('[data-init-card-idx]');
+  const included = Array.from(cards).filter(c => c.classList.contains('included')).length;
+  const skipped = cards.length - included;
+  const summary = document.getElementById('iscSummary');
+  if (summary) summary.innerHTML = `<strong style="color:var(--crimson);">${included}</strong> Kombattant${included === 1 ? '' : 'en'} · ${skipped} ausgegraut`;
 }
 
 function submitManualInitiative() {
@@ -6608,6 +6710,15 @@ document.querySelectorAll('.chat-panel').forEach(panel => {
   btn.addEventListener('click', () => sendChatFrom(host));
 });
 
+function clearChat(host) {
+  const t = chatThread(host);
+  if (!t.messages.length) { toast('Chat ist schon leer'); return; }
+  if (!confirm(`Chat-Verlauf für „${host === 'session' ? 'Session' : 'Vorbereitung'}" wirklich löschen?\n\n${t.messages.length} Nachricht${t.messages.length === 1 ? '' : 'en'} werden entfernt. Der Co-DM weiß ab jetzt nur noch was im Kampagnen-Kontext steht.`)) return;
+  state.threads[host] = { messages: [] };
+  saveState();
+  renderChat(host);
+  toast(`✓ Chat geleert`);
+}
 function chatThread(host) {
   if (!state.threads[host]) state.threads[host] = { messages: [] };
   return state.threads[host];
