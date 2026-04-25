@@ -116,10 +116,7 @@ body{
   transition:all .15s;white-space:nowrap;
 }
 .btn-top:hover{background:var(--surface);border-color:var(--gold);}
-.btn-new-session{background:linear-gradient(to bottom,var(--gold),#7a5a18);border-color:var(--gold-br);color:#fff;font-weight:700;}
-.btn-new-session:hover{background:linear-gradient(to bottom,#b48829,var(--gold));border-color:var(--gold-br);color:#fff;}
-.btn-end-session{background:linear-gradient(to bottom,var(--crimson),#7a1810);border-color:#7a1810;color:#fdf6e8;font-weight:700;}
-.btn-end-session:hover{background:linear-gradient(to bottom,#c23428,var(--crimson));border-color:#7a1810;color:#fff;}
+/* note: btn-end-session + btn-new-session styles wurden entfernt — Session-Lifecycle ist jetzt im Dropdown-Menu */
 .btn-top.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
 .btn-top.primary:hover{opacity:.92;}
 
@@ -368,13 +365,101 @@ body{
 .session-strip-loc-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--crimson);margin-bottom:3px;font-weight:700;text-transform:uppercase;}
 .session-strip-loc-name{font-family:'Cinzel',serif;font-size:19px;font-weight:700;color:var(--ink);letter-spacing:.3px;}
 .session-strip-loc-meta{font-size:12.5px;color:var(--text-dim);font-style:italic;font-family:'EB Garamond',serif;}
-.initiative{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.init-chip{background:var(--bg2);border:1px solid var(--border-strong);border-radius:8px;padding:6px 10px;font-size:11px;display:flex;align-items:center;gap:8px;cursor:move;min-width:70px;transition:all .15s;}
-.init-chip.turn{background:var(--accent-dim);border-color:var(--accent);box-shadow:0 0 0 2px rgba(108,93,228,0.2);}
-.init-chip.down{opacity:.4;text-decoration:line-through;}
-.init-chip .name{font-weight:600;flex:1;}
-.init-chip .hp{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);}
-.init-chip input{width:40px;background:transparent;border:none;outline:none;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;}
+.session-actions{display:flex;align-items:center;gap:8px;}
+.btn-next-turn{background:linear-gradient(to bottom,var(--gold),#7a5a18);color:#fff;border-color:var(--gold-br);font-weight:700;display:flex;align-items:center;gap:8px;padding:9px 18px;font-family:'Cinzel',serif;letter-spacing:1.2px;}
+.btn-next-turn:hover{background:linear-gradient(to bottom,#b48829,var(--gold));color:#fff;}
+.btn-next-turn .ico{font-size:13px;}
+.btn-next-turn .kbd-hint{background:rgba(0,0,0,0.18);font-size:10px;padding:2px 5px;border-radius:3px;margin-left:4px;}
+.session-action-menu-wrap{position:relative;}
+.btn-session-menu{display:flex;align-items:center;gap:8px;padding:9px 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;font-weight:700;}
+.btn-session-menu .chev{font-size:10px;color:var(--text-dim);}
+.session-status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dimmer);}
+.session-status-dot.live{background:var(--forest);box-shadow:0 0 8px rgba(39,104,79,0.6);animation:pulseLive 2s ease-in-out infinite;}
+.session-status-dot.combat{background:var(--crimson);box-shadow:0 0 10px rgba(168,35,24,0.7);animation:pulseLive 1s ease-in-out infinite;}
+@keyframes pulseLive{0%,100%{transform:scale(1);}50%{transform:scale(1.3);}}
+.session-action-menu{position:absolute;top:46px;right:0;z-index:200;background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;box-shadow:0 12px 48px rgba(0,0,0,0.28);min-width:320px;max-width:380px;overflow:hidden;}
+.sam-section{padding:6px 6px;border-bottom:1px solid var(--border);}
+.sam-section:last-child{border-bottom:none;}
+.sam-section-h{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-weight:700;padding:8px 10px 6px;}
+.sam-item{display:flex;align-items:center;gap:11px;width:100%;background:transparent;border:none;padding:9px 12px;border-radius:6px;cursor:pointer;text-align:left;color:var(--text);transition:background .12s;}
+.sam-item:hover{background:var(--surface-2);}
+.sam-item.active{background:rgba(147,110,30,0.08);}
+.sam-ico{font-size:18px;flex-shrink:0;width:24px;text-align:center;}
+.sam-name{font-family:'Cinzel',serif;font-size:12.5px;color:var(--ink);font-weight:700;letter-spacing:.02em;}
+.sam-desc{font-size:11px;color:var(--text-dim);margin-top:1px;}
+
+/* ═══════ COMBAT TRACKER PANEL ═══════ */
+.combat-tracker{
+  background:linear-gradient(to bottom,#fef2e4,#fbe4cc);
+  border-bottom:3px solid var(--crimson);
+  flex-shrink:0;
+  box-shadow:inset 0 -3px 12px rgba(168,35,24,0.15),0 4px 18px rgba(0,0,0,0.08);
+  animation:ctSlideIn .3s ease-out;
+}
+@keyframes ctSlideIn{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
+.ct-header{padding:10px 24px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed rgba(168,35,24,0.25);}
+.ct-h-tag{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:3px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.ct-h-meta{font-size:12.5px;color:var(--ink);font-family:'EB Garamond',serif;font-style:italic;margin-top:2px;}
+.ct-h-meta strong{color:var(--crimson);font-style:normal;font-family:'Cinzel',serif;font-size:14px;}
+.ct-h-actions{display:flex;gap:5px;}
+.ct-h-btn{background:#fff;border:1px solid var(--border-strong);color:var(--text);padding:5px 10px;border-radius:5px;font-size:13px;cursor:pointer;font-weight:700;font-family:'Cinzel',serif;}
+.ct-h-btn:hover{border-color:var(--crimson);color:var(--crimson);}
+.ct-h-btn-end:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+.ct-h-btn-rerole:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
+.ct-body{padding:8px 14px 14px;display:flex;flex-direction:column;gap:6px;max-height:48vh;overflow-y:auto;}
+.ct-row{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border:2px solid transparent;border-left:4px solid var(--border-strong);
+  border-radius:8px;padding:8px 10px;
+  transition:all .15s;cursor:pointer;
+  position:relative;
+}
+.ct-row:hover{border-color:rgba(147,110,30,0.4);transform:translateX(2px);}
+.ct-row.pc{border-left-color:#1e6fd9;}
+.ct-row.npc{border-left-color:var(--crimson);}
+.ct-row.active{border-color:var(--gold);background:linear-gradient(to right,#fffbe8,#fff);box-shadow:0 4px 16px rgba(147,110,30,0.25);transform:translateX(4px);}
+.ct-row.down{opacity:.55;background:#f5f5f5;}
+.ct-row.down .ct-name{text-decoration:line-through;}
+.ct-init-num{font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--ink);min-width:36px;text-align:center;flex-shrink:0;}
+.ct-row.active .ct-init-num{color:var(--gold);}
+.ct-portrait{width:48px;height:48px;border-radius:50%;background:var(--surface-2);overflow:hidden;flex-shrink:0;border:2px solid var(--border-strong);position:relative;display:flex;align-items:center;justify-content:center;}
+.ct-row.active .ct-portrait{border-color:var(--gold);}
+.ct-portrait img{width:100%;height:100%;object-fit:cover;}
+.ct-initials{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--text-dim);}
+.ct-active-pulse{position:absolute;inset:-3px;border:2px solid var(--gold);border-radius:50%;animation:ctActivePulse 1.6s ease-in-out infinite;}
+@keyframes ctActivePulse{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
+.ct-info{flex:1;min-width:0;}
+.ct-name-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.ct-name{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.02em;}
+.ct-tag{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1.5px;padding:2px 5px;border-radius:3px;font-weight:700;}
+.ct-tag.pc{background:rgba(30,111,217,0.12);color:#1e6fd9;}
+.ct-tag.npc{background:rgba(168,35,24,0.1);color:var(--crimson);}
+.ct-hp-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.ct-hp-bar{flex:1;height:8px;background:#e8d8b8;border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.08);min-width:80px;max-width:160px;}
+.ct-hp-fill{height:100%;transition:width .25s,background .25s;}
+.ct-hp-fill.high{background:linear-gradient(to right,#3a8d5f,#2d7a4f);}
+.ct-hp-fill.mid{background:linear-gradient(to right,#d9a83a,#c2942a);}
+.ct-hp-fill.low{background:linear-gradient(to right,#d94c2e,#a52f1a);}
+.ct-hp-buttons{display:flex;align-items:center;gap:3px;}
+.ct-hp-btn{background:rgba(168,35,24,0.08);border:1px solid rgba(168,35,24,0.2);color:var(--crimson);font-family:'Cinzel',serif;font-size:10px;font-weight:700;padding:3px 6px;border-radius:3px;cursor:pointer;min-width:26px;}
+.ct-hp-btn:hover{background:var(--crimson);color:#fff;}
+.ct-hp-btn.plus{background:rgba(39,104,79,0.08);border-color:rgba(39,104,79,0.2);color:var(--forest);}
+.ct-hp-btn.plus:hover{background:var(--forest);color:#fff;}
+.ct-hp-input{width:46px;background:#fff;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);text-align:center;outline:none;padding:3px 4px;border-radius:3px;font-weight:700;}
+.ct-hp-input:focus{border-color:var(--crimson);}
+.ct-hp-max{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);}
+.ct-conditions{display:flex;flex-wrap:wrap;gap:4px;}
+.ct-cond{background:rgba(147,110,30,0.12);border:1px solid rgba(147,110,30,0.28);color:#7a5a18;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;padding:2px 7px;border-radius:10px;cursor:pointer;font-weight:700;text-transform:uppercase;}
+.ct-cond:hover{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+.ct-cond-add{background:transparent;border:1px dashed var(--border-strong);color:var(--text-dim);font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;padding:2px 7px;border-radius:10px;cursor:pointer;font-weight:700;text-transform:uppercase;}
+.ct-cond-add:hover{border-color:var(--gold);color:var(--gold);}
+.ct-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
+.ct-act-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);width:30px;height:30px;border-radius:5px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.ct-act-btn:hover{border-color:var(--gold);color:var(--gold);}
+.ct-act-btn.on{background:rgba(168,35,24,0.12);border-color:var(--crimson);color:var(--crimson);}
+.cond-pick{background:#fff;border:1px solid var(--border);padding:8px 10px;border-radius:6px;cursor:pointer;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;font-weight:600;color:var(--text);}
+.cond-pick:hover{border-color:var(--gold);background:#fef6e8;}
+.cond-pick.on{background:var(--crimson);color:#fff;border-color:var(--crimson);}
 
 .session-body{flex:1;display:flex;overflow:hidden;min-height:0;}
 
@@ -1186,6 +1271,34 @@ body{
 }
 .quick-notes-btn:hover{filter:brightness(1.1);}
 
+/* ═══════ QUICK NOTES BAR · überarbeitet ═══════ */
+.quick-notes{padding:12px 26px;background:linear-gradient(to bottom,#fdf9ec,#fbf6e6);border-bottom:1px solid #d9c89a;flex-shrink:0;display:flex;flex-direction:column;gap:8px;}
+.qn-bar{display:flex;align-items:center;gap:10px;}
+.qn-lbl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);font-weight:700;text-transform:uppercase;flex-shrink:0;}
+.qn-input{flex:1;background:#fff;border:1.5px solid #d9c89a;border-radius:8px;padding:10px 14px;font-family:'EB Garamond',Georgia,serif;font-size:14.5px;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;}
+.qn-input:focus{border-color:var(--crimson);box-shadow:0 0 0 3px rgba(168,35,24,0.1);}
+.qn-input::placeholder{color:var(--text-dimmer);font-style:italic;}
+.qn-btn{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:9px 14px;border-radius:6px;cursor:pointer;border:1.5px solid;transition:all .12s;display:flex;align-items:center;gap:6px;}
+.qn-btn.primary{background:var(--crimson);color:#fdf6e8;border-color:var(--crimson);}
+.qn-btn.primary:hover{background:#7a1810;}
+.qn-btn.gold{background:var(--gold);color:#fff;border-color:var(--gold);}
+.qn-btn.gold:hover{background:#7a5a18;}
+.qn-btn.ghost{background:transparent;color:var(--text-dim);border-color:var(--border-strong);}
+.qn-btn.ghost:hover{border-color:var(--gold);color:var(--gold);}
+.qn-count-badge{background:var(--gold);color:#fff;font-size:10px;padding:2px 7px;border-radius:9px;font-weight:700;min-width:18px;text-align:center;font-family:'JetBrains Mono',monospace;}
+.qn-count-badge.empty{background:var(--text-dimmer);}
+.qn-history{background:#fff;border:1px solid #d9c89a;border-radius:8px;padding:10px 14px;max-height:240px;overflow-y:auto;animation:qnHistorySlide .2s ease-out;}
+@keyframes qnHistorySlide{from{opacity:0;max-height:0;}to{opacity:1;max-height:240px;}}
+.qn-h-empty{color:var(--text-dim);font-style:italic;font-size:13px;text-align:center;padding:20px;}
+.qn-h-row{display:flex;gap:10px;padding:6px 0;border-bottom:1px dotted var(--border);font-family:'EB Garamond',serif;font-size:13.5px;line-height:1.5;color:var(--ink);}
+.qn-h-row:last-child{border-bottom:none;}
+.qn-h-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);font-weight:700;flex-shrink:0;min-width:38px;}
+.qn-h-loc{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;text-transform:uppercase;flex-shrink:0;min-width:60px;align-self:center;}
+.qn-h-text{flex:1;}
+.qn-h-actions{display:flex;gap:4px;flex-shrink:0;align-self:flex-start;}
+.qn-h-card-btn{background:transparent;border:1px solid var(--border);color:var(--gold);padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'Cinzel',serif;letter-spacing:1px;font-weight:700;}
+.qn-h-card-btn:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
+
 /* ═══════ HP BAR + ACTIVE COMBATANT GLOW ═══════ */
 .hp-bar-wrap{flex:1;min-width:100px;max-width:160px;height:12px;background:rgba(0,0,0,0.08);border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--border);}
 .hp-bar-fill{height:100%;transition:width .35s ease-out, background .2s;}
@@ -1683,17 +1796,35 @@ body.gate-open{overflow:hidden;}
           <button class="session-mode-btn" data-mode="combat" onclick="setSessionMode('combat')" title="Fokus: Combat-Overview, Initiative"><span class="ico">⚔️</span>Kampf</button>
           <button class="session-mode-btn" data-mode="social" onclick="setSessionMode('social')" title="Fokus: Dialoge + NPCs"><span class="ico">💬</span>Social</button>
         </div>
-        <div class="initiative" id="initiative"></div>
-        <button class="btn-top btn-end-session" onclick="openPostSessionRecap()" title="Session beenden · KI-Recap + Highlights + Karten-Vorschläge">📝 Session beenden</button>
-        <button class="btn-top btn-new-session" onclick="startNewSession()" title="Neue Session beginnen · Recap anlegen + Session-Nummer +1">🎲 Neue Session</button>
-        <button class="btn-top" onclick="nextTurn()" title="Keyboard: Space">▸ Nächster Zug<span class="kbd-hint">Space</span></button>
+        <div class="session-actions">
+          <button class="btn-top btn-next-turn" id="btnNextTurn" onclick="nextTurn()" title="Keyboard: Space" style="display:none;">
+            <span class="ico">▸</span><span>Nächster Zug</span><span class="kbd-hint">Space</span>
+          </button>
+          <div class="session-action-menu-wrap" id="sessionActionMenuWrap">
+            <button class="btn-top btn-session-menu" onclick="toggleSessionActionMenu(event)" title="Session-Aktionen">
+              <span id="sessionStatusDot" class="session-status-dot"></span>
+              <span id="sessionStatusLabel">Session</span>
+              <span class="chev">▾</span>
+            </button>
+            <div class="session-action-menu" id="sessionActionMenu" style="display:none;"></div>
+          </div>
+        </div>
       </div>
+
+      <!-- Combat Tracker Panel · prominent visible only when initiative active -->
+      <div class="combat-tracker" id="combatTracker" style="display:none;"></div>
       <div class="quick-notes">
-        <span class="quick-notes-lbl">Live-Notiz</span>
-        <input class="quick-notes-input" id="quickNotesInput" placeholder="Was gerade passiert... (Enter = speichern, 🃏 = speichern + als Sammelkarte festhalten)" onkeydown="handleQuickNotesKey(event)">
-        <span class="quick-notes-count" id="quickNotesCount"></span>
-        <button class="quick-notes-btn" onclick="addQuickNote()" title="Keyboard: N">Speichern</button>
-        <button class="quick-notes-btn" onclick="saveNoteAsCard()" title="Legendärer Moment → EndoCraft-Karte" style="background:var(--accent);">🃏 Als Karte</button>
+        <div class="qn-bar">
+          <span class="qn-lbl">📝 Live-Log</span>
+          <input class="qn-input" id="quickNotesInput" placeholder="Was passiert gerade... [Enter zum Speichern]" onkeydown="handleQuickNotesKey(event)">
+          <button class="qn-btn primary" onclick="addQuickNote()" title="Speichern · Keyboard: N">+ Notiz</button>
+          <button class="qn-btn gold" onclick="saveNoteAsCard()" title="Als legendären Moment in Karten-Pool">🃏 Als Karte</button>
+          <button class="qn-btn ghost" onclick="toggleQuickNotesHistory()" title="Notizen-Historie ein/ausblenden">
+            <span id="qnCountBadge" class="qn-count-badge">0</span>
+            <span id="qnHistoryChev">▾</span>
+          </button>
+        </div>
+        <div class="qn-history" id="quickNotesHistory" style="display:none;"></div>
       </div>
       <div class="session-body">
         <div class="session-read-pane" id="sessReadPane"></div>
@@ -4066,11 +4197,65 @@ function applySessionMode() {
 
 // ═══════════ QUICK NOTES (Live Session Log) ═══════════
 function updateQuickNotesCount() {
-  const loc = currentLoc();
-  const log = loc?.log || '';
-  const count = (log.match(/\n/g) || []).length + (log ? 1 : 0);
-  const el = document.getElementById('quickNotesCount');
-  if (el) el.textContent = count > 0 ? `${count} Notizen` : '';
+  // Sammle alle Notes aus allen Locations
+  let total = 0;
+  Object.values(campaign().locations || {}).forEach(loc => {
+    if (loc.log) total += loc.log.split('\n').filter(l => l.trim()).length;
+  });
+  const badge = document.getElementById('qnCountBadge');
+  if (badge) {
+    badge.textContent = total;
+    badge.classList.toggle('empty', total === 0);
+  }
+  // Wenn History gerade offen ist, neu rendern
+  const history = document.getElementById('quickNotesHistory');
+  if (history && history.style.display !== 'none') renderQuickNotesHistory();
+}
+
+function toggleQuickNotesHistory() {
+  const history = document.getElementById('quickNotesHistory');
+  const chev = document.getElementById('qnHistoryChev');
+  if (!history) return;
+  const isOpen = history.style.display !== 'none';
+  if (isOpen) { history.style.display = 'none'; if (chev) chev.textContent = '▾'; }
+  else { history.style.display = 'block'; if (chev) chev.textContent = '▴'; renderQuickNotesHistory(); }
+}
+
+function renderQuickNotesHistory() {
+  const host = document.getElementById('quickNotesHistory');
+  if (!host) return;
+  // Sammle alle Notes aus allen Locations (newest last)
+  const allNotes = [];
+  Object.entries(campaign().locations || {}).forEach(([locId, loc]) => {
+    if (!loc.log) return;
+    loc.log.split('\n').filter(l => l.trim()).forEach((line, idx) => {
+      const m = line.match(/^\[(\d{2}:\d{2})\]\s*(.+)$/);
+      const time = m ? m[1] : '';
+      const text = m ? m[2] : line;
+      allNotes.push({ time, text, locName: loc.name, locId, idx });
+    });
+  });
+  if (!allNotes.length) {
+    host.innerHTML = '<div class="qn-h-empty">Noch keine Notizen. Schreib was passiert oben — Enter speichert.</div>';
+    return;
+  }
+  // Reverse so newest first
+  allNotes.reverse();
+  host.innerHTML = allNotes.map(n => `
+    <div class="qn-h-row">
+      <span class="qn-h-time">${escapeHtml(n.time || '·')}</span>
+      <span class="qn-h-loc">${escapeHtml(n.locName.split(' ')[0])}</span>
+      <span class="qn-h-text">${escapeHtml(n.text)}</span>
+      <span class="qn-h-actions">
+        <button class="qn-h-card-btn" onclick="turnNoteIntoCardFromHistory('${escapeAttr(n.text)}')" title="Als legendärer Moment in Highlights/Karten">🃏</button>
+      </span>
+    </div>
+  `).join('');
+}
+
+function turnNoteIntoCardFromHistory(text) {
+  if (!text) return;
+  turnMomentIntoCard(text);
 }
 function handleQuickNotesKey(e) {
   if (e.key === 'Enter') { e.preventDefault(); addQuickNote(); }
@@ -4623,11 +4808,7 @@ function addCondition(i, condId) {
   closeCondPicker(i);
   saveState(); renderSessionLocation();
 }
-function removeCondition(i, condId) {
-  if (!state.initiative[i].conditions) return;
-  state.initiative[i].conditions = state.initiative[i].conditions.filter(c => c !== condId);
-  saveState(); renderSessionLocation();
-}
+// Note: removeCondition wird unten neu definiert (combat-tracker-aware) — siehe Section "INTERACTIVE COMBAT TRACKER"
 // Close condition pickers when clicking outside
 document.addEventListener('click', e => {
   if (!e.target.closest('.cond-picker') && !e.target.closest('.cond-add')) {
@@ -4817,21 +4998,185 @@ function setMusicUrl(idx) {
 }
 
 function renderInitiative() {
-  const host = document.getElementById('initiative');
-  if (!state.initiative.length) {
-    host.innerHTML = '<button class="btn-top" onclick="rollInitiative()">⚡ Initiative würfeln</button>';
+  const tracker = document.getElementById('combatTracker');
+  const nextTurnBtn = document.getElementById('btnNextTurn');
+  if (!tracker) return;
+
+  if (!state.initiative?.length) {
+    tracker.style.display = 'none';
+    if (nextTurnBtn) nextTurnBtn.style.display = 'none';
+    renderSessionActionMenu();  // refresh menu (Initiative-Item ändert sich)
     return;
   }
-  host.innerHTML = state.initiative.map((e, i) => {
-    const c = state.characters.find(x => x.id === e.id);
-    if (!c) return '';
-    return `
-      <div class="init-chip ${e.turn ? 'turn' : ''} ${e.down ? 'down' : ''}" onclick="toggleDown(${i})">
-        <span class="name">${escapeHtml(c.name.split(' ')[0])}</span>
-        <input value="${e.hp}" onblur="updateInitHP(${i}, this.value)" onclick="event.stopPropagation()">
+
+  tracker.style.display = 'block';
+  if (nextTurnBtn) nextTurnBtn.style.display = '';
+
+  if (typeof state.combatRound !== 'number') state.combatRound = 1;
+  const turnIdx = state.initiative.findIndex(e => e.turn);
+  const activeCount = state.initiative.filter(e => !e.down).length;
+
+  tracker.innerHTML = `
+    <div class="ct-header">
+      <div class="ct-h-left">
+        <div class="ct-h-tag">⚔️ Kampf · Initiative</div>
+        <div class="ct-h-meta">Runde <strong id="ctRound">${state.combatRound}</strong> · ${activeCount}/${state.initiative.length} aktiv${turnIdx >= 0 ? ' · ' + escapeHtml((state.characters.find(c => c.id === state.initiative[turnIdx].id)?.name?.split(' ')[0]) || '?') + ' ist dran' : ''}</div>
       </div>
-    `;
-  }).join('') + '<button class="btn-top" onclick="clearInitiative()" style="font-size:10px;padding:5px 8px;">✕</button>';
+      <div class="ct-h-actions">
+        <button class="ct-h-btn" onclick="adjustCombatRound(-1)" title="Runde -1">−</button>
+        <button class="ct-h-btn" onclick="adjustCombatRound(1)" title="Runde +1">+</button>
+        <button class="ct-h-btn ct-h-btn-rerole" onclick="rollInitiative()" title="Neue Initiative würfeln">↻</button>
+        <button class="ct-h-btn ct-h-btn-end" onclick="endCombat()" title="Kampf beenden">✕</button>
+      </div>
+    </div>
+
+    <div class="ct-body">
+      ${state.initiative.map((e, i) => {
+        const c = state.characters.find(x => x.id === e.id);
+        if (!c) return '';
+        const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+        const isPC = c.type === 'pc';
+        const maxHp = c.maxHp || c.hp || 1;
+        const hpPercent = Math.max(0, Math.min(100, (e.hp / maxHp) * 100));
+        const hpColor = hpPercent > 50 ? 'high' : hpPercent > 25 ? 'mid' : 'low';
+        const conditions = e.conditions || [];
+        const isActive = !!e.turn;
+        const isDown = !!e.down;
+        return `
+          <div class="ct-row ${isActive ? 'active' : ''} ${isDown ? 'down' : ''} ${isPC ? 'pc' : 'npc'}"
+               data-init-idx="${i}"
+               onclick="openInitCharSheet('${c.id}')">
+            <div class="ct-init-num">${e.init || '–'}</div>
+            <div class="ct-portrait">
+              ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span class="ct-initials">${initials}</span>`}
+              ${isActive ? '<div class="ct-active-pulse"></div>' : ''}
+            </div>
+            <div class="ct-info">
+              <div class="ct-name-row">
+                <span class="ct-name">${escapeHtml(c.name)}</span>
+                <span class="ct-tag ${isPC ? 'pc' : 'npc'}">${isPC ? 'PC' : 'NPC'}</span>
+              </div>
+              <div class="ct-hp-row">
+                <div class="ct-hp-bar"><div class="ct-hp-fill ${hpColor}" style="width:${hpPercent}%;"></div></div>
+                <div class="ct-hp-buttons" onclick="event.stopPropagation()">
+                  <button class="ct-hp-btn" onclick="adjustInitHP(${i}, -5)" title="−5">−5</button>
+                  <button class="ct-hp-btn" onclick="adjustInitHP(${i}, -1)" title="−1">−1</button>
+                  <input class="ct-hp-input" type="number" value="${e.hp}" onblur="updateInitHP(${i}, this.value)" onclick="event.stopPropagation()" title="HP">
+                  <span class="ct-hp-max">/ ${maxHp}</span>
+                  <button class="ct-hp-btn plus" onclick="adjustInitHP(${i}, 1)" title="+1">+1</button>
+                  <button class="ct-hp-btn plus" onclick="adjustInitHP(${i}, 5)" title="+5">+5</button>
+                </div>
+              </div>
+              <div class="ct-conditions" onclick="event.stopPropagation()">
+                ${conditions.map(cn => `<span class="ct-cond" onclick="removeCondition(${i}, '${escapeAttr(cn)}')" title="Klick = entfernen">${escapeHtml(cn)} ×</span>`).join('')}
+                <button class="ct-cond-add" onclick="openConditionPicker(${i})" title="Zustand hinzufügen">+ Zustand</button>
+              </div>
+            </div>
+            <div class="ct-actions" onclick="event.stopPropagation()">
+              <button class="ct-act-btn ${isDown ? 'on' : ''}" onclick="toggleDown(${i})" title="Bewusstlos togglen">${isDown ? '💀' : '◐'}</button>
+              <button class="ct-act-btn" onclick="setActiveTurn(${i})" title="Auf diesen setzen">▸</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  // Auto-scroll active combatant into view
+  setTimeout(() => {
+    const activeEl = tracker.querySelector('.ct-row.active');
+    if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, 100);
+
+  renderSessionActionMenu();
+}
+
+function adjustInitHP(i, delta) {
+  if (!state.initiative[i]) return;
+  const c = state.characters.find(x => x.id === state.initiative[i].id);
+  const max = c?.maxHp || 999;
+  const newHp = Math.max(0, Math.min(max, state.initiative[i].hp + delta));
+  state.initiative[i].hp = newHp;
+  if (newHp === 0) state.initiative[i].down = true;
+  saveState(); renderInitiative();
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
+}
+function setActiveTurn(i) {
+  state.initiative.forEach((e, j) => e.turn = j === i);
+  saveState(); renderInitiative();
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
+}
+function adjustCombatRound(delta) {
+  state.combatRound = Math.max(1, (state.combatRound || 1) + delta);
+  saveState();
+  const el = document.getElementById('ctRound'); if (el) el.textContent = state.combatRound;
+  renderSessionActionMenu();
+}
+function endCombat() {
+  if (!confirm('Kampf beenden? Initiative wird gelöscht. HP-Werte bleiben am Charakter erhalten.')) return;
+  state.initiative.forEach(e => {
+    const c = state.characters.find(x => x.id === e.id);
+    if (c) c.hp = e.hp;
+  });
+  state.initiative = [];
+  state.combatRound = 1;
+  saveState();
+  renderInitiative();
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
+  toast('⚔️ Kampf beendet · HP gespeichert');
+}
+
+// 5e Conditions für den Picker
+const COMBAT_CONDITIONS = [
+  'Blinded','Charmed','Deafened','Frightened','Grappled','Incapacitated',
+  'Invisible','Paralyzed','Petrified','Poisoned','Prone','Restrained',
+  'Stunned','Unconscious','Exhaustion','Concentration'
+];
+
+function openConditionPicker(i) {
+  const e = state.initiative[i]; if (!e) return;
+  e.conditions = e.conditions || [];
+  const modal = document.createElement('div');
+  modal.className = 'srd-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="this.parentElement.remove()"></div>
+    <div class="srd-modal-inner" style="max-width:480px;">
+      <div class="srd-modal-h">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--crimson);font-weight:700;text-transform:uppercase;">Zustand hinzufügen</div>
+          <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--ink);margin-top:3px;">${escapeHtml(state.characters.find(c => c.id === e.id)?.name || '?')}</div>
+        </div>
+        <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:22px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
+      </div>
+      <div style="padding:14px 22px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;">
+        ${COMBAT_CONDITIONS.map(cond => {
+          const has = e.conditions.includes(cond);
+          return `<button class="cond-pick ${has ? 'on' : ''}" onclick="toggleCondition(${i}, '${cond}');this.classList.toggle('on');">${cond}</button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+function toggleCondition(i, cond) {
+  const e = state.initiative[i]; if (!e) return;
+  e.conditions = e.conditions || [];
+  const idx = e.conditions.indexOf(cond);
+  if (idx >= 0) e.conditions.splice(idx, 1);
+  else e.conditions.push(cond);
+  saveState(); renderInitiative();
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
+}
+function removeCondition(i, cond) {
+  const e = state.initiative[i]; if (!e) return;
+  e.conditions = (e.conditions || []).filter(c => c !== cond);
+  saveState(); renderInitiative();
+  if (typeof renderSessionLocation === 'function') renderSessionLocation();
+}
+function openInitCharSheet(charId) {
+  state.currentCharId = charId;
+  saveState();
+  switchView('chars');
 }
 
 // Manual Initiative: Modal öffnet mit Eingabe-Feldern für jeden Combatant.
@@ -4931,10 +5276,99 @@ function nextTurn() {
   const curIdx = state.initiative.findIndex(e => e.turn);
   state.initiative.forEach(e => e.turn = false);
   let next = (curIdx + 1) % state.initiative.length;
+  // Wenn Kampf-Runde wechselt (zurück auf Anfang) → combatRound +1
+  if (next <= curIdx && next !== curIdx) state.combatRound = (state.combatRound || 1) + 1;
   while (state.initiative[next].down && next !== curIdx) next = (next + 1) % state.initiative.length;
   state.initiative[next].turn = true;
   saveState(); renderInitiative(); renderSessionLocation();
   setTimeout(scrollToActiveCombatant, 80);
+}
+
+// ═══════════ SESSION ACTION MENU ═══════════
+function toggleSessionActionMenu(ev) {
+  ev?.stopPropagation();
+  const menu = document.getElementById('sessionActionMenu');
+  if (!menu) return;
+  const open = menu.style.display !== 'none';
+  if (open) { menu.style.display = 'none'; return; }
+  renderSessionActionMenu();
+  menu.style.display = 'block';
+  setTimeout(() => {
+    const closer = (e) => {
+      if (!menu.contains(e.target) && !e.target.closest('.btn-session-menu')) {
+        menu.style.display = 'none';
+        document.removeEventListener('click', closer);
+      }
+    };
+    document.addEventListener('click', closer);
+  }, 10);
+}
+
+function renderSessionActionMenu() {
+  const menu = document.getElementById('sessionActionMenu');
+  const dot = document.getElementById('sessionStatusDot');
+  const label = document.getElementById('sessionStatusLabel');
+  const sessions = campaign().sessions || [];
+  const currentSession = sessions[sessions.length - 1];
+  const sessionRunning = !!currentSession && !currentSession.recap;
+  const inCombat = !!state.initiative?.length;
+
+  // Status-Dot + Label updaten
+  if (dot) dot.className = 'session-status-dot ' + (inCombat ? 'combat' : sessionRunning ? 'live' : 'idle');
+  if (label) {
+    if (inCombat) label.textContent = `Kampf · R${state.combatRound || 1}`;
+    else if (sessionRunning) label.textContent = `Live · #${currentSession.number}`;
+    else label.textContent = 'Session';
+  }
+
+  if (!menu) return;
+  menu.innerHTML = `
+    <div class="sam-section">
+      <div class="sam-section-h">${currentSession ? `Aktuell: Session #${currentSession.number}${currentSession.title ? ' · ' + escapeHtml(currentSession.title) : ''}` : 'Keine aktive Session'}</div>
+      ${currentSession ? `
+        <button class="sam-item" onclick="openPostSessionRecap();closeSessionActionMenu()">
+          <span class="sam-ico">📝</span>
+          <div><div class="sam-name">Session beenden</div><div class="sam-desc">Recap + Highlights generieren, Karten-Vorschläge</div></div>
+        </button>
+      ` : ''}
+      <button class="sam-item" onclick="startNewSession();closeSessionActionMenu()">
+        <span class="sam-ico">🎲</span>
+        <div><div class="sam-name">Neue Session starten</div><div class="sam-desc">Initiative reset, Death-Saves auf 0, Counter +1</div></div>
+      </button>
+    </div>
+    <div class="sam-section">
+      <div class="sam-section-h">Kampf</div>
+      ${inCombat ? `
+        <button class="sam-item" onclick="endCombat();closeSessionActionMenu()">
+          <span class="sam-ico">✕</span>
+          <div><div class="sam-name">Kampf beenden</div><div class="sam-desc">Initiative löschen, HP an Charaktere speichern</div></div>
+        </button>
+        <button class="sam-item" onclick="adjustCombatRound(-1);closeSessionActionMenu()">
+          <span class="sam-ico">−</span>
+          <div><div class="sam-name">Runde zurück</div><div class="sam-desc">Aktuell Runde ${state.combatRound || 1}</div></div>
+        </button>
+      ` : `
+        <button class="sam-item" onclick="rollInitiative();closeSessionActionMenu()">
+          <span class="sam-ico">⚔️</span>
+          <div><div class="sam-name">Initiative starten</div><div class="sam-desc">Kombattanten + Werte eintragen</div></div>
+        </button>
+      `}
+    </div>
+    <div class="sam-section">
+      <div class="sam-section-h">Modus</div>
+      ${['scene','combat','social'].map(m => `
+        <button class="sam-item ${state.sessionMode === m ? 'active' : ''}" onclick="setSessionMode('${m}');closeSessionActionMenu()">
+          <span class="sam-ico">${m === 'scene' ? '🎭' : m === 'combat' ? '⚔️' : '💬'}</span>
+          <div><div class="sam-name">${m === 'scene' ? 'Szene' : m === 'combat' ? 'Kampf' : 'Social'}-Modus</div></div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function closeSessionActionMenu() {
+  const menu = document.getElementById('sessionActionMenu');
+  if (menu) menu.style.display = 'none';
 }
 function rollInitiativeUpdated() { rollInitiative(); renderSessionLocation(); }
 function toggleDown(i) { state.initiative[i].down = !state.initiative[i].down; saveState(); renderInitiative(); renderSessionLocation(); }
@@ -6704,12 +7138,18 @@ async function forcePushAllCampaigns() {
   }
 
   s.lastSync = new Date().toISOString();
+  if (fail === 0) s.lastError = null;  // alten Fehler wegwischen bei komplettem Erfolg
   saveState();
+  renderSyncStatus();
 
   if (fail === 0) {
     setSyncStatus('synced', 'Alle synced ✓');
     logLine(`<div style="margin-top:8px;color:var(--gold);font-weight:700;">🎉 Alles in Cloud! Du kannst jetzt in Incognito einloggen und sehen deine Kampagnen.</div>`);
     toast(`✓ ${ok} Kampagne${ok === 1 ? '' : 'n'} gepusht`);
+    // Alten Fehler-Banner aus dem Modal entfernen
+    document.querySelectorAll('.sync-status-line').forEach(el => {
+      if (el.textContent.includes('Letzter Fehler')) el.remove();
+    });
   } else {
     setSyncStatus('error', `${fail} Fehler`);
     logLine(`<div style="margin-top:8px;color:var(--crimson);">${fail} Fehler — klick "Status prüfen" für Details zur Ursache</div>`);
