@@ -8995,6 +8995,8 @@ function renderImporterStep1() {
   `;
 }
 
+let _importerAbortController = null;
+
 async function handleImportFile(file) {
   if (!file) return;
   if (file.size > 10 * 1024 * 1024) { toast('Max 10 MB bitte', true); return; }
@@ -9019,14 +9021,17 @@ async function handleImportFile(file) {
       text = await file.text();
     }
     if (!text.trim()) throw new Error('Datei ist leer oder enthält keinen extrahierbaren Text');
-    if (text.length > 100000) {
-      // Truncate auf erste 100k Zeichen — Claude schafft das gut
-      text = text.slice(0, 100000) + '\n\n[... Datei zu lang, abgeschnitten bei 100k chars]';
+    const originalLen = text.length;
+    if (text.length > 30000) {
+      // Cap auf 30k Zeichen — größere Files lassen Claude in Output-Limits laufen.
+      // Marco kann iterativ importieren (z.B. erst Yester Hill, dann Castle Ravenloft separat).
+      text = text.slice(0, 30000) + '\n\n[... Datei länger, ' + Math.round((originalLen - 30000) / 1000) + 'k chars abgeschnitten — bei Bedarf zweites Mal mit anderem Bereich importieren]';
     }
     _importedRawText = text;
-    if (status) status.textContent = `Text gelesen · ${(text.length / 1000).toFixed(1)}k Zeichen · KI strukturiert...`;
+    if (status) status.textContent = `Text gelesen · ${(text.length / 1000).toFixed(1)}k von ${(originalLen / 1000).toFixed(1)}k Zeichen · KI strukturiert...`;
     await processWithAI();
   } catch (err) {
+    if (err.name === 'AbortError') return;
     if (stepArea) stepArea.innerHTML = `
       <div style="padding:20px;background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;color:var(--crimson);">
         <strong>Fehler:</strong> ${escapeHtml(err.message)}
@@ -9034,6 +9039,13 @@ async function handleImportFile(file) {
       <div style="margin-top:12px;">${renderImporterStep1()}</div>
     `;
   }
+}
+
+function cancelImport() {
+  if (_importerAbortController) _importerAbortController.abort();
+  _importerAbortController = null;
+  document.querySelector('.content-importer-modal')?.remove();
+  toast('Import abgebrochen');
 }
 
 async function extractPdfText(file) {
@@ -9089,35 +9101,73 @@ async function processWithAI() {
   const stepArea = document.getElementById('importerStepArea');
   const status = document.getElementById('importerFootStatus');
 
-  const sysPrompt = `Du bist ein D&D-Content-Strukturierer. Aus dem rohen Text eines Adventure-Moduls / Source-Materials extrahierst du einzelne Locations und NPCs für ein DM-Tool.
+  // Loading-UI mit Live-Timer + Cancel-Button
+  const startTime = Date.now();
+  if (stepArea) stepArea.innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div class="spinner" style="margin:0 auto 14px;"></div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">KI strukturiert ${(_importedRawText.length / 1000).toFixed(0)}k Zeichen...</div>
+      <div id="importerTimer" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-dim);margin-top:8px;">0:00</div>
+      <div id="importerSubMsg" style="font-size:12px;color:var(--text-dim);margin-top:6px;font-style:italic;">Anthropic Sonnet · kann bei großen PDFs 30-90s dauern</div>
+      <button class="btn-top" onclick="cancelImport()" style="margin-top:18px;border-color:var(--crimson);color:var(--crimson);">Abbrechen</button>
+    </div>
+  `;
 
-WICHTIGE REGELN:
-- Locations: Räume, Orte, Encounter-Bereiche. Jede mit eigener id (kurz, lowercase, e.g. "w14"), name, meta (kurze Beschreibung), readAloud (atmosphärischer Text zum Vorlesen, 2-4 Sätze, nur wenn klar erkennbar), dmNote (taktische Notizen für DM, nur wenn da), scenarios (was kann passieren, mit title + body + probability "Wahrscheinlich"/"Möglich"/"Unwahrscheinlich"), dialogs (NPC-Zitate mit speaker + text)
-- NPCs: Kreaturen die einem Encounter zugeordnet sind oder eine eigene Rolle haben. Mit name, type (immer "npc"), race, class (oder Rolle wie "Wine Merchant"), creatureType, alignment, ac, hp, maxHp, speed, stats (str/dex/con/int/wis/cha), savingThrows, skills, senses, languages, cr, traits (passive abilities), actions, notes (DM-only Tactics). Nur die Felder befüllen die WIRKLICH im Text stehen, sonst weglassen.
-- Group-Vorschlag: Schlage eine sinnvolle Gruppen-Bezeichnung für die Locations vor (z.B. "🏰 Castle Ravenloft", "🍷 Wizard of Wines")
+  // Live-Timer ticker
+  const timerInterval = setInterval(() => {
+    const el = document.getElementById('importerTimer');
+    if (!el) { clearInterval(timerInterval); return; }
+    const sec = Math.floor((Date.now() - startTime) / 1000);
+    el.textContent = `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`;
+    const sub = document.getElementById('importerSubMsg');
+    if (sub) {
+      if (sec > 90) sub.textContent = 'Über 90s — KI ist am Limit, bitte weiter warten oder abbrechen';
+      else if (sec > 45) sub.textContent = 'Großes PDF — KI arbeitet noch';
+      else if (sec > 20) sub.textContent = 'Anthropic Sonnet · KI denkt nach';
+    }
+  }, 1000);
+
+  const sysPrompt = `Du bist ein D&D-Content-Strukturierer. Aus dem rohen Text eines Adventure-Moduls / Source-Materials extrahierst du Locations und NPCs für ein DM-Tool.
+
+KRITISCHE LIMITS — nicht überschreiten, sonst wird das JSON kaputt:
+- MAX 8 Locations (die wichtigsten — Räume mit konkretem Encounter / Story-Fokus, keine Filler)
+- MAX 6 NPCs (die am meisten wahrscheinlich gebraucht werden)
+- readAloud Texte: max 2 Sätze (knapp halten)
+- dmNote: max 1-2 Sätze
+- scenarios pro location: max 3
+- dialogs pro location: max 3, jeweils 1 Satz
+
+REGELN:
+- Locations mit id (kurz, lowercase, e.g. "yh1"), name, meta, readAloud (NUR wenn klar erkennbar), dmNote (NUR wenn da), scenarios (title+body+probability), dialogs (speaker+text)
+- NPCs mit name, type:"npc", race, class, ac, hp, maxHp, speed, stats, cr, traits, actions, notes — nur Felder die WIRKLICH im Text stehen
+- Felder die nicht im Text stehen → einfach weglassen, NICHT erfinden
 
 ANTWORT-FORMAT: Gültiges JSON, keine Markdown-Fences, kein Vorwort. Struktur:
 {
-  "groupLabel": "🍷 Yester Hill Quest",
+  "groupLabel": "🍷 Yester Hill",
   "locations": [
-    { "id": "yh1", "name": "Yester Hill Approach", "meta": "Forest path uphill", "readAloud": "Mist clings to twisted oaks...", "dmNote": "Druid ambush DC 15 Perception", "scenarios": [{"title": "Druid Ambush", "probability": "Wahrscheinlich", "body": "..."}], "dialogs": [{"speaker": "Yester Druid", "text": "Leave this hill or burn"}] }
+    { "id": "yh1", "name": "Approach", "meta": "Forest path uphill", "readAloud": "Mist clings to twisted oaks.", "dmNote": "Druid ambush DC 15 Perception" }
   ],
   "npcs": [
-    { "name": "Yester Druid", "type": "npc", "race": "Human", "class": "Druid", "ac": 11, "hp": 27, "maxHp": 27, "speed": "30 ft.", "stats": {"str": 10, "dex": 12, "con": 12, "int": 11, "wis": 16, "cha": 11}, "cr": "2", "traits": [{"name": "Spellcasting", "text": "..."}], "actions": [{"name": "Quarterstaff", "text": "+2 to hit, 1d6+0 bludgeoning"}] }
+    { "name": "Yester Druid", "type": "npc", "race": "Human", "class": "Druid", "ac": 11, "hp": 27, "maxHp": 27, "cr": "2" }
   ]
 }
 
 Wenn der Text NICHTS Verwertbares enthält: { "locations": [], "npcs": [], "note": "Kein D&D-Content erkennbar" }.`;
 
+  _importerAbortController = new AbortController();
+
   try {
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
+      signal: _importerAbortController.signal,
       body: JSON.stringify({
-        campaign: { ...campaign(), characters: [] },  // Kontext minimieren — Importer braucht keine bestehenden Daten
-        max_tokens: 8000,  // mehr Tokens damit JSON nicht abgeschnitten wird
+        campaign: { id: campaign().id, name: campaign().name, characters: [] },  // Kontext minimal
+        max_tokens: 4000,  // moderater output — passt sicher in eine Response
         messages: [{ role: 'user', content: sysPrompt + '\n\nROH-TEXT:\n' + _importedRawText }]
       })
     });
+    clearInterval(timerInterval);
     if (!resp.ok) {
       const body = await resp.text().catch(() => '');
       throw new Error(`API ${resp.status} ${resp.statusText}` + (body ? ' · ' + body.slice(0, 200) : ''));
@@ -9127,23 +9177,38 @@ Wenn der Text NICHTS Verwertbares enthält: { "locations": [], "npcs": [], "note
     if (Array.isArray(data.content)) text = data.content.map(c => c.type === 'text' ? c.text : '').join('\n').trim();
     else if (typeof data.content === 'string') text = data.content;
 
+    console.log('[Importer] Raw KI-Response:', text);  // für Debugging
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('KI lieferte kein gültiges JSON. Raw: ' + text.slice(0, 200));
+    if (!jsonMatch) throw new Error('KI lieferte kein JSON-Block. Output: ' + text.slice(0, 300));
     _importerSuggestions = parseAiJsonRobust(jsonMatch[0]);
-    if (!_importerSuggestions) throw new Error('JSON konnte nicht geparsed werden — Datei evtl. zu groß. Versuch eine kleinere Auswahl oder splitte das Material.');
+    if (!_importerSuggestions) {
+      // Zeig Raw-Response damit Marco sehen kann was die KI gemacht hat
+      _importerLastRawJson = jsonMatch[0];
+      throw new Error('JSON konnte nicht geparsed werden. Klick „Raw zeigen" um den KI-Output zu sehen.');
+    }
 
     renderImporterStep3();
   } catch (err) {
+    clearInterval(timerInterval);
+    if (err.name === 'AbortError') return;
     console.error('[Importer] Fehler:', err);
     if (stepArea) stepArea.innerHTML = `
       <div style="padding:20px;background:#fef2e4;border:1px solid var(--crimson);border-radius:6px;color:var(--crimson);">
         <strong>KI-Fehler:</strong> ${escapeHtml(err.message)}
       </div>
+      ${_importerLastRawJson ? `
+        <div style="margin-top:12px;">
+          <button class="btn-top" onclick="document.getElementById('rawDebug').style.display='block';this.style.display='none';" style="font-size:11px;">Raw KI-Response zeigen</button>
+          <pre id="rawDebug" style="display:none;margin-top:10px;background:var(--surface-2);padding:12px;border-radius:6px;font-size:10.5px;color:var(--text-dim);max-height:300px;overflow:auto;white-space:pre-wrap;">${escapeHtml(_importerLastRawJson)}</pre>
+        </div>` : ''}
       <div style="margin-top:12px;">${renderImporterStep1()}</div>
     `;
-    if (status) status.textContent = 'Fehler — bitte andere Datei probieren';
+    if (status) status.textContent = 'Fehler — bitte andere Datei oder kleineren Bereich probieren';
+  } finally {
+    _importerAbortController = null;
   }
 }
+let _importerLastRawJson = '';
 
 function renderImporterStep3() {
   const stepArea = document.getElementById('importerStepArea');
