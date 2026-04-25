@@ -2137,11 +2137,12 @@ body.gate-open{overflow:hidden;}
 // ═══════════════════════════════════════════════════════════════════════════
 
 const API_BASE = 'https://endocraft-production.up.railway.app';
-const STORAGE_KEY = 'ec_dmstudio_v3';
-// Hinweis: Multi-User-Schutz läuft über die Email-Match-Prüfung in initAuthState.
-// Wenn der eingeloggte User nicht zum gespeicherten User passt, wird ein Dialog gezeigt
-// ("Reset oder behalten?") — das deckt den seltenen Fall "Freund loggt sich ein auf
-// meinem Browser" ab. Für echte Per-User-Trennung ist Cloud-First (Supabase) der Weg.
+const STORAGE_KEY_USER = 'ec_dmstudio_v3';      // logged-in users (echte Daten)
+const STORAGE_KEY_ANON = 'ec_dmstudio_v3_anon'; // anon/offline-weiter — separat, leer beim ersten Mal
+const ANON_FLAG = '_ec_anon_mode';
+
+// STORAGE_KEY wird beim Bootstrap bestimmt. Anon-Flag ist explizit, alles andere = User-Key.
+let STORAGE_KEY = localStorage.getItem(ANON_FLAG) === '1' ? STORAGE_KEY_ANON : STORAGE_KEY_USER;
 
 // ═══════════ SUPABASE AUTH CONFIG ═══════════
 // Public anon key — safe to expose in frontend (RLS enforces permissions).
@@ -2175,11 +2176,13 @@ async function signOut() {
   await sb.auth.signOut();
   syncSettings().email = '';
   syncSettings().googleAuth = false;
-  state._offlineAck = false;  // Gate wieder aktivieren nach Logout
-  saveState(); renderSyncStatus();
-  document.querySelector('.sync-modal')?.remove();
-  toast('Abgemeldet');
-  if (typeof showLandingGate === 'function') showLandingGate();
+  state._offlineAck = false;
+  saveState();
+  // Beim Logout: Switch zu Anon-Storage damit User-Daten in main-key bleiben aber UI leer ist.
+  // Reload lädt anon-state (typically empty for first visit).
+  localStorage.setItem(ANON_FLAG, '1');
+  toast('Abgemeldet — Seite lädt neu...');
+  setTimeout(() => location.reload(), 600);
 }
 
 // Track sign-in state — nur bei echtem neuem Login den Cloud-Load-Dialog triggern,
@@ -9834,6 +9837,13 @@ async function gateSignIn() {
   }
 }
 function gateContinueOffline() {
+  // Switch zu Anon-Storage. Reload damit ein frischer State aus dem Anon-Key geladen wird,
+  // statt der eingeloggten User-Daten. So sieht ein anonymer Visitor wirklich nichts von Marco.
+  if (STORAGE_KEY !== STORAGE_KEY_ANON) {
+    localStorage.setItem(ANON_FLAG, '1');
+    location.reload();
+    return;
+  }
   state._offlineAck = true;
   saveState();
   hideLandingGate();
@@ -9845,6 +9855,12 @@ initAuthState = async function() {
   const sb = initSupabaseClient(); if (!sb) return;
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user?.email) {
+    // Wenn aktuell im Anon-Mode aber Supabase-Session existiert → zurück zum User-Storage.
+    if (STORAGE_KEY === STORAGE_KEY_ANON) {
+      localStorage.removeItem(ANON_FLAG);
+      location.reload();
+      return;
+    }
     // Prüfen ob User gewechselt hat — wenn ja, state zurücksetzen
     if (state._lastSignedInEmail && state._lastSignedInEmail !== session.user.email) {
       if (confirm(`Du bist jetzt als ${session.user.email} eingeloggt, vorher war es ${state._lastSignedInEmail}.\n\nLokale Kampagnen-Daten zurücksetzen und aus Cloud laden?\n\nOK = Ja, Reset · Abbrechen = Lokale Daten behalten`)) {
@@ -9862,11 +9878,25 @@ initAuthState = async function() {
     hideLandingGate();
     // Auto-Merge beim Page-Reload (schon eingeloggt) — silent, ohne Confirm
     setTimeout(() => loadAllCampaignsFromCloud({ confirmOverwrite: false }), 800);
-  } else if (!isGateUnlocked()) {
-    showLandingGate();
+  } else {
+    // Keine aktive Supabase-Session → wenn nicht im Anon-Mode UND main-key hat keinen logged-in user → gate
+    if (STORAGE_KEY === STORAGE_KEY_USER && !state._lastSignedInEmail) {
+      // User-Key aber nie eingeloggt → eigentlich erste Visite. Switch zu Anon damit Daten getrennt sind.
+      localStorage.setItem(ANON_FLAG, '1');
+      location.reload();
+      return;
+    }
+    if (!isGateUnlocked()) showLandingGate();
   }
   sb.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN' && session?.user?.email) {
+      // Wenn aktuell im Anon-Mode → Switch zu User-Storage. Reload damit user-key geladen wird.
+      if (STORAGE_KEY === STORAGE_KEY_ANON) {
+        localStorage.removeItem(ANON_FLAG);
+        toast('Login erkannt — lade deinen Account...');
+        setTimeout(() => location.reload(), 600);
+        return;
+      }
       const freshLogin = !_wasSignedIn;
       _wasSignedIn = true;
       // User-Wechsel-Check auch hier
