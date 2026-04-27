@@ -1394,6 +1394,16 @@ async function saveSession(cardData) {
     body: JSON.stringify({ id, ...cardData })
   });
   if (!res.ok) throw new Error('Could not save session');
+  // Cache Session-ID lokal damit das DM-Studio-Album sie findet
+  try {
+    const list = JSON.parse(localStorage.getItem('ec_my_sessions') || '[]');
+    if (!list.includes(id)) {
+      list.unshift(id);
+      // Max 200 IDs behalten
+      if (list.length > 200) list.length = 200;
+      localStorage.setItem('ec_my_sessions', JSON.stringify(list));
+    }
+  } catch(e) { console.warn('[ec_my_sessions] cache failed:', e); }
   return id;
 }
 

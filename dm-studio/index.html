@@ -1759,7 +1759,7 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 .highlight-board-head{margin-bottom:22px;}
 
 /* ═══════ PARTY ALBUM ═══════ */
-.album-board-head{margin-bottom:24px;}
+.album-board-head{margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;}
 .album-board-head h2{font-family:'Syne',sans-serif;font-size:24px;color:var(--ink);margin:0 0 4px;font-weight:800;}
 .album-board-head p{font-size:13px;color:var(--text-dim);margin:0;}
 .album-session-group{margin-bottom:32px;}
@@ -9208,65 +9208,80 @@ let _albumLastLoad = 0;          // Timestamp der letzten Ladung
 let _albumRarityFilter = 'all';
 let _albumLoading = false;
 
+let _albumLastError = null;
+
+// Marcos Karten liegen in der `sessions`-Tabelle (anonym).
+// Wir cachen die Session-IDs in localStorage `ec_my_sessions[]` — geschrieben von /scroll/ beim Save.
+// Album lädt diese IDs aus sessions-Tabelle.
 async function loadAlbumCards(force = false) {
-  const s = syncSettings();
-  if (!s.email) { console.warn('[Album] Kein Email → kein Load'); return []; }
   if (!force && _albumCards && (Date.now() - _albumLastLoad < 60000)) return _albumCards;
   _albumLoading = true;
   _albumLastError = null;
 
-  // Slug-Strategie: Erst localStorage (vom Backend gesetzt bei letzter Card-Save),
-  // dann fallback auf SHA-256-Hash der Email (gleiche Logik wie server.js).
-  let slug = localStorage.getItem('ec_owner_slug');
-  if (!slug) {
-    slug = await emailToSlugAsync(s.email);
-    console.log('[Album] Kein ec_owner_slug in localStorage — nutze SHA-256-Fallback:', slug);
-  } else {
-    console.log('[Album] Nutze gecachten ec_owner_slug:', slug);
+  let myIds = [];
+  try { myIds = JSON.parse(localStorage.getItem('ec_my_sessions') || '[]'); } catch(e){}
+  console.log('[Album] My session IDs:', myIds.length, myIds.slice(0, 5));
+
+  if (!myIds.length) {
+    _albumCards = [];
+    _albumLastLoad = Date.now();
+    _albumLoading = false;
+    return [];
   }
 
-  // Versuche beide Slugs (manchmal hat localStorage einen alten Slug, oder umgekehrt)
-  const slugsToTry = [slug];
-  const hashSlug = await emailToSlugAsync(s.email);
-  if (hashSlug !== slug) slugsToTry.push(hashSlug);
-
-  let allCards = [];
-  for (const trySlug of slugsToTry) {
+  // Supabase IN-Filter: ?id=in.(id1,id2,...)
+  const allCards = [];
+  // In Batches von 50 (URL-Length-Limit)
+  for (let i = 0; i < myIds.length; i += 50) {
+    const batch = myIds.slice(i, i + 50);
     try {
-      const url = `${SUPABASE_URL_PUBLIC}/rest/v1/cards?owner_slug=eq.${trySlug}&select=id,number,session_title,legendary_moment,character_name,character_class,rarity,visible_roll,image_url,created_at&order=created_at.desc&limit=200`;
-      console.log('[Album] Fetching:', url);
+      const url = `${SUPABASE_URL_PUBLIC}/rest/v1/sessions?id=in.(${batch.join(',')})&select=*&order=created_at.desc`;
       const resp = await fetch(url, {
         headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
       });
-      const txt = await resp.text();
       if (!resp.ok) {
+        const txt = await resp.text();
         console.error('[Album] Supabase ' + resp.status + ':', txt.slice(0, 300));
         _albumLastError = 'Supabase ' + resp.status + ' — ' + txt.slice(0, 200);
         continue;
       }
-      const cards = JSON.parse(txt);
-      console.log('[Album] Slug "' + trySlug + '" → ' + cards.length + ' Karten');
-      if (Array.isArray(cards) && cards.length > 0) {
-        allCards = cards;
-        // Update localStorage zum richtigen Slug
-        if (trySlug !== slug) {
-          localStorage.setItem('ec_owner_slug', trySlug);
-          console.log('[Album] Slug in localStorage aktualisiert auf:', trySlug);
-        }
-        break;
-      }
+      const cards = await resp.json();
+      console.log('[Album] Batch ' + i + ': ' + cards.length + ' Karten');
+      allCards.push(...cards);
     } catch (e) {
       console.error('[Album] Fetch-Error:', e);
       _albumLastError = e.message;
     }
   }
 
+  // Sort newest first
+  allCards.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   _albumCards = allCards;
   _albumLastLoad = Date.now();
   _albumLoading = false;
   return _albumCards;
 }
-let _albumLastError = null;
+
+// Manueller Add: User pasted eine Karten-URL oder Session-ID
+function addCardManually() {
+  const input = prompt('Karten-URL oder Session-ID einfügen:\n\nBeispiel:\n• https://endocraft.app/session/?id=abc12345\n• abc12345\n\nDie Karte wird zu deinem Album hinzugefügt:');
+  if (!input || !input.trim()) return;
+  // Extract ID — entweder aus URL oder direkt
+  let id = input.trim();
+  const urlMatch = id.match(/[?&]id=([a-z0-9]+)/i);
+  if (urlMatch) id = urlMatch[1];
+  // Cleanup
+  id = id.replace(/[^a-z0-9]/gi, '').slice(0, 16);
+  if (!id || id.length < 4) { toast('Ungültige ID', true); return; }
+
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('ec_my_sessions') || '[]'); } catch(e){}
+  if (list.includes(id)) { toast('Karte bereits im Album'); return; }
+  list.unshift(id);
+  localStorage.setItem('ec_my_sessions', JSON.stringify(list));
+  toast(`✓ Karte hinzugefügt (${id})`);
+  reloadAlbum();
+}
 
 // Async Helper für Email→Slug (sha256 erste 16 chars)
 async function emailToSlugAsync(email) {
@@ -9377,7 +9392,7 @@ async function renderAlbum() {
   const cards = await loadAlbumCards();
   const filtered = _albumRarityFilter === 'all' ? cards : cards.filter(c => (c.rarity || 'common').toLowerCase() === _albumRarityFilter);
 
-  // Side-Meta: Stats + Rarity-Verteilung
+  // Side-Meta: Stats + Add-Button
   if (sideMeta) {
     const stats = cards.reduce((acc, c) => {
       const r = (c.rarity || 'common').toLowerCase();
@@ -9394,8 +9409,8 @@ async function renderAlbum() {
       <div class="hl-meta-row"><span style="color:#1e6fd9;">Rare</span><strong>${stats.rare || 0}</strong></div>
       <div class="hl-meta-row"><span>Common</span><strong>${stats.common || 0}</strong></div>
       ${stats.misprint ? `<div class="hl-meta-row"><span style="color:var(--crimson);">Misprint</span><strong>${stats.misprint}</strong></div>` : ''}
-      <div class="hl-meta-row" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;font-size:11px;font-style:italic;color:var(--text-dimmer);">
-        Public-Album-Link teilen wenn fertig.
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+        <button class="btn-top" style="width:100%;font-size:11px;padding:7px 10px;" onclick="addCardManually()">+ Karte manuell hinzufügen</button>
       </div>
     `;
   }
@@ -9403,8 +9418,7 @@ async function renderAlbum() {
   if (!filtered.length) {
     const errorHtml = _albumLastError ? `
       <div style="max-width:520px;margin:0 auto 20px;padding:14px 18px;background:#fef2e4;border:1px solid var(--crimson);border-radius:8px;color:var(--crimson);font-size:13px;line-height:1.5;">
-        <strong>Fehler beim Laden:</strong> ${escapeHtml(_albumLastError)}<br>
-        <span style="font-size:11px;opacity:.8;">Schau in die Browser-Console (F12) für Details. Klick „↻" links um neu zu laden.</span>
+        <strong>Fehler beim Laden:</strong> ${escapeHtml(_albumLastError)}
       </div>
     ` : '';
     board.innerHTML = errorHtml + (cards.length ? `
@@ -9414,17 +9428,18 @@ async function renderAlbum() {
         <p style="font-size:13px;color:var(--text-dim);">Wechsel auf „Alle" um alle ${cards.length} Karten zu sehen.</p>
       </div>
     ` : `
-      <div style="max-width:520px;margin:60px auto;text-align:center;padding:40px 20px;">
+      <div style="max-width:560px;margin:60px auto;text-align:center;padding:40px 20px;">
         <div style="font-size:48px;margin-bottom:14px;">📚</div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">${_albumLastError ? 'Karten nicht erreichbar' : 'Noch keine Karten gesammelt'}</h2>
-        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:20px;">
-          ${_albumLastError
-            ? 'Console-Output (F12) zeigt was schief geht. Wahrscheinlich: RLS auf cards-Tabelle blockiert anon-Reads, oder Email-Slug stimmt nicht überein.'
-            : 'Sobald du Karten auf <a href="https://endocraft.app/scroll/" target="_blank" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a> erstellst, tauchen sie hier auf.'}
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">Dein Karten-Album ist leer</h2>
+        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:18px;">
+          Ab jetzt landet jede Karte die du auf <a href="https://endocraft.app/scroll/" target="_blank" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a> erstellst hier automatisch im Album.
+        </p>
+        <p style="font-size:12.5px;line-height:1.55;color:var(--text-dim);margin-bottom:20px;font-style:italic;">
+          Bestehende Karten aus früheren Sessions kannst du <strong style="color:var(--ink);">manuell hinzufügen</strong> — kopier den Share-Link oder die ID.
         </p>
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-          <button class="btn-top primary" onclick="window.open('https://endocraft.app/scroll/','_blank')" style="background:var(--gold);color:#fff;border-color:var(--gold);">→ Karte erstellen</button>
-          <button class="btn-top" onclick="testAlbumDebug()">🔍 Debug-Test</button>
+          <button class="btn-top primary" onclick="window.open('https://endocraft.app/scroll/','_blank')" style="background:var(--gold);color:#fff;border-color:var(--gold);">→ Neue Karte erstellen</button>
+          <button class="btn-top" onclick="addCardManually()">+ Karte manuell hinzufügen</button>
         </div>
       </div>
     `);
@@ -9451,7 +9466,10 @@ async function renderAlbum() {
     <div class="album-board-head">
       <div>
         <h2>📚 ${escapeHtml(campaign().name || 'Karten-Album')}</h2>
-        <p>${cards.length} Karte${cards.length === 1 ? '' : 'n'} gesammelt · ${sortedGroupKeys.length} Session${sortedGroupKeys.length === 1 ? '' : 's'}${_albumRarityFilter !== 'all' ? ' · gefiltert: ' + _albumRarityFilter : ''}</p>
+        <p>${cards.length} Karte${cards.length === 1 ? '' : 'n'} · ${sortedGroupKeys.length} Gruppe${sortedGroupKeys.length === 1 ? '' : 'n'}${_albumRarityFilter !== 'all' ? ' · gefiltert: ' + _albumRarityFilter : ''}</p>
+      </div>
+      <div>
+        <button class="btn-top" onclick="addCardManually()" style="font-size:11px;">+ Karte hinzufügen</button>
       </div>
     </div>
     ${sortedGroupKeys.map(key => `
@@ -9464,16 +9482,19 @@ async function renderAlbum() {
           ${groups[key].map(card => {
             const r = (card.rarity || 'common').toLowerCase();
             const color = rarityColor[r] || rarityColor.common;
+            // Sessions-Tabelle: Felder können session_title, summary, legendary_moment, character_name, image_url, rarity sein
+            const title = card.legendary_moment || card.session_title || card.title || 'Karte ' + (card.id || '').slice(0, 6);
+            const subtitle = [card.character_name, card.character_class].filter(Boolean).join(' · ');
             return `
               <div class="album-card" onclick="window.open('https://endocraft.app/session/?id=${escapeAttr(card.id)}','_blank')" style="border-color:${color};">
                 <div class="album-card-img">
-                  ${card.image_url ? `<img src="${escapeAttr(card.image_url)}" loading="lazy" alt="">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);font-size:11px;">No Image</div>'}
+                  ${card.image_url ? `<img src="${escapeAttr(card.image_url)}" loading="lazy" alt="">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);font-size:11px;font-family:Cinzel,serif;letter-spacing:1.5px;">NO IMAGE</div>'}
                   <div class="album-card-rarity ${r}" style="background:${color};">${r.toUpperCase()}</div>
                   ${card.number ? `<div class="album-card-num">#${card.number}</div>` : ''}
                 </div>
                 <div class="album-card-info">
-                  <div class="album-card-title">${escapeHtml(card.legendary_moment || card.session_title || 'Untitled')}</div>
-                  <div class="album-card-sub">${escapeHtml(card.character_name || '')}${card.character_class ? ' · ' + escapeHtml(card.character_class) : ''}</div>
+                  <div class="album-card-title">${escapeHtml(title)}</div>
+                  <div class="album-card-sub">${subtitle ? escapeHtml(subtitle) : (card.id ? escapeHtml(card.id) : '')}</div>
                 </div>
               </div>
             `;
