@@ -209,6 +209,104 @@ body.gate-open{overflow:hidden;}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-lg);font-weight:500;}
 .toast.show{opacity:1;}
 
+/* ═══════ LIVE-SESSION-CARD ═══════ */
+.live-card-wrap{max-width:1100px;margin:0 auto 22px;}
+.live-card{
+  background:linear-gradient(to bottom,#fff,#fef2e4);
+  border:1.5px solid var(--crimson);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 8px 28px rgba(168,35,24,0.12);
+}
+.live-card-h{
+  padding:13px 22px;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(to right,var(--crimson),#7a1810);color:#fdf6e8;
+}
+.live-pulse-dot{
+  width:10px;height:10px;border-radius:50%;background:#fdf6e8;
+  box-shadow:0 0 0 0 rgba(253,246,232,0.7);
+  animation:lbPulse 1.4s ease-out infinite;
+}
+.live-card-h-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;font-weight:700;flex:1;}
+.live-card-h-meta{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;opacity:.75;}
+.live-card-b{padding:18px 22px;}
+
+.live-loc-block{margin-bottom:16px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:10px;border-left:4px solid var(--gold);}
+.live-loc-block.live-loc-empty{border-left-color:var(--text-dim);background:var(--surface-2);}
+.live-loc-tag{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:2.5px;color:var(--gold);font-weight:700;text-transform:uppercase;}
+.live-loc-name{font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--ink);margin:6px 0 8px;font-weight:700;}
+.live-loc-readaloud{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--text);line-height:1.55;border-top:1px dotted var(--border);padding-top:8px;margin-top:6px;}
+
+.live-combat-block{margin-bottom:16px;padding:14px 16px;background:#1a0e0c;color:#fdf6e8;border-radius:10px;}
+.live-combat-h{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:#f4d57a;margin-bottom:10px;font-weight:700;}
+.live-combat-list{display:flex;flex-direction:column;gap:5px;}
+.live-combat-row{display:grid;grid-template-columns:1fr 130px 40px;gap:10px;align-items:center;padding:6px 10px;background:rgba(253,246,232,0.04);border-radius:6px;font-size:13px;}
+.live-combat-row.active{background:rgba(244,213,122,0.15);border-left:3px solid #f4d57a;}
+.live-combat-row.down{opacity:.45;text-decoration:line-through;}
+.lc-name{font-family:'Cinzel',serif;font-weight:600;letter-spacing:.02em;}
+.lc-hp{position:relative;height:14px;background:rgba(253,246,232,0.08);border-radius:7px;overflow:hidden;}
+.lc-hp-bar{height:100%;transition:width .3s;}
+.lc-hp-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#fdf6e8;text-shadow:0 0 3px rgba(0,0,0,0.6);}
+.lc-init{font-family:'Cinzel',serif;text-align:center;font-size:13px;font-weight:700;color:#f4d57a;}
+
+.live-notes-block{padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;}
+.live-notes-block.live-notes-empty{text-align:center;color:var(--text-dim);font-style:italic;padding:18px;}
+.live-notes-h{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;font-weight:700;}
+.live-notes-list{display:flex;flex-direction:column;gap:4px;}
+.live-note-row{display:grid;grid-template-columns:48px 80px 1fr;gap:8px;font-size:13px;line-height:1.45;padding:4px 0;border-bottom:1px dotted var(--border);}
+.live-note-row:last-child{border-bottom:none;}
+.live-note-time{font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600;font-size:11.5px;}
+.live-note-loc{font-family:'Cinzel',serif;font-size:10.5px;color:var(--text-dimmer);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.live-note-text{color:var(--text);}
+
+/* ═══════ HIGHLIGHT-TILES ═══════ */
+.highlight-tile{
+  background:#fff;border:1.5px solid var(--border);border-radius:10px;
+  padding:14px 16px;transition:all .15s;position:relative;
+}
+.highlight-tile:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,0.1);}
+.highlight-tile.mine{border-color:var(--gold);background:linear-gradient(to bottom,#fff,#fef9eb);}
+.hl-rarity{position:absolute;top:8px;right:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:#fff;padding:3px 7px;border-radius:3px;font-weight:700;text-transform:uppercase;}
+.hl-legendary{background:#b8851f;}
+.hl-epic{background:#7B6CF6;}
+.hl-rare{background:#1e6fd9;}
+.hl-common{background:#5a5a5a;}
+.hl-misprint{background:#a82318;}
+.hl-title{font-family:'Cinzel',serif;font-size:13.5px;color:var(--ink);font-weight:700;line-height:1.3;padding-right:60px;margin-bottom:4px;}
+.hl-char{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--gold);margin-bottom:6px;}
+.hl-desc{font-size:12.5px;color:var(--text-dim);line-height:1.5;margin-bottom:8px;}
+.hl-cta{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--accent);font-weight:700;text-transform:uppercase;}
+
+/* ═══════ ROLL-FLASH (D20-Roll-Animation auf Stat-Click) ═══════ */
+.char-stat{cursor:pointer;transition:all .15s;position:relative;}
+.char-stat:hover{border-color:var(--gold);background:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(147,110,30,0.12);}
+.char-stat:active{transform:translateY(0);}
+.char-stat .roll-hint{position:absolute;top:2px;right:5px;font-family:'Cinzel',serif;font-size:8px;color:var(--text-dimmer);letter-spacing:1px;}
+.roll-flash{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:300;pointer-events:none;
+  background:rgba(0,0,0,0.55);
+  animation:rollFlashIn .25s ease-out;
+}
+@keyframes rollFlashIn{from{opacity:0;}to{opacity:1;}}
+.roll-flash.fading{animation:rollFlashOut .35s ease-out forwards;}
+@keyframes rollFlashOut{from{opacity:1;}to{opacity:0;}}
+.roll-flash-inner{
+  background:linear-gradient(to bottom,#fbf6e6,#f4ecd4);
+  border:2px solid var(--gold);border-radius:18px;
+  padding:30px 50px;text-align:center;min-width:260px;
+  box-shadow:0 12px 40px rgba(147,110,30,0.4);
+  animation:rollFlashPop .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes rollFlashPop{from{transform:scale(.6) rotate(-8deg);}to{transform:scale(1) rotate(0);}}
+.rf-stat{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;}
+.rf-result{font-family:'Cinzel Decorative',serif;font-size:54px;color:var(--ink);line-height:1;margin:8px 0;font-weight:700;}
+.rf-result.crit{color:var(--forest);}
+.rf-result.fumble{color:var(--crimson);}
+.rf-formula{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-dim);}
+.rf-tag{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;font-weight:700;margin-top:6px;}
+.rf-tag.crit{color:var(--forest);}
+.rf-tag.fumble{color:var(--crimson);}
+
 /* ═══════ MOBILE ═══════ */
 @media (max-width:900px){
   .briefing-grid{grid-template-columns:1fr;}
@@ -681,14 +779,63 @@ function renderBriefing() {
   const sessions = camp.sessions || [];
   const lastSession = sessions[sessions.length - 1];
   const npcs = (camp.characters || []).filter(c => c.type === 'npc').slice(0, 8);
+  const status = getSessionStatus();
+  const isLive = status.state === 'live';
+
+  // ── LIVE-Mode-Daten sammeln ──
+  let liveCard = '';
+  if (isLive) {
+    liveCard = renderLiveSessionCard(camp, char);
+  }
+
+  // ── Highlights aus letzter abgeschlossener Session ──
+  let highlightsCard = '';
+  if (!isLive && lastSession?.highlights?.length) {
+    const myHighlights = lastSession.highlights.filter(h =>
+      !h.character || h.character.toLowerCase().includes(char.name.toLowerCase().split(' ')[0]) ||
+      char.name.toLowerCase().includes((h.character || '').toLowerCase().split(' ')[0])
+    );
+    const otherHighlights = lastSession.highlights.filter(h => !myHighlights.includes(h));
+    const ordered = [...myHighlights, ...otherHighlights].slice(0, 6);
+
+    highlightsCard = `
+      <div class="briefing-card" style="grid-column:1 / -1;">
+        <div class="briefing-card-h">
+          <span class="ico">⚡</span>
+          <span class="briefing-card-h-title">Highlights · Session ${lastSession.number}</span>
+        </div>
+        <div class="briefing-card-b">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">
+            ${ordered.map((h, i) => {
+              const rarity = (h.rarity || 'common').toLowerCase();
+              const isMine = myHighlights.includes(h);
+              return `
+                <div class="highlight-tile ${isMine ? 'mine' : ''}" data-hl-idx="${i}" onclick="openHighlightAsCard(${i})" style="cursor:pointer;">
+                  <div class="hl-rarity hl-${rarity}">${rarity.toUpperCase()}</div>
+                  <div class="hl-title">${escapeHtml(h.title || 'Untitled')}</div>
+                  ${h.character ? `<div class="hl-char">${escapeHtml(h.character)}${isMine ? ' · Du' : ''}</div>` : ''}
+                  ${h.description ? `<div class="hl-desc">${escapeHtml(h.description).slice(0, 130)}${h.description.length > 130 ? '…' : ''}</div>` : ''}
+                  <div class="hl-cta">→ Auf Scroll als Karte</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    // Highlights global hinterlegen damit openHighlightAsCard() drauf zugreifen kann
+    window._currentHighlights = ordered;
+  }
 
   host.innerHTML = `
     ${renderSessionStatusBanner()}
     <div style="max-width:1100px;margin:0 auto 28px;text-align:center;">
-      <div class="empty-crest" style="font-size:34px;">📜</div>
-      <h2 class="empty-title">Willkommen zurück, <em>${escapeHtml(char.name.split(' ')[0])}</em></h2>
-      <p class="empty-sub">Was du vor der nächsten Session wissen solltest. Recap aus deiner Sicht, offene Fäden, NPCs.</p>
+      <div class="empty-crest" style="font-size:34px;">${isLive ? '🔥' : '📜'}</div>
+      <h2 class="empty-title">${isLive ? `<em>${escapeHtml(char.name.split(' ')[0])}</em>, deine Session läuft` : `Willkommen zurück, <em>${escapeHtml(char.name.split(' ')[0])}</em>`}</h2>
+      <p class="empty-sub">${isLive ? 'Live-Updates aus dem DM Studio. Aktualisiert sich automatisch alle 60s.' : 'Was du vor der nächsten Session wissen solltest. Recap, Highlights, offene Fäden.'}</p>
     </div>
+
+    ${liveCard}
 
     <div class="briefing-grid">
       <div class="briefing-card">
@@ -716,6 +863,8 @@ function renderBriefing() {
         </div>
       </div>
 
+      ${highlightsCard}
+
       ${npcs.length ? `
         <div class="briefing-card" style="grid-column:1 / -1;">
           <div class="briefing-card-h">
@@ -734,6 +883,123 @@ function renderBriefing() {
           </div>
         </div>
       ` : ''}
+    </div>
+
+    <div style="max-width:1100px;margin:30px auto 0;text-align:center;">
+      <button class="btn-top" onclick="state.selectedCharId=null;saveState();renderBriefing();renderCampaignMeta();">↩ Anderen Charakter wählen</button>
+    </div>
+  `;
+}
+
+// ═══════════ LIVE-SESSION-CARD ═══════════
+// Zeigt während laufender Session: aktuellen Standort, letzte Quick-Notes, Kampf-Status.
+function renderLiveSessionCard(camp, char) {
+  const live = camp._live || {};
+  const locId = live.currentLocationId;
+  const locDict = camp.locations || {};
+  const currentLoc = locId ? locDict[locId] : null;
+
+  // Quick-Notes über alle Locations sammeln, sortiert nach Recency.
+  // Format: `[HH:MM] text` pro Zeile in loc.log.
+  const allNotes = [];
+  Object.entries(locDict).forEach(([lid, loc]) => {
+    if (!loc?.log) return;
+    String(loc.log).split('\n').filter(l => l.trim()).forEach(line => {
+      const m = line.match(/^\[(\d{1,2}:\d{2})\]\s*(.+)$/);
+      const time = m ? m[1] : '';
+      const text = m ? m[2] : line;
+      allNotes.push({ time, text, locId: lid, locName: loc.name || 'Unbekannt' });
+    });
+  });
+  // Take last 6 notes (assuming sequential append). If timestamps are HH:MM only,
+  // bewerten wir Reihenfolge konservativ: nimm einfach die letzten Einträge.
+  const recentNotes = allNotes.slice(-6).reverse();
+
+  // Combat-State
+  const combat = live.combatState;
+  const combatActive = combat && (combat.combatants || []).some(c => c?.name);
+  let combatHtml = '';
+  if (combatActive) {
+    const sortedCombatants = (combat.combatants || [])
+      .filter(c => c?.name)
+      .map((c, i) => ({ ...c, _idx: i }))
+      .sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+    const round = combat.round || 1;
+    const activeIdx = combat.activeIdx ?? combat.active ?? 0;
+    combatHtml = `
+      <div class="live-combat-block">
+        <div class="live-combat-h">⚔️ KAMPF · Runde ${round}</div>
+        <div class="live-combat-list">
+          ${sortedCombatants.map((c, i) => {
+            const isActive = c._idx === activeIdx;
+            const hpPercent = c.maxHp ? Math.max(0, Math.min(100, (c.hp / c.maxHp) * 100)) : 100;
+            const hpColor = hpPercent < 25 ? 'var(--crimson)' : hpPercent < 50 ? '#c08810' : 'var(--forest)';
+            return `
+              <div class="live-combat-row ${isActive ? 'active' : ''} ${c.down ? 'down' : ''}">
+                <div class="lc-name">${isActive ? '▸ ' : ''}${escapeHtml(c.name)}</div>
+                <div class="lc-hp">
+                  <div class="lc-hp-bar" style="width:${hpPercent}%;background:${hpColor};"></div>
+                  <span class="lc-hp-text">${c.down ? 'DOWN' : `${c.hp ?? '?'}/${c.maxHp ?? '?'}`}</span>
+                </div>
+                <div class="lc-init">${c.initiative ?? '—'}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const lastSnap = live.snapshotAt ? new Date(live.snapshotAt) : null;
+  const ageStr = lastSnap
+    ? (() => {
+        const diffMin = Math.floor((Date.now() - lastSnap.getTime()) / 60000);
+        if (diffMin < 1) return 'gerade eben';
+        if (diffMin < 60) return `vor ${diffMin} min`;
+        return `vor ${Math.floor(diffMin / 60)}h`;
+      })()
+    : '—';
+
+  return `
+    <div class="live-card-wrap">
+      <div class="live-card">
+        <div class="live-card-h">
+          <span class="live-pulse-dot"></span>
+          <span class="live-card-h-title">JETZT GERADE</span>
+          <span class="live-card-h-meta">DM-Sync ${ageStr}</span>
+        </div>
+        <div class="live-card-b">
+          ${currentLoc ? `
+            <div class="live-loc-block">
+              <div class="live-loc-tag">SCHAUPLATZ</div>
+              <div class="live-loc-name">${escapeHtml(currentLoc.name || 'Unbekannter Ort')}</div>
+              ${currentLoc.readAloud ? `<div class="live-loc-readaloud">${escapeHtml(currentLoc.readAloud)}</div>` : ''}
+            </div>
+          ` : `
+            <div class="live-loc-block live-loc-empty">
+              <div class="live-loc-tag">SCHAUPLATZ</div>
+              <em style="color:var(--text-dim);font-size:13px;">DM hat noch keinen Standort gewählt — Sync wartet.</em>
+            </div>
+          `}
+
+          ${combatHtml}
+
+          ${recentNotes.length ? `
+            <div class="live-notes-block">
+              <div class="live-notes-h">📝 LETZTE NOTIZEN VOM DM</div>
+              <div class="live-notes-list">
+                ${recentNotes.map(n => `
+                  <div class="live-note-row">
+                    <span class="live-note-time">${escapeHtml(n.time || '·')}</span>
+                    <span class="live-note-loc">${escapeHtml((n.locName || '').split(' ')[0])}</span>
+                    <span class="live-note-text">${escapeHtml(n.text)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : '<div class="live-notes-block live-notes-empty"><em>Noch keine Quick-Notes vom DM.</em></div>'}
+        </div>
+      </div>
     </div>
   `;
 }
@@ -782,7 +1048,8 @@ function renderCharacter() {
         ${['str','dex','con','int','wis','cha'].map(s => {
           const mod = abilityModifier(stats[s]);
           return `
-            <div class="char-stat">
+            <div class="char-stat" onclick="rollStat('${s}', ${mod})" title="Klick = d20 + Modifier">
+              <span class="roll-hint">d20</span>
               <div class="char-stat-lbl">${s.toUpperCase()}</div>
               <div class="char-stat-mod">${formatMod(mod)}</div>
               <div class="char-stat-val">${stats[s]}</div>
@@ -913,6 +1180,52 @@ async function renderAlbum() {
   }
 }
 
+// ═══════════ HIGHLIGHT → SCROLL ═══════════
+function openHighlightAsCard(idx) {
+  const h = (window._currentHighlights || [])[idx];
+  if (!h) return;
+  const story = [h.title, h.description].filter(Boolean).join(' — ');
+  const url = '/scroll/?prompt=' + encodeURIComponent(story);
+  window.open(url, '_blank');
+  try { window.plausible?.('Player View Highlight Click', { props: { rarity: h.rarity || 'common' } }); } catch(e) {}
+}
+
+// ═══════════ D20-ROLL ═══════════
+const STAT_LABELS = {
+  str: 'Strength', dex: 'Dexterity', con: 'Constitution',
+  int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma'
+};
+function rollStat(stat, mod) {
+  const d20 = 1 + Math.floor(Math.random() * 20);
+  const total = d20 + mod;
+  const isCrit = d20 === 20;
+  const isFumble = d20 === 1;
+  const tag = isCrit ? 'NATURAL 20!' : isFumble ? 'NATURAL 1!' : '';
+  const tagClass = isCrit ? 'crit' : isFumble ? 'fumble' : '';
+  const resultClass = tagClass;
+  const flash = document.createElement('div');
+  flash.className = 'roll-flash';
+  flash.innerHTML = `
+    <div class="roll-flash-inner">
+      <div class="rf-stat">${STAT_LABELS[stat] || stat.toUpperCase()}-CHECK</div>
+      <div class="rf-result ${resultClass}">${total}</div>
+      <div class="rf-formula">d20 (${d20}) ${mod >= 0 ? '+' : '−'} ${Math.abs(mod)}</div>
+      ${tag ? `<div class="rf-tag ${tagClass}">${tag}</div>` : ''}
+    </div>
+  `;
+  flash.onclick = () => closeRollFlash(flash);
+  document.body.appendChild(flash);
+  // Auto-close nach 1.8s
+  setTimeout(() => closeRollFlash(flash), 1800);
+  // Plausible-Event
+  try { window.plausible?.('Player View Roll', { props: { stat, result: total } }); } catch(e) {}
+}
+function closeRollFlash(el) {
+  if (!el || el.classList.contains('fading')) return;
+  el.classList.add('fading');
+  setTimeout(() => el.remove(), 350);
+}
+
 // Email-Hash für Supabase-Slug (sha256 erste 16 hex-chars, lowercase trimmed)
 async function emailToSlug(email) {
   const enc = new TextEncoder();
@@ -935,11 +1248,16 @@ initAuthState();
 // Plausible event
 try { window.plausible?.('Player View Open', { props: { hasEmail: syncSettings().email ? 'yes' : 'no' } }); } catch(e){}
 
-// Auto-Refresh alle 60s wenn Tab sichtbar + User eingeloggt — so siehst du wenn DM die Session beendet
+// Auto-Refresh alle 60s wenn Tab sichtbar + User eingeloggt — so siehst du Live-Updates
+// während der Session (neue Quick-Notes, Location-Wechsel, Kampfstand) UND wenn DM Session beendet.
 let _refreshTimer = setInterval(() => {
   if (document.hidden) return;
   if (!syncSettings().email) return;
-  loadAllCampaignsFromCloud().then(() => renderLiveBadge());
+  loadAllCampaignsFromCloud().then(() => {
+    renderLiveBadge();
+    // Wenn Briefing-Tab aktiv ist, neu rendern damit Live-Updates sichtbar werden
+    if (state.currentView === 'briefing') renderBriefing();
+  });
 }, 60000);
 
 // Beim Page-Visibility-Change (Tab wieder aktiv) sofort refresh

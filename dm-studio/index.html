@@ -7385,13 +7385,19 @@ async function syncNow() {
   setSyncStatus('syncing', 'Sync…');
   try {
     // Nur die aktive Kampagne wird gepusht — nicht der ganze state (spart Bandbreite)
+    // Live-Session-Snapshot mitschicken — Player View braucht das während laufender Session.
+    const liveSnapshot = {
+      currentLocationId: state.currentLocationId || null,
+      combatState: (state.initiative && (state.initiative.combatants || state.initiative.active)) ? state.initiative : null,
+      snapshotAt: Date.now()
+    };
     const resp = await fetch(`${API_BASE}/api/dm-studio/save`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: s.email,
         campaignId: active.id,
         state: {
-          campaign: active,  // die komplette Kampagnen-Daten
+          campaign: { ...active, _live: liveSnapshot },  // Live-Snapshot inline für Player View
           campaignMeta: { name: active.name, role: active.role || 'dm', updatedAt: active.updatedAt || Date.now() }
         }
       })

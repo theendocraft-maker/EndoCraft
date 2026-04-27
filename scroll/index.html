@@ -2776,6 +2776,14 @@ function surpriseStory(){
 window._dmStudioImport = null;  // globale Referenz für generateSessionImage
 function tryImportFromDMStudio() {
   const params = new URLSearchParams(window.location.search);
+
+  // Direct prompt prefill (z.B. von Player View highlight-tile)
+  const directPrompt = params.get('prompt');
+  if (directPrompt) {
+    const ta = document.getElementById('storyInput');
+    if (ta && !ta.value) ta.value = directPrompt;
+  }
+
   const key = params.get('dmstudio');
   if (!key) return;
   let payload;
