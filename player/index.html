@@ -63,6 +63,54 @@ html,body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georg
 .campaign-pill-name{font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;}
 .campaign-pill-meta{font-size:11px;color:var(--text-dim);font-style:italic;}
 
+/* ═══════ LIVE SESSION BADGE ═══════ */
+.live-badge{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 12px 7px 14px;
+  background:linear-gradient(to right,var(--crimson),#7a1810);
+  color:#fdf6e8;border-radius:30px;
+  font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:2px;font-weight:700;
+  box-shadow:0 2px 12px rgba(168,35,24,0.35);
+  animation:liveBadgeIn .4s ease-out;
+}
+@keyframes liveBadgeIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.lb-pulse{
+  width:8px;height:8px;border-radius:50%;background:#fdf6e8;
+  box-shadow:0 0 0 0 rgba(253,246,232,0.7);
+  animation:lbPulse 1.4s ease-out infinite;
+}
+@keyframes lbPulse{
+  0%{box-shadow:0 0 0 0 rgba(253,246,232,0.7);}
+  70%{box-shadow:0 0 0 8px rgba(253,246,232,0);}
+  100%{box-shadow:0 0 0 0 rgba(253,246,232,0);}
+}
+.lb-num{opacity:.7;font-size:10px;letter-spacing:1px;}
+.campaign-pill .dot.live{background:var(--crimson);box-shadow:0 0 8px rgba(168,35,24,0.6);animation:lbPulse 1.4s ease-out infinite;}
+
+/* Status-Banner in der Briefing-View */
+.session-status-banner{
+  max-width:1100px;margin:0 auto 24px;
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(to right,#fef2e4,#fff);
+  border:1.5px solid var(--crimson);border-left:5px solid var(--crimson);
+  border-radius:10px;padding:14px 20px;
+  box-shadow:0 4px 16px rgba(168,35,24,0.12);
+}
+.ssb-pulse{
+  width:14px;height:14px;border-radius:50%;background:var(--crimson);
+  box-shadow:0 0 0 0 rgba(168,35,24,0.6);
+  animation:lbPulse 1.4s ease-out infinite;flex-shrink:0;
+}
+.ssb-text{flex:1;}
+.ssb-h{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--crimson);text-transform:uppercase;font-weight:700;}
+.ssb-sub{font-family:'EB Garamond',serif;font-size:14px;color:var(--text);margin-top:3px;line-height:1.45;}
+.ssb-refresh{background:transparent;border:1px solid var(--border-strong);color:var(--text-dim);padding:6px 12px;border-radius:5px;font-size:11px;font-family:'Cinzel',serif;letter-spacing:1px;cursor:pointer;font-weight:700;}
+.ssb-refresh:hover{border-color:var(--gold);color:var(--gold);}
+
+.session-status-banner.idle{background:var(--surface-2);border-color:var(--border-strong);border-left-color:var(--text-dim);box-shadow:none;}
+.session-status-banner.idle .ssb-pulse{background:var(--text-dim);box-shadow:none;animation:none;}
+.session-status-banner.idle .ssb-h{color:var(--text-dim);}
+
 /* ═══════ MAIN LAYOUT ═══════ */
 .app{min-height:calc(100vh - 60px);}
 .view{display:none;padding:32px 28px 60px;}
@@ -208,11 +256,16 @@ body.gate-open{overflow:hidden;}
   </a>
   <div class="topbar-sep"></div>
   <div class="campaign-pill" id="campaignPill" onclick="">
-    <div class="dot"></div>
+    <div class="dot" id="campaignDot"></div>
     <div>
       <div class="campaign-pill-name" id="campName">—</div>
       <div class="campaign-pill-meta" id="campMeta">Wähle deinen Charakter</div>
     </div>
+  </div>
+  <div class="live-badge" id="liveSessionBadge" style="display:none;">
+    <span class="lb-pulse"></span>
+    <span class="lb-text">SESSION LÄUFT</span>
+    <span class="lb-num" id="lbSessionNum"></span>
   </div>
   <div class="tabnav">
     <div class="tab active" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Vor Session</span></div>
@@ -465,6 +518,90 @@ async function initAuthState() {
   });
 }
 
+// ═══════════ SESSION STATUS ═══════════
+// Eine Session "läuft" wenn sie existiert + noch keinen Recap hat.
+// Der Recap wird vom DM via "Session beenden" gesetzt — solange leer = aktiv.
+function getSessionStatus() {
+  const c = currentCampaign();
+  if (!c) return { state: 'none' };
+  const sessions = c.sessions || [];
+  const last = sessions[sessions.length - 1];
+  if (!last) return { state: 'none' };
+  const lastSync = state.syncSettings?.lastSync ? new Date(state.syncSettings.lastSync) : null;
+  if (!last.recap || !last.recap.trim()) {
+    return {
+      state: 'live',
+      number: last.number,
+      title: last.title || '',
+      date: last.date || '',
+      lastSync
+    };
+  }
+  return {
+    state: 'completed',
+    number: last.number,
+    title: last.title || '',
+    date: last.date || '',
+    lastSync
+  };
+}
+
+function renderLiveBadge() {
+  const status = getSessionStatus();
+  const badge = document.getElementById('liveSessionBadge');
+  const dot = document.getElementById('campaignDot');
+  if (!badge) return;
+  if (status.state === 'live') {
+    badge.style.display = '';
+    document.getElementById('lbSessionNum').textContent = '#' + status.number;
+    if (dot) dot.classList.add('live');
+  } else {
+    badge.style.display = 'none';
+    if (dot) dot.classList.remove('live');
+  }
+}
+
+function renderSessionStatusBanner() {
+  const status = getSessionStatus();
+  if (status.state === 'none') return '';
+  if (status.state === 'live') {
+    const lastSyncMin = status.lastSync ? Math.floor((Date.now() - status.lastSync.getTime()) / 60000) : null;
+    const syncLabel = lastSyncMin === null ? 'noch nicht synchronisiert'
+      : lastSyncMin < 1 ? 'gerade synchronisiert'
+      : lastSyncMin < 60 ? `vor ${lastSyncMin} min synchronisiert`
+      : `vor ${Math.floor(lastSyncMin/60)}h synchronisiert`;
+    return `
+      <div class="session-status-banner">
+        <div class="ssb-pulse"></div>
+        <div class="ssb-text">
+          <div class="ssb-h">Session ${status.number} läuft gerade</div>
+          <div class="ssb-sub">${status.title ? '„' + escapeHtml(status.title) + '" — ' : ''}dein DM hat noch keinen Recap geschrieben. ${syncLabel}.</div>
+        </div>
+        <button class="ssb-refresh" onclick="refreshFromCloud()">↻ Aktualisieren</button>
+      </div>
+    `;
+  }
+  // completed
+  return `
+    <div class="session-status-banner idle">
+      <div class="ssb-pulse"></div>
+      <div class="ssb-text">
+        <div class="ssb-h">Session ${status.number} abgeschlossen</div>
+        <div class="ssb-sub">${status.title ? '„' + escapeHtml(status.title) + '" — ' : ''}Recap unten. Die nächste Session hat noch nicht begonnen.</div>
+      </div>
+      <button class="ssb-refresh" onclick="refreshFromCloud()">↻ Prüfen</button>
+    </div>
+  `;
+}
+
+async function refreshFromCloud() {
+  toast('Lade...');
+  await loadAllCampaignsFromCloud();
+  renderLiveBadge();
+  switchView(state.currentView);
+  toast('Aktualisiert');
+}
+
 // ═══════════ RENDER: CAMPAIGN PILL ═══════════
 function renderCampaignMeta() {
   const c = currentCampaign();
@@ -475,6 +612,7 @@ function renderCampaignMeta() {
   } else {
     document.getElementById('campMeta').textContent = 'Wähle deinen Charakter';
   }
+  renderLiveBadge();
 }
 
 // ═══════════ RENDER: VOR SESSION (BRIEFING) ═══════════
@@ -545,6 +683,7 @@ function renderBriefing() {
   const npcs = (camp.characters || []).filter(c => c.type === 'npc').slice(0, 8);
 
   host.innerHTML = `
+    ${renderSessionStatusBanner()}
     <div style="max-width:1100px;margin:0 auto 28px;text-align:center;">
       <div class="empty-crest" style="font-size:34px;">📜</div>
       <h2 class="empty-title">Willkommen zurück, <em>${escapeHtml(char.name.split(' ')[0])}</em></h2>
@@ -795,6 +934,23 @@ initAuthState();
 
 // Plausible event
 try { window.plausible?.('Player View Open', { props: { hasEmail: syncSettings().email ? 'yes' : 'no' } }); } catch(e){}
+
+// Auto-Refresh alle 60s wenn Tab sichtbar + User eingeloggt — so siehst du wenn DM die Session beendet
+let _refreshTimer = setInterval(() => {
+  if (document.hidden) return;
+  if (!syncSettings().email) return;
+  loadAllCampaignsFromCloud().then(() => renderLiveBadge());
+}, 60000);
+
+// Beim Page-Visibility-Change (Tab wieder aktiv) sofort refresh
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && syncSettings().email) {
+    loadAllCampaignsFromCloud().then(() => {
+      renderLiveBadge();
+      if (state.currentView === 'briefing') renderBriefing();
+    });
+  }
+});
 </script>
 </body>
 </html>

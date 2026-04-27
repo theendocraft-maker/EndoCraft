@@ -465,6 +465,30 @@ body{
 .cond-pick:hover{border-color:var(--gold);background:#fef6e8;}
 .cond-pick.on{background:var(--crimson);color:#fff;border-color:var(--crimson);}
 
+/* ═══════ TOPBAR LIVE BADGE — Session läuft Indicator ═══════ */
+.topbar-live-badge{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 12px 7px 14px;
+  border-radius:30px;
+  font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:2px;font-weight:700;
+  margin-left:8px;
+  animation:tlbIn .35s ease-out;
+}
+@keyframes tlbIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.topbar-live-badge.live-only{background:linear-gradient(to right,var(--gold),#7a5a18);color:#fff;box-shadow:0 2px 12px rgba(147,110,30,0.35);}
+.topbar-live-badge.combat-mode{background:linear-gradient(to right,var(--crimson),#7a1810);color:#fdf6e8;box-shadow:0 2px 14px rgba(168,35,24,0.45);}
+.tlb-pulse{
+  width:8px;height:8px;border-radius:50%;background:#fdf6e8;
+  box-shadow:0 0 0 0 rgba(253,246,232,0.7);
+  animation:tlbPulse 1.4s ease-out infinite;
+}
+@keyframes tlbPulse{
+  0%{box-shadow:0 0 0 0 rgba(253,246,232,0.7);}
+  70%{box-shadow:0 0 0 8px rgba(253,246,232,0);}
+  100%{box-shadow:0 0 0 0 rgba(253,246,232,0);}
+}
+.tlb-num{opacity:.65;font-size:10px;letter-spacing:1px;}
+
 /* ═══════ ROLE PICKER MODAL ═══════ */
 .role-picker-inner{max-width:680px;width:100%;}
 .rp-head{padding:32px 32px 18px;text-align:center;}
@@ -3909,6 +3933,42 @@ function renderCampaignMeta() {
   const s = c.session || { number: 0, level: '' };
   const roleLabel = c.role === 'player' ? '🎭 Spieler' : '📖 DM';
   metaEl.textContent = `${roleLabel} · Session ${s.number || '–'}${s.level ? ' · Lvl ' + s.level : ''}`;
+  // Session-Status: läuft eine Session gerade (kein Recap geschrieben)?
+  renderSessionRunningBadge();
+}
+
+// Status-Badge in der Topbar: "🔴 SESSION LÄUFT" wenn aktuelle Session noch keinen Recap hat
+function renderSessionRunningBadge() {
+  let badge = document.getElementById('topbarLiveBadge');
+  const c = campaign();
+  const sessions = c?.sessions || [];
+  const last = sessions[sessions.length - 1];
+  const isRunning = last && (!last.recap || !last.recap.trim());
+  const isInCombat = !!state.initiative?.length;
+
+  // Falls Badge noch nicht existiert, in den Topbar zwischen Pill und Tabs einfügen
+  if (!badge) {
+    const pill = document.getElementById('campaignPill');
+    if (!pill) return;
+    badge = document.createElement('div');
+    badge.id = 'topbarLiveBadge';
+    badge.className = 'topbar-live-badge';
+    pill.parentNode.insertBefore(badge, pill.nextSibling);
+  }
+
+  if (isInCombat) {
+    badge.style.display = '';
+    badge.classList.remove('live-only');
+    badge.classList.add('combat-mode');
+    badge.innerHTML = `<span class="tlb-pulse"></span><span class="tlb-text">KAMPF · R${state.combatRound || 1}</span><span class="tlb-num">#${last?.number || '?'}</span>`;
+  } else if (isRunning) {
+    badge.style.display = '';
+    badge.classList.remove('combat-mode');
+    badge.classList.add('live-only');
+    badge.innerHTML = `<span class="tlb-pulse"></span><span class="tlb-text">SESSION LÄUFT</span><span class="tlb-num">#${last.number}</span>`;
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 // ═══════════ CAMPAIGN SWITCHER ═══════════
@@ -4956,6 +5016,7 @@ function startNewSession() {
   if (typeof renderInitiative === 'function') renderInitiative();
   if (typeof renderSessionLocation === 'function') renderSessionLocation();
   if (typeof updateQuickNotesCount === 'function') updateQuickNotesCount();
+  if (typeof renderCampaignMeta === 'function') renderCampaignMeta();
 
   toast(`✓ Session #${nextNum} gestartet${title.trim() ? ' · ' + title.trim() : ''}`);
   plausibleTrack && plausibleTrack('DMStudio · New Session', { number: nextNum });
@@ -5249,6 +5310,7 @@ function renderInitiative() {
     tracker.style.display = 'none';
     if (nextTurnBtn) nextTurnBtn.style.display = 'none';
     renderSessionActionMenu();  // refresh menu (Initiative-Item ändert sich)
+    if (typeof renderSessionRunningBadge === 'function') renderSessionRunningBadge();
     return;
   }
 
@@ -8583,6 +8645,7 @@ function savePostSessionRecap() {
   saveState();
   const modal = document.querySelector('.recap-modal');
   if (modal) { modal._savedCleanClose = true; modal.remove(); }
+  if (typeof renderCampaignMeta === 'function') renderCampaignMeta();  // Live-Badge updaten (Session jetzt completed)
 
   const hlInfo = highlights.length ? ' + ' + highlights.length + ' Highlight' + (highlights.length === 1 ? '' : 's') : '';
   toast(`✓ Session #${current.number} gespeichert${hlInfo} · Wechsle zu „Session Live" zum Anzeigen`);
