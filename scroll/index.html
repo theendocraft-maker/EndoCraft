@@ -6,6 +6,7 @@
 <title>EndoCraft — What happened in your session?</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0a0a0f;
@@ -78,6 +79,39 @@ body {
   transition: opacity .2s;
 }
 .topbar-cta:hover { opacity: .92; }
+
+/* Logged-in user pill (shown when Supabase session detected) */
+.user-pill {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px 5px 6px;
+  text-decoration: none;
+  transition: border-color .2s, color .2s;
+}
+.user-pill:hover { color: var(--text); border-color: var(--border-hover); }
+.user-pill.is-active { display: inline-flex; }
+.user-pill .user-avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  color: #fff; font-size: 10px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; letter-spacing: 0;
+  flex-shrink: 0;
+}
+.user-pill .user-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(76,175,125,0.6);
+  flex-shrink: 0;
+}
 
 /* ── MAIN ── */
 .main {
@@ -995,6 +1029,11 @@ body {
     <span class="brand-name">EndoCraft.<span class="brand-sub">Session Scroll</span></span>
   </a>
   <div class="topbar-right">
+    <a href="../dm-studio/" class="user-pill" id="userPill" title="Im DM Studio eingeloggt">
+      <span class="user-avatar" id="userAvatar">·</span>
+      <span class="user-dot" aria-hidden="true"></span>
+      <span class="user-email" id="userEmail">…</span>
+    </a>
     <a href="../my-cards/" class="topbar-link" id="myCardsLink" style="display:none;">My Collection</a>
     <a href="../roadmap.html" class="topbar-link">Roadmap</a>
     <span class="sessions-pill" id="sessionsPill">3 FREE SESSIONS</span>
@@ -2352,6 +2391,125 @@ async function saveCard() {
   } catch(e) { /* private mode / disabled storage */ }
 })();
 
+// ═══════════ SUPABASE AUTH DETECTION ═══════════
+// Wenn der User schon im DM Studio (oder Player View) eingeloggt ist,
+// erkennt scroll/ die Session automatisch — kein zweiter Login nötig.
+// Auth-Token liegt in localStorage unter `sb-<project-ref>-auth-token`
+// und wird vom Supabase JS SDK geteilt, sobald derselbe origin/domain genutzt wird.
+const SUPABASE_AUTH_PUBLIC_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTUwNTgsImV4cCI6MjA5MTgzMTA1OH0.hjB96zqn85y-uZ1SEWMiTHEJjvEEkO504vSzLbSQgWA';
+
+async function _emailToOwnerSlug(email) {
+  try {
+    const enc = new TextEncoder();
+    const data = enc.encode(String(email).toLowerCase().trim());
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('').slice(0, 16);
+  } catch(e) { return null; }
+}
+
+function _renderLoggedInPill(email) {
+  try {
+    const pill = document.getElementById('userPill');
+    const emailEl = document.getElementById('userEmail');
+    const avatarEl = document.getElementById('userAvatar');
+    if (!pill || !emailEl) return;
+    emailEl.textContent = email;
+    if (avatarEl) {
+      const initial = (email[0] || '?').toUpperCase();
+      avatarEl.textContent = initial;
+    }
+    pill.classList.add('is-active');
+  } catch(e) {}
+}
+
+function _prefillEmailFields(email) {
+  try {
+    const fillOne = (id) => {
+      const el = document.getElementById(id);
+      if (el && !el.value) el.value = email;
+    };
+    fillOne('cardSubEmail');
+    // CTA-Copy für Returning-User aktualisieren
+    const title = document.getElementById('saveCtaTitle');
+    if (title && title.textContent === 'Keep this moment forever.') {
+      title.textContent = 'Save this one to your collection too.';
+    }
+  } catch(e) {}
+}
+
+async function _bootstrapFromSupabaseSession() {
+  if (!window.supabase || !window.supabase.createClient) return;
+  let sb;
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_AUTH_PUBLIC_KEY);
+  } catch(e) { console.warn('[scroll auth] createClient failed:', e); return; }
+
+  // Aktive Session abfragen
+  let session = null;
+  try {
+    const r = await sb.auth.getSession();
+    session = r?.data?.session || null;
+  } catch(e) { console.warn('[scroll auth] getSession failed:', e); }
+
+  if (session?.user?.email) {
+    await _applySession(session.user.email);
+  }
+
+  // Auch auf SIGNED_IN reagieren falls User in einem anderen Tab einloggt
+  try {
+    sb.auth.onAuthStateChange((event, sess) => {
+      if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && sess?.user?.email) {
+        _applySession(sess.user.email);
+      } else if (event === 'SIGNED_OUT') {
+        // pill ausblenden — User selbst kann auch im Scroll bleiben, kein Reload nötig
+        const pill = document.getElementById('userPill');
+        if (pill) pill.classList.remove('is-active');
+      }
+    });
+  } catch(e) {}
+}
+
+async function _applySession(email) {
+  try {
+    if (!localStorage.getItem('ec_email')) localStorage.setItem('ec_email', email);
+    let slug = localStorage.getItem('ec_owner_slug');
+    if (!slug) {
+      slug = await _emailToOwnerSlug(email);
+      if (slug) localStorage.setItem('ec_owner_slug', slug);
+    }
+    // My-Collection-Link nachziehen falls Slug grad erst gesetzt wurde
+    const myCardsLink = document.getElementById('myCardsLink');
+    if (myCardsLink && slug) {
+      myCardsLink.href = '../my-cards/?slug=' + encodeURIComponent(slug);
+      myCardsLink.style.display = '';
+    }
+    _prefillEmailFields(email);
+    _renderLoggedInPill(email);
+    window._ec_user = { email, slug };
+  } catch(e) { console.warn('[scroll auth] applySession failed:', e); }
+}
+
+// Start sobald das SDK geladen ist (defer ist nicht gesetzt → SDK ist bereits da
+// wenn dieses Script läuft, da es im <head> steht und wir am Ende des body sind).
+// Trotzdem einen kleinen Retry für den Fall dass das CDN langsam ist.
+(function _kickoffAuthDetection() {
+  let tries = 0;
+  const tryNow = () => {
+    if (window.supabase && window.supabase.createClient) {
+      _bootstrapFromSupabaseSession();
+    } else if (tries++ < 20) {
+      setTimeout(tryNow, 150);
+    }
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryNow);
+  } else {
+    tryNow();
+  }
+})();
+
 async function shareSession() {
   const btn = document.querySelector('.share-btn.primary');
   const orig = btn.textContent;
@@ -2409,9 +2567,10 @@ function copyShareLink() {
 
 
 // ── RANDOM STORY LIBRARY ──
-// Every entry is hand-crafted to produce a great card image: cinematic
-// moment, clear character, specific visual details, strong emotion.
-const RANDOM_STORIES = [
+// Every entry follows the master formula: SCENE + AUTHENTICITY (imperfect detail) + EMOTIONAL HOOK.
+// Imperfect details (mud, blood, tears, dented armor) give cards lived-in feeling.
+// Emotional hooks ("quiet recognition", "exhausted relief") give Seedream a target feeling.
+const RANDOM_STORIES_OLD_DEPRECATED = [
   {
     id:'caspian', emoji:'💋', label:'The Unwanted Kiss',
     story:`Caspian, a small brown-furred harengon bard in a blue shirt and brown leather vest, gets kissed on the cheek by Grimhilda the hag — a grotesque old crone who mistook him for her long-lost love. His rabbit ears flatten back in horror, eyes wide with pure disgust. Swamp mist closes in around them. A single tear of absolute regret slides down his fur.
@@ -2461,6 +2620,101 @@ My character: Felix, half-elf bard, chestnut hair falling over one eye, dark vel
     id:'kora', emoji:'\uD83D\uDCA2', label:'Chains of Wrath',
     story:`Kora, a half-orc barbarian, rips rusted iron chains apart around her wrists with sheer fury. Blood streaks her tusked face. The slave-masters back away in horror. Her eyes have gone pure red with rage. She is going to kill every single one of them.
 My character: Kora, half-orc barbarian, muscular, short black mohawk, ritual tribal scars, torn leather armor, tusked jaw, raging red eyes.`
+  }
+];
+
+// ── ACTIVE STORY POOL · perfektioniert nach Master-Formel ──
+// Scene + Authenticity (imperfect detail) + Emotional Hook · jede Story für Seedream optimiert
+const RANDOM_STORIES = [
+  {
+    id:'caspian', emoji:'🐰', label:'The Unwanted Kiss',
+    story:`Caspian the harengon bard freezes mid-step as Grimhilda the hag presses a wet kiss to his cheek — she has mistaken him for her long-lost love. His rabbit ears flatten back, his lute hangs forgotten, and his eyes go wide with the specific horror of a creature who knows this story will follow him forever. Single tear, swamp mist, the resigned posture of a man who rolled a Natural 2 on charisma.
+My character: Caspian, harengon bard, small warm brown fur, blue shirt and brown leather vest, long floppy ears.`
+  },
+  {
+    id:'lyra', emoji:'🏹', label:'Last Arrow',
+    story:`Lyra has loosed her final arrow at the diving black dragon — and now stands very still, watching it fly. Her auburn braid whips in the mountain wind, her quiver is empty, her armor is mud-streaked from three days of running. Behind her the wounded party looks up not in triumph but in disbelief, the way you look at something you hoped for but did not actually expect. Sunset paints everything gold and crimson.
+My character: Lyra, wood elf ranger, forest-green cloak, auburn braided hair, mud-streaked leather armor, silver longbow.`
+  },
+  {
+    id:'seraphine', emoji:'🗡️', label:'Pact of the Blade',
+    story:`Seraphine steps from a violet shadow-portal directly behind the war general. Her dagger is already moving — but her face shows no satisfaction, only the cold focus of someone keeping a contract. Golden patron-runes pulse faintly under her skin. The fortress torches dim as if frightened. The general has perhaps half a second left and does not yet know it.
+My character: Seraphine, half-elf hexblade warlock, loose silver hair, flowing dark robes, faint golden runes on skin, violet glowing eyes.`
+  },
+  {
+    id:'aldric', emoji:'⚱️', label:'The Last Vigil',
+    story:`Brother Aldric stands alone in the rain-soaked graveyard at dawn, holy symbol raised, undead crumbling to ash mid-lunge around him. His weathered face shows no triumph — only the exhausted relief of an old man who kept his promise to god one more time. Mud on his white robes, blood on his sleeve, divine light fading from his hands. Behind him, the names on the gravestones become readable as the sun rises.
+My character: Brother Aldric, elderly human cleric, mud-streaked white robes, grey beard, iron holy symbol, deeply lined face.`
+  },
+  {
+    id:'vex', emoji:'🔥', label:'Burn Out',
+    story:`Vex stands at the center of a tightening cultist circle and casts the biggest fireball of her life — three slots overcast, palms shaking. Golden flame curls up her tattooed arms but her eyes are already going white. She is going to win this fight and lose herself in the same second. One of the cultists is running. The others are too close.
+My character: Vex, tiefling sorcerer, cracked golden horns, dark red skin, glowing arcane palm tattoos, tattered purple robes.`
+  },
+  {
+    id:'pip', emoji:'🕯️', label:'Quiet Work',
+    story:`Pip drops from the rafters of the candlelit study and lands on the sleeping archmage's chest with the weight of a housecat. Her twin daggers are already where they need to be. Her face shows none of the triumph this moment deserves — only a small frown of concentration, like someone threading a needle. Dust motes hang frozen in the candlelight. The room smells of beeswax and old paper.
+My character: Pip, halfling rogue, dusty grey leathers, dark curly hair tied back, twin curved daggers, emerald-green eyes.`
+  },
+  {
+    id:'aelwyn', emoji:'🐻', label:'Mid-Change',
+    story:`Aelwyn is caught mid-transformation in the moonlit forest — bones lengthening, fur erupting along her arms, mouth open in a sound that is not quite a scream and not quite a roar. Her expression is frozen between human grief and feral release. Amber druidic runes spiral up her bared shoulders. The forest is too quiet. The deer-hide cloak slides off her changing back like discarded skin.
+My character: Aelwyn, half-elf druid, long silver-white braids, deer-hide cloak, glowing amber tattoos, hazel eyes.`
+  },
+  {
+    id:'azara', emoji:'❄️', label:'Frost Inheritance',
+    story:`Azara plants her feet in the snow and exhales — a torrent of ice-blue frost breath meets the charging frost giant head-on. Her silver scales catch the cold northern light. Snowflakes crystallize mid-air around her horns. Her eyes glow electric blue, but her stance is patient, almost bored — this is the third time this week. The giant has not yet realized he picked the wrong dragonborn.
+My character: Azara, silver dragonborn sorcerer, gleaming silver scales, pale-blue robes, electric-blue eyes, crystal-studded horns.`
+  },
+  {
+    id:'felix', emoji:'🍷', label:'The Wrong Duchess',
+    story:`Felix leans across the candlelit tavern table, halfway through a whispered confession, and freezes — because the woman behind the feathered fan is not the duchess he came to seduce. It is her wife. The two royal guards by the door grip their halberds but do not yet move. Felix's lute is just out of reach. His crooked grin holds, barely. He has approximately three seconds to talk his way out of this.
+My character: Felix, half-elf bard, chestnut hair falling over one eye, dark velvet coat, crooked grin, hazel eyes, lute slung over shoulder.`
+  },
+  {
+    id:'kora', emoji:'⛓️', label:'After the Chains',
+    story:`Kora rips the last rusted iron link apart and stands very still, breathing hard. Blood runs from a gash above her tusked jaw. The slave-master is backing toward the wall, mouth opening on a plea she will not hear. Behind her, the other prisoners have not yet realized they are free. Her eyes are not red with rage anymore — just tired, the kind of tired that comes when a long bad chapter ends.
+My character: Kora, half-orc barbarian, muscular, short black mohawk, ritual tribal scars, torn leather armor, tusked jaw.`
+  },
+  {
+    id:'thornwick', emoji:'🛡️', label:'Last Wall',
+    story:`Thornwick plants his shield in the cave mouth and braces. The wave of ghouls hits him a heartbeat later — but he is dwarven, and stone-stubborn, and his party is behind him. Helmet dented, beard matted with grave-dust, one boot lost somewhere in the dark. He does not yell. He just holds. Behind him, somewhere, the wizard is finishing a ritual. He only needs to hold for nine more seconds.
+My character: Thornwick, mountain dwarf paladin, dented plate armor, braided red beard with iron rings, oak-and-iron tower shield, warhammer.`
+  },
+  {
+    id:'kestrel', emoji:'💧', label:'Tending the Wounded',
+    story:`Kestrel kneels in the blood-streaked grass over the unconscious fighter, hands glowing pale silver, and works in silence. Her cleric's robes are torn, her healer's pouch is nearly empty, her hair is plastered to her forehead with sweat. She is humming — not a hymn, just an old song her mother used to sing. The fighter's chest rises. She allows herself one breath of relief, then moves to the next body.
+My character: Kestrel, halfling cleric of the Dawn, mud-streaked pale-blue robes, light brown braided hair, silver healer's amulet, kind tired eyes.`
+  },
+  {
+    id:'bram', emoji:'⚒️', label:'Outnumbered',
+    story:`Bram is alone in the canyon and there are eleven of them. His goliath shoulders are streaked with dust and bandit-blood. His warhammer is heavy. His braids are coming loose. He smiles, slowly, with the specific calm of someone who knows the math is wrong but does not care. The bandits are starting to look at each other instead of him. That is when he moves.
+My character: Bram, goliath fighter, grey-stone skin, dark braided hair coming loose, dusty leather and chain harness, two-handed warhammer.`
+  },
+  {
+    id:'mira', emoji:'⚙️', label:'The Last Invention',
+    story:`Mira flips the switch on her mechanical contraption — bolts, brass tubes, stolen lightning — and watches it spin up in the airship's belly. Her goggles are fogged. Her gnomish hands are blackened from the third soldering iron of the day. The thing has never worked twice. The thing might not work this time. The crew above her is screaming. She closes her eyes and pulls the lever anyway.
+My character: Mira, rock gnome artificer, oil-streaked workshop apron, brass goggles pushed up into wild copper hair, scarred clever hands.`
+  },
+  {
+    id:'finn', emoji:'🎻', label:'Funeral Song',
+    story:`Finn sits cross-legged on the cliff at dusk and plays for the friend they could not save. The fiddle is borrowed. The melody is one Finn has never played before — it just arrived. Below them, the party stands in a rough circle around the cairn. Nobody is crying yet. The wind tugs at Finn's curls. The sun goes down through the song, slowly, the way real things go down.
+My character: Finn, halfling bard, sandy curls, wool traveler's cloak, fingerless gloves, borrowed fiddle, a face built for laughing held still.`
+  },
+  {
+    id:'odric', emoji:'⚖️', label:'The Wrong Order',
+    story:`Odric stands in the throne room with his sword raised over the kneeling king — the same king who saved his life ten years ago, who gave him this sword, who is now responsible for the village burning behind them. The paladin's hand is shaking. His oath says one thing. His memory says another. The court is silent. The king does not look up. The choice will be made in the next breath, and it will define him forever.
+My character: Odric, human paladin, weather-worn silver plate, short dark beard, scarred jaw, longsword passed down from his mentor.`
+  },
+  {
+    id:'whisper', emoji:'😺', label:'The Rooftop Run',
+    story:`Whisper sprints across the rain-slick rooftops with the rescued child on her back. Tabaxi claws find purchase where boots could not. The city watch is two streets behind and falling further. Her tail trails behind her like a ribbon. The child is gripping her mantle in absolute trust. She is grinning — not because this is easy, but because for once in this miserable city she is on the right side of the chase.
+My character: Whisper, tabaxi rogue, sleek dark fur with gold spots, soaked dark cloak, soft leather boots, twin shortswords, bright amber eyes.`
+  },
+  {
+    id:'dorian', emoji:'📜', label:'The Last Scroll',
+    story:`Dorian unrolls the scroll he has carried for seven years and reads it for the first and last time. The library is empty around him. The candle is low. Outside, the world is ending in a way that will not be stopped. His hands do not shake. He has been preparing for exactly this paragraph since he was nineteen. Behind his glasses, his eyes are very tired and very awake at the same time.
+My character: Dorian, human evocation wizard, grey-streaked dark hair, ink-stained robes, wire-rimmed reading glasses, calloused fingers from spell components.`
   }
 ];
 
