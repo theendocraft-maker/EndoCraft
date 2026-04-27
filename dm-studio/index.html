@@ -9210,28 +9210,63 @@ let _albumLoading = false;
 
 async function loadAlbumCards(force = false) {
   const s = syncSettings();
-  if (!s.email) return [];
-  // Cache 60s
+  if (!s.email) { console.warn('[Album] Kein Email → kein Load'); return []; }
   if (!force && _albumCards && (Date.now() - _albumLastLoad < 60000)) return _albumCards;
   _albumLoading = true;
-  try {
-    const slug = await emailToSlugAsync(s.email);
-    const url = `${SUPABASE_URL_PUBLIC}/rest/v1/cards?owner_slug=eq.${slug}&select=id,number,session_title,legendary_moment,character_name,character_class,rarity,visible_roll,image_url,created_at&order=created_at.desc&limit=200`;
-    const resp = await fetch(url, {
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-    });
-    if (!resp.ok) throw new Error('Supabase ' + resp.status);
-    const cards = await resp.json();
-    _albumCards = Array.isArray(cards) ? cards : [];
-    _albumLastLoad = Date.now();
-    return _albumCards;
-  } catch (err) {
-    console.error('[Album] Load-Fehler:', err);
-    return [];
-  } finally {
-    _albumLoading = false;
+  _albumLastError = null;
+
+  // Slug-Strategie: Erst localStorage (vom Backend gesetzt bei letzter Card-Save),
+  // dann fallback auf SHA-256-Hash der Email (gleiche Logik wie server.js).
+  let slug = localStorage.getItem('ec_owner_slug');
+  if (!slug) {
+    slug = await emailToSlugAsync(s.email);
+    console.log('[Album] Kein ec_owner_slug in localStorage — nutze SHA-256-Fallback:', slug);
+  } else {
+    console.log('[Album] Nutze gecachten ec_owner_slug:', slug);
   }
+
+  // Versuche beide Slugs (manchmal hat localStorage einen alten Slug, oder umgekehrt)
+  const slugsToTry = [slug];
+  const hashSlug = await emailToSlugAsync(s.email);
+  if (hashSlug !== slug) slugsToTry.push(hashSlug);
+
+  let allCards = [];
+  for (const trySlug of slugsToTry) {
+    try {
+      const url = `${SUPABASE_URL_PUBLIC}/rest/v1/cards?owner_slug=eq.${trySlug}&select=id,number,session_title,legendary_moment,character_name,character_class,rarity,visible_roll,image_url,created_at&order=created_at.desc&limit=200`;
+      console.log('[Album] Fetching:', url);
+      const resp = await fetch(url, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+      });
+      const txt = await resp.text();
+      if (!resp.ok) {
+        console.error('[Album] Supabase ' + resp.status + ':', txt.slice(0, 300));
+        _albumLastError = 'Supabase ' + resp.status + ' — ' + txt.slice(0, 200);
+        continue;
+      }
+      const cards = JSON.parse(txt);
+      console.log('[Album] Slug "' + trySlug + '" → ' + cards.length + ' Karten');
+      if (Array.isArray(cards) && cards.length > 0) {
+        allCards = cards;
+        // Update localStorage zum richtigen Slug
+        if (trySlug !== slug) {
+          localStorage.setItem('ec_owner_slug', trySlug);
+          console.log('[Album] Slug in localStorage aktualisiert auf:', trySlug);
+        }
+        break;
+      }
+    } catch (e) {
+      console.error('[Album] Fetch-Error:', e);
+      _albumLastError = e.message;
+    }
+  }
+
+  _albumCards = allCards;
+  _albumLastLoad = Date.now();
+  _albumLoading = false;
+  return _albumCards;
 }
+let _albumLastError = null;
 
 // Async Helper für Email→Slug (sha256 erste 16 chars)
 async function emailToSlugAsync(email) {
@@ -9245,6 +9280,63 @@ function reloadAlbum() {
   _albumCards = null;
   renderAlbum();
   toast('Lade Karten neu...');
+}
+
+// Debug-Helper: zeigt alle nötigen Infos für das Album-Loading-Problem
+async function testAlbumDebug() {
+  const s = syncSettings();
+  const out = [];
+  const log = (x) => { console.log('[Album-Debug]', x); out.push(x); };
+
+  log('=== ALBUM DEBUG ===');
+  log('Email: ' + (s.email || 'KEINE'));
+  log('localStorage ec_owner_slug: ' + (localStorage.getItem('ec_owner_slug') || 'nicht gesetzt'));
+
+  if (!s.email) {
+    alert('Kein Email konfiguriert. Bitte erst einloggen.\n\n' + out.join('\n'));
+    return;
+  }
+
+  const hashSlug = await emailToSlugAsync(s.email);
+  log('SHA-256-Slug: ' + hashSlug);
+
+  const slugsToTest = [hashSlug];
+  const lsSlug = localStorage.getItem('ec_owner_slug');
+  if (lsSlug && lsSlug !== hashSlug) slugsToTest.push(lsSlug);
+
+  for (const slug of slugsToTest) {
+    log('--- Test mit slug: ' + slug);
+    try {
+      const url = `${SUPABASE_URL_PUBLIC}/rest/v1/cards?owner_slug=eq.${slug}&select=id,number,session_title,character_name,rarity&limit=5`;
+      const resp = await fetch(url, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+      });
+      log('  Status: ' + resp.status);
+      const text = await resp.text();
+      log('  Body (200 chars): ' + text.slice(0, 200));
+      if (resp.ok) {
+        const cards = JSON.parse(text);
+        log('  → ' + cards.length + ' Karten gefunden');
+      }
+    } catch (e) {
+      log('  Error: ' + e.message);
+    }
+  }
+
+  // Test ohne slug-Filter — sehen ob Tabelle generell lesbar ist
+  log('--- Test ohne slug-Filter (nur erste 3 Karten):');
+  try {
+    const resp = await fetch(`${SUPABASE_URL_PUBLIC}/rest/v1/cards?select=id,owner_slug,character_name&limit=3`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    });
+    log('  Status: ' + resp.status);
+    const text = await resp.text();
+    log('  Body: ' + text.slice(0, 400));
+  } catch (e) {
+    log('  Error: ' + e.message);
+  }
+
+  alert('Debug-Output (auch in Console):\n\n' + out.join('\n'));
 }
 
 function filterAlbumRarity(r) {
@@ -9309,25 +9401,33 @@ async function renderAlbum() {
   }
 
   if (!filtered.length) {
-    board.innerHTML = cards.length ? `
+    const errorHtml = _albumLastError ? `
+      <div style="max-width:520px;margin:0 auto 20px;padding:14px 18px;background:#fef2e4;border:1px solid var(--crimson);border-radius:8px;color:var(--crimson);font-size:13px;line-height:1.5;">
+        <strong>Fehler beim Laden:</strong> ${escapeHtml(_albumLastError)}<br>
+        <span style="font-size:11px;opacity:.8;">Schau in die Browser-Console (F12) für Details. Klick „↻" links um neu zu laden.</span>
+      </div>
+    ` : '';
+    board.innerHTML = errorHtml + (cards.length ? `
       <div style="max-width:520px;margin:80px auto;text-align:center;padding:40px 20px;">
         <div style="font-size:42px;margin-bottom:12px;">🔍</div>
         <h2 style="font-family:'Syne',sans-serif;font-size:18px;color:var(--ink);margin-bottom:10px;">Keine Karten in diesem Filter</h2>
         <p style="font-size:13px;color:var(--text-dim);">Wechsel auf „Alle" um alle ${cards.length} Karten zu sehen.</p>
       </div>
     ` : `
-      <div style="max-width:520px;margin:80px auto;text-align:center;padding:40px 20px;">
+      <div style="max-width:520px;margin:60px auto;text-align:center;padding:40px 20px;">
         <div style="font-size:48px;margin-bottom:14px;">📚</div>
-        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">Noch keine Karten gesammelt</h2>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">${_albumLastError ? 'Karten nicht erreichbar' : 'Noch keine Karten gesammelt'}</h2>
         <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:20px;">
-          Sobald du Karten auf <a href="https://endocraft.app/scroll/" target="_blank" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a> erstellst,
-          tauchen sie hier auf. Auch deine Highlights aus dem Recap-Modal kannst du direkt zu Karten machen.
+          ${_albumLastError
+            ? 'Console-Output (F12) zeigt was schief geht. Wahrscheinlich: RLS auf cards-Tabelle blockiert anon-Reads, oder Email-Slug stimmt nicht überein.'
+            : 'Sobald du Karten auf <a href="https://endocraft.app/scroll/" target="_blank" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a> erstellst, tauchen sie hier auf.'}
         </p>
-        <button class="btn-top primary" onclick="window.open('https://endocraft.app/scroll/','_blank')" style="background:var(--gold);color:#fff;border-color:var(--gold);">
-          → Erste Karte erstellen
-        </button>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn-top primary" onclick="window.open('https://endocraft.app/scroll/','_blank')" style="background:var(--gold);color:#fff;border-color:var(--gold);">→ Karte erstellen</button>
+          <button class="btn-top" onclick="testAlbumDebug()">🔍 Debug-Test</button>
+        </div>
       </div>
-    `;
+    `);
     return;
   }
 
