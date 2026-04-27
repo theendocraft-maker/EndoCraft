@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EndoCraft Player View — Dein Charakter, deine Story</title>
+<meta name="description" content="Spieler-Tool für D&D-Tische — dein Charakterbogen, dein Karten-Album, deine Session-Recaps">
+<link rel="icon" type="image/png" href="https://endocraft.app/IMG_8431.PNG">
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Plausible Analytics -->
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
+
+<!-- Supabase JS SDK for Google OAuth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#eceae5;
+  --bg2:#e0ddd6;
+  --surface:#ffffff;
+  --surface-2:#f5f3ef;
+  --text:#0f0f0f;
+  --text-dim:#4a4845;
+  --text-dimmer:#7a7874;
+  --border:rgba(0,0,0,0.12);
+  --border-strong:rgba(0,0,0,0.22);
+  --ink:#0a0a0a;
+  --gold:#936e1e;
+  --gold-dim:rgba(147,110,30,0.14);
+  --gold-br:#b48829;
+  --crimson:#a82318;
+  --forest:#27684f;
+  --accent:#7B6CF6;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 30px rgba(0,0,0,0.12);
+}
+html,body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:15px;line-height:1.55;min-height:100vh;}
+
+/* ═══════ TOP BAR ═══════ */
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 22px;background:linear-gradient(to bottom,#fbf6e6,#f4ecd4);border-bottom:1.5px solid #d9c89a;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:.01em;}
+.logo img{width:30px;height:30px;border-radius:7px;}
+.logo .sub{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;font-weight:700;border-left:1px solid var(--border-strong);padding-left:10px;margin-left:4px;}
+.topbar-sep{flex:1;}
+.tabnav{display:flex;gap:2px;background:var(--surface-2);padding:3px;border-radius:9px;border:1px solid var(--border);}
+.tab{padding:8px 14px;cursor:pointer;font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1.4px;color:var(--text-dim);font-weight:700;border-radius:6px;display:flex;align-items:center;gap:6px;text-transform:uppercase;transition:all .15s;}
+.tab:hover{color:var(--text);}
+.tab.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm);}
+.tab .ico{font-size:13px;}
+.btn-top{background:transparent;border:1px solid var(--border-strong);padding:7px 12px;border-radius:6px;font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;color:var(--text);cursor:pointer;font-weight:700;text-transform:uppercase;transition:all .15s;}
+.btn-top:hover{background:var(--surface);border-color:var(--gold);}
+.btn-top.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-top.primary:hover{filter:brightness(1.08);}
+
+/* ═══════ CAMPAIGN PILL ═══════ */
+.campaign-pill{display:flex;align-items:center;gap:10px;padding:6px 12px;background:var(--surface);border:1px solid var(--border-strong);border-radius:30px;cursor:pointer;}
+.campaign-pill:hover{border-color:var(--gold);}
+.campaign-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--forest);box-shadow:0 0 6px rgba(58,107,58,0.5);}
+.campaign-pill-name{font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;}
+.campaign-pill-meta{font-size:11px;color:var(--text-dim);font-style:italic;}
+
+/* ═══════ MAIN LAYOUT ═══════ */
+.app{min-height:calc(100vh - 60px);}
+.view{display:none;padding:32px 28px 60px;}
+.view.active{display:block;}
+
+/* ═══════ LOGIN GATE ═══════ */
+.landing-gate{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;}
+.landing-gate.show{display:flex;}
+.landing-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#1a1612 0%,#0a0908 70%);z-index:0;}
+.landing-bg::before{content:'';position:absolute;inset:0;background-image:url('https://endocraft.app/IMG_8431.PNG');background-size:cover;background-position:center;opacity:.08;filter:blur(2px) sepia(.3);}
+.landing-inner{position:relative;z-index:1;max-width:560px;width:100%;text-align:center;color:#fdf6e8;padding:40px 32px;}
+.landing-brand{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:30px;}
+.landing-logo{width:54px;height:54px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);box-shadow:0 4px 20px rgba(147,110,30,0.35);}
+.landing-brand-text{text-align:left;}
+.landing-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fdf6e8;letter-spacing:.01em;line-height:1;}
+.landing-sub{font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-top:4px;font-weight:700;}
+.landing-h1{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.2;margin:0 0 16px;color:#fdf6e8;letter-spacing:-.015em;}
+.landing-h1 em{font-style:italic;color:var(--gold);font-weight:800;}
+.landing-p{font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;color:rgba(253,246,232,0.75);margin:0 0 30px;}
+.landing-actions{display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto;}
+.landing-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.8px;text-transform:uppercase;font-weight:700;padding:14px 22px;border-radius:8px;cursor:pointer;transition:all .18s;border:none;display:inline-flex;align-items:center;justify-content:center;}
+.landing-btn.primary{background:#fff;color:#1a1612;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.landing-btn.primary:hover{background:#fdf6e8;}
+.landing-btn.secondary{background:transparent;color:rgba(253,246,232,0.7);border:1px solid rgba(253,246,232,0.2);}
+.landing-btn.secondary:hover{background:rgba(253,246,232,0.06);color:#fdf6e8;border-color:var(--gold);}
+.landing-foot{margin-top:24px;font-size:11px;color:rgba(253,246,232,0.4);font-style:italic;}
+body.gate-open{overflow:hidden;}
+
+/* ═══════ EMPTY STATE ═══════ */
+.empty-state{max-width:640px;margin:60px auto;text-align:center;padding:40px 20px;}
+.empty-crest{font-size:44px;margin-bottom:12px;color:var(--gold);}
+.empty-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--ink);margin-bottom:14px;letter-spacing:-.01em;}
+.empty-title em{color:var(--gold);font-style:italic;}
+.empty-sub{font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;color:var(--text-dim);margin-bottom:24px;}
+.empty-sub strong{color:var(--ink);}
+.empty-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.empty-card{display:flex;gap:14px;align-items:center;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:14px 18px;cursor:pointer;transition:all .15s;text-align:left;}
+.empty-card:hover{border-color:var(--gold);transform:translateX(3px);box-shadow:0 4px 14px rgba(147,110,30,0.1);}
+.empty-card-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Cinzel',serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.empty-card-name{font-family:'Syne',sans-serif;font-weight:700;color:var(--ink);font-size:14px;}
+.empty-card-desc{font-size:12px;color:var(--text-dim);margin-top:2px;}
+
+/* ═══════ VOR SESSION (Briefing für Spieler) ═══════ */
+.briefing-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1100px;margin:0 auto;}
+.briefing-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.briefing-card-h{padding:14px 20px;background:linear-gradient(to bottom,var(--surface-2),#fff);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.briefing-card-h .ico{font-size:18px;}
+.briefing-card-h-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.briefing-card-b{padding:18px 22px;font-family:'EB Garamond',serif;font-size:15px;color:var(--text);line-height:1.65;}
+.briefing-card-b em{color:var(--text-dim);font-style:italic;}
+.recap-text{font-style:italic;color:var(--text);}
+.thread-list{display:flex;flex-direction:column;gap:10px;}
+.thread-item{padding:12px 14px;background:var(--surface-2);border-left:3px solid var(--gold);border-radius:6px;}
+.thread-q{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.thread-text{font-size:14px;color:var(--text);line-height:1.5;}
+
+/* ═══════ CHARACTER SHEET (read-only) ═══════ */
+.char-page{max-width:780px;margin:0 auto;}
+.char-page-head{display:flex;gap:24px;margin-bottom:30px;align-items:flex-start;}
+.char-portrait{width:140px;height:140px;border-radius:14px;background:var(--surface-2);overflow:hidden;flex-shrink:0;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:36px;color:var(--text-dim);}
+.char-portrait img{width:100%;height:100%;object-fit:cover;}
+.char-name-block{flex:1;}
+.char-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.char-name{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--ink);font-weight:700;line-height:1.1;}
+.char-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--text-dim);margin-top:4px;}
+.char-stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:18px 0;}
+.char-stat{background:#fff;border:1px solid var(--border);border-radius:6px;padding:10px 6px;text-align:center;}
+.char-stat-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--crimson);font-weight:700;}
+.char-stat-mod{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--ink);margin:4px 0;line-height:1;}
+.char-stat-val{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+.char-section{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.char-section-h{padding:11px 18px;background:var(--surface-2);border-bottom:1px solid var(--border);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.char-section-b{padding:14px 18px;}
+.char-line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dotted var(--border);font-size:14px;}
+.char-line:last-child{border-bottom:none;}
+.char-line-lbl{color:var(--text-dim);}
+.char-line-val{color:var(--ink);font-weight:600;}
+
+/* ═══════ ALBUM ═══════ */
+.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;max-width:1100px;margin:0 auto;}
+.album-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .18s;}
+.album-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,0.15);border-color:var(--gold);}
+.album-card-img{aspect-ratio:3/4;background:linear-gradient(135deg,#1a0a00,#2a1505);position:relative;}
+.album-card-img img{width:100%;height:100%;object-fit:cover;}
+.album-card-rarity{position:absolute;top:8px;right:8px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:#fff;padding:3px 7px;border-radius:3px;font-weight:700;text-transform:uppercase;}
+.album-card-rarity.legendary{background:#b8851f;}
+.album-card-rarity.epic{background:#7B6CF6;}
+.album-card-rarity.rare{background:#1e6fd9;}
+.album-card-rarity.common{background:#5a5a5a;}
+.album-card-rarity.misprint{background:#a82318;}
+.album-card-info{padding:11px 14px;}
+.album-card-title{font-family:'Cinzel',serif;font-size:12.5px;color:var(--ink);font-weight:700;letter-spacing:.02em;line-height:1.25;}
+.album-card-sub{font-family:'EB Garamond',serif;font-size:12px;color:var(--text-dim);font-style:italic;margin-top:3px;}
+
+/* ═══════ TOAST ═══════ */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:10px 20px;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:var(--shadow-lg);font-weight:500;}
+.toast.show{opacity:1;}
+
+/* ═══════ MOBILE ═══════ */
+@media (max-width:900px){
+  .briefing-grid{grid-template-columns:1fr;}
+  .char-page-head{flex-direction:column;}
+  .char-portrait{width:110px;height:110px;}
+  .char-stats-row{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN GATE ═══════════ -->
+<div id="landingGate" class="landing-gate">
+  <div class="landing-bg"></div>
+  <div class="landing-inner">
+    <div class="landing-brand">
+      <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" class="landing-logo" onerror="this.style.display='none'">
+      <div class="landing-brand-text">
+        <div class="landing-title">EndoCraft</div>
+        <div class="landing-sub">Player View</div>
+      </div>
+    </div>
+    <h1 class="landing-h1">Dein Charakter, deine <em>Story</em></h1>
+    <p class="landing-p">
+      Spieler-Tool für deinen D&D-Tisch. Charakterbogen mit Live-Rolls, Karten-Album deiner legendären Momente, Recaps aus deiner Sicht. Logge dich ein damit deine Daten geräteübergreifend bleiben.
+    </p>
+    <div class="landing-actions">
+      <button class="landing-btn primary" onclick="gateSignIn()">
+        <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right:10px;vertical-align:-3px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Mit Google einloggen
+      </button>
+      <button class="landing-btn secondary" onclick="gateContinueOffline()">Offline ausprobieren</button>
+    </div>
+    <div class="landing-foot">
+      <span>Bist du DM? <a href="/dm-studio/" style="color:var(--gold);">Hier zum DM Studio →</a></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<div class="topbar">
+  <a href="/" class="logo">
+    <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
+    EndoCraft <span class="sub">Player</span>
+  </a>
+  <div class="topbar-sep"></div>
+  <div class="campaign-pill" id="campaignPill" onclick="">
+    <div class="dot"></div>
+    <div>
+      <div class="campaign-pill-name" id="campName">—</div>
+      <div class="campaign-pill-meta" id="campMeta">Wähle deinen Charakter</div>
+    </div>
+  </div>
+  <div class="tabnav">
+    <div class="tab active" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Vor Session</span></div>
+    <div class="tab" data-view="character" onclick="switchView('character')"><span class="ico">📜</span><span>Charakter</span></div>
+    <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">🃏</span><span>Album</span></div>
+  </div>
+  <button class="btn-top" onclick="signOut()" id="signOutBtn" style="display:none;">Abmelden</button>
+  <button class="btn-top" onclick="window.location.href='/dm-studio/'" title="Wenn du DM bist">📖 DM Studio</button>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div class="app">
+
+  <!-- VIEW: VOR SESSION (Briefing) -->
+  <div class="view active" id="view-briefing">
+    <div id="briefingMain"></div>
+  </div>
+
+  <!-- VIEW: CHARACTER (Read-Only Sheet) -->
+  <div class="view" id="view-character">
+    <div id="characterMain"></div>
+  </div>
+
+  <!-- VIEW: ALBUM (Cards) -->
+  <div class="view" id="view-album">
+    <div id="albumMain"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// EndoCraft Player View — MVP
+// Login → Cloud-Load der Kampagnen → Charakter-Auswahl → 3 Tabs
+// ═══════════════════════════════════════════════════════════════════════════
+
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const STORAGE_KEY_USER = 'ec_player_v1';
+const STORAGE_KEY_ANON = 'ec_player_v1_anon';
+const ANON_FLAG = '_ec_player_anon_mode';
+
+let STORAGE_KEY = localStorage.getItem(ANON_FLAG) === '1' ? STORAGE_KEY_ANON : STORAGE_KEY_USER;
+
+const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTUwNTgsImV4cCI6MjA5MTgzMTA1OH0.hjB96zqn85y-uZ1SEWMiTHEJjvEEkO504vSzLbSQgWA';
+
+let supabaseClient = null;
+function initSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (!window.supabase) return null;
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return supabaseClient;
+}
+
+// ═══════════ STATE ═══════════
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+if (!state.currentView) state.currentView = 'briefing';
+if (!state.selectedCharId) state.selectedCharId = null;
+if (!state.selectedCampaignId) state.selectedCampaignId = null;
+if (!state.campaigns) state.campaigns = [];  // wird von Cloud-Sync gefüllt
+if (!state.cards) state.cards = [];  // user's cards from Supabase
+
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) { console.warn(e); } }
+
+function syncSettings() {
+  if (!state.syncSettings) state.syncSettings = { email: '', googleAuth: false, lastSync: null };
+  return state.syncSettings;
+}
+
+// ═══════════ ESCAPE HELPERS ═══════════
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
+
+// ═══════════ TOAST ═══════════
+let _toastTimer;
+function toast(msg, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = isError ? 'var(--crimson)' : 'var(--gold)';
+  el.style.color = isError ? 'var(--crimson)' : 'var(--gold)';
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══════════ TAB-SWITCH ═══════════
+function switchView(view) {
+  state.currentView = view;
+  saveState();
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  if (view === 'briefing') renderBriefing();
+  if (view === 'character') renderCharacter();
+  if (view === 'album') renderAlbum();
+}
+
+// ═══════════ HELPERS ═══════════
+function abilityModifier(score) { return Math.floor(((score || 10) - 10) / 2); }
+function formatMod(n) { return (n >= 0 ? '+' : '') + n; }
+
+function currentCampaign() {
+  return state.campaigns?.find(c => c.id === state.selectedCampaignId) || state.campaigns?.[0] || null;
+}
+function currentChar() {
+  const c = currentCampaign();
+  if (!c) return null;
+  const all = c.characters || [];
+  return all.find(ch => ch.id === state.selectedCharId) || null;
+}
+
+// ═══════════ AUTH / CLOUD LOAD ═══════════
+async function gateSignIn() {
+  const sb = initSupabaseClient();
+  if (!sb) { toast('Supabase nicht konfiguriert', true); return; }
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href.split('?')[0].split('#')[0] }
+  });
+  if (error) toast('Google-Login-Fehler: ' + error.message, true);
+}
+
+function gateContinueOffline() {
+  if (STORAGE_KEY !== STORAGE_KEY_ANON) {
+    localStorage.setItem(ANON_FLAG, '1');
+    location.reload();
+    return;
+  }
+  state._offlineAck = true;
+  saveState();
+  hideLandingGate();
+  toast('Offline-Modus · Daten bleiben lokal');
+  initialRender();
+}
+
+async function signOut() {
+  const sb = initSupabaseClient();
+  if (sb) await sb.auth.signOut();
+  syncSettings().email = '';
+  syncSettings().googleAuth = false;
+  state._offlineAck = false;
+  saveState();
+  localStorage.setItem(ANON_FLAG, '1');
+  toast('Abgemeldet — Seite lädt neu...');
+  setTimeout(() => location.reload(), 600);
+}
+
+function isGateUnlocked() {
+  return !!(syncSettings().email || state._offlineAck);
+}
+
+function showLandingGate() {
+  const gate = document.getElementById('landingGate');
+  if (!gate) return;
+  gate.classList.add('show');
+  document.body.classList.add('gate-open');
+}
+function hideLandingGate() {
+  const gate = document.getElementById('landingGate');
+  if (!gate) return;
+  gate.classList.remove('show');
+  document.body.classList.remove('gate-open');
+}
+
+async function loadAllCampaignsFromCloud() {
+  const s = syncSettings();
+  if (!s.email) return;
+  try {
+    const listResp = await fetch(`${API_BASE}/api/dm-studio/campaigns?email=${encodeURIComponent(s.email)}`);
+    const listData = await listResp.json();
+    if (!listResp.ok) { console.warn('[Cloud] List fail:', listData); return; }
+    const cloudCampaigns = listData.campaigns || [];
+    if (!cloudCampaigns.length) {
+      console.log('[Cloud] Keine Kampagnen gefunden');
+      return;
+    }
+
+    const merged = [];
+    for (const cc of cloudCampaigns) {
+      const loadResp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(cc.campaign_id)}`);
+      const loadData = await loadResp.json();
+      if (loadResp.ok && loadData.found && loadData.state?.campaign) {
+        merged.push(loadData.state.campaign);
+      }
+    }
+    state.campaigns = merged;
+    if (!state.selectedCampaignId && merged.length) state.selectedCampaignId = merged[0].id;
+    s.lastSync = new Date().toISOString();
+    saveState();
+    console.log('[Cloud] ' + merged.length + ' Kampagnen geladen');
+    initialRender();
+  } catch (err) {
+    console.error('[Cloud] Fehler:', err);
+  }
+}
+
+let _wasSignedIn = false;
+async function initAuthState() {
+  const sb = initSupabaseClient();
+  if (!sb) {
+    if (!isGateUnlocked()) showLandingGate();
+    return;
+  }
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user?.email) {
+    if (STORAGE_KEY === STORAGE_KEY_ANON) {
+      localStorage.removeItem(ANON_FLAG);
+      location.reload();
+      return;
+    }
+    syncSettings().email = session.user.email;
+    syncSettings().googleAuth = true;
+    saveState();
+    _wasSignedIn = true;
+    hideLandingGate();
+    document.getElementById('signOutBtn').style.display = '';
+    setTimeout(() => loadAllCampaignsFromCloud(), 400);
+  } else {
+    if (STORAGE_KEY === STORAGE_KEY_USER && !syncSettings().email) {
+      localStorage.setItem(ANON_FLAG, '1');
+      location.reload();
+      return;
+    }
+    if (!isGateUnlocked()) showLandingGate();
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session?.user?.email) {
+      if (STORAGE_KEY === STORAGE_KEY_ANON) {
+        localStorage.removeItem(ANON_FLAG);
+        toast('Login erkannt — lade...');
+        setTimeout(() => location.reload(), 500);
+        return;
+      }
+      const fresh = !_wasSignedIn;
+      _wasSignedIn = true;
+      syncSettings().email = session.user.email;
+      syncSettings().googleAuth = true;
+      saveState();
+      hideLandingGate();
+      document.getElementById('signOutBtn').style.display = '';
+      if (fresh) {
+        toast('Eingeloggt als ' + session.user.email);
+        setTimeout(() => loadAllCampaignsFromCloud(), 600);
+      }
+    } else if (event === 'SIGNED_OUT') {
+      _wasSignedIn = false;
+      showLandingGate();
+    }
+  });
+}
+
+// ═══════════ RENDER: CAMPAIGN PILL ═══════════
+function renderCampaignMeta() {
+  const c = currentCampaign();
+  const pc = currentChar();
+  document.getElementById('campName').textContent = c?.name || 'Keine Kampagne';
+  if (pc) {
+    document.getElementById('campMeta').textContent = `${pc.name} · ${pc.race || ''} ${pc.class || ''}`.trim();
+  } else {
+    document.getElementById('campMeta').textContent = 'Wähle deinen Charakter';
+  }
+}
+
+// ═══════════ RENDER: VOR SESSION (BRIEFING) ═══════════
+function renderBriefing() {
+  const host = document.getElementById('briefingMain');
+  const camp = currentCampaign();
+  const char = currentChar();
+
+  if (!camp) {
+    host.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-crest">✦</div>
+        <h2 class="empty-title">Willkommen, <em>Spieler</em></h2>
+        <p class="empty-sub">
+          Hier siehst du Recaps aus deiner Perspektive, deinen Charakterbogen und dein Karten-Album.
+          Damit du Daten siehst, muss dein DM dich zu einer Kampagne hinzufügen — oder du legst
+          einen eigenen Test-Charakter an.
+        </p>
+        <div class="empty-cards">
+          <div class="empty-card" onclick="toast('Coming soon — frag deinen DM nach Kampagnen-Einladung')">
+            <div class="empty-card-num">1</div>
+            <div>
+              <div class="empty-card-name">Kampagne beitreten</div>
+              <div class="empty-card-desc">Dein DM teilt einen Code — du gibst ihn ein, du siehst eure Kampagne</div>
+            </div>
+          </div>
+          <div class="empty-card" onclick="toast('Coming soon — Solo-Charakter anlegen')">
+            <div class="empty-card-num">2</div>
+            <div>
+              <div class="empty-card-name">Eigenen Charakter testen</div>
+              <div class="empty-card-desc">Lege einen PC an um die Player-Funktionen kennenzulernen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (!char) {
+    const pcs = (camp.characters || []).filter(c => c.type === 'pc');
+    host.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-crest">🎭</div>
+        <h2 class="empty-title">Welchen <em>Charakter</em> spielst du?</h2>
+        <p class="empty-sub">In <strong>${escapeHtml(camp.name)}</strong> sind ${pcs.length} Charakter${pcs.length === 1 ? '' : 'e'} angelegt. Wähl deinen — die Player View richtet sich danach aus.</p>
+        <div class="empty-cards">
+          ${pcs.map(pc => `
+            <div class="empty-card" onclick="selectCharacter('${pc.id}')">
+              <div class="empty-card-num" style="background:transparent;border:1.5px solid var(--gold);color:var(--gold);overflow:hidden;width:42px;height:42px;">
+                ${pc.portraitUrl ? `<img src="${escapeAttr(pc.portraitUrl)}" style="width:100%;height:100%;object-fit:cover;">` : escapeHtml((pc.name||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase())}
+              </div>
+              <div>
+                <div class="empty-card-name">${escapeHtml(pc.name)}</div>
+                <div class="empty-card-desc">${escapeHtml([pc.race, pc.class].filter(Boolean).join(' · ') || 'Charakter')}${pc.level ? ' · Level ' + pc.level : ''}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Charakter ausgewählt → Player-Briefing zeigen
+  const sessions = camp.sessions || [];
+  const lastSession = sessions[sessions.length - 1];
+  const npcs = (camp.characters || []).filter(c => c.type === 'npc').slice(0, 8);
+
+  host.innerHTML = `
+    <div style="max-width:1100px;margin:0 auto 28px;text-align:center;">
+      <div class="empty-crest" style="font-size:34px;">📜</div>
+      <h2 class="empty-title">Willkommen zurück, <em>${escapeHtml(char.name.split(' ')[0])}</em></h2>
+      <p class="empty-sub">Was du vor der nächsten Session wissen solltest. Recap aus deiner Sicht, offene Fäden, NPCs.</p>
+    </div>
+
+    <div class="briefing-grid">
+      <div class="briefing-card">
+        <div class="briefing-card-h">
+          <span class="ico">📖</span>
+          <span class="briefing-card-h-title">Was zuletzt geschah${lastSession ? ' · Session #' + lastSession.number : ''}</span>
+        </div>
+        <div class="briefing-card-b">
+          ${lastSession?.recap ? `<div class="recap-text">${escapeHtml(lastSession.recap).replace(/\n/g, '<br>')}</div>` : '<em>Noch kein Recap — dein DM hat die letzte Session noch nicht abgeschlossen.</em>'}
+          ${lastSession?.title ? `<div style="margin-top:10px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;font-weight:700;">${escapeHtml(lastSession.title)}${lastSession.date ? ' · ' + escapeHtml(lastSession.date) : ''}</div>` : ''}
+        </div>
+      </div>
+
+      <div class="briefing-card">
+        <div class="briefing-card-h">
+          <span class="ico">🧵</span>
+          <span class="briefing-card-h-title">Offene Fäden für ${escapeHtml(char.name.split(' ')[0])}</span>
+        </div>
+        <div class="briefing-card-b">
+          <div class="thread-list">
+            ${char.notes ? `<div class="thread-item"><div class="thread-q">DM-Notiz</div><div class="thread-text">${escapeHtml(char.notes).replace(/\n/g,'<br>')}</div></div>` : ''}
+            ${char.backstory ? `<div class="thread-item"><div class="thread-q">Backstory</div><div class="thread-text">${escapeHtml(char.backstory).slice(0, 280)}${char.backstory.length > 280 ? '…' : ''}</div></div>` : ''}
+            ${!char.notes && !char.backstory ? '<em>Keine offenen Fäden notiert. Sprich mit deinem DM.</em>' : ''}
+          </div>
+        </div>
+      </div>
+
+      ${npcs.length ? `
+        <div class="briefing-card" style="grid-column:1 / -1;">
+          <div class="briefing-card-h">
+            <span class="ico">🎭</span>
+            <span class="briefing-card-h-title">NPCs · Wer ist wer</span>
+          </div>
+          <div class="briefing-card-b">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+              ${npcs.map(n => `
+                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+                  <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--ink);font-weight:700;letter-spacing:.02em;">${escapeHtml(n.name)}</div>
+                  <div style="font-size:11px;color:var(--text-dim);font-style:italic;margin-top:2px;">${escapeHtml([n.race, n.class || n.creatureType].filter(Boolean).join(' · '))}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function selectCharacter(charId) {
+  state.selectedCharId = charId;
+  saveState();
+  renderCampaignMeta();
+  renderBriefing();
+  toast('Charakter ausgewählt');
+}
+
+// ═══════════ RENDER: CHARACTER (Read-Only Sheet) ═══════════
+function renderCharacter() {
+  const host = document.getElementById('characterMain');
+  const char = currentChar();
+  if (!char) {
+    host.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-crest">📜</div>
+        <h2 class="empty-title">Wähle erst deinen <em>Charakter</em></h2>
+        <p class="empty-sub">Geh zurück zu „Vor Session" und such deinen Charakter aus der Kampagnen-Liste raus.</p>
+        <button class="btn-top primary" onclick="switchView('briefing')" style="margin-top:14px;">→ Charakter wählen</button>
+      </div>
+    `;
+    return;
+  }
+
+  const initials = (char.name || '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const stats = char.stats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+
+  host.innerHTML = `
+    <div class="char-page">
+      <div class="char-page-head">
+        <div class="char-portrait">
+          ${char.portraitUrl ? `<img src="${escapeAttr(char.portraitUrl)}" alt="">` : initials}
+        </div>
+        <div class="char-name-block">
+          <div class="char-tag">${char.type === 'pc' ? 'Spieler-Charakter' : 'NPC'}</div>
+          <div class="char-name">${escapeHtml(char.name)}</div>
+          <div class="char-sub">${escapeHtml([char.race, char.class].filter(Boolean).join(' · '))}${char.level ? ' · Level ' + char.level : ''}${char.alignment ? ' · ' + escapeHtml(char.alignment) : ''}</div>
+        </div>
+      </div>
+
+      <div class="char-stats-row">
+        ${['str','dex','con','int','wis','cha'].map(s => {
+          const mod = abilityModifier(stats[s]);
+          return `
+            <div class="char-stat">
+              <div class="char-stat-lbl">${s.toUpperCase()}</div>
+              <div class="char-stat-mod">${formatMod(mod)}</div>
+              <div class="char-stat-val">${stats[s]}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="char-section">
+        <div class="char-section-h">⚔️ Kampf-Werte</div>
+        <div class="char-section-b">
+          <div class="char-line"><span class="char-line-lbl">Armor Class</span><span class="char-line-val">${char.ac || '—'}${char.acType ? ' (' + escapeHtml(char.acType) + ')' : ''}</span></div>
+          <div class="char-line"><span class="char-line-lbl">Hit Points</span><span class="char-line-val">${char.hp || 0} / ${char.maxHp || char.hp || 0}${char.hitDice ? ' · ' + escapeHtml(char.hitDice) : ''}</span></div>
+          <div class="char-line"><span class="char-line-lbl">Speed</span><span class="char-line-val">${escapeHtml(char.speed || '30 ft.')}</span></div>
+          <div class="char-line"><span class="char-line-lbl">Initiative</span><span class="char-line-val">${formatMod(abilityModifier(stats.dex))}</span></div>
+          <div class="char-line"><span class="char-line-lbl">Proficiency Bonus</span><span class="char-line-val">${escapeHtml(char.proficiency || formatMod(2 + Math.floor(((char.level || 1) - 1) / 4)))}</span></div>
+        </div>
+      </div>
+
+      ${char.savingThrows ? `
+        <div class="char-section">
+          <div class="char-section-h">🛡️ Saving Throws</div>
+          <div class="char-section-b" style="font-size:14px;color:var(--text);font-family:'EB Garamond',serif;">${escapeHtml(char.savingThrows)}</div>
+        </div>
+      ` : ''}
+
+      ${char.skills ? `
+        <div class="char-section">
+          <div class="char-section-h">🎯 Skills</div>
+          <div class="char-section-b" style="font-size:14px;color:var(--text);font-family:'EB Garamond',serif;">${escapeHtml(char.skills)}</div>
+        </div>
+      ` : ''}
+
+      ${(char.traits || []).length ? `
+        <div class="char-section">
+          <div class="char-section-h">✨ Traits & Features</div>
+          <div class="char-section-b">
+            ${char.traits.map(t => `<div style="margin-bottom:10px;"><strong style="font-family:'Cinzel',serif;font-size:12px;color:var(--ink);">${escapeHtml(t.name)}.</strong> <span style="font-size:13.5px;line-height:1.55;">${escapeHtml(t.text || '').replace(/\n/g,'<br>')}</span></div>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${(char.actions || []).length ? `
+        <div class="char-section">
+          <div class="char-section-h">⚔️ Actions</div>
+          <div class="char-section-b">
+            ${char.actions.map(a => `<div style="margin-bottom:10px;"><strong style="font-family:'Cinzel',serif;font-size:12px;color:var(--crimson);">${escapeHtml(a.name)}.</strong> <span style="font-size:13.5px;line-height:1.55;">${escapeHtml(a.text || '').replace(/\n/g,'<br>')}</span></div>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${char.backstory ? `
+        <div class="char-section">
+          <div class="char-section-h">📖 Backstory</div>
+          <div class="char-section-b" style="font-style:italic;line-height:1.65;color:var(--text);">${escapeHtml(char.backstory).replace(/\n/g,'<br>')}</div>
+        </div>
+      ` : ''}
+
+      <div style="margin-top:18px;text-align:center;font-size:11px;color:var(--text-dimmer);font-style:italic;">
+        Charakter wird vom DM gepflegt. Live-Rolls und Editier-Funktionen kommen später.
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════ RENDER: ALBUM (Cards) ═══════════
+async function renderAlbum() {
+  const host = document.getElementById('albumMain');
+  const s = syncSettings();
+  if (!s.email) {
+    host.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-crest">🃏</div>
+        <h2 class="empty-title">Dein <em>Karten-Album</em></h2>
+        <p class="empty-sub">Logge dich ein um deine gesammelten Karten zu sehen — alle Karten die du auf <a href="/scroll/" style="color:var(--gold);">endocraft.app/scroll</a> erstellt hast.</p>
+      </div>
+    `;
+    return;
+  }
+
+  host.innerHTML = `
+    <div style="max-width:1100px;margin:0 auto 22px;text-align:center;">
+      <div class="empty-crest" style="font-size:32px;">🃏</div>
+      <h2 class="empty-title">Dein <em>Karten-Album</em></h2>
+      <p class="empty-sub">Alle Karten die du gesammelt hast. Lade neue auf <a href="/scroll/" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a></p>
+    </div>
+    <div id="albumCardsHost" style="text-align:center;padding:20px;color:var(--text-dim);">Lade deine Karten...</div>
+  `;
+
+  try {
+    const slug = await emailToSlug(s.email);
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/cards?owner_slug=eq.${slug}&select=id,number,session_title,legendary_moment,character_name,character_class,rarity,image_url,created_at&order=created_at.desc&limit=50`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    });
+    const cards = await resp.json();
+    const cardsHost = document.getElementById('albumCardsHost');
+    if (!Array.isArray(cards) || !cards.length) {
+      cardsHost.innerHTML = `
+        <div style="padding:40px 20px;color:var(--text-dim);font-style:italic;">
+          Noch keine Karten. <a href="/scroll/" style="color:var(--gold);font-weight:600;">Erstelle deine erste →</a>
+        </div>
+      `;
+      return;
+    }
+
+    cardsHost.outerHTML = `
+      <div class="album-grid">
+        ${cards.map(card => {
+          const r = (card.rarity || 'common').toLowerCase();
+          return `
+            <div class="album-card" onclick="window.open('/session/?id=${escapeAttr(card.id)}','_blank')">
+              <div class="album-card-img">
+                ${card.image_url ? `<img src="${escapeAttr(card.image_url)}" alt="">` : ''}
+                <div class="album-card-rarity ${r}">${r.toUpperCase()}</div>
+              </div>
+              <div class="album-card-info">
+                <div class="album-card-title">${escapeHtml(card.session_title || 'Untitled')}</div>
+                <div class="album-card-sub">${escapeHtml(card.character_name || '')} · #${card.number || '—'}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } catch (err) {
+    console.error('[Album] Fehler:', err);
+    document.getElementById('albumCardsHost').innerHTML = `<em style="color:var(--crimson);">Fehler beim Laden: ${escapeHtml(err.message)}</em>`;
+  }
+}
+
+// Email-Hash für Supabase-Slug (sha256 erste 16 hex-chars, lowercase trimmed)
+async function emailToSlug(email) {
+  const enc = new TextEncoder();
+  const data = enc.encode(String(email).toLowerCase().trim());
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+
+// ═══════════ INITIAL RENDER ═══════════
+function initialRender() {
+  renderCampaignMeta();
+  switchView(state.currentView || 'briefing');
+}
+
+// ═══════════ INIT ═══════════
+if (!isGateUnlocked()) showLandingGate();
+initialRender();
+initAuthState();
+
+// Plausible event
+try { window.plausible?.('Player View Open', { props: { hasEmail: syncSettings().email ? 'yes' : 'no' } }); } catch(e){}
+</script>
+</body>
+</html>

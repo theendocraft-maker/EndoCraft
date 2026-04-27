@@ -465,6 +465,36 @@ body{
 .cond-pick:hover{border-color:var(--gold);background:#fef6e8;}
 .cond-pick.on{background:var(--crimson);color:#fff;border-color:var(--crimson);}
 
+/* ═══════ ROLE PICKER MODAL ═══════ */
+.role-picker-inner{max-width:680px;width:100%;}
+.rp-head{padding:32px 32px 18px;text-align:center;}
+.rp-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:14px;}
+.rp-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--ink);line-height:1.15;margin:0 0 12px;letter-spacing:-.02em;}
+.rp-title em{color:var(--gold);font-style:italic;}
+.rp-sub{font-family:'EB Garamond',serif;font-size:15px;color:var(--text-dim);margin:0;line-height:1.5;max-width:520px;margin-left:auto;margin-right:auto;}
+.rp-options{padding:8px 32px 24px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.rp-option{
+  background:#fff;border:2px solid var(--border-strong);border-radius:14px;
+  padding:24px 20px;cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;text-align:center;
+}
+.rp-option:hover{
+  border-color:var(--gold);transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(147,110,30,0.18);
+  background:linear-gradient(to bottom,#fffbe8,#fff);
+}
+.rp-option-icon{font-size:42px;margin-bottom:12px;}
+.rp-option-name{font-family:'Cinzel',serif;font-size:14px;color:var(--ink);font-weight:600;letter-spacing:.5px;margin-bottom:8px;}
+.rp-option-name strong{color:var(--crimson);font-weight:700;}
+.rp-option:hover .rp-option-name strong{color:var(--gold);}
+.rp-option-desc{font-family:'EB Garamond',serif;font-size:13px;color:var(--text-dim);line-height:1.5;flex:1;margin-bottom:14px;}
+.rp-option-cta{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;color:var(--gold);font-weight:700;text-transform:uppercase;}
+.rp-foot{padding:14px 32px 22px;text-align:center;font-size:11px;color:var(--text-dimmer);font-style:italic;}
+@media (max-width:620px){
+  .rp-options{grid-template-columns:1fr;}
+  .rp-title{font-size:24px;}
+}
+
 /* ═══════ CONTENT IMPORTER · LOADING ANIMATIONS ═══════ */
 .imp-scanner{padding:20px 0;}
 .imp-scanner-frame{
@@ -9828,6 +9858,52 @@ function hideLandingGate() {
   gate.classList.remove('show');
   document.body.classList.remove('gate-open');
 }
+// ─── ROLE PICKER · beim ersten Login fragen ob DM oder Spieler ───
+function showRolePicker() {
+  if (document.getElementById('rolePickerModal')) return;
+  const modal = document.createElement('div');
+  modal.id = 'rolePickerModal';
+  modal.className = 'srd-modal role-picker-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop"></div>
+    <div class="srd-modal-inner role-picker-inner">
+      <div class="rp-head">
+        <div class="rp-tag">✦ WILLKOMMEN BEI ENDOCRAFT</div>
+        <h1 class="rp-title">Wie spielst du <em>D&D?</em></h1>
+        <p class="rp-sub">Damit wir dir das richtige Tool zeigen — DMs leiten Sessions, Spieler erleben sie.</p>
+      </div>
+      <div class="rp-options">
+        <div class="rp-option" onclick="pickRole('dm')">
+          <div class="rp-option-icon">📖</div>
+          <div class="rp-option-name">Ich bin <strong>Dungeon Master</strong></div>
+          <div class="rp-option-desc">Du leitest deine Kampagne. Brauchst Vorbereitung, Combat-Tracker, NPC-Statblöcke, Co-DM-Chat.</div>
+          <div class="rp-option-cta">→ DM Studio öffnen</div>
+        </div>
+        <div class="rp-option" onclick="pickRole('player')">
+          <div class="rp-option-icon">🎭</div>
+          <div class="rp-option-name">Ich bin <strong>Spieler</strong></div>
+          <div class="rp-option-desc">Du spielst einen Charakter. Brauchst deinen Charakterbogen, Session-Recaps aus deiner Sicht, dein Karten-Album.</div>
+          <div class="rp-option-cta">→ Player View öffnen</div>
+        </div>
+      </div>
+      <div class="rp-foot">Du kannst die Rolle später jederzeit pro Kampagne ändern. Dies ist nur deine Default-Ansicht.</div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function pickRole(role) {
+  state.userRole = role;
+  saveState();
+  document.getElementById('rolePickerModal')?.remove();
+  if (role === 'player') {
+    toast('→ Wechsel zur Player View...');
+    setTimeout(() => { window.location.href = '/player/'; }, 600);
+  } else {
+    toast('Willkommen, DM! Auto-Sync ist aktiv.');
+  }
+}
+
 async function gateSignIn() {
   if (typeof signInWithGoogle === 'function') {
     await signInWithGoogle();
@@ -9926,6 +10002,8 @@ initAuthState = async function() {
           }
           // Danach lokale Kampagnen zu Cloud pushen (falls neu/nicht dort)
           syncAllCampaigns();
+          // Wenn User noch keine Rolle hat → Role-Picker zeigen
+          if (!state.userRole) setTimeout(() => showRolePicker(), 800);
         }, 600);
       }
     } else if (event === 'SIGNED_OUT') {
