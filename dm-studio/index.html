@@ -8454,7 +8454,27 @@ async function generateRecapQuestions() {
   }
 
   try {
-    const prompt = `Du bist Co-DM und hilfst beim Post-Session-Recap. Basierend auf diesen Live-Notizen des DMs, stelle 5-7 präzise Stichpunkt-Fragen die ihm helfen, den Recap zu vervollständigen. Frag nach Dingen die in den Notizen nur angedeutet aber nicht ausgeführt sind: welchen Weg haben die Spieler gewählt? Wer hat was entschieden? Welche NPCs wurden getroffen/getötet/befreundet? Welche Loot oder Info wurde gewonnen? Emotionale Höhepunkte?\n\nAntworte AUSSCHLIESSLICH mit den Fragen — je eine Frage pro Zeile, keine Aufzählungszeichen, keine Einleitung, kein Schluss-Satz.\n\nLIVE-NOTIZEN:\n${allNotes.join('\n')}`;
+    const prompt = `Aus knappen Live-Notizen des DMs leitest du 5-7 präzise Nachfragen ab, die der DM beantworten würde um den Recap zu schärfen. Konkret + spezifisch — nicht generisch.
+
+GUTE FRAGEN bauen auf dem auf was in den Notizen STEHT:
+
+Notiz: "rahadin verschwindet alleine, larrymäus war ausgeknockt"
+Frage: "Wie hat Rahadin den Teleportkreis aktiviert — verbal, ritualisch, oder einfach durchgeschritten?"
+
+Notiz: "Torgan Schmorgan"
+Frage: "Was ist Torgans Rolle in der Szene — Augenzeuge, Geisel, oder hat er eine eigene Reaktion?"
+
+Notiz: "lange rast im keller"
+Frage: "Wer hat während der Rast Wache geschoben? Gab es Träume oder Visionen?"
+
+SCHLECHTE FRAGEN sind generisch:
+❌ "Was wissen wir über die NPCs?"
+❌ "Welche Entscheidungen waren wichtig?"
+
+ANTWORT: Eine Frage pro Zeile. Keine Nummerierung, keine Bullets, keine Einleitung, kein Abschluss.
+
+LIVE-NOTIZEN:
+${allNotes.join('\n')}`;
 
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -8533,13 +8553,33 @@ async function generateFinalRecap() {
       throw new Error('Keine Notizen und keine beantworteten Fragen — KI hat nichts zum Schreiben. Antworte erst auf die Fragen oben.');
     }
 
-    const prompt = `Du bist Co-DM und schreibst den finalen Session-Recap. Nutze die Live-Notizen + die Antworten auf die Stichpunkt-Fragen. Schreibe einen 4-6 Satz Narrativ-Recap im Präteritum, atmosphärisch, zum Vorlesen am Anfang der nächsten Session. Nur Storyrelevantes — Nebengespräche überspringen. Antworte AUSSCHLIESSLICH mit dem Recap-Text, kein Vorwort.\n\nLIVE-NOTIZEN:\n${allNotes.join('\n')}\n\n${qaBlocks.length ? 'ZUSATZ-INFO VOM DM:\n' + qaBlocks.join('\n\n') : ''}`;
+    const prompt = `Du schreibst einen Session-Recap im Stil professioneller D&D-Abenteuer-Module (Pyram King, Curse of Strahd). 4-6 Sätze im Präteritum, atmosphärisch, zum Vorlesen am Anfang der nächsten Session.
 
-    console.log('[Recap] Sending prompt (' + prompt.length + ' chars)');
+REGELN:
+- Erste Person Plural ("Die Party") oder dritte Person — nicht "Ihr"
+- Atmosphäre über Plot: lieber 1 starkes Bild ("der Keller roch nach altem Wein und Blut") als 3 Plot-Punkte
+- Cliffhanger-Sensibilität: enden mit dem unaufgelösten Moment, nicht mit Erklärung
+- Nur Storyrelevantes — keine Würfel-Würfe, keine Mechanik, keine Spieler-Namen-Mention
+- KEIN Vorwort, KEIN "Hier ist der Recap:" — direkt loslegen mit dem Text
+
+BEISPIEL (gut):
+"Im Keller des Wizard of Wines stand Rahadin still wie ein Zeichen aus Stein. Sein Schatten verlängerte sich nicht, obwohl die Fackeln flackerten. Larrymäus' Gebet verfing sich in der Luft. Als der Dusk-Elf endlich sprach, war es kein Befehl — nur ein Name. Dann öffnete sich der Teleport-Kreis."
+
+LIVE-NOTIZEN:
+${allNotes.join('\n')}
+
+${qaBlocks.length ? 'ANTWORTEN DES DMs AUF NACHFRAGEN:\n' + qaBlocks.join('\n\n') : ''}`;
+
+    console.log('[Recap] Sending prompt (' + prompt.length + ' chars) → Opus 4.7');
 
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({
+        campaign: { ...campaign(), characters: state.characters },
+        model: 'claude-opus-4-7',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
 
     if (!resp.ok) {
@@ -8720,25 +8760,30 @@ async function generateSessionHighlights() {
   const pcs = state.characters.filter(c => c.type === 'pc').map(c => `${c.name} (${c.race} ${c.class})`).join(', ');
 
   try {
-    const prompt = `Du bist Kurator für "Session Scroll" — eine TTRPG-Trading-Card-Produktlinie die legendäre D&D-Spielmomente als Sammelkarten festhält. Deine Aufgabe: aus dem Session-Recap + Live-Notizen des DMs 5-8 konkrete Moments extrahieren die sich als Einzelkarte eignen.
+    const prompt = `Du kuratierst Trading-Card-Momente für "Session Scroll". Aus Recap + Live-Notizen wählst du 5-8 card-würdige Momente.
 
-KRITERIEN für einen card-würdigen Moment:
-• Eng auf EINEN Charakter oder EINE klare Aktion fokussiert (nicht: "die Party tat X")
-• Emotional aufgeladen: knapper Tod, legendärer Wurf, heroisches Opfer, moralische Entscheidung, unerwartete Nähe zu NPC, komische Katastrophe
-• Visualisierbar: es lässt sich eine Karten-Illustration vorstellen (Szene · Subject · Licht)
-• Authentisch zum D&D-Tisch: nicht hochtrabend, sondern das "echte" was passiert ist
+WAS EIN GUTER MOMENT IST:
+• Ein Charakter, eine Handlung, ein emotionaler Beat (NICHT "die Party tat X")
+• Visualisierbar als Einzelbild (Subject + Light + Atmosphere)
+• Authentisch zum Tisch — das ECHTE was passiert ist, nicht hochtrabende Heldengeschichte
+• Emotionale Ebenen: knapper Tod, ironischer Wurf, unerwartete NPC-Reaktion, comedic disaster, moralisches Dilemma, stiller Recognition-Moment
 
-PARTY-KONTEXT: ${pcs}
+RARITY — STRENG LIMITIERT:
+• default: "rare" für emotionale Höhepunkte (5-6 Stück erlaubt)
+• "common" für solide aber alltägliche Beats (1-2 Stück)
+• "legendary" NUR für historisch wegweisende Momente (MAX 1 pro Session, kann auch 0 sein)
+• Wenn unsicher → "rare"
 
-ANTWORT-FORMAT: Gib AUSSCHLIESSLICH gültiges JSON zurück (kein Vorwort, kein Markdown, keine Kommentare). Ein Array von 5-8 Objekten mit dieser Struktur:
+PARTY: ${pcs}
+
+ANTWORT: Reines JSON-Array, kein Vorwort, keine Fences. Sprache: Deutsch (Eigennamen original).
+
+BEISPIEL-OUTPUT für eine Session:
 [
-  {"character":"Larrymäus","title":"Dem Tod knapp entkommen","moment":"Kurzer 1-2-Satz-Moment für die Karten-Rückseite. Präsens. Emotional konkret. KEIN Allgemeinplatz.","rarity":"rare","imageHint":"Dark cellar light, kneeling cleric, hand pressed against bleeding side, amber lantern glow, single tear on dusty face"}
+  {"character":"Larrymäus","title":"Der Chor der Toten","moment":"Tausend sterbende Stimmen treffen ihn gleichzeitig. Larrymäus, der ruhige Fels der Gruppe, sackt lautlos in sich zusammen — der erste Bewusstlose, den Rahadin hinterlässt.","rarity":"rare","imageHint":"Stone cellar, bald cleric in plate armor collapsing to his knees, ghostly wailing faces swirling around him, hands still clutching holy symbol, dramatic cold blue mist light"},
+  {"character":"Telro","title":"Den Pakt erkennen","moment":"Während die anderen taumeln, sieht Telro in Rahadins Bewegungen etwas Vertrautes — die Geometrie eines Paktes, die Mechanik der Dienstbarkeit. Er sagt nichts. Aber er weiß jetzt mehr als vorher.","rarity":"legendary","imageHint":"Cellar darkness, tiefling warlock standing still amid chaos, glowing runic horns casting faint light on his face, eyes narrowed in recognition, blurred figures of combat around him, deep shadow and cold arcane blue"},
+  {"character":"Gattok","title":"Erschöpft, nicht gebrochen","moment":"Gattok schläft auf dem Kellerboden wie ein gefällter Baum — Wunden aus Spinnen, Rahadin und allem dazwischen. Er schnarcht. Er lebt. Das reicht.","rarity":"common","imageHint":"Stone cellar floor, half-orc barbarian sprawled on his back in bear pelt armor, massive greatsword across his chest, mouth slightly open, warm lantern light, wine barrels towering above"}
 ]
-
-RARITY-WAHL:
-- "common" = alltäglicher aber memorabler Moment
-- "rare" = emotionaler Höhepunkt, knapper Tod, wichtige Entscheidung
-- "legendary" = einmaliger wegweisender Moment (max 1-2 pro Session)
 
 RECAP:
 ${recapText || '(Kein Recap-Text — nutze nur die Notizen)'}
@@ -8746,11 +8791,16 @@ ${recapText || '(Kein Recap-Text — nutze nur die Notizen)'}
 LIVE-NOTIZEN:
 ${allNotes.join('\n')}`;
 
-    console.log('[Highlights] Sending prompt (' + prompt.length + ' chars)');
+    console.log('[Highlights] Sending prompt (' + prompt.length + ' chars) → Opus 4.7');
 
     const resp = await fetch(`${API_BASE}/api/dm-chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ campaign: { ...campaign(), characters: state.characters }, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({
+        campaign: { ...campaign(), characters: state.characters },
+        model: 'claude-opus-4-7',
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
 
     if (!resp.ok) {
@@ -9549,19 +9599,18 @@ ANTWORT: Gültiges JSON, kein Vorwort, keine Fences:
     showItemsList(skeleton, '✦ Schritt 2/3 · Holst Location-Details');
     if (status) status.textContent = `Step 2: Locations`;
 
-    const locDetailPrompt = `Aus dem rohen Adventure-Text extrahiere die DETAILS für EINE bestimmte Location.
+    const locDetailPrompt = `Extrahiere DETAILS für eine Location aus dem Adventure-Text.
 
-🇩🇪 SPRACHE: ALLE Text-Inhalte werden ins DEUTSCHE übersetzt — readAloud, dmNote, scenario.title, scenario.body, dialog.text, history. Eigennamen (NPC-Namen, Ortsnamen, Spell-Namen, Item-Namen) bleiben original. D&D-Mechanik-Begriffe können auf Deutsch (DC = SG/Schwierigkeitsgrad, Saving Throw = Rettungswurf) ODER original bleiben — was natürlicher klingt. Bei DM-Notizen: knackiger deutscher DM-Slang.
+SPRACHE: Beschreibende Texte auf Deutsch übersetzen, lebendig nicht wörtlich. Eigennamen (Ortsnamen, NPCs, Spells, Items) bleiben original.
 
-Du bekommst: (a) den Volltext, (b) die Location-Info {id, name}.
-Fokussier dich NUR auf diese eine Location. Extrahiere:
-- readAloud: atmosphärischer Vorlese-Text auf DEUTSCH (2-4 Sätze, NUR wenn klar im Text). Übersetz lebendig, nicht wortwörtlich.
-- dmNote: taktische DM-Notizen, Hinweise, Mechanik-Tipps auf DEUTSCH (alle die du findest)
-- scenarios: was kann passieren — Array mit objects {title (deutsch), body (deutsch), probability "Wahrscheinlich"|"Möglich"|"Unwahrscheinlich"}
-- dialogs: NPC-Zitate für diese Location — Array mit {speaker (Eigenname), text (auf DEUTSCH übersetzt — so wie der NPC im deutschen Sprachraum sprechen würde)}
-- history: Hintergrund-Lore zur Location auf DEUTSCH, falls vorhanden
+Felder:
+- readAloud: atmosphärisch, 2-4 Sätze, nur wenn klar erkennbar
+- dmNote: taktische Tipps, knackiger DM-Slang
+- scenarios: Array {title, body, probability "Wahrscheinlich"|"Möglich"|"Unwahrscheinlich"}
+- dialogs: Array {speaker (original), text (deutsch wie der NPC sprechen würde)}
+- history: Hintergrund-Lore wenn vorhanden
 
-ANTWORT als JSON, keine Fences:
+ANTWORT — reines JSON, keine Fences:
 {
   "id": "yh1",
   "readAloud": "...",
@@ -9571,7 +9620,7 @@ ANTWORT als JSON, keine Fences:
   "history": "..."
 }
 
-Falls ein Feld nicht im Text steht: weglassen oder leeren String. Nicht erfinden.`;
+Felder die nicht im Text stehen: weglassen. Nichts erfinden.`;
 
     const locDetailResults = new Array((skeleton.locations || []).length);
     await runWithLimit(
@@ -9598,32 +9647,29 @@ Falls ein Feld nicht im Text steht: weglassen oder leeren String. Nicht erfinden
     if (phaseEl) phaseEl.textContent = '✦ Schritt 3/3 · Holst NPC-Stats';
     if (status) status.textContent = `Step 3: NPCs`;
 
-    const npcDetailPrompt = `Aus dem rohen Adventure-Text extrahiere die vollen STATS für EINEN NPC.
+    const npcDetailPrompt = `Extrahiere komplette Stats für einen NPC aus dem Adventure-Text.
 
-🇩🇪 SPRACHE: Beschreibende Texte (traits.text, actions.text, notes, alignment) werden ins DEUTSCHE übersetzt. NAMEN (name, traits.name, actions.name z.B. "Multiattack", "Spellcasting", "Quarterstaff") bleiben original — diese sind D&D-Standard-Begriffe. Schaden-Typen können auf Deutsch (slashing → Hieb, piercing → Stich, bludgeoning → Wucht) ODER original bleiben. Mechanische Werte (AC, HP, +5 to hit, DC 13) bleiben original-Format.
+SPRACHE: traits.text, actions.text, notes, alignment auf Deutsch. Action-Namen bleiben original (Multiattack, Spellcasting, Quarterstaff — D&D-Standard). Mechanische Werte original-Format (+5 to hit, DC 13, 1d6+2). Schaden-Typen: deutsch oder original.
 
-Du bekommst: (a) den Volltext, (b) die NPC-Basics {name, race, class}.
-Fokussier auf diesen einen NPC. Extrahiere komplett:
-- size, creatureType (z.B. "humanoid (human)"), alignment (auf DEUTSCH: rechtschaffen gut, neutral böse, etc.)
-- ac, hp, maxHp (=hp wenn nicht anders), speed (z.B. "30 ft.")
-- stats: { str, dex, con, int, wis, cha } — Zahlen
+Felder:
+- size, creatureType ("humanoid (human)"), alignment (deutsch: rechtschaffen gut, neutral böse...)
+- ac, hp, maxHp, speed
+- stats: {str, dex, con, int, wis, cha} als Zahlen
 - savingThrows, skills, damageResistances, damageImmunities, conditionImmunities, senses, languages, cr, xp
-- traits: passive Features mit {name (original Begriff), text (auf DEUTSCH übersetzt)}
-- actions: aktive Actions mit {name (original), text (DEUTSCH)}
-- bonusActions, reactions, legendaryActions: falls vorhanden, mit {name (original), text (DEUTSCH)}
-- notes: DM-only Tactics oder Backstory auf DEUTSCH
+- traits, actions, bonusActions, reactions, legendaryActions: Array {name (original), text (deutsch)}
+- notes: DM-Tactics deutsch
 
-ANTWORT als JSON, keine Fences:
+ANTWORT — reines JSON, keine Fences:
 {
   "name": "Yester Druid",
   "type": "npc",
   "alignment": "neutral böse",
   "stats": {"str": 10, ...},
-  "traits": [{"name": "Spellcasting", "text": "Der Druide ist ein Zauberwirker der 4. Stufe. Sein Zauber-Attribut ist Weisheit (Zauber-SG 13, +5 auf Zauberangriffe)."}],
-  "actions": [{"name": "Quarterstaff", "text": "Nahkampf-Waffenangriff: +2 auf Treffer, Reichweite 1,5 m, ein Ziel. Treffer: 3 (1W6) Wuchtschaden."}]
+  "traits": [{"name": "Spellcasting", "text": "Der Druide ist Zauberwirker der 4. Stufe. Zauber-Attribut Weisheit (Zauber-SG 13, +5 auf Zauberangriffe)."}],
+  "actions": [{"name": "Quarterstaff", "text": "Nahkampf: +2 auf Treffer, Reichweite 1,5 m, ein Ziel. Treffer: 3 (1d6) Wuchtschaden."}]
 }
 
-Was nicht im Text steht: weglassen. Nicht erfinden.`;
+Felder die nicht im Text stehen: weglassen. Nichts erfinden.`;
 
     const npcDetailResults = new Array((skeleton.npcs || []).length);
     await runWithLimit(
