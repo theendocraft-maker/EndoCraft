@@ -1757,6 +1757,25 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 /* ═══════ HIGHLIGHTS BOARD ═══════ */
 .highlight-board{padding:24px 28px;overflow-y:auto;}
 .highlight-board-head{margin-bottom:22px;}
+
+/* ═══════ PARTY ALBUM ═══════ */
+.album-board-head{margin-bottom:24px;}
+.album-board-head h2{font-family:'Syne',sans-serif;font-size:24px;color:var(--ink);margin:0 0 4px;font-weight:800;}
+.album-board-head p{font-size:13px;color:var(--text-dim);margin:0;}
+.album-session-group{margin-bottom:32px;}
+.album-session-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-bottom:8px;border-bottom:1.5px dashed var(--border-strong);}
+.album-session-title{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);font-weight:700;letter-spacing:.01em;}
+.album-session-count{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;font-weight:700;}
+.album-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+.album-card{background:#fff;border:1.5px solid var(--border-strong);border-radius:11px;overflow:hidden;cursor:pointer;transition:all .18s;}
+.album-card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,0.18);}
+.album-card-img{aspect-ratio:3/4;background:linear-gradient(135deg,#1a0a00,#2a1505);position:relative;}
+.album-card-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.album-card-rarity{position:absolute;top:7px;right:7px;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1.5px;color:#fff;padding:3px 7px;border-radius:3px;font-weight:700;text-transform:uppercase;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.album-card-num{position:absolute;bottom:7px;right:7px;font-family:'Cinzel',serif;font-size:9.5px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:3px;font-weight:700;backdrop-filter:blur(4px);}
+.album-card-info{padding:10px 12px;}
+.album-card-title{font-family:'Cinzel',serif;font-size:12.5px;color:var(--ink);font-weight:700;letter-spacing:.02em;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.album-card-sub{font-family:'EB Garamond',serif;font-size:11.5px;color:var(--text-dim);font-style:italic;margin-top:3px;}
 .highlight-board-head h2{font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin:0 0 4px;font-weight:800;}
 .highlight-board-head p{font-size:13px;color:var(--text-dim);margin:0;}
 .highlight-board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
@@ -1941,6 +1960,7 @@ body.gate-open{overflow:hidden;}
     <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
     <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
+    <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
   </div>
   <div class="topbar-right">
     <button class="btn-top" onclick="openConditionsModal()" title="SRD 5.1 Regel-Referenz">📖 Regeln</button>
@@ -2177,6 +2197,26 @@ body.gate-open{overflow:hidden;}
     </aside>
 
     <main class="highlight-board" id="highlightBoard"></main>
+  </div>
+
+  <!-- ═══════ PARTY ALBUM VIEW · Fertige Karten aus Supabase, gruppiert nach Session ═══════ -->
+  <div class="view" id="view-album">
+    <aside class="lpanel">
+      <div class="lp-header">
+        <span class="lp-title">Party Album</span>
+        <button class="lp-add" onclick="reloadAlbum()" title="Karten aus Cloud neu laden">↻</button>
+      </div>
+      <div class="char-filter" id="albumRarityFilter">
+        <button class="active" data-r="all" onclick="filterAlbumRarity('all')">Alle</button>
+        <button data-r="legendary" onclick="filterAlbumRarity('legendary')" style="color:#b8851f;">★</button>
+        <button data-r="epic" onclick="filterAlbumRarity('epic')" style="color:#7B6CF6;">Epic</button>
+        <button data-r="rare" onclick="filterAlbumRarity('rare')" style="color:#1e6fd9;">Rare</button>
+        <button data-r="common" onclick="filterAlbumRarity('common')">Common</button>
+      </div>
+      <div class="highlight-side-meta" id="albumSideMeta"></div>
+    </aside>
+
+    <main class="highlight-board" id="albumBoard"></main>
   </div>
 
 </div>
@@ -3597,6 +3637,7 @@ function switchView(view) {
   if (view === 'session') renderSession();
   if (view === 'chars') renderChars();
   if (view === 'highlights') renderHighlightsBoard();
+  if (view === 'album') renderAlbum();
   plausibleTrack('DMStudio · View', { view });
 }
 
@@ -9157,6 +9198,190 @@ function addManualHighlight() {
   saveState();
   renderHighlightsBoard();
   toast('✓ Highlight hinzugefügt');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PARTY ALBUM — fertige Karten aus Supabase, gruppiert nach Session
+// ═══════════════════════════════════════════════════════════════════════════
+let _albumCards = null;          // Cache: Karten-Daten aus Supabase
+let _albumLastLoad = 0;          // Timestamp der letzten Ladung
+let _albumRarityFilter = 'all';
+let _albumLoading = false;
+
+async function loadAlbumCards(force = false) {
+  const s = syncSettings();
+  if (!s.email) return [];
+  // Cache 60s
+  if (!force && _albumCards && (Date.now() - _albumLastLoad < 60000)) return _albumCards;
+  _albumLoading = true;
+  try {
+    const slug = await emailToSlugAsync(s.email);
+    const url = `${SUPABASE_URL_PUBLIC}/rest/v1/cards?owner_slug=eq.${slug}&select=id,number,session_title,legendary_moment,character_name,character_class,rarity,visible_roll,image_url,created_at&order=created_at.desc&limit=200`;
+    const resp = await fetch(url, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    });
+    if (!resp.ok) throw new Error('Supabase ' + resp.status);
+    const cards = await resp.json();
+    _albumCards = Array.isArray(cards) ? cards : [];
+    _albumLastLoad = Date.now();
+    return _albumCards;
+  } catch (err) {
+    console.error('[Album] Load-Fehler:', err);
+    return [];
+  } finally {
+    _albumLoading = false;
+  }
+}
+
+// Async Helper für Email→Slug (sha256 erste 16 chars)
+async function emailToSlugAsync(email) {
+  const enc = new TextEncoder();
+  const data = enc.encode(String(email).toLowerCase().trim());
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+
+function reloadAlbum() {
+  _albumCards = null;
+  renderAlbum();
+  toast('Lade Karten neu...');
+}
+
+function filterAlbumRarity(r) {
+  _albumRarityFilter = r;
+  document.querySelectorAll('#albumRarityFilter button').forEach(b => b.classList.toggle('active', b.dataset.r === r));
+  renderAlbum();
+}
+
+async function renderAlbum() {
+  const board = document.getElementById('albumBoard');
+  const sideMeta = document.getElementById('albumSideMeta');
+  if (!board) return;
+
+  const s = syncSettings();
+  if (!s.email) {
+    board.innerHTML = `
+      <div style="max-width:520px;margin:80px auto;text-align:center;padding:40px 20px;">
+        <div style="font-size:48px;margin-bottom:14px;">🃏</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">Party Album braucht Login</h2>
+        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:20px;">
+          Damit deine fertigen Karten geladen werden können, musst du eingeloggt sein.
+          Klick im Header auf <strong style="color:var(--gold);">☁️ Sync</strong> um dich anzumelden.
+        </p>
+      </div>
+    `;
+    if (sideMeta) sideMeta.innerHTML = '';
+    return;
+  }
+
+  // Loading-State
+  board.innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div class="spinner" style="margin:0 auto 14px;"></div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--crimson);text-transform:uppercase;font-weight:700;">Lade Karten aus Cloud...</div>
+    </div>
+  `;
+
+  const cards = await loadAlbumCards();
+  const filtered = _albumRarityFilter === 'all' ? cards : cards.filter(c => (c.rarity || 'common').toLowerCase() === _albumRarityFilter);
+
+  // Side-Meta: Stats + Rarity-Verteilung
+  if (sideMeta) {
+    const stats = cards.reduce((acc, c) => {
+      const r = (c.rarity || 'common').toLowerCase();
+      acc[r] = (acc[r] || 0) + 1;
+      return acc;
+    }, {});
+    sideMeta.innerHTML = `
+      <div class="hl-meta-block">
+        <div class="hl-meta-h">Karten gesamt</div>
+        <div class="hl-meta-big">${cards.length}</div>
+      </div>
+      <div class="hl-meta-row"><span style="color:#b8851f;">★ Legendary</span><strong>${stats.legendary || 0}</strong></div>
+      <div class="hl-meta-row"><span style="color:#7B6CF6;">Epic</span><strong>${stats.epic || 0}</strong></div>
+      <div class="hl-meta-row"><span style="color:#1e6fd9;">Rare</span><strong>${stats.rare || 0}</strong></div>
+      <div class="hl-meta-row"><span>Common</span><strong>${stats.common || 0}</strong></div>
+      ${stats.misprint ? `<div class="hl-meta-row"><span style="color:var(--crimson);">Misprint</span><strong>${stats.misprint}</strong></div>` : ''}
+      <div class="hl-meta-row" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;font-size:11px;font-style:italic;color:var(--text-dimmer);">
+        Public-Album-Link teilen wenn fertig.
+      </div>
+    `;
+  }
+
+  if (!filtered.length) {
+    board.innerHTML = cards.length ? `
+      <div style="max-width:520px;margin:80px auto;text-align:center;padding:40px 20px;">
+        <div style="font-size:42px;margin-bottom:12px;">🔍</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;color:var(--ink);margin-bottom:10px;">Keine Karten in diesem Filter</h2>
+        <p style="font-size:13px;color:var(--text-dim);">Wechsel auf „Alle" um alle ${cards.length} Karten zu sehen.</p>
+      </div>
+    ` : `
+      <div style="max-width:520px;margin:80px auto;text-align:center;padding:40px 20px;">
+        <div style="font-size:48px;margin-bottom:14px;">📚</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">Noch keine Karten gesammelt</h2>
+        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:20px;">
+          Sobald du Karten auf <a href="https://endocraft.app/scroll/" target="_blank" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a> erstellst,
+          tauchen sie hier auf. Auch deine Highlights aus dem Recap-Modal kannst du direkt zu Karten machen.
+        </p>
+        <button class="btn-top primary" onclick="window.open('https://endocraft.app/scroll/','_blank')" style="background:var(--gold);color:#fff;border-color:var(--gold);">
+          → Erste Karte erstellen
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // Gruppieren nach Session-Titel (oder Datum falls kein Titel)
+  const groups = {};
+  filtered.forEach(card => {
+    const key = card.session_title || (card.created_at ? new Date(card.created_at).toLocaleDateString('de-DE', { year: 'numeric', month: 'long' }) : 'Ohne Titel');
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(card);
+  });
+  // Sort groups by newest card first
+  const sortedGroupKeys = Object.keys(groups).sort((a, b) => {
+    const aLatest = Math.max(...groups[a].map(c => new Date(c.created_at).getTime()));
+    const bLatest = Math.max(...groups[b].map(c => new Date(c.created_at).getTime()));
+    return bLatest - aLatest;
+  });
+
+  const rarityColor = { legendary: '#b8851f', epic: '#7B6CF6', rare: '#1e6fd9', common: '#5a5a5a', misprint: '#a82318' };
+
+  board.innerHTML = `
+    <div class="album-board-head">
+      <div>
+        <h2>📚 ${escapeHtml(campaign().name || 'Karten-Album')}</h2>
+        <p>${cards.length} Karte${cards.length === 1 ? '' : 'n'} gesammelt · ${sortedGroupKeys.length} Session${sortedGroupKeys.length === 1 ? '' : 's'}${_albumRarityFilter !== 'all' ? ' · gefiltert: ' + _albumRarityFilter : ''}</p>
+      </div>
+    </div>
+    ${sortedGroupKeys.map(key => `
+      <div class="album-session-group">
+        <div class="album-session-h">
+          <span class="album-session-title">${escapeHtml(key)}</span>
+          <span class="album-session-count">${groups[key].length} Karte${groups[key].length === 1 ? '' : 'n'}</span>
+        </div>
+        <div class="album-cards-grid">
+          ${groups[key].map(card => {
+            const r = (card.rarity || 'common').toLowerCase();
+            const color = rarityColor[r] || rarityColor.common;
+            return `
+              <div class="album-card" onclick="window.open('https://endocraft.app/session/?id=${escapeAttr(card.id)}','_blank')" style="border-color:${color};">
+                <div class="album-card-img">
+                  ${card.image_url ? `<img src="${escapeAttr(card.image_url)}" loading="lazy" alt="">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);font-size:11px;">No Image</div>'}
+                  <div class="album-card-rarity ${r}" style="background:${color};">${r.toUpperCase()}</div>
+                  ${card.number ? `<div class="album-card-num">#${card.number}</div>` : ''}
+                </div>
+                <div class="album-card-info">
+                  <div class="album-card-title">${escapeHtml(card.legendary_moment || card.session_title || 'Untitled')}</div>
+                  <div class="album-card-sub">${escapeHtml(card.character_name || '')}${card.character_class ? ' · ' + escapeHtml(card.character_class) : ''}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
