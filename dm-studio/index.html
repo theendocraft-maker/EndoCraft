@@ -20,31 +20,40 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
-/* ═══════ PROFESSIONAL LIGHT THEME · PC-optimized, high-contrast DM tool ═══════ */
+/* ═══════ PROFESSIONAL LIGHT THEME · Unified Warm-Paper Palette ═══════
+   Single tonal family: cream → parchment → ivory. No gray-slate intrusions.
+   Mirrors how Twilight is one slate-ink family. */
 :root{
-  --bg:#eceae5;               /* slightly darker warm off-white — higher card contrast */
-  --bg2:#e0ddd6;              /* panel bg — clearly separated from main */
-  --surface:#ffffff;          /* cards pop crisply on bg */
-  --surface-2:#f5f3ef;        /* input / secondary surface */
-  --text:#0f0f0f;             /* full black for body text */
-  --text-dim:#4a4845;         /* darker mid-gray — WCAG AA on light bg */
-  --text-dimmer:#7a7874;
-  --border:rgba(0,0,0,0.12);
-  --border-strong:rgba(0,0,0,0.22);
-  --accent:#6c5de4;
-  --accent-dim:rgba(108,93,228,0.13);
-  --gold:#936e1e;             /* deeper for stronger visual weight */
+  --bg:#f0e9d6;               /* warm parchment — main canvas */
+  --bg2:#e8dfc6;              /* sidebar / panel — slightly deeper parchment */
+  --surface:#fbf6e6;           /* cream paper — cards, panels */
+  --surface-2:#f4ecd4;          /* secondary surface — inputs, hover */
+  --text:#2a1f10;             /* warm sepia black — softer than pure black on cream */
+  --text-dim:#5b4a30;
+  --text-dimmer:#8a7a5a;
+  --border:rgba(91,61,24,0.18);
+  --border-strong:rgba(91,61,24,0.32);
+  --accent:#936e1e;           /* gold-led accent like dark mode */
+  --accent-dim:rgba(147,110,30,0.13);
+  --gold:#936e1e;
   --gold-dim:rgba(147,110,30,0.14);
   --gold-br:#b48829;
-  --crimson:#a82318;          /* stronger red */
+  --crimson:#a82318;
   --crimson-dim:rgba(168,35,24,0.08);
   --forest:#27684f;
-  --ink:#050505;
-  --shadow-sm:0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md:0 3px 12px rgba(0,0,0,0.09);
-  --shadow-lg:0 10px 40px rgba(0,0,0,0.15);
-  --topbar-bg:rgba(247,246,243,0.92);
-  --hp-track:rgba(0,0,0,0.08);
+  --ink:#1f150a;              /* deepest warm-black — for headings */
+  --shadow-sm:0 1px 2px rgba(91,61,24,0.10);
+  --shadow-md:0 3px 12px rgba(91,61,24,0.13);
+  --shadow-lg:0 10px 40px rgba(91,61,24,0.20);
+  --topbar-bg:rgba(232,223,198,0.92);  /* parchment topbar, no slate */
+  --hp-track:rgba(91,61,24,0.10);
+}
+/* Subtle warm-paper texture for light mode body */
+html[data-theme="light"] body,
+html:not([data-theme]) body{
+  background-image:
+    radial-gradient(at 20% 10%, rgba(201,162,95,0.10) 0%, transparent 55%),
+    radial-gradient(at 80% 90%, rgba(168,35,24,0.04) 0%, transparent 55%);
 }
 
 /* ═══════ TWILIGHT THEME · Dark mode for evening sessions ═══════ */
@@ -626,6 +635,180 @@ html[data-theme="light"] .mode-combat [data-mod-section="combat-stats"]{
   box-shadow:0 4px 16px rgba(168,35,24,0.10) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   PHASE 5 · LIGHT MODE UNIFICATION
+   Goal: eliminate the "wild mix" — gray sidebars vs cream cards vs slate
+   topbar vs salmon read-aloud. ONE warm paper family, layered tonally.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Sidebar / nav rail / left panel — was using gray bg2, now warm parchment */
+html[data-theme="light"] .sidebar,
+html[data-theme="light"] .left-rail,
+html[data-theme="light"] .nav-rail,
+html[data-theme="light"] [class*="sidebar"]:not(.csi-panel):not(.side-widget),
+html[data-theme="light"] .panel-left{
+  background:var(--bg2) !important;
+  border-right:1px solid var(--border) !important;
+}
+
+/* Topbar gets a warm border-bottom that ties it into the paper system */
+html[data-theme="light"] .topbar{
+  background:var(--topbar-bg) !important;
+  border-bottom:1px solid rgba(91,61,24,0.15) !important;
+}
+html[data-theme="light"] .topbar .logo,
+html[data-theme="light"] .topbar .logo .sub{
+  color:var(--ink) !important;
+}
+
+/* Read-Aloud panel — was salmon-pink rgba(168,35,24,0.06); now warm parchment band */
+html[data-theme="light"] .mod-readaloud{
+  background:
+    linear-gradient(to bottom, rgba(201,162,95,0.18) 0%, transparent 8%, transparent 92%, rgba(201,162,95,0.18) 100%),
+    #f4ecd4 !important;
+  border-color:#d9b678 !important;
+  border-left:none !important;
+  border-right:none !important;
+}
+html[data-theme="light"] .mod-readaloud-label{
+  background:#f4ecd4 !important;
+  color:var(--crimson) !important;
+}
+html[data-theme="light"] .mod-readaloud-body{
+  color:var(--ink) !important;
+}
+html[data-theme="light"] .mod-readaloud-body p:first-child::first-letter{
+  color:var(--crimson) !important;
+}
+
+/* DM-Notiz callout — soften */
+html[data-theme="light"] .mod-dmnote{
+  background:linear-gradient(to right, rgba(147,110,30,0.10), rgba(147,110,30,0.03)) !important;
+  border-color:rgba(147,110,30,0.30) !important;
+}
+
+/* Statblock side panel & character sheet sections — coherent cream */
+html[data-theme="light"] .statblock,
+html[data-theme="light"] .statblock-wrap,
+html[data-theme="light"] .live-statblock,
+html[data-theme="light"] .sheet-section,
+html[data-theme="light"] .roll-log-panel,
+html[data-theme="light"] .recap-block,
+html[data-theme="light"] .briefing-card,
+html[data-theme="light"] .side-widget,
+html[data-theme="light"] .mod-section,
+html[data-theme="light"] .mod-scen,
+html[data-theme="light"] .rules-card,
+html[data-theme="light"] .welcome-opt{
+  background:var(--surface) !important;
+  border-color:var(--border) !important;
+}
+html[data-theme="light"] .welcome-opt.primary{
+  background:linear-gradient(to bottom, var(--surface), var(--surface-2)) !important;
+  border-color:var(--crimson) !important;
+}
+
+/* Inputs and secondary surfaces — quick-notes, quick-notes-input, recap-textarea, isc-input, importer hover */
+html[data-theme="light"] .quick-notes{
+  background:linear-gradient(to bottom, var(--surface), var(--surface-2)) !important;
+  border-bottom:1px solid var(--border) !important;
+}
+html[data-theme="light"] .quick-notes-input,
+html[data-theme="light"] .qn-input,
+html[data-theme="light"] .recap-textarea,
+html[data-theme="light"] .recap-edit-btn,
+html[data-theme="light"] .isc-input,
+html[data-theme="light"] .imp-item.loading,
+html[data-theme="light"] .importer-dropzone:hover,
+html[data-theme="light"] .importer-dropzone.hover{
+  background:var(--surface-2) !important;
+}
+
+/* Session strip (the W14 — Wine Cellar header band on Session Live) */
+html[data-theme="light"] .session-strip{
+  background:linear-gradient(to bottom, var(--surface), var(--surface-2)) !important;
+  border-bottom:2px solid var(--gold-br) !important;
+}
+
+/* Pure white surfaces hardcoded in CSS or inline-style — flip to surface */
+html[data-theme="light"] [style*="background:#fff"]:not(.landing-btn):not([style*="background:#fff8"]):not([style*="background:#fffc"]),
+html[data-theme="light"] [style*="background: #fff"]:not(.landing-btn),
+html[data-theme="light"] .ability-box,
+html[data-theme="light"] .cond-pick,
+html[data-theme="light"] .ct-h-btn,
+html[data-theme="light"] .ct-card,
+html[data-theme="light"] .ct-hp-input,
+html[data-theme="light"] .imp-item,
+html[data-theme="light"] .importer-item,
+html[data-theme="light"] .init-setup-card,
+html[data-theme="light"] .bes-card,
+html[data-theme="light"] .sa-row,
+html[data-theme="light"] .rp-option{
+  background:var(--surface) !important;
+}
+
+/* Hover states — replace #fef6e8 (light cream-orange) with surface-2 + gold border */
+html[data-theme="light"] .ability-box:hover,
+html[data-theme="light"] .cond-pick:hover,
+html[data-theme="light"] .ct-card:hover,
+html[data-theme="light"] .bes-card:hover,
+html[data-theme="light"] .sa-row:hover,
+html[data-theme="light"] .wiz-radio:hover,
+html[data-theme="light"] .wiz-race-card:hover,
+html[data-theme="light"] .wiz-class-card:hover,
+html[data-theme="light"] .wiz-bg-card:hover{
+  background:var(--surface-2) !important;
+  border-color:var(--gold) !important;
+}
+html[data-theme="light"] .wiz-radio.active,
+html[data-theme="light"] .wiz-race-card.selected,
+html[data-theme="light"] .wiz-class-card.selected,
+html[data-theme="light"] .wiz-bg-card.selected{
+  background:rgba(168,35,24,0.06) !important;
+  border-color:var(--crimson) !important;
+}
+
+/* Combat tracker — full re-tone, no more pink-orange gradient */
+html[data-theme="light"] .combat-tracker{
+  background:linear-gradient(to bottom, var(--surface), var(--surface-2)) !important;
+  border-bottom:2px solid var(--crimson) !important;
+  box-shadow:inset 0 -2px 8px rgba(168,35,24,0.06), 0 4px 14px rgba(91,61,24,0.08) !important;
+}
+
+/* Mode-combat panel — same re-tone */
+html[data-theme="light"] .mode-combat [data-mod-section="combat-stats"]{
+  background:linear-gradient(to bottom, var(--surface), var(--surface-2)) !important;
+  border:2px solid var(--crimson) !important;
+  box-shadow:0 4px 16px rgba(168,35,24,0.08) !important;
+}
+
+/* CSI panel head (character slide-in) */
+html[data-theme="light"] .csi-head{
+  background:linear-gradient(to bottom, var(--surface), var(--surface-2)) !important;
+}
+
+/* Toast error — was bright peach #fef2e4, now muted parchment */
+html[data-theme="light"] .toast.error{
+  background:var(--surface) !important;
+  border-color:var(--crimson) !important;
+}
+
+/* Inline #fef2e4 banners (recap/highlights/album/importer JS) */
+html[data-theme="light"] [style*="#fef2e4"]{
+  background:rgba(168,35,24,0.06) !important;
+}
+
+/* Section-card banner headers — keep cream ribbon (already set in Phase 4),
+   but explicitly tie surface to token to avoid drift */
+html[data-theme="light"] .briefing-card-h,
+html[data-theme="light"] .sheet-section-h,
+html[data-theme="light"] .roll-log-h,
+html[data-theme="light"] .side-widget-h,
+html[data-theme="light"] .mod-section-head{
+  background:linear-gradient(to bottom, var(--surface-2), #ebdfb8) !important;
+  border-bottom:1px solid var(--border) !important;
+}
+
 /* ═══════ THEME TOGGLE BUTTON ═══════ */
 .theme-toggle{
   display:flex;align-items:center;
@@ -664,7 +847,7 @@ body{
 /* ═══════ TOP BAR ═══════ */
 .topbar{
   height:56px;flex-shrink:0;display:flex;align-items:center;padding:0 20px;gap:14px;
-  background:rgba(247,246,243,0.92);backdrop-filter:blur(20px);
+  background:var(--topbar-bg);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);z-index:20;
 }
 .logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--ink);text-decoration:none;}
