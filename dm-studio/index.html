@@ -3631,8 +3631,7 @@ body.gate-open{overflow:hidden;}
   <div class="campaign-menu" id="campaignMenu" style="display:none;"></div>
   <div class="tabnav">
     <div class="tab" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Briefing</span></div>
-    <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
-    <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
+    <div class="tab active" data-view="scene" onclick="openScene()"><span class="ico">🎲</span><span>Schauplatz</span></div>
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
     <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
     <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
@@ -3714,6 +3713,10 @@ body.gate-open{overflow:hidden;}
           <div class="prep-head-meta" id="prepMeta" contenteditable="true" onblur="updateLocField('meta', this.innerText)"></div>
         </div>
         <div class="prep-head-actions">
+          <div class="scene-mode-toggle" title="Wechsel zwischen Vorbereitung und Live-Session">
+            <button class="btn-top scene-mode-btn active" onclick="switchView('prep')">📋 Prep</button>
+            <button class="btn-top scene-mode-btn" onclick="switchView('session')">🎲 Live</button>
+          </div>
           <button class="btn-top" onclick="markLocStatus('active')" title="Diesen Ort in der Tree-Navigation als 'aktuell' markieren — gold-pulsierender Punkt zeigt wo die Party gerade ist">● Als aktueller Ort</button>
           <button class="btn-top" onclick="markLocStatus('done')" title="Ort als abgeschlossen markieren — Tree-Punkt wird grau, sodass du auf einen Blick siehst was schon durch ist">✓ Als abgehakt</button>
           <button class="btn-top" onclick="markLocStatus('pending')" title="Status zurücksetzen — Ort ist wieder offen / steht noch an">↺ Zurücksetzen</button>
@@ -3785,6 +3788,10 @@ body.gate-open{overflow:hidden;}
           <div class="session-strip-loc-tag" id="sessLocTag">LIVE · AKTUELLE SZENE</div>
           <div class="session-strip-loc-name" id="sessLocName">—</div>
           <div class="session-strip-loc-meta" id="sessLocMeta"></div>
+        </div>
+        <div class="scene-mode-toggle" title="Wechsel zwischen Vorbereitung und Live-Session" style="margin-right:8px;">
+          <button class="btn-top scene-mode-btn" onclick="switchView('prep')">📋 Prep</button>
+          <button class="btn-top scene-mode-btn active" onclick="switchView('session')">🎲 Live</button>
         </div>
         <div class="session-modes" id="sessionModes">
           <button class="session-mode-btn active" data-mode="scene" onclick="setSessionMode('scene')" title="Standard: Read-Aloud, NPCs, Dialoge, Szenarien"><span class="ico">🎭</span>Szene</button>
@@ -5340,7 +5347,9 @@ function currentChar() { return state.characters.find(c => c.id === state.curren
 // ═══════════ TOP BAR + VIEW SWITCH ═══════════
 function switchView(view) {
   state.currentView = view; saveState();
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  // Tab-Mapping: prep + session sind beide unter dem "Schauplatz"-Tab (data-view="scene")
+  const tabKey = (view === 'prep' || view === 'session') ? 'scene' : view;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === tabKey));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
   if (view === 'briefing') renderBriefing();
   if (view === 'prep') renderPrep();
@@ -5348,7 +5357,34 @@ function switchView(view) {
   if (view === 'chars') renderChars();
   if (view === 'highlights') renderHighlightsBoard();
   if (view === 'album') renderAlbum();
+  // Schauplatz: merken welcher Modus zuletzt aktiv war + Toggle-Buttons in beiden Views aktualisieren
+  if (view === 'prep' || view === 'session') {
+    state.lastSceneMode = view;
+    saveState();
+  }
+  updateSceneModeToggles();
   plausibleTrack('DMStudio · View', { view });
+}
+
+// Hält die "📋 Prep / 🎲 Live"-Toggle-Buttons in beiden Views synchron mit currentView.
+// .btn-top.primary signalisiert aktiv (existing CSS class wird wiederverwendet).
+function updateSceneModeToggles() {
+  const v = state.currentView;
+  document.querySelectorAll('.scene-mode-toggle').forEach(group => {
+    const btns = group.querySelectorAll('.scene-mode-btn');
+    btns.forEach((b, i) => {
+      // Convention: erster Button = prep, zweiter = session/live
+      const btnView = (i === 0) ? 'prep' : 'session';
+      b.classList.toggle('primary', btnView === v);
+      b.classList.toggle('active', btnView === v);
+    });
+  });
+}
+
+// "Schauplatz"-Tab geklickt → öffnet den zuletzt benutzten Modus (prep oder session)
+function openScene() {
+  const mode = state.lastSceneMode === 'session' ? 'session' : 'prep';
+  switchView(mode);
 }
 
 // ═══════════ BRIEFING — Pre-Session Dashboard ═══════════
