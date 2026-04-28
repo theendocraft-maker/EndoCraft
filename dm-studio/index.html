@@ -1238,6 +1238,333 @@ html[data-theme="twilight"] .char-portrait{
   color:var(--text-dim) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   PHASE 7 · STUDIO-WIDE CLASSIC SHEET TREATMENT
+   Apply the same engraved double-rule + parchment aesthetic from the
+   character sheet across all major surfaces: briefing cards, side
+   widgets, mod sections, recap blocks, session strip, welcome options.
+   Theme-agnostic via tokens. Restrained — section-internal headers
+   keep their existing tinted-cream ribbon, only the OUTER card frame
+   gets the double-rule treatment.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* All major card containers — engraved double-rule frame */
+.briefing-card,
+.side-widget,
+.mod-section,
+.mod-scen,
+.recap-block,
+.welcome-opt,
+.roll-log-panel{
+  border:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 var(--ink), 0 4px 14px rgba(91,61,24,0.10) !important;
+  position:relative;
+}
+html[data-theme="twilight"] .briefing-card,
+html[data-theme="twilight"] .side-widget,
+html[data-theme="twilight"] .mod-section,
+html[data-theme="twilight"] .mod-scen,
+html[data-theme="twilight"] .recap-block,
+html[data-theme="twilight"] .welcome-opt,
+html[data-theme="twilight"] .roll-log-panel{
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 rgba(201,162,95,0.40), 0 6px 22px rgba(0,0,0,0.4) !important;
+}
+
+/* Inner-frame outline (the "second rule" that gives the engraved look) */
+.briefing-card::before,
+.side-widget::before,
+.mod-section::before,
+.recap-block::before,
+.welcome-opt::before,
+.roll-log-panel::before{
+  content:"";
+  position:absolute;
+  top:3px;left:3px;right:3px;bottom:3px;
+  border:1px solid var(--border-strong);
+  pointer-events:none;
+  z-index:1;
+}
+html[data-theme="twilight"] .briefing-card::before,
+html[data-theme="twilight"] .side-widget::before,
+html[data-theme="twilight"] .mod-section::before,
+html[data-theme="twilight"] .recap-block::before,
+html[data-theme="twilight"] .welcome-opt::before,
+html[data-theme="twilight"] .roll-log-panel::before{
+  border-color:rgba(201,162,95,0.22);
+}
+
+/* Card content needs to sit above the inner-frame pseudo-element */
+.briefing-card > *,
+.side-widget > *,
+.mod-section > *,
+.recap-block > *,
+.welcome-opt > *,
+.roll-log-panel > *{
+  position:relative;
+  z-index:2;
+}
+
+/* Card section headers — engraved Cinzel, no crimson banner */
+.briefing-card-h,
+.side-widget-h,
+.mod-section-head,
+.roll-log-h{
+  background:transparent !important;
+  color:var(--ink) !important;
+  font-family:'Cinzel',serif !important;
+  font-size:11px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:700 !important;
+  padding:13px 18px 10px !important;
+  border-bottom:1px solid var(--border-strong) !important;
+  text-align:left !important;
+  text-shadow:none !important;
+}
+html[data-theme="twilight"] .briefing-card-h,
+html[data-theme="twilight"] .side-widget-h,
+html[data-theme="twilight"] .mod-section-head,
+html[data-theme="twilight"] .roll-log-h{
+  color:var(--gold) !important;
+  border-bottom-color:rgba(201,162,95,0.30) !important;
+}
+.briefing-card-h .ico,
+.side-widget-h .ico,
+.mod-section-head .ico,
+.roll-log-h .ico{
+  filter:none !important;
+}
+
+/* Mod-section title sits in head — match engraved Cinzel */
+.mod-section-title{
+  font-family:'Cinzel',serif !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  color:var(--ink) !important;
+}
+html[data-theme="twilight"] .mod-section-title{
+  color:var(--gold) !important;
+}
+
+/* Roll-log clear button — keep small ghost-pill, drop heavy crimson */
+.roll-log-clear{
+  background:transparent !important;
+  border:1px solid var(--border-strong) !important;
+  color:var(--text-dim) !important;
+  text-shadow:none !important;
+}
+html[data-theme="twilight"] .roll-log-clear{
+  border-color:rgba(201,162,95,0.30) !important;
+  color:var(--gold) !important;
+}
+
+/* Welcome-opt — primary card pops with crimson hairline accent on top */
+.welcome-opt.primary{
+  border-color:var(--ink) !important;
+  position:relative;
+}
+.welcome-opt.primary::after{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:3px;
+  background:var(--crimson);
+  z-index:2;
+}
+html[data-theme="twilight"] .welcome-opt.primary{
+  border-color:var(--gold) !important;
+}
+
+/* Briefing-empty cards (bes-card) — sheet-cell aesthetic */
+.bes-card,
+.sa-row,
+.rules-card{
+  border:1.5px solid var(--ink) !important;
+  border-radius:0 !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 var(--ink) !important;
+}
+html[data-theme="twilight"] .bes-card,
+html[data-theme="twilight"] .sa-row,
+html[data-theme="twilight"] .rules-card{
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 rgba(201,162,95,0.35) !important;
+}
+.bes-card:hover,
+.sa-row:hover{
+  transform:translateY(-1px) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 4px 0 var(--ink) !important;
+}
+html[data-theme="twilight"] .bes-card:hover,
+html[data-theme="twilight"] .sa-row:hover{
+  box-shadow:inset 0 0 0 1px var(--surface), 0 4px 0 rgba(201,162,95,0.45) !important;
+}
+.bes-num{
+  border-radius:50% !important;
+  border:2px solid var(--ink) !important;
+  background:var(--surface) !important;
+  color:var(--ink) !important;
+  box-shadow:inset 0 0 0 2px var(--surface-2), 0 1px 0 var(--ink) !important;
+}
+html[data-theme="twilight"] .bes-num{
+  border-color:var(--gold) !important;
+  color:var(--gold) !important;
+  background:var(--bg) !important;
+  box-shadow:inset 0 0 0 2px var(--surface), 0 1px 0 rgba(201,162,95,0.35) !important;
+}
+
+/* Session-strip — engraved location header bar */
+.session-strip{
+  border-top:2px solid var(--ink) !important;
+  border-bottom:2px solid var(--ink) !important;
+  background:var(--surface) !important;
+  box-shadow:inset 0 0 0 1px var(--surface-2), 0 2px 0 rgba(91,61,24,0.10) !important;
+}
+html[data-theme="twilight"] .session-strip{
+  border-top-color:var(--gold) !important;
+  border-bottom-color:var(--gold) !important;
+  background:var(--surface) !important;
+}
+.session-strip-loc-name{
+  font-family:'Cinzel',serif !important;
+  letter-spacing:0.08em !important;
+  text-transform:uppercase !important;
+  color:var(--ink) !important;
+}
+html[data-theme="twilight"] .session-strip-loc-name{
+  color:var(--gold) !important;
+}
+
+/* Top-bar buttons — sheet-cell aesthetic */
+.btn-top{
+  border-radius:0 !important;
+  border:1.5px solid var(--ink) !important;
+  background:var(--surface) !important;
+  color:var(--ink) !important;
+  box-shadow:0 2px 0 var(--ink) !important;
+  font-family:'Cinzel',serif !important;
+  letter-spacing:1.6px !important;
+  text-transform:uppercase !important;
+  font-size:10.5px !important;
+  font-weight:700 !important;
+  transition:all .12s !important;
+}
+html[data-theme="twilight"] .btn-top{
+  border-color:var(--gold) !important;
+  background:var(--surface) !important;
+  color:var(--gold) !important;
+  box-shadow:0 2px 0 rgba(201,162,95,0.4) !important;
+}
+.btn-top:hover{
+  transform:translateY(-1px) !important;
+  box-shadow:0 3px 0 var(--ink) !important;
+  background:var(--surface-2) !important;
+}
+html[data-theme="twilight"] .btn-top:hover{
+  box-shadow:0 3px 0 rgba(201,162,95,0.5) !important;
+  background:rgba(201,162,95,0.08) !important;
+}
+.btn-top:active{
+  transform:translateY(1px) !important;
+  box-shadow:0 1px 0 var(--ink) !important;
+}
+.btn-top.primary{
+  background:var(--ink) !important;
+  color:var(--bg) !important;
+  border-color:var(--ink) !important;
+}
+html[data-theme="twilight"] .btn-top.primary{
+  background:var(--gold) !important;
+  color:var(--bg) !important;
+  border-color:var(--gold) !important;
+}
+
+/* Tab buttons in topbar (Briefing, Vorbereitung, etc) — engraved tabs */
+.topbar .tab,
+.topbar [role="tab"],
+.tab-btn{
+  font-family:'Cinzel',serif !important;
+  letter-spacing:2px !important;
+  text-transform:uppercase !important;
+  border-radius:0 !important;
+}
+
+/* Logo refinement — Cinzel uppercase to match the system */
+.topbar .logo{
+  font-family:'Cinzel',serif !important;
+  letter-spacing:0.12em !important;
+  text-transform:uppercase !important;
+  font-weight:700 !important;
+}
+.topbar .logo .sub{
+  font-family:'Cinzel',serif !important;
+  letter-spacing:2.5px !important;
+  font-size:10px !important;
+  text-transform:uppercase !important;
+  font-weight:700 !important;
+  color:var(--gold) !important;
+}
+
+/* Modals — gold/ink double-rule frame */
+.modal-pane,
+.modal-content,
+.csi-panel{
+  border:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 4px 0 var(--ink), 0 18px 60px rgba(0,0,0,0.4) !important;
+}
+html[data-theme="twilight"] .modal-pane,
+html[data-theme="twilight"] .modal-content,
+html[data-theme="twilight"] .csi-panel{
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 4px 0 rgba(201,162,95,0.4), 0 18px 60px rgba(0,0,0,0.7) !important;
+}
+
+/* Section-card banner overrides from earlier phases — kill the cream
+   gradient on briefing/sheet/side/mod headers since we now want them
+   transparent (engraved, not banner). Phase 4 + Phase 5 set those —
+   override here. */
+html[data-theme="light"] .briefing-card-h,
+html[data-theme="light"] .sheet-section-h,
+html[data-theme="light"] .roll-log-h,
+html[data-theme="light"] .side-widget-h,
+html[data-theme="light"] .mod-section-head{
+  background:transparent !important;
+  color:var(--ink) !important;
+  border-bottom:1px solid var(--border-strong) !important;
+}
+html[data-theme="light"] .mod-section-title{
+  color:var(--ink) !important;
+}
+
+/* Quick-notes bar — engraved input strip */
+.quick-notes{
+  border-top:2px solid var(--ink) !important;
+  border-bottom:2px solid var(--ink) !important;
+}
+html[data-theme="twilight"] .quick-notes{
+  border-top-color:var(--gold) !important;
+  border-bottom-color:var(--gold) !important;
+}
+.quick-notes-input,
+.qn-input{
+  border-radius:0 !important;
+  border:1.5px solid var(--ink) !important;
+  font-family:'EB Garamond',Georgia,serif !important;
+  font-size:14px !important;
+  background:var(--surface) !important;
+}
+html[data-theme="twilight"] .quick-notes-input,
+html[data-theme="twilight"] .qn-input{
+  border-color:var(--gold) !important;
+}
+
+/* Combat-tracker — keep crimson identity but in sheet-frame language */
+.combat-tracker{
+  border:2px solid var(--crimson) !important;
+  border-radius:0 !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 var(--crimson), 0 4px 14px rgba(168,35,24,0.12) !important;
+}
+
 /* ═══════ THEME TOGGLE BUTTON ═══════ */
 .theme-toggle{
   display:flex;align-items:center;
