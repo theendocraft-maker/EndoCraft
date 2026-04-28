@@ -304,6 +304,210 @@ html[data-theme="twilight"] .session-right{
   box-shadow:inset 0 0 60px rgba(201,162,95,0.025);
 }
 
+/* ════════ ATMOSPHERE PASS · Phase 3 — Briefing & Session Live ════════
+   Cream-gradient panels, hardcoded #fbf6e6 cards, crimson banner-headers
+   and bright cream side widgets all need explicit dark-paper treatment. */
+
+/* BRIEFING — Hero panel (the big top "session prep" block) */
+html[data-theme="twilight"] .briefing-hero{
+  background:
+    linear-gradient(to bottom, rgba(201,162,95,0.10), rgba(201,162,95,0.03)),
+    var(--surface) !important;
+  border-color:var(--border-strong) !important;
+  border-top-color:var(--crimson) !important;
+  border-bottom-color:var(--crimson) !important;
+  box-shadow:0 4px 18px rgba(0,0,0,0.4), inset 0 0 80px rgba(201,162,95,0.04) !important;
+}
+html[data-theme="twilight"] .briefing-hero::before{
+  color:var(--gold) !important;
+  opacity:.55 !important;
+}
+html[data-theme="twilight"] .briefing-hero-meta{
+  border-top-color:rgba(201,162,95,0.20) !important;
+}
+
+/* BRIEFING — Card chrome (every section card body bg + crimson banner header) */
+html[data-theme="twilight"] .briefing-card,
+html[data-theme="twilight"] .side-widget,
+html[data-theme="twilight"] .sheet-section,
+html[data-theme="twilight"] .recap-block,
+html[data-theme="twilight"] .mod-section{
+  background:var(--surface) !important;
+  border-color:var(--border-strong) !important;
+  box-shadow:0 2px 10px rgba(0,0,0,0.30) !important;
+}
+html[data-theme="twilight"] .briefing-card-h{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.18), rgba(168,35,24,0.08)) !important;
+  color:var(--crimson) !important;
+  border-bottom:1px solid rgba(168,35,24,0.30) !important;
+}
+html[data-theme="twilight"] .briefing-card-h .ico{
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6)) !important;
+}
+
+/* BRIEFING — Read-aloud + DM-note callouts (parchment quote blocks) */
+html[data-theme="twilight"] .briefing-loc-readaloud{
+  background:rgba(168,35,24,0.10) !important;
+  color:var(--text) !important;
+}
+html[data-theme="twilight"] .briefing-loc-dmnote{
+  background:rgba(201,162,95,0.08) !important;
+  color:var(--text) !important;
+}
+
+/* BRIEFING — Party HP pill, music-icon disc */
+html[data-theme="twilight"] .briefing-party-row{
+  background:var(--surface-2) !important;
+  border-color:var(--border) !important;
+}
+
+/* BRIEFING — Numbered objective bullets (stay crimson but legible) */
+html[data-theme="twilight"] .briefing-obj-num{
+  background:var(--crimson) !important;
+  color:#fdf6e8 !important;
+}
+
+/* BRIEFING — Notes textarea */
+html[data-theme="twilight"] .briefing-notes{
+  background:var(--surface-2) !important;
+  color:var(--text) !important;
+  border-color:var(--border-strong) !important;
+}
+
+/* SESSION LIVE — Top strip with location/initiative info */
+html[data-theme="twilight"] .session-strip{
+  background:linear-gradient(to bottom, var(--bg2), var(--surface)) !important;
+  border-bottom:1px solid var(--border-strong) !important;
+  box-shadow:0 2px 10px rgba(0,0,0,0.35) !important;
+}
+
+/* SESSION LIVE — Quick-notes bar (cream gradient + cream input) */
+html[data-theme="twilight"] .quick-notes{
+  background:linear-gradient(to bottom, var(--bg2), var(--surface)) !important;
+  border-bottom:1px solid var(--border-strong) !important;
+}
+html[data-theme="twilight"] .qn-input,
+html[data-theme="twilight"] .qn-history,
+html[data-theme="twilight"] .quick-notes-input{
+  background:var(--surface-2) !important;
+  color:var(--text) !important;
+  border-color:var(--border-strong) !important;
+}
+
+/* SESSION LIVE — Combat tracker (bright orange-cream alarm gradient) */
+html[data-theme="twilight"] .combat-tracker{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.14), rgba(168,35,24,0.05)) !important;
+  border-bottom:2px solid var(--crimson) !important;
+  box-shadow:inset 0 -3px 12px rgba(168,35,24,0.20), 0 4px 18px rgba(0,0,0,0.4) !important;
+}
+html[data-theme="twilight"] .ct-card{
+  background:var(--surface) !important;
+  border-color:var(--border-strong) !important;
+}
+html[data-theme="twilight"] .ct-card.active{
+  background:linear-gradient(135deg, rgba(201,162,95,0.18), var(--surface)) !important;
+  border-color:var(--gold) !important;
+  box-shadow:0 6px 20px rgba(201,162,95,0.25) !important;
+}
+html[data-theme="twilight"] .ct-card.down{
+  opacity:.45;
+  background:rgba(0,0,0,0.20) !important;
+}
+html[data-theme="twilight"] .ct-hp-bar{
+  background:rgba(0,0,0,0.35) !important;
+  border-color:rgba(255,255,255,0.05) !important;
+}
+html[data-theme="twilight"] .ct-init-badge{
+  background:var(--gold) !important;
+  color:#13131a !important;
+  border-color:var(--surface) !important;
+}
+
+/* SESSION LIVE — Mode-tinted section panels (combat-stats / dialogs) */
+html[data-theme="twilight"] .mode-combat [data-mod-section="combat-stats"]{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.10), var(--surface)) !important;
+  border-color:var(--crimson) !important;
+  box-shadow:0 4px 22px rgba(168,35,24,0.20) !important;
+}
+html[data-theme="twilight"] .mode-combat [data-mod-section="combat-stats"] .mod-section-head{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.30), rgba(168,35,24,0.15)) !important;
+  color:#fdf6e8 !important;
+}
+html[data-theme="twilight"] .mode-social [data-mod-section="dialogs"]{
+  background:linear-gradient(to bottom, rgba(108,93,228,0.10), var(--surface)) !important;
+  border-color:#6c5de4 !important;
+  box-shadow:0 4px 18px rgba(108,93,228,0.18) !important;
+}
+html[data-theme="twilight"] .mode-social [data-mod-section="dialogs"] .mod-section-head{
+  background:linear-gradient(to bottom, rgba(108,93,228,0.40), rgba(108,93,228,0.20)) !important;
+  color:#fff !important;
+}
+
+/* SESSION LIVE — Read-aloud / DM-note / scenario / dialog blocks within modules */
+html[data-theme="twilight"] .mod-readaloud,
+html[data-theme="twilight"] .mod-dmnote,
+html[data-theme="twilight"] .mod-scen,
+html[data-theme="twilight"] .mod-dialog{
+  background:rgba(201,162,95,0.05) !important;
+  color:var(--text) !important;
+  border-color:var(--border) !important;
+}
+html[data-theme="twilight"] .mod-readaloud{
+  background:rgba(168,35,24,0.08) !important;
+}
+
+/* SESSION LIVE — Init-setup card grid (in setup modal) */
+html[data-theme="twilight"] .init-setup-card{
+  background:var(--surface) !important;
+  border-color:var(--border-strong) !important;
+}
+
+/* ════════ LIGHT MODE POLISH · echte Daylight-Identität ════════
+   Bisher war Light = "twilight inverse + Dutzende cream/crimson Hardcodes".
+   Jetzt: konsistente warm-paper Palette die den Dark Mode spiegelt. */
+
+/* Light mode: einheitlicher cream-Hintergrund für ALLE bisher harten #fbf6e6 / #fff Cards.
+   Dark Mode kontert mit dunklem Slate — Light antwortet mit warmem Pergament-System. */
+html[data-theme="light"] .briefing-card,
+html[data-theme="light"] .side-widget,
+html[data-theme="light"] .sheet-section,
+html[data-theme="light"] .recap-block,
+html[data-theme="light"] .mod-section{
+  box-shadow:0 2px 10px rgba(91,61,24,0.10), 0 1px 0 rgba(255,255,255,0.6) inset !important;
+}
+
+/* Active CT-card im Light Mode — sanfteres Goldglow statt harter Schatten */
+html[data-theme="light"] .ct-card.active{
+  box-shadow:0 4px 18px rgba(147,110,30,0.22), 0 0 0 1px rgba(147,110,30,0.15) !important;
+}
+
+/* Active-turn outer glow im Light: gold passt jetzt zum Akzent statt purple */
+html[data-theme="light"] .statblock-wrap.active-turn::before{
+  background:linear-gradient(135deg, rgba(147,110,30,0.30) 0%, rgba(147,110,30,0.08) 100%) !important;
+}
+html[data-theme="light"] .statblock-wrap.active-turn .sb-hp-tracker{
+  border-color:var(--gold) !important;
+  background:linear-gradient(to right, rgba(147,110,30,0.12), #f4eadc) !important;
+}
+html[data-theme="light"] .active-turn-badge{
+  background:var(--gold) !important;
+  color:#fff !important;
+}
+
+/* Combat tracker im Light Mode — vom alarmig-orange auf ruhiges warmes Cream */
+html[data-theme="light"] .combat-tracker{
+  background:linear-gradient(to bottom, #fbf3de, #f4ecd4) !important;
+  border-bottom:2px solid var(--crimson) !important;
+  box-shadow:inset 0 -2px 8px rgba(168,35,24,0.08), 0 4px 14px rgba(91,61,24,0.10) !important;
+}
+
+/* Mode-combat section panel im Light — weniger schreiend als vorher */
+html[data-theme="light"] .mode-combat [data-mod-section="combat-stats"]{
+  background:linear-gradient(to bottom, #fbf3de, #fff) !important;
+  border:2px solid var(--crimson) !important;
+  box-shadow:0 4px 16px rgba(168,35,24,0.10) !important;
+}
+
 /* ═══════ THEME TOGGLE BUTTON ═══════ */
 .theme-toggle{
   display:flex;align-items:center;
@@ -2193,7 +2397,8 @@ body.gate-open{overflow:hidden;}
   (function(){
     try {
       var saved = localStorage.getItem('endocraft-theme');
-      if (saved !== 'light') document.documentElement.setAttribute('data-theme', 'twilight');
+      var t = (saved === 'light') ? 'light' : 'twilight';
+      document.documentElement.setAttribute('data-theme', t);
     } catch(e){
       document.documentElement.setAttribute('data-theme', 'twilight');
     }
@@ -2263,8 +2468,7 @@ body.gate-open{overflow:hidden;}
       (function(){
         var root = document.documentElement;
         function apply(t){
-          if (t === 'twilight') root.setAttribute('data-theme', 'twilight');
-          else root.removeAttribute('data-theme');
+          root.setAttribute('data-theme', t === 'twilight' ? 'twilight' : 'light');
           try { localStorage.setItem('endocraft-theme', t); } catch(e){}
           document.querySelectorAll('.theme-toggle button').forEach(function(b){
             b.classList.toggle('active', b.dataset.themeSet === t);
