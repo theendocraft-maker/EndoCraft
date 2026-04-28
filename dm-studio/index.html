@@ -145,7 +145,143 @@ html[data-theme="twilight"] .prof-toggle.expertise::after{
   background:var(--bg) !important;
 }
 
-/* hp-extra-input has color:var(--ink) which is now parchment — stays readable. Same for ct-hp-input. */
+/* ════════ ATMOSPHERE PASS · Phase 2 ════════
+   Calm down loud crimson section bands, flip parchment statblock, fix cream hovers.
+   Goal: even, readable dark — section headers feel like quiet ribbons, not warning labels. */
+
+/* All-crimson section header bands → muted: dark surface-2 with crimson hairline + crimson title */
+html[data-theme="twilight"] .sheet-section-h,
+html[data-theme="twilight"] .roll-log-h,
+html[data-theme="twilight"] .briefing-card-h,
+html[data-theme="twilight"] .mod-section-head,
+html[data-theme="twilight"] .side-widget-h{
+  background:var(--surface-2) !important;
+  color:var(--crimson) !important;
+  border-bottom:1px solid var(--border) !important;
+  border-left:3px solid var(--crimson) !important;
+  box-shadow:none !important;
+}
+html[data-theme="twilight"] .roll-log-clear{
+  background:rgba(243,234,214,0.06) !important;
+  color:var(--text-dim) !important;
+  border-color:var(--border-strong) !important;
+}
+html[data-theme="twilight"] .topbar-live-badge.combat-mode{
+  border-left:0 !important;
+}
+
+/* Sheet sections — cream bg → dark surface */
+html[data-theme="twilight"] .sheet-section,
+html[data-theme="twilight"] .roll-log-panel{
+  background:var(--surface) !important;
+  border-color:var(--border-strong) !important;
+}
+
+/* The "parchment" statblock card — flip to dark paper with gold trim instead of crimson-on-cream */
+html[data-theme="twilight"] .statblock{
+  background:var(--surface) !important;
+  color:var(--text) !important;
+  border-top-color:var(--gold) !important;
+  border-bottom-color:var(--gold) !important;
+  box-shadow:0 4px 18px rgba(0,0,0,0.35), inset 0 0 60px rgba(201,162,95,0.04) !important;
+}
+html[data-theme="twilight"] .statblock .sb-name,
+html[data-theme="twilight"] .statblock .sb-section-h,
+html[data-theme="twilight"] .statblock .sb-ab-l{
+  color:var(--gold) !important;
+}
+html[data-theme="twilight"] .statblock .sb-section-h{
+  border-bottom-color:var(--gold) !important;
+}
+html[data-theme="twilight"] .statblock .sb-rule{
+  background:var(--gold) !important;
+}
+html[data-theme="twilight"] .statblock .sb-sub,
+html[data-theme="twilight"] .statblock .sb-top,
+html[data-theme="twilight"] .statblock .sb-line,
+html[data-theme="twilight"] .statblock .sb-meta,
+html[data-theme="twilight"] .statblock .sb-item,
+html[data-theme="twilight"] .statblock .sb-ab-v{
+  color:var(--text) !important;
+}
+html[data-theme="twilight"] .sb-hp-tracker{
+  background:var(--surface-2) !important;
+  border-color:var(--border-strong) !important;
+}
+html[data-theme="twilight"] .statblock-wrap.active-turn .sb-hp-tracker{
+  background:linear-gradient(to right, var(--gold-dim), var(--surface-2)) !important;
+  border-color:var(--gold) !important;
+}
+
+/* Mode-combat header band — keep crimson identity but as left-stripe, not full gradient */
+html[data-theme="twilight"] .mode-combat [data-mod-section="combat-stats"] .mod-section-head{
+  background:var(--surface-2) !important;
+  color:var(--crimson) !important;
+  border-left:3px solid var(--crimson) !important;
+}
+html[data-theme="twilight"] .mode-combat [data-mod-section="combat-stats"] .mod-section-title{
+  color:var(--crimson) !important;
+}
+
+/* Cream hover backgrounds (#fef6e8) used in many places → tinted dark hover */
+html[data-theme="twilight"] .ability-box:hover,
+html[data-theme="twilight"] .cond-pick:hover,
+html[data-theme="twilight"] .bes-card:hover,
+html[data-theme="twilight"] .sa-row:hover,
+html[data-theme="twilight"] .srd-card:hover,
+html[data-theme="twilight"] .wiz-radio.active,
+html[data-theme="twilight"] .wiz-race-card.selected,
+html[data-theme="twilight"] .wiz-class-card.selected,
+html[data-theme="twilight"] .wiz-bg-card.selected{
+  background:var(--gold-dim) !important;
+}
+html[data-theme="twilight"] .wiz-race-card:hover,
+html[data-theme="twilight"] .wiz-class-card:hover,
+html[data-theme="twilight"] .wiz-bg-card:hover{
+  background:var(--surface) !important;
+}
+
+/* Inline-styled error banners (#fef2e4) used by recap/highlights/album/importer JS */
+html[data-theme="twilight"] [style*="#fef2e4"]{
+  background:rgba(198,110,98,0.10) !important;
+  color:var(--crimson) !important;
+}
+
+/* HP-bar critical state — text-shadow on white text becomes too harsh on dim crimson; soften */
+html[data-theme="twilight"] .hp-bar-wrap::after{
+  text-shadow:0 1px 2px rgba(0,0,0,0.6) !important;
+}
+
+/* Toast error fallback */
+html[data-theme="twilight"] .toast.error{
+  background:rgba(198,110,98,0.10) !important;
+  border-color:var(--crimson);
+  color:var(--crimson);
+}
+
+/* Mod-room title bottom rule — crimson candy-stripe is too playful; flatten to gold hairline */
+html[data-theme="twilight"] .mod-room-title::after{
+  background:var(--gold) !important;
+  height:2px !important;
+  border-radius:1px !important;
+}
+
+/* Welcome-title underline rule — soften crimson burst to gold whisper */
+html[data-theme="twilight"] .welcome-title::after{
+  background:linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent) !important;
+}
+
+/* The .bes-num red disc on briefing-empty step cards — keep crimson but with subtle gold ring instead of harsh fill */
+html[data-theme="twilight"] .bes-num{
+  background:var(--surface-2) !important;
+  color:var(--gold) !important;
+  border:1px solid var(--gold);
+}
+
+/* Active-turn outer glow — purple was the old accent; in twilight gold IS the accent */
+html[data-theme="twilight"] .statblock-wrap.active-turn::before{
+  background:linear-gradient(135deg, rgba(201,162,95,0.5) 0%, rgba(201,162,95,0.18) 100%) !important;
+}
 
 /* Buttons that hardcoded white text on color: those colors stay strong enough — leave them */
 
@@ -2053,11 +2189,14 @@ body.gate-open{overflow:hidden;}
 <body>
 <script>
   // ═══ Theme bootstrap — applied before paint to avoid FOUC ═══
+  // Default = twilight (dark). User can switch to light via toggle.
   (function(){
     try {
       var saved = localStorage.getItem('endocraft-theme');
-      if (saved === 'twilight') document.documentElement.setAttribute('data-theme', 'twilight');
-    } catch(e){}
+      if (saved !== 'light') document.documentElement.setAttribute('data-theme', 'twilight');
+    } catch(e){
+      document.documentElement.setAttribute('data-theme', 'twilight');
+    }
   })();
 </script>
 
