@@ -1222,6 +1222,13 @@ async function switchActivePartyPlayer(code) {
   if (state.currentView === 'album') renderAlbum();
 }
 
+// Party-Progress (Milestones / Unlocks) — vom Backend bei /sessions mitgeliefert
+let _partyProgress = null;        // { next, nextName, threshold, have, remaining }
+let _partyUnlocks = [];           // Array von Achievement-Keys: ['10_nights', ...]
+let _partyMilestones = [];        // [{ key, threshold, name, desc }, ...]
+let _partyCardCount = 0;
+let _partyNewlyUnlocked = [];     // Diese kamen frisch dazu — für Toast-Celebration
+
 async function loadPartyAlbumData() {
   if (!_activeParty?.code) return null;
   try {
@@ -1229,11 +1236,73 @@ async function loadPartyAlbumData() {
     const data = await resp.json();
     if (!resp.ok) return null;
     _partyMembers = data.members || [];
+    _partyProgress = data.progress || null;
+    _partyUnlocks = data.unlocks || [];
+    _partyMilestones = data.milestones || [];
+    _partyCardCount = data.cardCount || 0;
+    _partyNewlyUnlocked = data.newlyUnlocked || [];
+
+    // Frische Unlocks feiern
+    if (_partyNewlyUnlocked.length) {
+      _partyNewlyUnlocked.forEach(key => {
+        const m = _partyMilestones.find(x => x.key === key);
+        if (m) toast(`✨ Freigeschaltet: ${m.name}`);
+      });
+    }
+
     const byId = {};
     (data.sessions || []).forEach(s => { byId[s.id] = { ...s, _source: 'session' }; });
     (data.cards || []).forEach(c => { if (!byId[c.id]) byId[c.id] = { ...c, _source: 'card' }; });
     return Object.values(byId).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   } catch (e) { return null; }
+}
+
+// Baut den Progress+Unlock-Block für die Party-Card.
+// Verwendet ausschließlich existierende CSS-Klassen (.ppb-tag, .ppb-meta) +
+// CSS-Variablen via inline-style. Keine neuen Stylesheets damit das frische
+// Design nicht überschrieben wird.
+function renderPartyProgressBlock() {
+  if (!_activeParty || !_partyMilestones.length) return '';
+  const progress = _partyProgress;
+  const unlocks = _partyUnlocks || [];
+  const unlockedMs = _partyMilestones.filter(m => unlocks.includes(m.key));
+
+  // Progress-Bar — % zwischen letzter erreichter und nächster Schwelle
+  const progressBlock = progress ? (() => {
+    const prevThreshold = unlockedMs.length ? unlockedMs[unlockedMs.length - 1].threshold : 0;
+    const span = Math.max(1, progress.threshold - prevThreshold);
+    const inSpan = Math.max(0, progress.have - prevThreshold);
+    const pct = Math.min(100, Math.round((inSpan / span) * 100));
+    return `
+      <div style="margin-top:10px;padding-top:10px;border-top:1px dotted var(--border);" title="${escapeAttr(progress.nextDesc || '')}">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;">
+          <span class="ppb-tag">Nächster Meilenstein</span>
+          <span class="ppb-meta">${progress.have}/${progress.threshold} · ${escapeHtml(progress.nextName)}</span>
+        </div>
+        <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;border:1px solid var(--border);">
+          <div style="height:100%;width:${pct}%;background:linear-gradient(to right,var(--gold),var(--gold-br));transition:width .4s;"></div>
+        </div>
+      </div>
+    `;
+  })() : `
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dotted var(--border);text-align:center;">
+      <span class="ppb-tag">✦ Alle Meilensteine erreicht</span>
+      <div class="ppb-meta" style="margin-top:4px;">${_partyCardCount} Karten · Hall-of-Fame-würdig</div>
+    </div>
+  `;
+
+  const unlockBlock = unlockedMs.length ? `
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dotted var(--border);">
+      <span class="ppb-tag">Freigeschaltet</span>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+        ${unlockedMs.map(m => `
+          <span title="${escapeAttr(m.desc)}" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-br);border-radius:4px;padding:3px 8px;font-weight:700;text-transform:uppercase;">✦ ${escapeHtml(m.name)}</span>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  return progressBlock + unlockBlock;
 }
 
 // ═══════════ RENDER: ALBUM (Cards) ═══════════
@@ -1271,6 +1340,7 @@ async function renderAlbum() {
       <div class="ppb-actions">
         <button class="btn-top" onclick="promptJoinParty()">+ Andere Party</button>
       </div>
+      <div id="partyProgressHost"></div>
     </div>
   ` : `
     <div class="player-party-empty">
@@ -1299,6 +1369,9 @@ async function renderAlbum() {
       // Header neu rendern damit Member-Count stimmt
       const ppmeta = host.querySelector('.ppb-meta');
       if (ppmeta) ppmeta.textContent = `${_partyMembers.length || '—'} Member${_partyMembers.length === 1 ? '' : 's'}`;
+      // Progress + Unlocks rendern
+      const progHost = host.querySelector('#partyProgressHost');
+      if (progHost) progHost.innerHTML = renderPartyProgressBlock();
     } else {
       // Fallback: Solo-Cards (legacy single-user album)
       const slug = await emailToSlug(s.email);
