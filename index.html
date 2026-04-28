@@ -208,19 +208,13 @@ footer a:hover{color:var(--text);}
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="./" class="nav-logo">
-    <img src="./IMG_8431.PNG" alt="EndoCraft">
-    EndoCraft.
-  </a>
-  <div class="nav-right">
-    <a href="./hall-of-fame/" class="nav-link">Hall of Fame</a>
-    <a href="./dm-studio/" class="nav-link">📖 Cockpit</a>
-    <a href="./roadmap.html" class="nav-link">Roadmap</a>
-    <a href="./scroll/" class="nav-cta">Try for free →</a>
-  </div>
-</nav>
+<!-- NAV (shared card-layer header) -->
+<div id="ec-header"></div>
+<div id="ec-header-extras">
+  <a href="./roadmap.html" class="nav-link">Roadmap</a>
+  <a href="./scroll/" class="nav-cta">Try for free →</a>
+</div>
+<script src="/_shared/card-layer-header.js"></script>
 
 <!-- HERO -->
 <section class="hero">

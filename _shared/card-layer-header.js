@@ -125,17 +125,18 @@
     }
   `;
 
-  function buildHTML(active) {
+  function buildHTML(active, sub) {
     const link = (href, section, label, extraClass) => {
       const cls = ['ec-header-link'];
       if (extraClass) cls.push(extraClass);
       if (section && active === section) cls.push('active');
       return `<a href="${href}" class="${cls.join(' ')}" data-section="${section || ''}">${label}</a>`;
     };
+    const subHtml = sub ? `<span class="ec-header-sub">${sub}</span>` : '';
     return `
       <a href="/" class="ec-header-brand" title="EndoCraft Home">
         <img src="/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
-        <span>EndoCraft<span class="ec-header-sub">Card Layer</span></span>
+        <span>EndoCraft${subHtml}</span>
       </a>
       <nav class="ec-header-nav">
         ${link('/scroll/', 'scroll', '✦ Karte erstellen')}
@@ -144,6 +145,16 @@
         ${link('/dm-studio/', null, '📖 Cockpit', 'cockpit')}
       </nav>
     `;
+  }
+
+  // Default-Sub pro Section. Kann via data-sub="…" am #ec-header überschrieben werden,
+  // oder data-sub="" für gar kein Sub-Label.
+  function defaultSubForActive(active) {
+    if (active === 'hall-of-fame') return 'Hall of Fame';
+    if (active === 'scroll') return 'Session Scroll';
+    if (active === 'my-cards') return 'My Collection';
+    if (active === 'session') return 'Card View';
+    return '';  // Landing oder unbekannt → kein Sub
   }
 
   function injectStyles() {
@@ -158,8 +169,10 @@
     const slot = document.getElementById('ec-header');
     if (!slot) return;
     const active = slot.dataset.active || detectActive();
+    // Sub-Label: data-sub="…" überschreibt, data-sub="" entfernt komplett, sonst Default für die Section
+    const sub = slot.hasAttribute('data-sub') ? slot.dataset.sub : defaultSubForActive(active);
     slot.classList.add('ec-header');
-    slot.innerHTML = buildHTML(active);
+    slot.innerHTML = buildHTML(active, sub);
 
     // Wenn ec-header-extras separat im DOM existiert, NACH dem nav anhängen
     const extras = document.getElementById('ec-header-extras');
