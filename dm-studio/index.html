@@ -2499,6 +2499,9 @@ body{
 }
 .session-rt-tab:hover{color:var(--text);background:var(--surface-2);}
 .session-rt-tab.active{color:var(--ink);border-bottom-color:var(--accent);background:var(--surface-2);}
+.session-rt-tab.has-new{position:relative;}
+.session-rt-tab.has-new::after{content:'';position:absolute;top:8px;right:10px;width:6px;height:6px;border-radius:50%;background:var(--crimson);box-shadow:0 0 6px rgba(168,35,24,0.6);animation:pulseRT 1.4s ease-in-out infinite;}
+@keyframes pulseRT{0%,100%{opacity:1;}50%{opacity:.4;}}
 .session-rt-pane{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
 .session-rt-pane.active{display:flex;}
 .session-rt-head{padding:12px 16px 8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;flex-shrink:0;}
@@ -3831,6 +3834,7 @@ body.gate-open{overflow:hidden;}
         <aside class="session-right">
           <div class="session-rt-tabs">
             <button class="session-rt-tab active" data-srt="chat" onclick="switchSessionRT('chat')"><span>✦</span>Co-DM</button>
+            <button class="session-rt-tab" data-srt="dice" onclick="switchSessionRT('dice')"><span>🎲</span>Würfel</button>
             <button class="session-rt-tab" data-srt="image" onclick="switchSessionRT('image')"><span>🏛️</span>Szene</button>
             <button class="session-rt-tab" data-srt="music" onclick="switchSessionRT('music')"><span>🎵</span>Musik</button>
           </div>
@@ -3849,6 +3853,17 @@ body.gate-open{overflow:hidden;}
                   <button class="chat-send-btn">Senden</button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div class="session-rt-pane" data-srt="dice">
+            <div class="session-rt-head">
+              <strong>Würfel-Stream</strong> · Live-Rolls deiner Party
+              <button class="btn-top" style="font-size:11px;padding:5px 10px;margin-left:8px;" onclick="openRollRequestModal()" title="Wurf bei der Party anfragen">+ Roll anfragen</button>
+            </div>
+            <div id="diceStreamPanel" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+              <div id="diceStreamStatus" style="padding:10px 16px;font-size:11.5px;color:var(--text-dim);font-family:'EB Garamond',serif;font-style:italic;border-bottom:1px solid var(--border);"></div>
+              <div id="diceStreamList" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
           </div>
 
@@ -6333,12 +6348,223 @@ function renderSession() {
   switchSessionRT(state.sessionRTTab || 'chat');
 }
 
-// Session right-panel tab switcher (Chat / Szene / Musik)
+// Session right-panel tab switcher (Chat / Würfel / Szene / Musik)
 function switchSessionRT(tab) {
   state.sessionRTTab = tab; saveState();
   document.querySelectorAll('.session-rt-tab').forEach(b => b.classList.toggle('active', b.dataset.srt === tab));
   document.querySelectorAll('.session-rt-pane').forEach(p => p.classList.toggle('active', p.dataset.srt === tab));
   if (tab === 'chat') setTimeout(() => document.querySelector('[data-chat-host="session"] .chat-input')?.focus(), 40);
+  if (tab === 'dice') {
+    // "has-new"-Indicator zurücksetzen wenn Tab geöffnet
+    document.querySelector('.session-rt-tab[data-srt="dice"]')?.classList.remove('has-new');
+    // Listener starten falls noch nicht aktiv
+    if (!_liveRollChannel) startDMRollStreamListener();
+    else renderDiceStream();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LIVE MULTIPLAYER DICE — DM-Side Roll-Stream + Roll-Anfrage
+// Aktive Party benötigt (state._activeParty oder lokal _activePartyDM)
+// ═══════════════════════════════════════════════════════════════════════════
+let _liveRolls = [];                  // Roll-Stream Cache
+let _liveRollChannel = null;
+let _activePartyDM = null;            // DM hat eine Party im Album geladen
+
+async function _ensureActiveParty() {
+  // Versucht aktive Party zu finden — entweder aus geladenen Daten oder via API
+  if (_activePartyDM?.code) return _activePartyDM;
+  if (typeof _activeParty !== 'undefined' && _activeParty?.code) {
+    _activePartyDM = _activeParty;
+    return _activePartyDM;
+  }
+  const s = syncSettings();
+  if (!s.email) return null;
+  try {
+    const resp = await fetch(`${API_BASE}/api/parties/list?email=${encodeURIComponent(s.email)}`);
+    const data = await resp.json();
+    const parties = data.parties || [];
+    const savedCode = localStorage.getItem('ec_active_party_code');
+    let active = savedCode ? parties.find(p => p.parties?.code === savedCode) : null;
+    if (!active && parties.length) active = parties[0];
+    _activePartyDM = active?.parties || null;
+    return _activePartyDM;
+  } catch(e) { return null; }
+}
+
+async function startDMRollStreamListener() {
+  stopDMRollStreamListener();
+  const party = await _ensureActiveParty();
+  if (!party?.code) return;
+  const sb = initSupabaseClient();
+  if (!sb) return;
+  // Initial-Load
+  try {
+    const r = await fetch(`${API_BASE}/api/live/stream/${encodeURIComponent(party.code)}`);
+    const d = await r.json();
+    _liveRolls = (d.rolls || []).reverse();   // ältest zuerst, neueste unten
+  } catch(e){ console.warn('[live-dice DM] initial fetch fail:', e); }
+
+  _liveRollChannel = sb
+    .channel('dm-dice-' + party.code)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'live_rolls',
+      filter: `party_code=eq.${party.code}`
+    }, (payload) => {
+      if (!payload?.new) return;
+      _liveRolls.push(payload.new);
+      if (_liveRolls.length > 100) _liveRolls.shift();
+      renderDiceStream();
+      // Tab-Indicator falls Würfel-Tab nicht aktiv
+      const tab = document.querySelector('.session-rt-tab[data-srt="dice"]');
+      if (tab && !tab.classList.contains('active')) {
+        tab.classList.add('has-new');
+      }
+      // Kurzes "ding" via Toast falls Crit/Fumble
+      if (payload.new.is_crit) toast(`✦ ${payload.new.player_name || 'Spieler'}: Natural 20!`);
+      else if (payload.new.is_fumble) toast(`◈ ${payload.new.player_name || 'Spieler'}: Natural 1...`);
+    })
+    .subscribe();
+  renderDiceStream();
+}
+
+function stopDMRollStreamListener() {
+  if (_liveRollChannel) {
+    try { _liveRollChannel.unsubscribe(); } catch(e) {}
+    _liveRollChannel = null;
+  }
+}
+
+function renderDiceStream() {
+  const list = document.getElementById('diceStreamList');
+  const status = document.getElementById('diceStreamStatus');
+  if (!list || !status) return;
+  if (!_activePartyDM?.code) {
+    status.textContent = 'Keine aktive Party — wähle im Party Album eine aus.';
+    list.innerHTML = '';
+    return;
+  }
+  status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(_activePartyDM.name)}</strong> · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · Realtime`;
+  if (!_liveRolls.length) {
+    list.innerHTML = '<div style="text-align:center;padding:30px 12px;color:var(--text-dim);font-style:italic;font-size:13px;">Noch keine Würfe. Klick „+ Roll anfragen" um eine Wurf-Anfrage zu schicken.</div>';
+    return;
+  }
+  list.innerHTML = _liveRolls.slice().reverse().map(r => {
+    const time = new Date(r.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    const resultColor = r.is_crit ? 'var(--gold-br)' : (r.is_fumble ? 'var(--crimson)' : (r.result_kind === 'success' ? 'var(--forest)' : (r.result_kind === 'fail' ? 'var(--crimson)' : 'var(--ink)')));
+    const resultBg = r.is_crit ? 'rgba(184,133,31,0.12)' : (r.is_fumble ? 'rgba(168,35,24,0.10)' : 'transparent');
+    const tag = r.is_crit ? '✦ NAT 20' : (r.is_fumble ? '◈ NAT 1' : (r.result_kind === 'success' ? '✓' : (r.result_kind === 'fail' ? '✗' : '')));
+    const who = escapeHtml(r.character_name || r.player_name || 'Spieler');
+    const statLabel = r.stat ? r.stat.toUpperCase() : 'D20';
+    return `
+      <div style="display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:8px 10px;background:${resultBg};border:1px solid var(--border);border-radius:7px;">
+        <div style="font-family:'Cinzel Decorative',serif;font-size:20px;font-weight:700;color:${resultColor};text-align:center;">${r.total}</div>
+        <div style="min-width:0;">
+          <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${who}</div>
+          <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">${statLabel} · d20(${r.d20}) ${r.modifier >= 0 ? '+' : '−'}${Math.abs(r.modifier)}${r.dc != null ? ' · DC ' + r.dc : ''}</div>
+        </div>
+        <div style="text-align:right;">
+          ${tag ? `<div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.2px;color:${resultColor};font-weight:700;">${tag}</div>` : ''}
+          <div style="font-size:10px;color:var(--text-dimmer);font-family:'JetBrains Mono',monospace;margin-top:1px;">${time}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openRollRequestModal() {
+  if (!_activePartyDM?.code) {
+    _ensureActiveParty().then(p => {
+      if (p?.code) openRollRequestModal();
+      else toast('Keine aktive Party gefunden — wähle eine im Party Album', true);
+    });
+    return;
+  }
+  const existing = document.getElementById('rollRequestModal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'rollRequestModal';
+  modal.className = 'srd-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="closeRollRequestModal()"></div>
+    <div class="srd-modal-inner" style="max-width:440px;">
+      <div class="srd-modal-head">
+        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">🎲 Roll bei der Party anfragen</h3>
+        <button onclick="closeRollRequestModal()">✕</button>
+      </div>
+      <div class="srd-modal-body" style="padding:16px 22px 22px;">
+        <label style="display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:5px;">PROMPT (z.B. „Wisdom Save · Deathly Choir")</label>
+        <input id="rrPrompt" type="text" maxlength="200" placeholder="Wisdom Save" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;margin-bottom:14px;" />
+
+        <div style="display:grid;grid-template-columns:1fr 100px;gap:10px;margin-bottom:14px;">
+          <div>
+            <label style="display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:5px;">STAT</label>
+            <select id="rrStat" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);">
+              <option value="">— frei —</option>
+              <option value="str">Strength</option>
+              <option value="dex">Dexterity</option>
+              <option value="con">Constitution</option>
+              <option value="int">Intelligence</option>
+              <option value="wis" selected>Wisdom</option>
+              <option value="cha">Charisma</option>
+              <option value="attack">Attack</option>
+              <option value="damage">Damage</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:5px;">DC</label>
+            <input id="rrDC" type="number" min="1" max="40" placeholder="16" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;" />
+          </div>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:18px;cursor:pointer;">
+          <input id="rrSecret" type="checkbox" style="width:16px;height:16px;cursor:pointer;" />
+          Geheim · nur DM sieht Resultate
+        </label>
+
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button class="btn-top" onclick="closeRollRequestModal()">Abbrechen</button>
+          <button class="btn-top primary" onclick="submitRollRequest()">→ Anfrage senden</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('rrPrompt')?.focus(), 50);
+}
+
+function closeRollRequestModal() {
+  document.getElementById('rollRequestModal')?.remove();
+}
+
+async function submitRollRequest() {
+  const prompt = document.getElementById('rrPrompt')?.value?.trim();
+  const stat = document.getElementById('rrStat')?.value || null;
+  const dcRaw = document.getElementById('rrDC')?.value;
+  const dc = dcRaw ? parseInt(dcRaw) : null;
+  const secret = document.getElementById('rrSecret')?.checked;
+  if (!prompt) { toast('Prompt eingeben', true); return; }
+  const party = await _ensureActiveParty();
+  if (!party?.code) { toast('Keine aktive Party', true); return; }
+  const s = syncSettings();
+  try {
+    const resp = await fetch(`${API_BASE}/api/live/request`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        partyCode: party.code,
+        dmEmail: s.email,
+        prompt, statType: stat, dc,
+        visibility: secret ? 'dm_only' : 'public'
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Fehler');
+    toast('🎲 Anfrage gesendet — Spieler bekommen Banner');
+    closeRollRequestModal();
+    switchSessionRT('dice');
+  } catch (e) { toast('Fehler: ' + e.message, true); }
 }
 
 function setSessionMode(mode) {

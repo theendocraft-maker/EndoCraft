@@ -304,6 +304,24 @@ body.gate-open{overflow:hidden;}
   backdrop-filter:blur(3px);
 }
 
+/* ═══════ LIVE-DICE · ROLL-REQUEST-BANNER ═══════ */
+.roll-request-banner{
+  position:fixed;top:90px;right:24px;z-index:250;
+  max-width:320px;
+  background:linear-gradient(to bottom,#fef2e4,#fff);
+  border:2px solid var(--crimson);border-left:5px solid var(--crimson);
+  border-radius:12px;padding:14px 18px 16px;
+  box-shadow:0 12px 40px rgba(168,35,24,0.25);
+  animation:rrbIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes rrbIn{from{transform:translateX(40px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.rrb-inner{display:flex;flex-direction:column;gap:8px;}
+.rrb-tag{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--crimson);font-weight:700;text-transform:uppercase;}
+.rrb-prompt{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--ink);font-weight:700;line-height:1.2;}
+.rrb-dc{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--gold);font-weight:700;}
+.rrb-actions{display:flex;gap:6px;margin-top:6px;}
+.rrb-actions button{font-size:11px;padding:7px 12px;}
+
 /* ═══════ ROLL-FLASH (D20-Roll-Animation auf Stat-Click) ═══════ */
 .char-stat{cursor:pointer;transition:all .15s;position:relative;}
 .char-stat:hover{border-color:var(--gold);background:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(147,110,30,0.12);}
@@ -1184,6 +1202,8 @@ async function loadMyParties() {
     if (!active && _myParties.length) active = _myParties[0];
     _activeParty = active?.parties || null;
     if (_activeParty) localStorage.setItem('ec_active_party_code', _activeParty.code);
+    // Live-Dice-Listener starten falls Party aktiv ist
+    if (_activeParty && typeof startLiveDiceListener === 'function') startLiveDiceListener();
     return _myParties;
   } catch (e) { console.error('[Party] List fail:', e); return []; }
 }
@@ -1220,6 +1240,8 @@ async function switchActivePartyPlayer(code) {
   _activeParty = found.parties;
   localStorage.setItem('ec_active_party_code', code);
   toast('→ ' + (found.parties.name || code));
+  // Live-Dice neu subscriben für die neue Party
+  if (typeof startLiveDiceListener === 'function') startLiveDiceListener();
   if (state.currentView === 'album') renderAlbum();
 }
 
@@ -1461,19 +1483,26 @@ const STAT_LABELS = {
   str: 'Strength', dex: 'Dexterity', con: 'Constitution',
   int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma'
 };
-function rollStat(stat, mod) {
+function rollStat(stat, mod, opts) {
+  opts = opts || {};
   const d20 = 1 + Math.floor(Math.random() * 20);
   const total = d20 + mod;
   const isCrit = d20 === 20;
   const isFumble = d20 === 1;
-  const tag = isCrit ? 'NATURAL 20!' : isFumble ? 'NATURAL 1!' : '';
-  const tagClass = isCrit ? 'crit' : isFumble ? 'fumble' : '';
-  const resultClass = tagClass;
+  const dc = opts.dc != null ? opts.dc : null;
+  let resultKind = null;
+  if (isCrit) resultKind = 'crit-success';
+  else if (isFumble) resultKind = 'crit-fail';
+  else if (dc != null) resultKind = total >= dc ? 'success' : 'fail';
+
+  const tag = isCrit ? 'NATURAL 20!' : isFumble ? 'NATURAL 1!' : (dc != null && resultKind === 'success' ? 'SUCCESS' : (dc != null && resultKind === 'fail' ? 'FAIL' : ''));
+  const tagClass = isCrit ? 'crit' : isFumble ? 'fumble' : (resultKind === 'success' ? 'crit' : (resultKind === 'fail' ? 'fumble' : ''));
+  const resultClass = isCrit ? 'crit' : isFumble ? 'fumble' : '';
   const flash = document.createElement('div');
   flash.className = 'roll-flash';
   flash.innerHTML = `
     <div class="roll-flash-inner">
-      <div class="rf-stat">${STAT_LABELS[stat] || stat.toUpperCase()}-CHECK</div>
+      <div class="rf-stat">${opts.label || STAT_LABELS[stat] || stat.toUpperCase()}${dc != null ? ' · DC ' + dc : ''}</div>
       <div class="rf-result ${resultClass}">${total}</div>
       <div class="rf-formula">d20 (${d20}) ${mod >= 0 ? '+' : '−'} ${Math.abs(mod)}</div>
       ${tag ? `<div class="rf-tag ${tagClass}">${tag}</div>` : ''}
@@ -1481,15 +1510,159 @@ function rollStat(stat, mod) {
   `;
   flash.onclick = () => closeRollFlash(flash);
   document.body.appendChild(flash);
-  // Auto-close nach 1.8s
   setTimeout(() => closeRollFlash(flash), 1800);
-  // Plausible-Event
   try { window.plausible?.('Player View Roll', { props: { stat, result: total } }); } catch(e) {}
+
+  // Live-Multiplayer-Sync: Wenn Player in einer Party ist, broadcast den Roll
+  if (_activeParty?.code) {
+    publishLiveRoll({
+      stat, modifier: mod, d20, dc,
+      requestId: opts.requestId || null,
+      visibility: opts.visibility || 'public'
+    });
+  }
 }
 function closeRollFlash(el) {
   if (!el || el.classList.contains('fading')) return;
   el.classList.add('fading');
   setTimeout(() => el.remove(), 350);
+}
+
+// ═══════════ LIVE MULTIPLAYER DICE ═══════════
+// Spieler postet Würfe an die Cloud, hört auf DM-Anfragen via Supabase Realtime.
+let _liveDiceChannel = null;          // Realtime-Channel für aktive Party
+let _activeRollRequest = null;        // aktuelle DM-Anfrage (UI-Banner)
+let _seenRequestIds = new Set();      // dedupliziert wiederkehrende Subscriptions
+
+async function publishLiveRoll({ stat, modifier, d20, dc, requestId, visibility }) {
+  if (!_activeParty?.code) return;
+  const s = syncSettings();
+  if (!s.email) return;
+  const char = currentChar();
+  try {
+    await fetch(`${API_BASE}/api/live/roll`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        partyCode: _activeParty.code,
+        playerEmail: s.email,
+        playerName: s.email.split('@')[0],
+        characterName: char?.name || null,
+        stat, modifier, d20, dc, requestId, visibility
+      })
+    });
+  } catch (e) { console.warn('[live-dice] publish fail:', e); }
+}
+
+// Subscribe auf Realtime: roll_requests für aktive Party
+function startLiveDiceListener() {
+  stopLiveDiceListener();
+  if (!_activeParty?.code) return;
+  const sb = initSupabaseClient();
+  if (!sb) return;
+  const code = _activeParty.code;
+  _liveDiceChannel = sb
+    .channel('live-dice-' + code)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'roll_requests',
+      filter: `party_code=eq.${code}`
+    }, (payload) => {
+      const req = payload.new;
+      if (!req || _seenRequestIds.has(req.id)) return;
+      _seenRequestIds.add(req.id);
+      // Wenn target_emails gesetzt UND wir nicht drin sind → ignorieren
+      const myEmail = (syncSettings().email || '').toLowerCase().trim();
+      if (Array.isArray(req.target_emails) && req.target_emails.length && !req.target_emails.includes(myEmail)) return;
+      _activeRollRequest = req;
+      renderRollRequestBanner();
+    })
+    .subscribe();
+  console.log('[live-dice] subscribed to', code);
+  // Auch beim Start: offene Requests fetchen falls einer schon vor unserem Subscribe kam
+  fetchOpenRequests();
+}
+
+function stopLiveDiceListener() {
+  if (_liveDiceChannel) {
+    try { _liveDiceChannel.unsubscribe(); } catch(e) {}
+    _liveDiceChannel = null;
+  }
+  _activeRollRequest = null;
+  _seenRequestIds.clear();
+  renderRollRequestBanner();
+}
+
+async function fetchOpenRequests() {
+  if (!_activeParty?.code) return;
+  try {
+    const resp = await fetch(`${API_BASE}/api/live/stream/${encodeURIComponent(_activeParty.code)}`);
+    const data = await resp.json();
+    if (!resp.ok) return;
+    const open = (data.openRequests || []).filter(r => {
+      if (_seenRequestIds.has(r.id)) return false;
+      const myEmail = (syncSettings().email || '').toLowerCase().trim();
+      if (Array.isArray(r.target_emails) && r.target_emails.length && !r.target_emails.includes(myEmail)) return false;
+      // Nur Requests der letzten 5 Minuten als "frisch" zeigen
+      const age = Date.now() - new Date(r.created_at).getTime();
+      return age < 5 * 60 * 1000;
+    });
+    if (open.length) {
+      _activeRollRequest = open[0];
+      _seenRequestIds.add(open[0].id);
+      renderRollRequestBanner();
+    }
+  } catch (e) { console.warn('[live-dice] fetchOpen failed:', e); }
+}
+
+function renderRollRequestBanner() {
+  let banner = document.getElementById('rollRequestBanner');
+  if (!_activeRollRequest) {
+    if (banner) banner.remove();
+    return;
+  }
+  const r = _activeRollRequest;
+  const char = currentChar();
+  // Modifier aus Char-Stats holen falls möglich
+  let mod = 0;
+  if (char?.stats && r.stat_type && ['str','dex','con','int','wis','cha'].includes(r.stat_type)) {
+    mod = abilityModifier(char.stats[r.stat_type]);
+  }
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'rollRequestBanner';
+    banner.className = 'roll-request-banner';
+    document.body.appendChild(banner);
+  }
+  banner.innerHTML = `
+    <div class="rrb-inner">
+      <div class="rrb-tag">DM BITTET UM WURF</div>
+      <div class="rrb-prompt">${escapeHtml(r.prompt)}</div>
+      ${r.dc != null ? `<div class="rrb-dc">DC ${r.dc}</div>` : ''}
+      <div class="rrb-actions">
+        <button class="btn-top primary" onclick="answerRollRequest(${r.id}, '${r.stat_type || ''}', ${mod}, ${r.dc != null ? r.dc : 'null'})">🎲 Würfeln</button>
+        <button class="btn-top" onclick="dismissRollRequest()">✕ Ignorieren</button>
+      </div>
+    </div>
+  `;
+}
+
+function answerRollRequest(requestId, statType, mod, dc) {
+  const r = _activeRollRequest;
+  if (!r) return;
+  rollStat(statType || 'd20', mod || 0, {
+    dc: dc,
+    requestId: requestId,
+    label: r.prompt,
+    visibility: r.visibility || 'public'
+  });
+  _activeRollRequest = null;
+  renderRollRequestBanner();
+}
+
+function dismissRollRequest() {
+  _activeRollRequest = null;
+  renderRollRequestBanner();
 }
 
 // Email-Hash für Supabase-Slug (sha256 erste 16 hex-chars, lowercase trimmed)
