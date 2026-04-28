@@ -43,6 +43,149 @@
   --shadow-sm:0 1px 2px rgba(0,0,0,0.06);
   --shadow-md:0 3px 12px rgba(0,0,0,0.09);
   --shadow-lg:0 10px 40px rgba(0,0,0,0.15);
+  --topbar-bg:rgba(247,246,243,0.92);
+  --hp-track:rgba(0,0,0,0.08);
+}
+
+/* ═══════ TWILIGHT THEME · Dark mode for evening sessions ═══════ */
+/* Token-only override — every component that uses var(--…) flips automatically.
+   Layout, spacing, typography, structure all stay identical. */
+html[data-theme="twilight"]{
+  --bg:#13131a;               /* deep ink-blue night */
+  --bg2:#191921;              /* panel bg */
+  --surface:#1f1f29;          /* cards / paper */
+  --surface-2:#23232f;        /* input / secondary */
+  --text:#f3ead6;             /* warm parchment */
+  --text-dim:#a59c87;
+  --text-dimmer:#6c6555;
+  --border:rgba(243,234,214,0.08);
+  --border-strong:rgba(243,234,214,0.18);
+  --accent:#c9a25f;           /* gold IS the accent at night */
+  --accent-dim:rgba(201,162,95,0.16);
+  --gold:#c9a25f;
+  --gold-dim:rgba(201,162,95,0.16);
+  --gold-br:#d9b675;
+  --crimson:#c66e62;          /* softer crimson on dark */
+  --crimson-dim:rgba(198,110,98,0.12);
+  --forest:#7fb781;
+  --ink:#f3ead6;              /* "ink" inverts to warm parchment for headings */
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:0 4px 18px rgba(0,0,0,0.45);
+  --shadow-lg:0 14px 50px rgba(0,0,0,0.6);
+  --topbar-bg:rgba(19,19,26,0.78);
+  --hp-track:rgba(243,234,214,0.06);
+}
+html[data-theme="twilight"] body{
+  background-image:
+    radial-gradient(at 20% 10%, rgba(201,162,95,0.06) 0%, transparent 55%),
+    radial-gradient(at 80% 90%, rgba(198,110,98,0.04) 0%, transparent 55%);
+}
+html[data-theme="twilight"] .topbar{ background:var(--topbar-bg); }
+/* Soften pure-white surfaces that hardcode #fff */
+html[data-theme="twilight"] .cm-count,
+html[data-theme="twilight"] [style*="background:#fff"],
+html[data-theme="twilight"] [style*="background: #fff"]{
+  background:var(--surface) !important;
+  color:var(--text) !important;
+}
+
+/* All hardcoded #fff surfaces from the original CSS — flip to dark surface */
+html[data-theme="twilight"] .ct-h-btn,
+html[data-theme="twilight"] .ct-card,
+html[data-theme="twilight"] .ct-hp-input,
+html[data-theme="twilight"] .cond-pick,
+html[data-theme="twilight"] .rp-option,
+html[data-theme="twilight"] .imp-item,
+html[data-theme="twilight"] .importer-grouplabel-row input,
+html[data-theme="twilight"] .importer-item,
+html[data-theme="twilight"] .init-setup-card,
+html[data-theme="twilight"] .init-setup-card.included .isc-input,
+html[data-theme="twilight"] .isc-input:focus,
+html[data-theme="twilight"] .side-pc-hp,
+html[data-theme="twilight"] .ability-box,
+html[data-theme="twilight"] .attack-row,
+html[data-theme="twilight"] .hp-extra-box,
+html[data-theme="twilight"] .spellslot-box,
+html[data-theme="twilight"] .insp-toggle,
+html[data-theme="twilight"] .exh-box,
+html[data-theme="twilight"] .death-saves,
+html[data-theme="twilight"] .ds-dot,
+html[data-theme="twilight"] .prof-toggle,
+html[data-theme="twilight"] .sb-hp-tracker input,
+html[data-theme="twilight"] .sb-hp-tracker .hp-btn,
+html[data-theme="twilight"] .briefing-party-hp,
+html[data-theme="twilight"] .briefing-music-ico,
+html[data-theme="twilight"] .qn-input,
+html[data-theme="twilight"] .qn-history,
+html[data-theme="twilight"] .bes-card,
+html[data-theme="twilight"] .sa-row,
+html[data-theme="twilight"] .album-card{
+  background:var(--surface) !important;
+  color:var(--text);
+  border-color:var(--border-strong);
+}
+html[data-theme="twilight"] .isc-input{ background:var(--surface-2) !important; color:var(--text); }
+html[data-theme="twilight"] .qn-input,
+html[data-theme="twilight"] .qn-history{ border-color:var(--border-strong) !important; }
+html[data-theme="twilight"] .ability-box{ border-color:var(--border-strong) !important; }
+html[data-theme="twilight"] .death-saves{ border-color:var(--border-strong) !important; }
+
+/* hover states that flip to bright #fef6e8 (warm cream) — switch to a tinted dark hover */
+html[data-theme="twilight"] .ability-box:hover,
+html[data-theme="twilight"] .cond-pick:hover,
+html[data-theme="twilight"] .bes-card:hover,
+html[data-theme="twilight"] .sa-row:hover,
+html[data-theme="twilight"] .srd-card:hover{
+  background:var(--gold-dim) !important;
+}
+
+/* prof-toggle / expertise dots that draw white inner discs — invert so they stay visible */
+html[data-theme="twilight"] .prof-toggle.prof::after,
+html[data-theme="twilight"] .prof-toggle.expertise::after{
+  background:var(--bg) !important;
+}
+
+/* hp-extra-input has color:var(--ink) which is now parchment — stays readable. Same for ct-hp-input. */
+
+/* Buttons that hardcoded white text on color: those colors stay strong enough — leave them */
+
+/* Buttons that hardcoded white text on crimson/gold gradients still look right —
+   crimson/gold tokens are tuned to keep AA contrast in both themes. */
+html[data-theme="twilight"] .cm-new{ color:#13131a; background:var(--gold); }
+html[data-theme="twilight"] .cm-new:hover{ background:var(--gold-br); }
+html[data-theme="twilight"] .btn-top.primary{ color:#13131a; }
+html[data-theme="twilight"] .topbar-live-badge.live-only{
+  background:linear-gradient(to right,var(--gold),#8a6a30);color:#13131a;
+}
+html[data-theme="twilight"] .topbar-live-badge.combat-mode{
+  background:linear-gradient(to right,var(--crimson),#7a3530);color:#fdf6e8;
+}
+/* Subtle paper-glow on cards in dark mode */
+html[data-theme="twilight"] .surface-glow,
+html[data-theme="twilight"] .lpanel,
+html[data-theme="twilight"] .prep-right,
+html[data-theme="twilight"] .session-right{
+  box-shadow:inset 0 0 60px rgba(201,162,95,0.025);
+}
+
+/* ═══════ THEME TOGGLE BUTTON ═══════ */
+.theme-toggle{
+  display:flex;align-items:center;
+  background:transparent;border:1px solid var(--border-strong);
+  border-radius:99px;padding:2px;gap:0;
+  margin-right:6px;
+}
+.theme-toggle button{
+  width:28px;height:24px;border-radius:99px;border:none;
+  background:transparent;color:var(--text-dimmer);cursor:pointer;
+  font-size:13px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;
+  transition:background .15s, color .15s;
+}
+.theme-toggle button:hover{ color:var(--text-dim); }
+.theme-toggle button.active{
+  background:var(--gold-dim);color:var(--gold);
 }
 
 html,body{height:100%;overflow:hidden;}
@@ -1806,20 +1949,6 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 .hl-meta-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:var(--text);}
 .hl-meta-row strong{color:var(--ink);font-weight:700;}
 
-/* ═══════ PARTY-BLOCK im Album ═══════ */
-.album-party-block{padding:10px 14px 12px;border-bottom:1px solid var(--border);}
-.album-party-empty{font-size:12px;color:var(--text-dim);font-style:italic;text-align:center;line-height:1.5;}
-.album-party-empty button{margin-top:8px;width:100%;font-size:11px;padding:7px 10px;}
-.album-party-active{display:flex;flex-direction:column;gap:6px;}
-.app-row{display:flex;align-items:center;gap:8px;}
-.app-tag{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.8px;color:var(--gold);text-transform:uppercase;font-weight:700;}
-.app-name{font-family:'Cinzel',serif;font-size:13px;color:var(--ink);font-weight:700;letter-spacing:.02em;}
-.app-code{font-family:'JetBrains Mono','Courier New',monospace;font-size:14px;font-weight:700;color:var(--accent);background:var(--surface-2);padding:5px 10px;border-radius:5px;letter-spacing:.06em;cursor:pointer;border:1px dashed var(--border);}
-.app-code:hover{border-color:var(--accent);background:var(--accent-dim,rgba(123,108,246,0.1));}
-.app-meta{font-size:11px;color:var(--text-dim);}
-.app-actions{display:flex;gap:5px;margin-top:6px;}
-.app-actions button{flex:1;font-size:10.5px;padding:6px 8px;}
-
 /* ═══════ CHARACTER WIZARD ═══════ */
 .wizard-inner{max-width:780px;width:100%;max-height:90vh;display:flex;flex-direction:column;}
 .wiz-close-x{background:transparent;border:none;font-size:28px;line-height:1;color:var(--text-dim);cursor:pointer;padding:0 8px;}
@@ -1922,6 +2051,15 @@ body.gate-open{overflow:hidden;}
 </style>
 </head>
 <body>
+<script>
+  // ═══ Theme bootstrap — applied before paint to avoid FOUC ═══
+  (function(){
+    try {
+      var saved = localStorage.getItem('endocraft-theme');
+      if (saved === 'twilight') document.documentElement.setAttribute('data-theme', 'twilight');
+    } catch(e){}
+  })();
+</script>
 
 <!-- ═══════════ LOGIN GATE · leere Landing bis Login ═══════════ -->
 <div id="landingGate" class="landing-gate">
@@ -1977,7 +2115,30 @@ body.gate-open{overflow:hidden;}
     <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
   </div>
   <div class="topbar-right">
-    <button class="btn-top" onclick="window.open('/player/','_blank')" title="Player View in neuem Tab — Spieler-Sicht auf deine Kampagne">🎭 Player View</button>
+    <div class="theme-toggle" role="group" aria-label="Theme">
+      <button type="button" data-theme-set="light" title="Daylight — Tageslicht-Theme" aria-label="Daylight">☼</button>
+      <button type="button" data-theme-set="twilight" title="Twilight — Dark Theme für Abend-Sessions" aria-label="Twilight">☾</button>
+    </div>
+    <script>
+      // wire up theme toggle (runs once when topbar parses)
+      (function(){
+        var root = document.documentElement;
+        function apply(t){
+          if (t === 'twilight') root.setAttribute('data-theme', 'twilight');
+          else root.removeAttribute('data-theme');
+          try { localStorage.setItem('endocraft-theme', t); } catch(e){}
+          document.querySelectorAll('.theme-toggle button').forEach(function(b){
+            b.classList.toggle('active', b.dataset.themeSet === t);
+          });
+        }
+        document.querySelectorAll('.theme-toggle button').forEach(function(b){
+          b.addEventListener('click', function(){ apply(b.dataset.themeSet); });
+        });
+        // reflect saved state in button highlight
+        var current = root.getAttribute('data-theme') === 'twilight' ? 'twilight' : 'light';
+        apply(current);
+      })();
+    </script>
     <button class="btn-top" onclick="openConditionsModal()" title="SRD 5.1 Regel-Referenz">📖 Regeln</button>
     <button class="btn-top" onclick="openPostSessionRecap()" title="Post-Session Recap · KI-gestützt">📝 Recap</button>
     <button class="btn-top" onclick="loadSession14Prep()" title="Session 14 Prep-Daten laden · Ctrl+Shift+D toggles this" id="demoLoadBtn" style="background:var(--crimson);color:#fff;border-color:var(--crimson);display:none;">🎲 Demo laden</button>
@@ -2221,7 +2382,6 @@ body.gate-open{overflow:hidden;}
         <span class="lp-title">Party Album</span>
         <button class="lp-add" onclick="reloadAlbum()" title="Karten aus Cloud neu laden">↻</button>
       </div>
-      <div id="albumPartyBlock" class="album-party-block"></div>
       <div class="char-filter" id="albumRarityFilter">
         <button class="active" data-r="all" onclick="filterAlbumRarity('all')">Alle</button>
         <button data-r="legendary" onclick="filterAlbumRarity('legendary')" style="color:#b8851f;">★</button>
@@ -9232,12 +9392,6 @@ let _albumLoading = false;
 
 let _albumLastError = null;
 
-// Party-State (Phase 2): aktive Party + Liste aller Parties
-let _activeParty = null;     // { id, code, name, dm_email, ... }
-let _myParties = [];         // [{ role, display_name, parties: {...} }]
-let _partyMembers = [];      // members der aktiven Party
-let _partyLoading = false;
-
 // Marcos Karten liegen in der `sessions`-Tabelle (anonym).
 // Wir cachen die Session-IDs in localStorage `ec_my_sessions[]` — geschrieben von /scroll/ beim Save.
 // Album lädt diese IDs aus sessions-Tabelle.
@@ -9311,179 +9465,6 @@ function addCardManually() {
   reloadAlbum();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// PARTY ALBUM PHASE 2 — Multi-User-Album via Party-Code
-// ═══════════════════════════════════════════════════════════════════════════
-async function loadMyParties() {
-  const s = syncSettings();
-  if (!s.email) return [];
-  _partyLoading = true;
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/list?email=${encodeURIComponent(s.email)}`);
-    const data = await resp.json();
-    _myParties = data.parties || [];
-    // Wähle Active-Party: gespeicherte ID falls noch existent, sonst erste
-    const savedCode = localStorage.getItem('ec_active_party_code');
-    let active = null;
-    if (savedCode) active = _myParties.find(p => p.parties?.code === savedCode);
-    if (!active && _myParties.length) active = _myParties[0];
-    _activeParty = active?.parties || null;
-    if (_activeParty) localStorage.setItem('ec_active_party_code', _activeParty.code);
-    return _myParties;
-  } catch (e) {
-    console.error('[Party] List fail:', e);
-    return [];
-  } finally { _partyLoading = false; }
-}
-
-async function createParty() {
-  const s = syncSettings();
-  if (!s.email) { toast('Bitte erst einloggen', true); return; }
-  const camp = campaign();
-  const defaultName = camp?.name ? `${camp.name} Tisch` : 'Mein Tisch';
-  const name = prompt('Name für die Party:', defaultName);
-  if (!name || !name.trim()) return;
-  toast('Erstelle Party...');
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/create`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dmEmail: s.email, name: name.trim(), campaignId: camp?.id || null })
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.error || 'Create failed');
-    _activeParty = data.party;
-    localStorage.setItem('ec_active_party_code', data.party.code);
-    toast(`✓ Party erstellt — Code: ${data.party.code}`);
-    await loadMyParties();
-    renderAlbum();
-  } catch (e) {
-    toast('Party-Erstellung fehlgeschlagen: ' + e.message, true);
-  }
-}
-
-async function switchActiveParty(code) {
-  const found = _myParties.find(p => p.parties?.code === code);
-  if (!found) return;
-  _activeParty = found.parties;
-  localStorage.setItem('ec_active_party_code', code);
-  // Cache leeren damit Party-Daten neu geladen werden
-  _albumCards = null;
-  toast('→ ' + (found.parties.name || code));
-  renderAlbum();
-}
-
-function copyPartyCode(code) {
-  if (!code) return;
-  navigator.clipboard.writeText(code).then(() => {
-    toast('Code „' + code + '" in Zwischenablage');
-  }).catch(() => {
-    // Fallback: text input
-    const ta = document.createElement('textarea');
-    ta.value = code; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy'); ta.remove();
-    toast('Code kopiert');
-  });
-}
-
-async function sharePartyCode() {
-  if (!_activeParty) return;
-  const url = window.location.origin + '/player/?party=' + encodeURIComponent(_activeParty.code);
-  const text = `Tritt unserer D&D-Party bei: ${_activeParty.name}\nCode: ${_activeParty.code}\n${url}`;
-  if (navigator.share) {
-    try { await navigator.share({ title: 'EndoCraft Party · ' + _activeParty.name, text, url }); return; } catch(e){}
-  }
-  // Fallback: clipboard
-  navigator.clipboard.writeText(text).then(() => toast('Einladungstext kopiert'));
-}
-
-async function leaveActiveParty() {
-  if (!_activeParty) return;
-  const s = syncSettings();
-  if (!s.email) return;
-  if (!confirm(`Party „${_activeParty.name}" wirklich verlassen?\n\n(DMs können nicht austreten — Party muss gelöscht werden.)`)) return;
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/${encodeURIComponent(_activeParty.code)}/leave`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: s.email })
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Leave failed');
-    _activeParty = null;
-    localStorage.removeItem('ec_active_party_code');
-    await loadMyParties();
-    renderAlbum();
-    toast('Party verlassen');
-  } catch (e) { toast('Fehler: ' + e.message, true); }
-}
-
-// Lädt das Party-Album (alle Sessions+Cards aller Members) für die aktive Party
-async function loadPartyAlbumCards() {
-  if (!_activeParty?.code) return [];
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/${encodeURIComponent(_activeParty.code)}/sessions`);
-    const data = await resp.json();
-    if (!resp.ok) { _albumLastError = data.error || 'Party-Album-Load failed'; return []; }
-    _partyMembers = data.members || [];
-    // Sessions + Cards mergen — Sessions gewinnen falls beide eine ID haben (sessions.id == card.id selten, aber möglich)
-    const byId = {};
-    (data.sessions || []).forEach(s => { byId[s.id] = { ...s, _source: 'session' }; });
-    (data.cards || []).forEach(c => { if (!byId[c.id]) byId[c.id] = { ...c, _source: 'card' }; });
-    return Object.values(byId).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  } catch (e) { _albumLastError = e.message; return []; }
-}
-
-function renderPartyBlock() {
-  const host = document.getElementById('albumPartyBlock');
-  if (!host) return;
-  const s = syncSettings();
-  if (!s.email) { host.innerHTML = ''; return; }
-
-  if (_partyLoading) {
-    host.innerHTML = `<div class="album-party-empty">Lade Parties…</div>`;
-    return;
-  }
-
-  if (!_myParties.length) {
-    host.innerHTML = `
-      <div class="album-party-empty">
-        Noch keine Party.<br>
-        <span style="font-style:normal;font-size:11px;">Erstelle eine — gemeinsames Album, Code zum Teilen mit deinen Spielern.</span>
-        <button class="btn-top primary" onclick="createParty()">+ Party erstellen</button>
-      </div>
-    `;
-    return;
-  }
-
-  const party = _activeParty;
-  const partyOptions = _myParties.map(p => `
-    <option value="${escapeAttr(p.parties.code)}" ${party && party.code === p.parties.code ? 'selected' : ''}>
-      ${escapeHtml(p.parties.name)} ${p.role === 'dm' ? '· DM' : ''}
-    </option>
-  `).join('');
-
-  host.innerHTML = `
-    <div class="album-party-active">
-      <div class="app-row">
-        <span class="app-tag">Party</span>
-        ${_myParties.length > 1 ? `
-          <select onchange="switchActiveParty(this.value)" style="flex:1;font-size:12px;padding:4px 6px;border-radius:5px;border:1px solid var(--border);background:var(--surface);">
-            ${partyOptions}
-          </select>
-        ` : `<span class="app-name">${escapeHtml(party.name)}</span>`}
-      </div>
-      <div class="app-row" style="margin-top:4px;">
-        <span class="app-code" onclick="copyPartyCode('${escapeAttr(party.code)}')" title="Klick zum Kopieren">${escapeHtml(party.code)}</span>
-        <span class="app-meta">${_partyMembers.length || '—'} Member${_partyMembers.length === 1 ? '' : 's'}</span>
-      </div>
-      <div class="app-actions">
-        <button class="btn-top" onclick="sharePartyCode()" title="Einladung teilen (Web Share oder Clipboard)">📤 Teilen</button>
-        <button class="btn-top" onclick="createParty()" title="Weitere Party erstellen">+ Neu</button>
-        ${party.dm_email !== syncSettings().email ? `<button class="btn-top" onclick="leaveActiveParty()">Verlassen</button>` : ''}
-      </div>
-    </div>
-  `;
-}
-
 // Async Helper für Email→Slug (sha256 erste 16 chars)
 async function emailToSlugAsync(email) {
   const enc = new TextEncoder();
@@ -9494,7 +9475,6 @@ async function emailToSlugAsync(email) {
 
 function reloadAlbum() {
   _albumCards = null;
-  _myParties = [];  // Party-Liste auch neu laden, falls neue Members beigetreten sind
   renderAlbum();
   toast('Lade Karten neu...');
 }
@@ -9591,21 +9571,7 @@ async function renderAlbum() {
     </div>
   `;
 
-  // Party-Liste laden (falls noch nicht geladen) und Party-Block rendern
-  if (!_myParties.length && !_partyLoading) {
-    await loadMyParties();
-  }
-  renderPartyBlock();
-
-  // Wenn Party aktiv → Party-Album laden, sonst Solo-Album
-  let cards;
-  if (_activeParty?.code) {
-    cards = await loadPartyAlbumCards();
-    // Member-Count im Party-Block jetzt frisch — neu rendern
-    renderPartyBlock();
-  } else {
-    cards = await loadAlbumCards();
-  }
+  const cards = await loadAlbumCards();
   const filtered = _albumRarityFilter === 'all' ? cards : cards.filter(c => (c.rarity || 'common').toLowerCase() === _albumRarityFilter);
 
   // Side-Meta: Stats + Add-Button
