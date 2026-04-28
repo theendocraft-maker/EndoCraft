@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EndoCraft Hall of Fame — Trending Cards</title>
+<meta name="description" content="Die epischsten Karten der EndoCraft-Community — Trending, All-Time, Voting">
+<link rel="icon" type="image/png" href="https://endocraft.app/IMG_8431.PNG">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!--
+  HALL OF FAME · MVP-Design
+  Minimal vanilla HTML/CSS/JS. Marco redesigned später mit Claude Design.
+  Funktioniert ohne Login (Read-only) — Login nur für Voten erforderlich.
+-->
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --surface:#1a1a24;
+  --surface-2:#1f1f2b;
+  --border:rgba(255,255,255,0.08);
+  --border-strong:rgba(255,255,255,0.18);
+  --text:#f0eff4;
+  --text-dim:rgba(255,255,255,0.5);
+  --text-dimmer:rgba(255,255,255,0.25);
+  --accent:#7B6CF6;
+  --accent-dim:rgba(123,108,246,0.15);
+  --gold:#E8B86D;
+  --gold-dim:rgba(232,184,109,0.12);
+  --green:#4CAF7D;
+  --crimson:#E85555;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* Topbar */
+.topbar{padding:14px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.85);backdrop-filter:blur(16px);}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-family:'Syne',sans-serif;font-weight:800;font-size:17px;}
+.brand img{width:30px;height:30px;border-radius:7px;}
+.brand-sub{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;font-weight:700;border-left:1px solid var(--border-strong);padding-left:10px;margin-left:4px;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-right a{color:var(--text-dim);text-decoration:none;font-size:13px;}
+.topbar-right a:hover{color:var(--text);}
+.signin-btn{background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;padding:7px 14px;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+.signin-btn:hover{border-color:var(--gold);color:var(--gold);}
+.signin-btn.signed-in{border-color:var(--green);color:var(--green);}
+
+/* Hero */
+.hero{padding:60px 28px 40px;text-align:center;max-width:900px;margin:0 auto;}
+.hero-tag{font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:14px;}
+.hero h1{font-family:'Cinzel Decorative',serif;font-size:46px;font-weight:700;line-height:1.1;letter-spacing:-.01em;margin-bottom:14px;}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero p{font-family:'EB Garamond',serif;font-size:17px;line-height:1.6;color:var(--text-dim);max-width:580px;margin:0 auto;}
+
+/* Filters */
+.filters{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:0 28px 28px;border-bottom:1px solid var(--border);}
+.filter-group{display:flex;gap:3px;background:var(--surface);padding:3px;border-radius:9px;border:1px solid var(--border);}
+.filter-btn{padding:8px 16px;background:transparent;border:none;color:var(--text-dim);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.4px;font-weight:700;cursor:pointer;border-radius:6px;text-transform:uppercase;transition:all .15s;}
+.filter-btn:hover{color:var(--text);}
+.filter-btn.active{background:var(--surface-2);color:var(--text);}
+
+/* Grid */
+.cards-host{padding:32px 28px 80px;max-width:1400px;margin:0 auto;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;position:relative;}
+.card:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+.card-rank{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.65);color:var(--gold);font-family:'Cinzel Decorative',serif;font-weight:700;font-size:14px;padding:4px 10px;border-radius:4px;backdrop-filter:blur(4px);z-index:2;}
+.card-rarity{position:absolute;top:12px;right:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:#fff;padding:4px 8px;border-radius:3px;font-weight:700;text-transform:uppercase;z-index:2;}
+.card-rarity.legendary{background:#b8851f;}
+.card-rarity.epic{background:#7B6CF6;}
+.card-rarity.rare{background:#1e6fd9;}
+.card-rarity.common{background:#5a5a5a;}
+.card-img{aspect-ratio:3/4;background:linear-gradient(135deg,#1a0a00,#2a1505);position:relative;cursor:pointer;}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.card-info{padding:14px 16px;}
+.card-title{font-family:'Cinzel',serif;font-size:13.5px;color:var(--text);font-weight:700;letter-spacing:.02em;line-height:1.3;margin-bottom:5px;}
+.card-meta{font-family:'EB Garamond',serif;font-size:13px;color:var(--text-dim);font-style:italic;}
+.card-actions{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);}
+.vote-btn{display:flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--border-strong);border-radius:8px;padding:6px 12px;color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.vote-btn:hover{border-color:var(--gold);color:var(--gold);}
+.vote-btn.voted{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.vote-btn .heart{font-size:14px;line-height:1;}
+.vote-count{font-family:'Cinzel',serif;font-weight:700;font-size:12.5px;letter-spacing:.5px;}
+.card-action-spacer{flex:1;}
+.card-open{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);text-decoration:none;font-weight:700;text-transform:uppercase;}
+.card-open:hover{color:var(--accent);}
+
+/* Empty / Loading / Error */
+.state-block{text-align:center;padding:80px 20px;color:var(--text-dim);}
+.state-block .crest{font-size:46px;margin-bottom:14px;}
+.state-block h3{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--text);margin-bottom:10px;font-weight:700;}
+.state-block p{font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;max-width:480px;margin:0 auto;}
+.state-block a{color:var(--gold);}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 18px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--gold);color:var(--gold);padding:11px 22px;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);font-weight:500;}
+.toast.show{opacity:1;}
+.toast.error{border-color:var(--crimson);color:var(--crimson);}
+
+/* Mobile */
+@media (max-width:780px){
+  .hero h1{font-size:32px;}
+  .hero{padding:36px 20px 24px;}
+  .filters{gap:10px;padding:0 16px 20px;}
+  .filter-group{padding:2px;}
+  .filter-btn{padding:7px 11px;font-size:10px;}
+  .cards-host{padding:24px 16px 60px;}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+  .card-info{padding:10px 12px;}
+  .card-title{font-size:12px;}
+  .card-meta{font-size:11.5px;}
+  .card-actions{padding:8px 12px;}
+  .vote-btn{padding:5px 10px;font-size:12px;}
+  .topbar{padding:11px 16px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/" class="brand">
+    <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
+    EndoCraft <span class="brand-sub">Hall of Fame</span>
+  </a>
+  <div class="topbar-right">
+    <a href="/scroll/">Karte erstellen</a>
+    <a href="/dm-studio/">DM Studio</a>
+    <button id="signinBtn" class="signin-btn" onclick="toggleAuth()">Anmelden</button>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-tag">✦ Community Voting</div>
+  <h1>Hall of <em>Fame</em></h1>
+  <p>Die epischsten Karten der EndoCraft-Community. Stimme für deine Favoriten — der Algorithmus belohnt frische Karten mit Trending-Boost. All-Time zeigt die Klassiker.</p>
+</section>
+
+<section class="filters">
+  <div class="filter-group" id="sortFilter">
+    <button class="filter-btn active" data-sort="trending" onclick="setSort('trending')">Trending</button>
+    <button class="filter-btn" data-sort="all-time" onclick="setSort('all-time')">All-Time</button>
+  </div>
+  <div class="filter-group" id="rarityFilter">
+    <button class="filter-btn active" data-rarity="all" onclick="setRarity('all')">Alle</button>
+    <button class="filter-btn" data-rarity="legendary" onclick="setRarity('legendary')" style="color:#b8851f;">Legendary</button>
+    <button class="filter-btn" data-rarity="epic" onclick="setRarity('epic')" style="color:#7B6CF6;">Epic</button>
+    <button class="filter-btn" data-rarity="rare" onclick="setRarity('rare')" style="color:#1e6fd9;">Rare</button>
+  </div>
+</section>
+
+<main class="cards-host" id="cardsHost">
+  <div class="state-block">
+    <div class="spinner"></div>
+    <p>Lade Hall of Fame...</p>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTUwNTgsImV4cCI6MjA5MTgzMTA1OH0.hjB96zqn85y-uZ1SEWMiTHEJjvEEkO504vSzLbSQgWA';
+
+let _sort = 'trending';
+let _rarity = 'all';
+let _userEmail = null;
+let _myVotes = {};   // cardId → 0/1 cache
+let supabaseClient = null;
+
+function initSupabase() {
+  if (supabaseClient) return supabaseClient;
+  if (!window.supabase) return null;
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return supabaseClient;
+}
+
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
+
+let _toastTimer;
+function toast(msg, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.toggle('error', !!isError);
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ═══════════ AUTH ═══════════
+async function checkAuth() {
+  const sb = initSupabase();
+  if (!sb) return;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user?.email) {
+      _userEmail = session.user.email;
+      updateAuthBtn();
+    }
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email) {
+        _userEmail = session.user.email;
+        updateAuthBtn();
+        loadCards();  // refresh to show our votes
+      } else if (event === 'SIGNED_OUT') {
+        _userEmail = null;
+        _myVotes = {};
+        updateAuthBtn();
+        loadCards();
+      }
+    });
+  } catch (e) { console.warn('[auth]', e); }
+}
+
+function updateAuthBtn() {
+  const btn = document.getElementById('signinBtn');
+  if (_userEmail) {
+    btn.textContent = _userEmail.split('@')[0];
+    btn.classList.add('signed-in');
+    btn.title = _userEmail + ' · klicken zum Abmelden';
+  } else {
+    btn.textContent = 'Anmelden';
+    btn.classList.remove('signed-in');
+    btn.title = 'Mit Google anmelden um zu voten';
+  }
+}
+
+async function toggleAuth() {
+  const sb = initSupabase();
+  if (!sb) { toast('Auth nicht verfügbar', true); return; }
+  if (_userEmail) {
+    if (!confirm('Abmelden?')) return;
+    await sb.auth.signOut();
+    return;
+  }
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href.split('?')[0].split('#')[0] }
+  });
+  if (error) toast('Login-Fehler: ' + error.message, true);
+}
+
+// ═══════════ LOAD CARDS ═══════════
+function setSort(s) {
+  _sort = s;
+  document.querySelectorAll('#sortFilter .filter-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === s));
+  loadCards();
+}
+
+function setRarity(r) {
+  _rarity = r;
+  document.querySelectorAll('#rarityFilter .filter-btn').forEach(b => b.classList.toggle('active', b.dataset.rarity === r));
+  loadCards();
+}
+
+async function loadCards() {
+  const host = document.getElementById('cardsHost');
+  host.innerHTML = `<div class="state-block"><div class="spinner"></div><p>Lade Karten...</p></div>`;
+
+  let url = `${API_BASE}/api/hall-of-fame/trending?limit=40&sort=${_sort}`;
+  if (_rarity !== 'all') url += `&rarity=${_rarity}`;
+
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Fehler beim Laden');
+    const cards = data.cards || [];
+    if (!cards.length) {
+      host.innerHTML = `
+        <div class="state-block">
+          <div class="crest">✦</div>
+          <h3>Noch keine Hall-of-Fame-Karten</h3>
+          <p>Die Hall of Fame füllt sich, sobald Karten Votes bekommen. <a href="/scroll/">Erstelle die erste →</a></p>
+        </div>
+      `;
+      return;
+    }
+
+    // Bulk-Lookup eigener Votes (parallel)
+    if (_userEmail) {
+      await Promise.all(cards.map(async c => {
+        try {
+          const r = await fetch(`${API_BASE}/api/cards/${encodeURIComponent(c.id)}/votes?email=${encodeURIComponent(_userEmail)}`);
+          const d = await r.json();
+          _myVotes[c.id] = d.myVote || 0;
+        } catch(e){}
+      }));
+    }
+
+    renderCards(cards);
+  } catch (e) {
+    host.innerHTML = `
+      <div class="state-block">
+        <div class="crest">⚠</div>
+        <h3>Fehler beim Laden</h3>
+        <p>${escapeHtml(e.message)}</p>
+      </div>
+    `;
+  }
+}
+
+function renderCards(cards) {
+  const host = document.getElementById('cardsHost');
+  host.innerHTML = `
+    <div class="cards-grid">
+      ${cards.map((c, i) => {
+        const r = (c.rarity || 'common').toLowerCase();
+        const voteCount = c._stats?.vote_count ?? 0;
+        const myVote = _myVotes[c.id] || 0;
+        const title = c.session_title || c.legendary_moment || 'Untitled';
+        const meta = c.character_name ? `${c.character_name}${c.character_class ? ' · ' + c.character_class : ''}` : '';
+        const cardUrl = `/session/?id=${encodeURIComponent(c.id)}`;
+        return `
+          <article class="card">
+            <div class="card-rank">#${i + 1}</div>
+            <div class="card-rarity ${r}">${r.toUpperCase()}</div>
+            <div class="card-img" onclick="window.open('${cardUrl}','_blank')">
+              ${c.image_url ? `<img src="${escapeAttr(c.image_url)}" alt="${escapeAttr(title)}" loading="lazy">` : ''}
+            </div>
+            <div class="card-info">
+              <div class="card-title">${escapeHtml(title)}</div>
+              ${meta ? `<div class="card-meta">${escapeHtml(meta)}</div>` : ''}
+            </div>
+            <div class="card-actions">
+              <button class="vote-btn ${myVote ? 'voted' : ''}" onclick="vote('${escapeAttr(c.id)}', this)" title="${_userEmail ? '' : 'Login zum Voten'}">
+                <span class="heart">${myVote ? '♥' : '♡'}</span>
+                <span class="vote-count" data-count="${voteCount}">${voteCount}</span>
+              </button>
+              <div class="card-action-spacer"></div>
+              <a class="card-open" href="${cardUrl}" target="_blank">Öffnen →</a>
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+async function vote(cardId, btnEl) {
+  if (!_userEmail) {
+    toast('Bitte erst anmelden zum Voten', false);
+    setTimeout(() => toggleAuth(), 800);
+    return;
+  }
+  const currentlyVoted = (_myVotes[cardId] || 0) === 1;
+  const newVote = currentlyVoted ? 0 : 1;
+  // Optimistic UI
+  btnEl.classList.toggle('voted', newVote === 1);
+  const heart = btnEl.querySelector('.heart');
+  const counter = btnEl.querySelector('.vote-count');
+  if (heart) heart.textContent = newVote === 1 ? '♥' : '♡';
+  if (counter) {
+    const cur = parseInt(counter.dataset.count) || 0;
+    const next = Math.max(0, cur + (newVote === 1 ? 1 : -1));
+    counter.dataset.count = next;
+    counter.textContent = next;
+  }
+  _myVotes[cardId] = newVote;
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/cards/${encodeURIComponent(cardId)}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: _userEmail, vote: newVote })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Vote fehlgeschlagen');
+    // Sync mit echtem Count vom Server
+    if (data.stats && counter) {
+      counter.dataset.count = data.stats.vote_count;
+      counter.textContent = data.stats.vote_count;
+    }
+    try { window.plausible?.('Hall of Fame Vote', { props: { vote: newVote, cardId } }); } catch(e) {}
+  } catch (e) {
+    // Rollback
+    btnEl.classList.toggle('voted', currentlyVoted);
+    if (heart) heart.textContent = currentlyVoted ? '♥' : '♡';
+    if (counter) {
+      const cur = parseInt(counter.dataset.count) || 0;
+      const reverted = Math.max(0, cur + (newVote === 1 ? -1 : 1));
+      counter.dataset.count = reverted;
+      counter.textContent = reverted;
+    }
+    _myVotes[cardId] = currentlyVoted ? 1 : 0;
+    toast(e.message, true);
+  }
+}
+
+// Init
+checkAuth();
+loadCards();
+try { window.plausible?.('Hall of Fame Open'); } catch(e) {}
+</script>
+</body>
+</html>
