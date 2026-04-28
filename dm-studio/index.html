@@ -809,6 +809,435 @@ html[data-theme="light"] .mod-section-head{
   border-bottom:1px solid var(--border) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   PHASE 6 · CLASSIC D&D CHARACTER SHEET TREATMENT
+   Make the right-hand character editor feel like the official 5e form:
+   compartmentalized boxes with double-rules, all-caps printed labels in
+   Cinzel, dotted underline inputs, prominent ability blocks with stacked
+   modifier-over-score, and proficiency-dot saves/skills lists.
+   Theme-agnostic — uses tokens so dark mode stays coherent.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Outer canvas of the sheet — subtle parchment lines like ruled form paper */
+.char-form-editor{
+  background:
+    linear-gradient(transparent 95%, rgba(91,61,24,0.04) 95%) 0 0/100% 1.6em,
+    var(--bg) !important;
+}
+html[data-theme="twilight"] .char-form-editor{
+  background:
+    linear-gradient(transparent 95%, rgba(243,234,214,0.03) 95%) 0 0/100% 1.6em,
+    var(--bg) !important;
+}
+
+/* Header strip: name + portrait + class/race/alignment slots (like the WotC sheet top bar) */
+.char-form-head{
+  background:linear-gradient(to bottom, var(--surface-2), var(--surface)) !important;
+  border:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  padding:18px 22px !important;
+  position:relative;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 var(--ink) !important;
+}
+.char-form-head::before{
+  content:"";
+  position:absolute;inset:4px;
+  border:1px solid var(--border-strong);
+  pointer-events:none;
+}
+html[data-theme="twilight"] .char-form-head{
+  background:linear-gradient(to bottom, var(--surface-2), var(--surface)) !important;
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 rgba(201,162,95,0.4) !important;
+}
+html[data-theme="twilight"] .char-form-head::before{
+  border-color:rgba(201,162,95,0.30);
+}
+
+/* Character name — large, all-caps engraved title */
+.char-form-name{
+  font-family:'Cinzel',serif !important;
+  font-size:34px !important;
+  font-weight:700 !important;
+  text-transform:uppercase !important;
+  letter-spacing:0.08em !important;
+  color:var(--ink) !important;
+  background:transparent !important;
+  border:none !important;
+  border-bottom:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  padding:6px 4px !important;
+  width:100% !important;
+  text-align:left !important;
+}
+html[data-theme="twilight"] .char-form-name{
+  border-bottom-color:var(--gold) !important;
+  color:var(--gold) !important;
+}
+.char-form-name:focus{
+  outline:none !important;
+  background:rgba(147,110,30,0.06) !important;
+}
+
+/* The label-on-top, value-below "form field" (Race, Class, Background, Alignment, Size, etc) */
+.field{
+  position:relative;
+  padding-top:0 !important;
+}
+.field-lbl{
+  font-family:'Cinzel',serif !important;
+  font-size:9.5px !important;
+  letter-spacing:2.4px !important;
+  text-transform:uppercase !important;
+  font-weight:700 !important;
+  color:var(--text-dim) !important;
+  margin-bottom:4px !important;
+  text-align:center !important;
+  order:2;
+}
+.field-in,
+.field input,
+.field select{
+  background:transparent !important;
+  border:none !important;
+  border-bottom:1.5px solid var(--ink) !important;
+  border-radius:0 !important;
+  padding:6px 8px !important;
+  font-family:'EB Garamond',Georgia,serif !important;
+  font-size:15px !important;
+  color:var(--ink) !important;
+  text-align:center !important;
+  width:100% !important;
+  order:1;
+  margin-bottom:2px;
+}
+html[data-theme="twilight"] .field-in,
+html[data-theme="twilight"] .field input,
+html[data-theme="twilight"] .field select{
+  border-bottom-color:var(--gold) !important;
+  color:var(--text) !important;
+}
+.field{
+  display:flex !important;
+  flex-direction:column !important;
+}
+.field-in:focus,
+.field input:focus,
+.field select:focus{
+  background:rgba(147,110,30,0.08) !important;
+  outline:none !important;
+}
+
+/* Sections — heavy double-ruled boxes like a printed form */
+.sheet-section{
+  background:var(--surface) !important;
+  border:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  margin-bottom:18px !important;
+  position:relative;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 var(--ink) !important;
+}
+html[data-theme="twilight"] .sheet-section{
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 rgba(201,162,95,0.40) !important;
+}
+.sheet-section::before{
+  content:"";
+  position:absolute;
+  top:3px;left:3px;right:3px;bottom:3px;
+  border:1px solid var(--border-strong);
+  pointer-events:none;
+}
+html[data-theme="twilight"] .sheet-section::before{
+  border-color:rgba(201,162,95,0.25);
+}
+
+/* Section header — engraved, no crimson banner */
+.sheet-section-h{
+  background:transparent !important;
+  color:var(--ink) !important;
+  font-family:'Cinzel',serif !important;
+  font-size:11px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  font-weight:700 !important;
+  padding:14px 18px 10px !important;
+  border-bottom:1px solid var(--border-strong) !important;
+  text-align:center !important;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+html[data-theme="twilight"] .sheet-section-h{
+  color:var(--gold) !important;
+  border-bottom-color:rgba(201,162,95,0.30) !important;
+}
+.sheet-section-h::before,
+.sheet-section-h::after{
+  content:"◆";
+  font-size:9px;
+  color:var(--gold);
+  margin:0 6px;
+  opacity:.6;
+}
+.sheet-section-h .ico{
+  filter:none !important;
+}
+
+.sheet-section-b{
+  padding:18px !important;
+}
+
+/* Ability scores — big stacked block, classic form */
+.ability-grid-interactive{
+  gap:12px !important;
+  padding:6px 0 !important;
+}
+.ability-box{
+  background:var(--surface-2) !important;
+  border:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  padding:14px 6px 10px !important;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  box-shadow:inset 0 0 0 1px var(--surface) !important;
+  transition:transform .12s, background .15s !important;
+}
+html[data-theme="twilight"] .ability-box{
+  border-color:var(--gold) !important;
+  background:var(--surface-2) !important;
+}
+.ability-box:hover{
+  background:rgba(147,110,30,0.10) !important;
+  transform:translateY(-1px);
+  box-shadow:inset 0 0 0 1px var(--surface), 0 4px 0 var(--ink) !important;
+}
+html[data-theme="twilight"] .ability-box:hover{
+  background:rgba(201,162,95,0.12) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 4px 0 rgba(201,162,95,0.40) !important;
+}
+.ability-box-label{
+  font-family:'Cinzel',serif !important;
+  font-size:10.5px !important;
+  letter-spacing:2.5px !important;
+  color:var(--ink) !important;
+  font-weight:700 !important;
+  text-transform:uppercase !important;
+  margin-bottom:8px !important;
+}
+html[data-theme="twilight"] .ability-box-label{
+  color:var(--gold) !important;
+}
+.ability-box-mod{
+  font-family:'Cinzel',serif !important;
+  font-size:32px !important;
+  font-weight:700 !important;
+  color:var(--ink) !important;
+  line-height:1 !important;
+  margin:0 !important;
+}
+.ability-box-score{
+  margin-top:8px !important;
+  background:var(--surface) !important;
+  border:1.5px solid var(--ink) !important;
+  border-radius:99px !important;
+  width:42px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 0 var(--ink) !important;
+}
+html[data-theme="twilight"] .ability-box-score{
+  border-color:var(--gold) !important;
+  background:var(--bg) !important;
+}
+.ability-box-score input{
+  font-family:'Cinzel',serif !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  color:var(--ink) !important;
+  width:100% !important;
+}
+html[data-theme="twilight"] .ability-box-score input{
+  color:var(--text) !important;
+}
+
+/* Saving Throws + Skills tables — classic dotted-line form rows */
+.saves-table th,
+.skills-table th{
+  font-family:'Cinzel',serif !important;
+  font-size:9.5px !important;
+  letter-spacing:2.2px !important;
+  color:var(--ink) !important;
+  border-bottom:2px solid var(--ink) !important;
+  padding:8px 10px !important;
+  text-transform:uppercase !important;
+  background:transparent !important;
+}
+html[data-theme="twilight"] .saves-table th,
+html[data-theme="twilight"] .skills-table th{
+  color:var(--gold) !important;
+  border-bottom-color:var(--gold) !important;
+}
+.saves-table td,
+.skills-table td{
+  padding:9px 10px !important;
+  border-bottom:1px dotted var(--border-strong) !important;
+  font-family:'EB Garamond',Georgia,serif !important;
+  font-size:14px !important;
+  color:var(--ink) !important;
+}
+html[data-theme="twilight"] .saves-table td,
+html[data-theme="twilight"] .skills-table td{
+  color:var(--text) !important;
+}
+.saves-table tr:hover,
+.skills-table tr:hover{
+  background:rgba(147,110,30,0.08) !important;
+}
+html[data-theme="twilight"] .saves-table tr:hover,
+html[data-theme="twilight"] .skills-table tr:hover{
+  background:rgba(201,162,95,0.08) !important;
+}
+
+/* Proficiency dot — open circle that fills when active */
+.prof-toggle{
+  width:14px !important;
+  height:14px !important;
+  border:2px solid var(--ink) !important;
+  background:transparent !important;
+  border-radius:50% !important;
+  position:relative;
+}
+html[data-theme="twilight"] .prof-toggle{
+  border-color:var(--gold) !important;
+}
+.prof-toggle.on,
+.prof-toggle[data-on="true"],
+.prof-toggle.active{
+  background:var(--ink) !important;
+}
+html[data-theme="twilight"] .prof-toggle.on,
+html[data-theme="twilight"] .prof-toggle[data-on="true"],
+html[data-theme="twilight"] .prof-toggle.active{
+  background:var(--gold) !important;
+}
+
+/* Vitals grid — AC, Initiative, Speed in classic boxed-trio look */
+.vitals-grid,
+.armor-row{
+  gap:14px !important;
+}
+.vitals-cell,
+.armor-cell{
+  background:var(--surface) !important;
+  border:2px solid var(--ink) !important;
+  border-radius:0 !important;
+  padding:14px 10px 10px !important;
+  text-align:center !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 var(--ink) !important;
+  position:relative;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:4px;
+}
+html[data-theme="twilight"] .vitals-cell,
+html[data-theme="twilight"] .armor-cell{
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 rgba(201,162,95,0.40) !important;
+}
+.vitals-cell label,
+.vitals-cell .label,
+.vitals-cell .lbl,
+.armor-cell label,
+.armor-cell .label,
+.armor-cell .lbl{
+  font-family:'Cinzel',serif !important;
+  font-size:9px !important;
+  letter-spacing:2.2px !important;
+  text-transform:uppercase !important;
+  color:var(--text-dim) !important;
+  font-weight:700 !important;
+  order:2;
+}
+.vitals-cell input,
+.vitals-cell .value,
+.armor-cell input,
+.armor-cell .value{
+  font-family:'Cinzel',serif !important;
+  font-size:26px !important;
+  font-weight:700 !important;
+  color:var(--ink) !important;
+  background:transparent !important;
+  border:none !important;
+  text-align:center !important;
+  width:100% !important;
+  padding:0 !important;
+  order:1;
+}
+html[data-theme="twilight"] .vitals-cell input,
+html[data-theme="twilight"] .vitals-cell .value,
+html[data-theme="twilight"] .armor-cell input,
+html[data-theme="twilight"] .armor-cell .value{
+  color:var(--text) !important;
+}
+
+/* Death-saves section — three open circles for successes / failures */
+.death-saves{
+  background:var(--surface) !important;
+  border:1.5px solid var(--ink) !important;
+  border-radius:0 !important;
+  padding:12px 14px !important;
+}
+html[data-theme="twilight"] .death-saves{
+  border-color:var(--gold) !important;
+}
+.ds-dot{
+  width:14px !important;
+  height:14px !important;
+  border:2px solid var(--ink) !important;
+  background:transparent !important;
+  border-radius:50% !important;
+}
+html[data-theme="twilight"] .ds-dot{
+  border-color:var(--gold) !important;
+}
+.ds-dot.on{ background:var(--crimson) !important; border-color:var(--crimson) !important; }
+.ds-dot.fail{ background:var(--crimson) !important; border-color:var(--crimson) !important; }
+.ds-dot.success{ background:var(--forest) !important; border-color:var(--forest) !important; }
+
+/* Inspiration / Exhaustion boxes — match form aesthetic */
+.insp-toggle,
+.exh-box{
+  background:var(--surface) !important;
+  border:1.5px solid var(--ink) !important;
+  border-radius:0 !important;
+}
+html[data-theme="twilight"] .insp-toggle,
+html[data-theme="twilight"] .exh-box{
+  border-color:var(--gold) !important;
+}
+
+/* Portrait frame — classic illuminated medallion */
+.char-portrait{
+  border:3px double var(--ink) !important;
+  border-radius:8px !important;
+  box-shadow:inset 0 0 0 2px var(--surface), 0 3px 0 var(--ink), 0 6px 18px rgba(91,61,24,0.18) !important;
+}
+html[data-theme="twilight"] .char-portrait{
+  border-color:var(--gold) !important;
+  box-shadow:inset 0 0 0 2px var(--bg), 0 3px 0 rgba(201,162,95,0.35), 0 6px 22px rgba(0,0,0,0.5) !important;
+}
+
+/* Tag (PC / NPC) under portrait — stamped look */
+.char-form-tag{
+  font-family:'Cinzel',serif !important;
+  font-size:10px !important;
+  letter-spacing:3px !important;
+  text-transform:uppercase !important;
+  color:var(--text-dim) !important;
+}
+
 /* ═══════ THEME TOGGLE BUTTON ═══════ */
 .theme-toggle{
   display:flex;align-items:center;
