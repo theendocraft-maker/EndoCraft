@@ -1022,25 +1022,18 @@ body {
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <a class="brand" href="../">
-    <img src="../IMG_8431.PNG" alt="EndoCraft">
-    <span class="brand-name">EndoCraft.<span class="brand-sub">Session Scroll</span></span>
+<!-- TOPBAR (shared) -->
+<div id="ec-header"></div>
+<div id="ec-header-extras">
+  <a href="/dm-studio/" class="user-pill" id="userPill" title="Im DM Studio eingeloggt">
+    <span class="user-avatar" id="userAvatar">·</span>
+    <span class="user-dot" aria-hidden="true"></span>
+    <span class="user-email" id="userEmail">…</span>
   </a>
-  <div class="topbar-right">
-    <a href="../dm-studio/" class="user-pill" id="userPill" title="Im DM Studio eingeloggt">
-      <span class="user-avatar" id="userAvatar">·</span>
-      <span class="user-dot" aria-hidden="true"></span>
-      <span class="user-email" id="userEmail">…</span>
-    </a>
-    <a href="../hall-of-fame/" class="topbar-link" title="Hall of Fame · Trending Karten">Hall of Fame</a>
-    <a href="../my-cards/" class="topbar-link" id="myCardsLink" style="display:none;">My Collection</a>
-    <a href="../dm-studio/" class="topbar-link" title="Cockpit: DM Studio · Sessions vorbereiten und führen">📖 Cockpit</a>
-    <a href="../roadmap.html" class="topbar-link">Roadmap</a>
-    <span class="sessions-pill" id="sessionsPill">3 FREE SESSIONS</span>
-  </div>
+  <a href="/roadmap.html" class="topbar-link">Roadmap</a>
+  <span class="sessions-pill" id="sessionsPill">3 FREE SESSIONS</span>
 </div>
+<script src="/_shared/card-layer-header.js"></script>
 
 <!-- MAIN -->
 <div class="main" id="mainArea">
@@ -2359,11 +2352,16 @@ async function saveCard() {
     const slug = localStorage.getItem('ec_owner_slug');
 
     // Show My Collection link in topbar if we know the slug
+    // (Updates legacy #myCardsLink AND shared card-layer-header link)
     const showMyCards = () => {
-      const link = document.getElementById('myCardsLink');
-      if (link && slug) {
-        link.href = '../my-cards/?slug=' + encodeURIComponent(slug);
-        link.style.display = '';
+      const legacy = document.getElementById('myCardsLink');
+      if (legacy && slug) {
+        legacy.href = '../my-cards/?slug=' + encodeURIComponent(slug);
+        legacy.style.display = '';
+      }
+      const shared = document.querySelector('#ec-header [data-section="my-cards"]');
+      if (shared && slug) {
+        shared.href = '/my-cards/?slug=' + encodeURIComponent(slug);
       }
     };
     if (document.readyState === 'loading') {
@@ -2482,10 +2480,16 @@ async function _applySession(email) {
       if (slug) localStorage.setItem('ec_owner_slug', slug);
     }
     // My-Collection-Link nachziehen falls Slug grad erst gesetzt wurde
+    // (Legacy-Element aus altem Topbar — falls noch im DOM)
     const myCardsLink = document.getElementById('myCardsLink');
     if (myCardsLink && slug) {
       myCardsLink.href = '../my-cards/?slug=' + encodeURIComponent(slug);
       myCardsLink.style.display = '';
+    }
+    // Shared Card-Layer Header: My Collection Link mit slug erweitern
+    const sharedMyCards = document.querySelector('#ec-header [data-section="my-cards"]');
+    if (sharedMyCards && slug) {
+      sharedMyCards.href = '/my-cards/?slug=' + encodeURIComponent(slug);
     }
     _prefillEmailFields(email);
     _renderLoggedInPill(email);
