@@ -453,7 +453,125 @@ html[data-theme="twilight"] .mod-dialog{
   border-color:var(--border) !important;
 }
 html[data-theme="twilight"] .mod-readaloud{
-  background:rgba(168,35,24,0.08) !important;
+  background:
+    linear-gradient(to bottom, rgba(201,162,95,0.06) 0%, transparent 8%, transparent 92%, rgba(201,162,95,0.06) 100%),
+    rgba(168,35,24,0.06) !important;
+  border-color:rgba(201,162,95,0.30) !important;
+  color:var(--text) !important;
+}
+/* Read-aloud body text was hardcoded #2a1e12 (almost black on cream) — invisible on dark.
+   Use warm cream tone that reads against twilight slate. */
+html[data-theme="twilight"] .mod-readaloud .mod-readaloud-body,
+html[data-theme="twilight"] .mod-readaloud-body{
+  color:#e8d8b8 !important;
+}
+html[data-theme="twilight"] .mod-readaloud-body p:first-child::first-letter{
+  color:var(--gold) !important;
+  text-shadow:0 2px 0 rgba(0,0,0,0.4) !important;
+}
+html[data-theme="twilight"] .mod-readaloud-label{
+  background:var(--surface) !important;
+  color:var(--gold) !important;
+  border-color:rgba(201,162,95,0.40) !important;
+}
+html[data-theme="twilight"] .mod-readaloud::before,
+html[data-theme="twilight"] .mod-readaloud::after{
+  background:linear-gradient(90deg, rgba(201,162,95,0.15) 0%, var(--gold) 50%, rgba(201,162,95,0.15) 100%) !important;
+}
+/* DM-note "for the DM" callout — readable text + gold corners */
+html[data-theme="twilight"] .mod-dmnote{
+  background:linear-gradient(to right, rgba(201,162,95,0.12), rgba(201,162,95,0.04)) !important;
+  border-color:rgba(201,162,95,0.30) !important;
+  color:var(--text) !important;
+}
+html[data-theme="twilight"] .mod-dmnote em{
+  color:var(--text-dim) !important;
+}
+/* Welcome / onboarding cream cards — flip to dark surface */
+html[data-theme="twilight"] .welcome-opt{
+  background:var(--surface) !important;
+  border-color:var(--border-strong) !important;
+  box-shadow:0 2px 12px rgba(0,0,0,0.35) !important;
+}
+html[data-theme="twilight"] .welcome-opt.primary{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.12), var(--surface)) !important;
+  border-color:var(--crimson) !important;
+}
+html[data-theme="twilight"] .welcome-opt:hover{
+  border-color:var(--gold) !important;
+  box-shadow:0 6px 22px rgba(201,162,95,0.18) !important;
+}
+/* Mod-room title bottom rule — kill candy-stripe in twilight (already done) but also the ✦ background */
+html[data-theme="twilight"] .mod-room-title::before{
+  background:var(--bg) !important;
+  color:var(--gold) !important;
+}
+/* Section headers (mod-section, sheet-section, briefing-card-h, roll-log-h) had a 2nd "loud crimson" override at line 156.
+   That one was already added — but combat-stats head still flips to bright crimson gradient (line 432).
+   Soften combat-stats head to muted crimson on dark surface so text stays #fdf6e8 readable. */
+html[data-theme="twilight"] .mode-combat [data-mod-section="combat-stats"] .mod-section-head{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.20), rgba(168,35,24,0.08)) !important;
+  border-bottom:1px solid rgba(168,35,24,0.30) !important;
+}
+
+/* ════════ LIGHT MODE GLOBAL POLISH · Phase 4 ════════
+   Bring light mode up to the dark mode's elegance: soften crimson banner-headers
+   on cards (they read as warning-stripes), match shadow language, calm hovers. */
+
+/* Cards: replace harsh full-saturation crimson banner with subtle ribbon — header text stays crimson on tinted surface */
+html[data-theme="light"] .briefing-card-h,
+html[data-theme="light"] .sheet-section-h,
+html[data-theme="light"] .roll-log-h,
+html[data-theme="light"] .side-widget-h{
+  background:linear-gradient(to bottom, #fbf3de, #f4ecd4) !important;
+  color:var(--crimson) !important;
+  border-bottom:1px solid rgba(168,35,24,0.25) !important;
+  text-shadow:none !important;
+}
+html[data-theme="light"] .briefing-card-h .ico,
+html[data-theme="light"] .sheet-section-h .ico{
+  filter:none !important;
+}
+/* Mod section heads — same treatment for consistency across views */
+html[data-theme="light"] .mod-section-head{
+  background:linear-gradient(to bottom, #fbf3de, #f4ecd4) !important;
+  color:var(--crimson) !important;
+  border-bottom:1px solid rgba(168,35,24,0.22) !important;
+}
+html[data-theme="light"] .mod-section-title{
+  color:var(--crimson) !important;
+}
+html[data-theme="light"] .mod-section-chev{
+  color:var(--crimson) !important;
+  opacity:.55 !important;
+}
+/* Mode-combat band gets crimson-edged ribbon, not full red header */
+html[data-theme="light"] .mode-combat [data-mod-section="combat-stats"] .mod-section-head{
+  background:linear-gradient(to bottom, rgba(168,35,24,0.10), rgba(168,35,24,0.04)) !important;
+  color:var(--crimson) !important;
+  border-bottom:2px solid var(--crimson) !important;
+}
+html[data-theme="light"] .mode-combat [data-mod-section="combat-stats"] .mod-section-title{
+  color:var(--crimson) !important;
+}
+/* Same for social-mode dialogs band */
+html[data-theme="light"] .mode-social [data-mod-section="dialogs"] .mod-section-head{
+  background:linear-gradient(to bottom, rgba(30,111,217,0.10), rgba(30,111,217,0.04)) !important;
+  color:#1554a8 !important;
+  border-bottom:2px solid #1e6fd9 !important;
+}
+html[data-theme="light"] .mode-social [data-mod-section="dialogs"] .mod-section-title{
+  color:#1554a8 !important;
+}
+/* Welcome screen options — quieter cream gradient, gold hover instead of crimson */
+html[data-theme="light"] .welcome-opt:hover{
+  border-color:var(--gold) !important;
+  box-shadow:0 6px 22px rgba(147,110,30,0.18) !important;
+}
+/* Briefing-empty cards — softer hover */
+html[data-theme="light"] .bes-card:hover{
+  background:linear-gradient(to right, #fef6e8, #fbf6e6) !important;
+  border-color:var(--gold) !important;
 }
 
 /* SESSION LIVE — Init-setup card grid (in setup modal) */
