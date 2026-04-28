@@ -6442,11 +6442,18 @@ function renderDiceStream() {
   const status = document.getElementById('diceStreamStatus');
   if (!list || !status) return;
   if (!_activePartyDM?.code) {
-    status.textContent = 'Keine aktive Party — wähle im Party Album eine aus.';
-    list.innerHTML = '';
+    status.innerHTML = `<span style="color:var(--crimson);">Keine aktive Party</span> · <a href="#" onclick="event.preventDefault();openPartyManager();" style="color:var(--accent);text-decoration:underline;font-style:normal;">Party verwalten</a>`;
+    list.innerHTML = `
+      <div style="text-align:center;padding:30px 16px;color:var(--text-dim);font-size:13px;line-height:1.6;">
+        <div style="font-size:32px;margin-bottom:10px;">🎲</div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--ink);font-weight:700;margin-bottom:8px;">PARTY ERFORDERLICH</div>
+        <p style="margin-bottom:14px;">Live-Würfeln verbindet DM und Spieler über einen Party-Code. Erstelle eine, teile den Code an deine Spieler, dann landen ihre Rolls hier.</p>
+        <button class="btn-top primary" onclick="openPartyManager()">+ Party erstellen / wählen</button>
+      </div>
+    `;
     return;
   }
-  status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(_activePartyDM.name)}</strong> · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · Realtime`;
+  status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(_activePartyDM.name)}</strong> · Code: <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;cursor:pointer;" onclick="navigator.clipboard?.writeText('${escapeAttr(_activePartyDM.code)}');toast('Code kopiert');" title="Klick zum Kopieren">${escapeHtml(_activePartyDM.code)}</code> · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · <a href="#" onclick="event.preventDefault();openPartyManager();" style="color:var(--accent);text-decoration:underline;font-style:normal;">verwalten</a>`;
   if (!_liveRolls.length) {
     list.innerHTML = '<div style="text-align:center;padding:30px 12px;color:var(--text-dim);font-style:italic;font-size:13px;">Noch keine Würfe. Klick „+ Roll anfragen" um eine Wurf-Anfrage zu schicken.</div>';
     return;
@@ -6478,7 +6485,7 @@ function openRollRequestModal() {
   if (!_activePartyDM?.code) {
     _ensureActiveParty().then(p => {
       if (p?.code) openRollRequestModal();
-      else toast('Keine aktive Party gefunden — wähle eine im Party Album', true);
+      else openPartyManager();   // direkt zum Party-Manager statt nur Toast
     });
     return;
   }
@@ -6537,6 +6544,122 @@ function openRollRequestModal() {
 
 function closeRollRequestModal() {
   document.getElementById('rollRequestModal')?.remove();
+}
+
+// ═══════════ PARTY-MANAGER (DM Studio) ═══════════
+// Minimaler UI um Parties zu erstellen, anzusehen, aktiv zu setzen.
+// Nicht in dein Album-Design eingebaut — eigenständiges Modal das von der
+// Würfel-Tab oder Roll-Anfrage geöffnet wird.
+
+async function openPartyManager() {
+  const s = syncSettings();
+  if (!s.email) { toast('Bitte erst einloggen', true); return; }
+
+  // Lade aktuelle Parties
+  let parties = [];
+  try {
+    const resp = await fetch(`${API_BASE}/api/parties/list?email=${encodeURIComponent(s.email)}`);
+    const data = await resp.json();
+    parties = data.parties || [];
+  } catch(e) { console.warn('[party-mgr] load fail:', e); }
+
+  const activeCode = _activePartyDM?.code || localStorage.getItem('ec_active_party_code') || '';
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  const defaultName = camp?.name ? camp.name + ' Tisch' : 'Mein Tisch';
+
+  document.getElementById('partyManagerModal')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'partyManagerModal';
+  modal.className = 'srd-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="closePartyManager()"></div>
+    <div class="srd-modal-inner" style="max-width:520px;">
+      <div class="srd-modal-head">
+        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">🃏 Party verwalten</h3>
+        <button onclick="closePartyManager()">✕</button>
+      </div>
+      <div class="srd-modal-body" style="padding:18px 22px 22px;">
+
+        <div style="margin-bottom:18px;">
+          <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:700;margin-bottom:8px;">DEINE PARTIES</div>
+          ${parties.length ? `
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              ${parties.map(p => {
+                const isActive = p.parties.code === activeCode;
+                const role = p.role === 'dm' ? 'DM' : 'Spieler';
+                return `
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${isActive ? 'rgba(123,108,246,0.08)' : 'var(--surface-2)'};border:1px solid ${isActive ? 'var(--accent)' : 'var(--border)'};border-radius:8px;">
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--ink);font-weight:700;">${escapeHtml(p.parties.name)} ${isActive ? '<span style="color:var(--accent);font-size:10px;letter-spacing:1.5px;margin-left:4px;">· AKTIV</span>' : ''}</div>
+                      <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-top:2px;">${escapeHtml(p.parties.code)} · Rolle: ${role}</div>
+                    </div>
+                    ${!isActive ? `<button class="btn-top" style="font-size:11px;padding:5px 10px;" onclick="setActivePartyDM('${escapeAttr(p.parties.code)}','${escapeAttr(p.parties.name)}')">Aktivieren</button>` : ''}
+                    <button class="btn-top" style="font-size:11px;padding:5px 10px;" onclick="copyPartyShareLink('${escapeAttr(p.parties.code)}')" title="Einladungs-Link kopieren">📋 Teilen</button>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : `
+            <div style="padding:18px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:8px;text-align:center;font-size:13px;color:var(--text-dim);font-style:italic;">
+              Noch keine Party. Erstelle eine — Spieler treten dann via Code bei.
+            </div>
+          `}
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:18px;">
+          <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:700;margin-bottom:8px;">+ NEUE PARTY ERSTELLEN</div>
+          <div style="display:flex;gap:8px;">
+            <input id="pmNewName" type="text" maxlength="80" placeholder="${escapeAttr(defaultName)}" value="${escapeAttr(defaultName)}" style="flex:1;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--ink);outline:none;" />
+            <button class="btn-top primary" onclick="createPartyFromManager()">+ Erstellen</button>
+          </div>
+          <div style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;margin-top:8px;">Nach dem Erstellen kriegst du einen Code (z.B. STRAHD-7K2X). Den teilst du an deine Spieler — die geben ihn im Player View ein.</div>
+        </div>
+
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function closePartyManager() {
+  document.getElementById('partyManagerModal')?.remove();
+}
+
+async function createPartyFromManager() {
+  const s = syncSettings();
+  if (!s.email) { toast('Bitte erst einloggen', true); return; }
+  const name = document.getElementById('pmNewName')?.value?.trim();
+  if (!name) { toast('Name eingeben', true); return; }
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  toast('Erstelle Party...');
+  try {
+    const resp = await fetch(`${API_BASE}/api/parties/create`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dmEmail: s.email, name, campaignId: camp?.id || null })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) throw new Error(data.error || 'Fehler');
+    _activePartyDM = data.party;
+    localStorage.setItem('ec_active_party_code', data.party.code);
+    toast(`✓ Party erstellt — Code: ${data.party.code}`);
+    closePartyManager();
+    // Roll-Stream neu subscriben + UI updaten
+    await startDMRollStreamListener();
+  } catch (e) { toast('Fehler: ' + e.message, true); }
+}
+
+function setActivePartyDM(code, name) {
+  _activePartyDM = { code, name };
+  localStorage.setItem('ec_active_party_code', code);
+  toast('→ ' + name);
+  closePartyManager();
+  startDMRollStreamListener();
+}
+
+function copyPartyShareLink(code) {
+  const url = window.location.origin + '/player/?party=' + encodeURIComponent(code);
+  const text = `Tritt unserer EndoCraft-Party bei:\nCode: ${code}\n${url}`;
+  navigator.clipboard?.writeText(text).then(() => toast('Einladung kopiert'));
 }
 
 async function submitRollRequest() {
