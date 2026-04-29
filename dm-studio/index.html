@@ -13512,9 +13512,9 @@ async function showDiceAnimation(roll) {
   const fogColor = isCrit ? 0x110800 : isFumble ? 0x110000 : 0x060412;
   scene.fog = new THREE.Fog(fogColor, 7, 20);
 
-  const camera = new THREE.PerspectiveCamera(46, cvW / cvH, 0.1, 50);
-  camera.position.set(0, 4.2, 5.0);
-  camera.lookAt(0, 0.6, 0);
+  const camera = new THREE.PerspectiveCamera(38, cvW / cvH, 0.1, 50);
+  camera.position.set(0, 2.2, 2.8);
+  camera.lookAt(0, 0.4, 0);
 
   // IBL
   try {
@@ -13603,8 +13603,8 @@ async function showDiceAnimation(roll) {
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
     emissiveIntensity: 1.10,
-    shininess: 140,
-    specular: new THREE.Color(0.45, 0.45, 0.55),
+    shininess: 25,
+    specular: new THREE.Color(0.12, 0.10, 0.08),
   });
 
   const diceMesh = new THREE.Mesh(diceGeo, diceMat);
