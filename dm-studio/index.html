@@ -13630,7 +13630,7 @@ async function showDiceAnimation(roll) {
   // ── PHYSICS WORKER ──
   const spawnX = (Math.random() - 0.5) * 0.5;
   const spawnZ = (Math.random() - 0.5) * 0.3;
-  let _diceState = { x: spawnX, y: 5.5, z: spawnZ, qx: 0, qy: 0, qz: 0, qw: 1 };
+  let _diceState = { x: spawnX, y: 2.5, z: spawnZ, qx: 0, qy: 0, qz: 0, qw: 1 };
 
   const diceWorker = new Worker('/dice-worker.js');
   diceWorker.onmessage = function(e) {
@@ -13659,9 +13659,9 @@ async function showDiceAnimation(roll) {
     }
   };
   diceWorker.postMessage({
-    t: 'init', r: diceRadius,
+    t: 'init', r: diceRadius, sy: 2.5,
     sx: spawnX, sz: spawnZ,
-    vx: (Math.random()-0.5)*0.8, vy: -0.4, vz: (Math.random()-0.5)*0.6,
+    vx: (Math.random()-0.5)*0.3, vy: -2.0, vz: (Math.random()-0.5)*0.2,
     avx: (Math.random()-0.5)*40, avy: (Math.random()-0.5)*32, avz: (Math.random()-0.5)*28
   });
   stage._diceWorker = diceWorker;

@@ -23,7 +23,7 @@ function init(cfg) {
 
   diceBody = new CANNON.Body({ mass: 1, material: dMat, linearDamping: 0.18, angularDamping: 0.26 });
   diceBody.addShape(new CANNON.Sphere(cfg.r));
-  diceBody.position.set(cfg.sx, 5.5, cfg.sz);
+  diceBody.position.set(cfg.sx, cfg.sy || 2.5, cfg.sz);
   diceBody.velocity.set(cfg.vx, cfg.vy, cfg.vz);
   diceBody.angularVelocity.set(cfg.avx, cfg.avy, cfg.avz);
   world.addBody(diceBody);
