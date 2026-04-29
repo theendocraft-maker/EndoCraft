@@ -52,10 +52,10 @@ function init(cfg) {
 
   var dMat = new CANNON.Material('d');
   world.addContactMaterial(new CANNON.ContactMaterial(gMat, dMat, {
-    friction: 0.40, restitution: 0.65
+    friction: 0.58, restitution: 0.32
   }));
 
-  diceBody = new CANNON.Body({ mass: 1, material: dMat, linearDamping: 0.07, angularDamping: 0.20 });
+  diceBody = new CANNON.Body({ mass: 1, material: dMat, linearDamping: 0.12, angularDamping: 0.32 });
   diceBody.addShape(makeIcosahedron(cfg.r));
   diceBody.position.set(cfg.sx, cfg.sy || 2.5, cfg.sz);
   diceBody.velocity.set(cfg.vx, cfg.vy, cfg.vz);
