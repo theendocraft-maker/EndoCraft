@@ -1841,7 +1841,7 @@ function loadDiceLibraries() {
       document.head.appendChild(s);
     });
     loadScript('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js', 'THREE')
-      .then(() => loadScript('https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js', 'CANNON'))
+      .then(() => loadScript('https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js', 'CANNON'))
       .then(resolve).catch(reject);
   });
 }
@@ -2152,10 +2152,11 @@ async function showDiceAnimation(roll) {
     diceMesh.add(dot);
   }
 
-  // ── CANNON-ES PHYSICS ──
-  const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -24, 0) });
+  // ── CANNON PHYSICS ──
+  const world = new CANNON.World();
+  world.gravity.set(0, -24, 0);
   world.broadphase = new CANNON.NaiveBroadphase();
-  world.solver.iterations = 30;
+  world.solver.iterations = 20;
 
   const groundMat = new CANNON.Material('ground');
   const groundBody = new CANNON.Body({ mass: 0, material: groundMat });
