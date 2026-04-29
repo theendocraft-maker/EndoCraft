@@ -580,28 +580,59 @@ async function loadAllCampaignsFromCloud() {
   const s = syncSettings();
   if (!s.email) return;
   try {
-    const listResp = await fetch(`${API_BASE}/api/dm-studio/campaigns?email=${encodeURIComponent(s.email)}`);
-    const listData = await listResp.json();
-    if (!listResp.ok) { console.warn('[Cloud] List fail:', listData); return; }
-    const cloudCampaigns = listData.campaigns || [];
-    if (!cloudCampaigns.length) {
-      console.log('[Cloud] Keine Kampagnen gefunden');
-      return;
-    }
-
     const merged = [];
-    for (const cc of cloudCampaigns) {
-      const loadResp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(cc.campaign_id)}`);
-      const loadData = await loadResp.json();
-      if (loadResp.ok && loadData.found && loadData.state?.campaign) {
-        merged.push(loadData.state.campaign);
+    const seenIds = new Set();
+
+    // 1. Eigene Kampagnen (falls Player auch DM ist)
+    try {
+      const listResp = await fetch(`${API_BASE}/api/dm-studio/campaigns?email=${encodeURIComponent(s.email)}`);
+      const listData = await listResp.json();
+      if (listResp.ok) {
+        for (const cc of (listData.campaigns || [])) {
+          const loadResp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(cc.campaign_id)}`);
+          const loadData = await loadResp.json();
+          if (loadResp.ok && loadData.found && loadData.state?.campaign) {
+            const camp = loadData.state.campaign;
+            if (!seenIds.has(camp.id)) { merged.push(camp); seenIds.add(camp.id); }
+          }
+        }
       }
-    }
+    } catch (e) { console.warn('[Cloud own] fail:', e); }
+
+    // 2. Kampagnen wo wir per Charakter-Einladung Member sind
+    try {
+      const memResp = await fetch(`${API_BASE}/api/campaigns/by-member?email=${encodeURIComponent(s.email)}`);
+      const memData = await memResp.json();
+      const memberships = memResp.ok ? (memData.memberships || []) : [];
+      for (const m of memberships) {
+        if (seenIds.has(m.campaign_id)) continue;
+        // Lade Kampagne via DM-Email + Campaign-ID
+        const loadResp = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(m.dm_email)}&campaignId=${encodeURIComponent(m.campaign_id)}`);
+        const loadData = await loadResp.json();
+        if (loadResp.ok && loadData.found && loadData.state?.campaign) {
+          const camp = loadData.state.campaign;
+          // Markieren als Member-Campaign damit wir wissen wer DM ist
+          camp._dm_email = m.dm_email;
+          camp._member_role = m.member_role;
+          camp._assigned_char_id = m.character_id;
+          if (!seenIds.has(camp.id)) { merged.push(camp); seenIds.add(camp.id); }
+          // Auto-select beigetretene Kampagne wenn wir grad eingeladen wurden
+          if (!state.selectedCampaignId || state.selectedCampaignId === camp.id) {
+            state.selectedCampaignId = camp.id;
+          }
+          // Auto-select Char wenn der Invite einen vorgegeben hat
+          if (m.character_id && !state.selectedCharId) {
+            state.selectedCharId = m.character_id;
+          }
+        }
+      }
+    } catch (e) { console.warn('[Cloud member] fail:', e); }
+
     state.campaigns = merged;
     if (!state.selectedCampaignId && merged.length) state.selectedCampaignId = merged[0].id;
     s.lastSync = new Date().toISOString();
     saveState();
-    console.log('[Cloud] ' + merged.length + ' Kampagnen geladen');
+    console.log('[Cloud] ' + merged.length + ' Kampagnen geladen (own + member)');
     initialRender();
   } catch (err) {
     console.error('[Cloud] Fehler:', err);
