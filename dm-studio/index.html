@@ -13313,69 +13313,77 @@ function loadDiceLibraries() {
   });
 }
 
-function playDiceSound(type) {
+var _diceAudioCtx = null;
+function _getACtx() {
+  if (!_diceAudioCtx || _diceAudioCtx.state === 'closed') {
+    _diceAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (_diceAudioCtx.state === 'suspended') _diceAudioCtx.resume();
+  return _diceAudioCtx;
+}
+function playDiceSound(type, volume) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (type === 'roll') {
-      // rolling white noise
-      const bufSize = Math.floor(ctx.sampleRate * 0.5);
+    const ctx = _getACtx();
+    const vol = volume || 1.0;
+    const t = ctx.currentTime;
+
+    if (type === 'bounce') {
+      // Hard resin clack — short filtered noise burst + body thump
+      const dur = 0.055;
+      const bufSize = Math.floor(ctx.sampleRate * dur);
       const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < bufSize; i++) data[i] = (Math.random()*2-1) * Math.pow(1-i/bufSize, 0.4);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) d[i] = (Math.random()*2-1) * Math.exp(-i / (bufSize * 0.06));
       const src = ctx.createBufferSource(); src.buffer = buf;
-      const hpf = ctx.createBiquadFilter(); hpf.type='highpass'; hpf.frequency.value=600;
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.4, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.45);
-      src.connect(hpf); hpf.connect(gain); gain.connect(ctx.destination);
-      src.start(); src.stop(ctx.currentTime+0.5);
-    } else if (type === 'bounce') {
-      // sharp click for table impact
-      const bufSize = Math.floor(ctx.sampleRate * 0.08);
-      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-      const data = buf.getChannelData(0);
-      for (let i = 0; i < bufSize; i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(bufSize*0.15));
-      const src = ctx.createBufferSource(); src.buffer = buf;
-      const lpf = ctx.createBiquadFilter(); lpf.type='lowpass'; lpf.frequency.value=3000;
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.55, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.08);
-      src.connect(lpf); lpf.connect(gain); gain.connect(ctx.destination);
-      src.start();
+      // High-click layer (the hard plastic snap)
+      const hpf = ctx.createBiquadFilter(); hpf.type = 'highpass'; hpf.frequency.value = 1800; hpf.Q.value = 1.2;
+      // Low body thump
+      const lpf = ctx.createBiquadFilter(); lpf.type = 'lowpass'; lpf.frequency.value = 280; lpf.Q.value = 2.5;
+      const gainH = ctx.createGain(); gainH.gain.setValueAtTime(0.55 * vol, t); gainH.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+      const gainL = ctx.createGain(); gainL.gain.setValueAtTime(0.40 * vol, t); gainL.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+      src.connect(hpf); hpf.connect(gainH); gainH.connect(ctx.destination);
+      src.connect(lpf); lpf.connect(gainL); gainL.connect(ctx.destination);
+      src.start(t); src.stop(t + dur + 0.01);
+
     } else if (type === 'settle') {
-      // soft thud when fully stopped
+      // Soft final thud — quieter, lower
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.frequency.setValueAtTime(90, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime+0.15);
-      gain.gain.setValueAtTime(0.45, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.18);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(110, t);
+      osc.frequency.exponentialRampToValueAtTime(42, t + 0.12);
+      gain.gain.setValueAtTime(0.30 * vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime+0.2);
+      osc.start(t); osc.stop(t + 0.16);
+
     } else if (type === 'crit') {
-      // ascending triumphant chord
-      [[440,0],[554,0.12],[659,0.24],[880,0.38]].forEach(([freq,delay]) => {
+      // Triumphant rising chord — sine waves, short attack, warm decay
+      [[261.6, 0], [329.6, 0.08], [392, 0.17], [523.2, 0.28], [659.2, 0.40]].forEach(([freq, delay]) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type='sine'; osc.frequency.value=freq;
-        const t = ctx.currentTime + delay;
-        gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.linearRampToValueAtTime(0.35, t+0.06);
-        gain.gain.exponentialRampToValueAtTime(0.001, t+0.55);
+        osc.type = 'sine'; osc.frequency.value = freq;
+        const st = t + delay;
+        gain.gain.setValueAtTime(0.0001, st);
+        gain.gain.linearRampToValueAtTime(0.28 * vol, st + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.70);
         osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(t); osc.stop(t+0.6);
+        osc.start(st); osc.stop(st + 0.75);
       });
+
     } else if (type === 'fumble') {
-      // descending doom tone
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type='sawtooth';
-      osc.frequency.setValueAtTime(200, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime+0.6);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.65);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(); osc.stop(ctx.currentTime+0.7);
+      // Descending minor chord — ominous
+      [[220, 0], [185, 0.06], [155, 0.14], [130, 0.24]].forEach(([freq, delay]) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle'; osc.frequency.value = freq;
+        const st = t + delay;
+        gain.gain.setValueAtTime(0.0001, st);
+        gain.gain.linearRampToValueAtTime(0.22 * vol, st + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.65);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(st); osc.stop(st + 0.70);
+      });
     }
   } catch(e) {}
 }
@@ -13511,9 +13519,9 @@ async function showDiceAnimation(roll) {
   const fogColor = isCrit ? 0x110800 : isFumble ? 0x110000 : 0x060412;
   scene.fog = new THREE.Fog(fogColor, 7, 20);
 
-  const camera = new THREE.PerspectiveCamera(52, cvW / cvH, 0.1, 50);
-  camera.position.set(0, 3.2, 3.5);
-  camera.lookAt(0, 0.4, 0);
+  const camera = new THREE.PerspectiveCamera(46, cvW / cvH, 0.1, 50);
+  camera.position.set(0, 4.2, 5.0);
+  camera.lookAt(0, 0.6, 0);
 
   // IBL
   try {
@@ -13536,19 +13544,33 @@ async function showDiceAnimation(roll) {
   scene.add(sun);
 
   const accentColor = isCrit ? 0xe8b86d : isFumble ? 0xff2222 : 0x5566ff;
-  const keyLight = new THREE.PointLight(accentColor, 4, 9);
-  keyLight.position.set(-2.5, 3.5, 1.5);
+  const keyLight = new THREE.PointLight(accentColor, 5, 12);
+  keyLight.position.set(0, 4, 2); // will track die in frame loop
   scene.add(keyLight);
 
-  const rimLight = new THREE.PointLight(isCrit ? 0xffa040 : isFumble ? 0xff0000 : 0x3344cc, 2, 7);
-  rimLight.position.set(3, 1, -2.5);
+  const rimLight = new THREE.PointLight(isCrit ? 0xffa040 : isFumble ? 0xff0000 : 0x3344cc, 2.5, 8);
+  rimLight.position.set(2.5, 2, -2);
   scene.add(rimLight);
 
-  // ── TABLE ──
-  const tableMat = new THREE.MeshStandardMaterial({
-    color: isCrit ? 0x150e00 : isFumble ? 0x100505 : 0x08071a,
-    roughness: 0.82, metalness: 0.08
-  });
+  // Upward bounce fill from table
+  const fillLight = new THREE.PointLight(accentColor, 0.8, 5);
+  fillLight.position.set(0, -0.5, 0);
+  scene.add(fillLight);
+
+  // ── TABLE (felt texture) ──
+  const feltCv = document.createElement('canvas'); feltCv.width = 256; feltCv.height = 256;
+  const fctx = feltCv.getContext('2d');
+  const feltBase = isCrit ? '#180d00' : isFumble ? '#120303' : '#080618';
+  fctx.fillStyle = feltBase; fctx.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 6000; i++) {
+    const x = Math.random()*256, y = Math.random()*256, r = Math.random()*1.2 + 0.2;
+    fctx.beginPath(); fctx.arc(x, y, r, 0, Math.PI*2);
+    fctx.fillStyle = `rgba(255,255,255,${Math.random()*0.028})`; fctx.fill();
+  }
+  const feltTex = new THREE.CanvasTexture(feltCv);
+  feltTex.wrapS = feltTex.wrapT = THREE.RepeatWrapping;
+  feltTex.repeat.set(4, 4);
+  const tableMat = new THREE.MeshStandardMaterial({ map: feltTex, roughness: 0.95, metalness: 0.0 });
   const table = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), tableMat);
   table.rotation.x = -Math.PI / 2;
   table.receiveShadow = true;
@@ -13593,19 +13615,12 @@ async function showDiceAnimation(roll) {
     color: bodyColor,
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
-    emissiveIntensity: 0.90,
-    metalness: 0.0,
-    roughness: 0.10,
-    transmission: 0.12,
-    thickness: 2.0,
+    emissiveIntensity: 1.10,
+    metalness: 0.05,
+    roughness: 0.05,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.05,
-    ior: 1.52,
-    envMapIntensity: 1.2,
-    attenuationColor: isCrit ? new THREE.Color(0.75, 0.35, 0.0)
-                    : isFumble ? new THREE.Color(0.75, 0.0, 0.0)
-                    : new THREE.Color(0.08, 0.0, 0.65),
-    attenuationDistance: 2.2,
+    clearcoatRoughness: 0.03,
+    envMapIntensity: 0.6,
   });
 
   const diceMesh = new THREE.Mesh(diceGeo, diceMat);
@@ -13655,12 +13670,12 @@ async function showDiceAnimation(roll) {
   });
   diceBody.addShape(new CANNON.Sphere(diceRadius));
 
-  const spawnX = (Math.random() - 0.5) * 0.8;
-  const spawnZ = (Math.random() - 0.5) * 0.4;
-  diceBody.position.set(spawnX, 4.2, spawnZ);
-  diceBody.velocity.set((Math.random()-0.5)*1.5, -0.5, (Math.random()-0.5)*1.0);
+  const spawnX = (Math.random() - 0.5) * 0.5;
+  const spawnZ = (Math.random() - 0.5) * 0.3;
+  diceBody.position.set(spawnX, 5.5, spawnZ);
+  diceBody.velocity.set((Math.random()-0.5)*0.8, -0.4, (Math.random()-0.5)*0.6);
   diceBody.angularVelocity.set(
-    (Math.random()-0.5)*38, (Math.random()-0.5)*30, (Math.random()-0.5)*26
+    (Math.random()-0.5)*40, (Math.random()-0.5)*32, (Math.random()-0.5)*28
   );
   world.addBody(diceBody);
 
@@ -13703,7 +13718,7 @@ async function showDiceAnimation(roll) {
   let lastBounceTs = -999;
   let slowMo = false;
   let lastTs = null;
-  const fixedStep = 1/120;
+  const fixedStep = 1/60;
 
   function frame(ts) {
     stage._animId = requestAnimationFrame(frame);
@@ -13724,8 +13739,14 @@ async function showDiceAnimation(roll) {
       diceMesh.position.set(diceBody.position.x, diceBody.position.y, diceBody.position.z);
       diceMesh.quaternion.set(diceBody.quaternion.x, diceBody.quaternion.y, diceBody.quaternion.z, diceBody.quaternion.w);
 
-      // Pulse lights
-      keyLight.intensity = 3.5 + Math.sin(ts * 0.009) * 1.0;
+      // Key light tracks die position
+      keyLight.position.set(
+        diceBody.position.x - 1.5,
+        diceBody.position.y + 3.5,
+        diceBody.position.z + 1.5
+      );
+      keyLight.intensity = 4.5 + Math.sin(ts * 0.008) * 0.8;
+      fillLight.position.set(diceBody.position.x, -0.3, diceBody.position.z);
 
       // Bounce sound on each significant table impact
       const vel = diceBody.velocity.length();
