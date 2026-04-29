@@ -6833,10 +6833,10 @@ function addEncounterToCombat(idx) {
   const enc = _encounterBuilderState.results?.encounters?.[idx];
   if (!enc) return;
   if (!Array.isArray(state.characters)) state.characters = [];
-  let added = 0;
+  const newIds = [];
   (enc.monsters || []).forEach(m => {
     for (let i = 0; i < (m.count || 1); i++) {
-      const id = 'c_enc_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+      const id = 'c_enc_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6) + '_' + i;
       state.characters.push({
         id,
         type: 'npc',
@@ -6864,14 +6864,21 @@ function addEncounterToCombat(idx) {
         legendaryActions: [],
         notes: m.tactics ? 'TAKTIK: ' + m.tactics : ''
       });
-      added++;
+      newIds.push(id);
     }
   });
   campaign().updatedAt = Date.now();
   saveState();
   closeEncounterBuilder();
-  toast(`✓ ${added} Combatants in Charaktere geladen — wechsel zu Kampf-Modus für Initiative`);
+  toast(`✓ ${newIds.length} Combatants geladen · Initiative wird gestartet…`);
+  // Auf Session-View wechseln + Combat-Mode + Initiative direkt mit den neuen IDs starten
   if (state.currentView !== 'session') switchView('session');
+  // Re-render damit Charaktere-Liste die neuen NPCs zeigt
+  if (state.currentView === 'chars') renderCharList();
+  setTimeout(() => {
+    setSessionMode('combat');
+    setTimeout(() => rollInitiative({ extraNpcIds: newIds }), 200);
+  }, 300);
 }
 
 // ═══════════ PARTY-MANAGER (DM Studio) ═══════════
@@ -8071,9 +8078,12 @@ function closeCharSlideIn() {
 
 // Manual Initiative: Modal öffnet mit Eingabe-Feldern für jeden Combatant.
 // Marco würfelt am Tisch physisch, trägt die Werte ein.
-function rollInitiative() {
+function rollInitiative(opts) {
+  opts = opts || {};
+  const extraIds = new Set(opts.extraNpcIds || []);
   const locNpcs = state.characters.filter(c => {
     if (c.type !== 'npc') return false;
+    if (extraIds.has(c.id)) return true;   // direkt aus Encounter-Builder zugefügt
     const loc = currentLoc(); if (!loc) return false;
     const ln = (loc.name + ' ' + (loc.dmNote || '')).toLowerCase();
     return ln.includes(c.name.toLowerCase().split(' ')[0]);
