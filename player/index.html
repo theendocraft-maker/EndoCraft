@@ -1634,9 +1634,11 @@ function closeRollFlash(el) {
 
 // ═══════════ LIVE MULTIPLAYER DICE ═══════════
 // Spieler postet Würfe an die Cloud, hört auf DM-Anfragen via Supabase Realtime.
-let _liveDiceChannel = null;          // Realtime-Channel für aktive Party
+let _liveDiceChannel = null;          // Realtime-Channel für aktive Party (roll_requests)
+let _liveRollsChannel = null;         // Realtime-Channel für Würfe aller Spieler (live_rolls)
 let _activeRollRequest = null;        // aktuelle DM-Anfrage (UI-Banner)
 let _seenRequestIds = new Set();      // dedupliziert wiederkehrende Subscriptions
+let _seenRollIds = new Set();         // dedupliziert live_rolls
 
 async function publishLiveRoll({ stat, modifier, d20, dc, requestId, visibility }) {
   // Scope: campaign_room (neuer Weg via Invite) ODER party_code (Legacy)
@@ -1691,6 +1693,8 @@ function startLiveDiceListener() {
     })
     .subscribe();
   console.log('[live-dice] subscribed to', room ? ('room ' + room) : ('party ' + code));
+  // Auch Würfe der anderen Spieler abonnieren
+  startLiveRollsListener();
   // Auch beim Start: offene Requests fetchen falls einer schon vor unserem Subscribe kam
   fetchOpenRequests();
 }
@@ -1700,9 +1704,61 @@ function stopLiveDiceListener() {
     try { _liveDiceChannel.unsubscribe(); } catch(e) {}
     _liveDiceChannel = null;
   }
+  if (_liveRollsChannel) {
+    try { _liveRollsChannel.unsubscribe(); } catch(e) {}
+    _liveRollsChannel = null;
+  }
   _activeRollRequest = null;
   _seenRequestIds.clear();
+  _seenRollIds.clear();
   renderRollRequestBanner();
+}
+
+// Hört auf live_rolls — zeigt Würfe aller anderen Spieler in der Party
+function startLiveRollsListener() {
+  if (_liveRollsChannel) {
+    try { _liveRollsChannel.unsubscribe(); } catch(e) {}
+    _liveRollsChannel = null;
+  }
+  const room = _activeCampaignRoom || localStorage.getItem('ec_active_campaign_room');
+  const code = _activeParty?.code;
+  if (!room && !code) return;
+  const sb = initSupabaseClient();
+  if (!sb) return;
+  const filter = room ? `campaign_room=eq.${room}` : `party_code=eq.${code}`;
+  const myEmail = (syncSettings().email || '').toLowerCase().trim();
+
+  _liveRollsChannel = sb
+    .channel('live-rolls-player-' + (room || code))
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'live_rolls',
+      filter: filter
+    }, (payload) => {
+      const roll = payload.new;
+      if (!roll || _seenRollIds.has(roll.id)) return;
+      _seenRollIds.add(roll.id);
+      // Eigene Würfe überspringen — die sehen wir schon lokal
+      const rollEmail = (roll.player_email || '').toLowerCase().trim();
+      if (rollEmail && rollEmail === myEmail) return;
+      // Nur öffentliche Würfe anzeigen
+      if (roll.visibility && roll.visibility !== 'public') return;
+
+      const d20 = roll.d20 || 10;
+      const mod = roll.modifier || 0;
+      showDiceAnimation({
+        is_crit: d20 === 20,
+        is_fumble: d20 === 1,
+        total: d20 + mod,
+        d20,
+        stat: roll.stat || 'D20',
+        character_name: roll.character_name || roll.player_name || '',
+        player_name: roll.player_name || ''
+      });
+    })
+    .subscribe();
+  console.log('[live-rolls] subscribed for other players in', room || code);
 }
 
 async function fetchOpenRequests() {
@@ -2171,20 +2227,28 @@ async function showDiceAnimation(roll) {
   }
   uvAttr.needsUpdate = true;
 
-  // Deep midnight-blue body — like a classic Chessex die
-  const bodyColor = isCrit ? 0x120c02 : isFumble ? 0x110002 : 0x0d0a1e;
+  // Rich deep body colors — dark enough to look substantial, not washed-out
+  const bodyColor = isCrit ? 0x1a1000 : isFumble ? 0x160000 : 0x100d28;
   const diceEmissiveTex = _createDiceEmissiveTexture(isCrit, isFumble);
+  // Attenuation: light that travels through the resin picks up this color, creating
+  // the characteristic "deep glow from within" of premium resin dice
+  const attCol = isCrit
+    ? new THREE.Color(0.55, 0.28, 0.01)   // amber gold
+    : isFumble
+    ? new THREE.Color(0.45, 0.01, 0.01)   // deep blood red
+    : new THREE.Color(0.06, 0.04, 0.50);  // midnight indigo
 
-  // MeshPhysicalMaterial: clearcoat + transmission = polished translucent resin
   const diceMat = new THREE.MeshPhysicalMaterial({
     color: bodyColor,
-    roughness: 0.08,
+    roughness: 0.04,
     metalness: 0.0,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.06,
-    transmission: isCrit ? 0.15 : isFumble ? 0.15 : 0.38,
-    thickness: 0.9,
-    ior: 1.52,
+    clearcoatRoughness: 0.02,
+    transmission: isCrit ? 0.05 : isFumble ? 0.05 : 0.08,
+    thickness: 2.4,
+    ior: 1.58,
+    attenuationColor: attCol,
+    attenuationDistance: 0.55,
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
     emissiveIntensity: isCrit ? 0.80 : isFumble ? 0.80 : 0.70,
