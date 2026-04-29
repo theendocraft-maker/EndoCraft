@@ -3575,6 +3575,68 @@ body.gate-open{overflow:hidden;}
   .lpanel{width:180px;}
   .prep-right,.session-right{display:none;}
 }
+
+/* ═══════════ DRAMA-STAGE DICE OVERLAY ═══════════ */
+#diceStage{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s ease;}
+#diceStage.ds-active{opacity:1;}
+#diceStage.ds-normal{align-items:flex-end;justify-content:flex-start;padding:0 0 90px 28px;}
+#diceStage.ds-crit,#diceStage.ds-fumble{background:rgba(4,2,1,.92);backdrop-filter:blur(10px);pointer-events:all;}
+.ds-glow-crit{position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(232,184,109,.18) 0%,transparent 70%);animation:dsGP 1.6s ease-in-out infinite;}
+.ds-glow-fumble{position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(168,35,24,.22) 0%,transparent 70%);animation:dsGP 1s ease-in-out infinite;}
+@keyframes dsGP{0%,100%{opacity:.8;}50%{opacity:1;}}
+.ds-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:1;}
+.ds-die-body{width:170px;height:170px;display:flex;align-items:center;justify-content:center;position:relative;}
+.ds-crit .ds-die-body,.ds-fumble .ds-die-body{width:230px;height:230px;}
+.ds-normal .ds-die-body{width:90px;height:90px;}
+.ds-hex{position:absolute;inset:0;clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:linear-gradient(145deg,rgba(28,18,8,.95),rgba(8,6,3,.98));}
+.ds-crit .ds-hex{background:linear-gradient(145deg,rgba(232,184,109,.3) 0%,rgba(180,120,20,.15) 40%,rgba(8,6,3,.98) 100%);animation:dsHG 1s ease-in-out infinite alternate;}
+.ds-fumble .ds-hex{background:linear-gradient(145deg,rgba(168,35,24,.35) 0%,rgba(80,15,10,.2) 40%,rgba(6,2,2,.98) 100%);}
+@keyframes dsHG{from{filter:drop-shadow(0 0 20px rgba(232,184,109,.5));}to{filter:drop-shadow(0 0 50px rgba(232,184,109,.85));}}
+.ds-number{position:relative;z-index:2;font-family:'Cinzel Decorative',serif;font-size:52px;font-weight:700;color:#fffbf0;line-height:1;text-shadow:0 2px 20px rgba(0,0,0,.9);}
+.ds-crit .ds-number{color:#E8B86D;font-size:70px;text-shadow:0 0 40px rgba(232,184,109,.8),0 2px 20px rgba(0,0,0,.9);}
+.ds-fumble .ds-number{color:#ef4444;font-size:70px;text-shadow:0 0 40px rgba(239,68,68,.7),0 2px 20px rgba(0,0,0,.9);}
+.ds-normal .ds-number{font-size:32px;}
+@keyframes dsFlick{0%,100%{opacity:1;}50%{opacity:.6;}}
+.ds-rolling .ds-number{animation:dsFlick .09s linear infinite;}
+.ds-who{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:rgba(255,255,255,.45);text-align:center;}
+.ds-stat{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:rgba(232,184,109,.65);text-align:center;margin-top:3px;}
+.ds-crit .ds-who,.ds-crit .ds-stat{color:rgba(232,184,109,.9);}
+.ds-fumble .ds-who,.ds-fumble .ds-stat{color:rgba(239,68,68,.8);}
+.ds-tag{font-family:'Cinzel',serif;font-size:13px;letter-spacing:4px;font-weight:700;text-align:center;margin-top:6px;opacity:0;transform:translateY(10px);transition:all .4s ease .85s;}
+.ds-crit .ds-tag{color:#E8B86D;}
+.ds-fumble .ds-tag{color:#ef4444;}
+.ds-revealed .ds-tag{opacity:1;transform:none;}
+.ds-mini-wrap{background:rgba(8,5,2,.96);border:1px solid rgba(232,184,109,.2);border-radius:14px;padding:14px 18px;backdrop-filter:blur(18px);box-shadow:0 8px 40px rgba(0,0,0,.65);display:flex;align-items:center;gap:14px;}
+.ds-holo{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;background:linear-gradient(135deg,rgba(255,0,80,.35) 0%,rgba(255,160,0,.45) 25%,rgba(0,255,120,.35) 50%,rgba(0,200,255,.45) 75%,rgba(255,0,80,.35) 100%);background-size:300% 300%;animation:dsHolo 1.8s ease forwards;}
+@keyframes dsHolo{0%{opacity:0;background-position:0% 0%;}10%{opacity:.7;}50%{background-position:100% 100%;}85%{opacity:.5;}100%{opacity:0;background-position:200% 200%;}}
+.ds-dismiss{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.18);pointer-events:none;}
+@keyframes dsShake{0%,100%{transform:translate(0,0) rotate(0);}15%{transform:translate(-7px,3px) rotate(-.5deg);}30%{transform:translate(7px,-4px) rotate(.5deg);}45%{transform:translate(-5px,5px) rotate(-.3deg);}60%{transform:translate(4px,-3px) rotate(.2deg);}75%{transform:translate(-2px,2px);}90%{transform:translate(1px,-1px);}}
+.ds-screen-shake{animation:dsShake .55s ease-out;}
+
+/* ═══════════ LORE CODEX ═══════════ */
+.codex-main{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
+.codex-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.codex-search{flex:1;min-width:160px;padding:9px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;font-family:'EB Garamond',serif;font-size:14px;color:var(--text);outline:none;}
+.codex-search:focus{border-color:var(--gold);}
+.codex-filter{display:flex;gap:6px;flex-wrap:wrap;}
+.codex-filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:var(--text-dim);cursor:pointer;transition:all .15s;}
+.codex-filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.codex-gen-btn{padding:9px 18px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;font-weight:700;transition:opacity .2s;}
+.codex-gen-btn:hover{opacity:.9;}
+.codex-gen-btn:disabled{opacity:.5;cursor:default;}
+.codex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.codex-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:border-color .2s,transform .2s;cursor:pointer;}
+.codex-card:hover{border-color:rgba(147,110,30,.35);transform:translateY(-2px);}
+.codex-card-type{display:inline-flex;align-items:center;gap:6px;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:2.5px;color:var(--text-dimmer);margin-bottom:8px;text-transform:uppercase;}
+.codex-card-name{font-family:'Cinzel Decorative',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.2;}
+.codex-card-summary{font-family:'EB Garamond',serif;font-size:13.5px;color:var(--text-dim);line-height:1.55;margin-bottom:10px;}
+.codex-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.codex-card-tag{background:var(--gold-dim);color:var(--gold);font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;padding:2px 8px;border-radius:10px;}
+.codex-card-connections{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--text-dimmer);border-top:1px solid var(--border);padding-top:8px;margin-top:4px;}
+.codex-secret{background:var(--crimson-dim);border:1px solid rgba(168,35,24,.2);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--crimson);}
+.codex-empty{text-align:center;padding:60px 20px;color:var(--text-dim);font-family:'EB Garamond',serif;font-style:italic;font-size:15px;line-height:1.8;}
+.codex-empty .ico{font-size:40px;margin-bottom:12px;display:block;}
+.codex-type-icon{font-size:13px;}
 </style>
 </head>
 <body>
@@ -3643,6 +3705,7 @@ body.gate-open{overflow:hidden;}
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
     <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
     <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
+    <div class="tab" data-view="codex" onclick="switchView('codex')"><span class="ico">📜</span><span>Lore Codex</span></div>
   </div>
   <div class="topbar-right">
     <div class="theme-toggle" role="group" aria-label="Theme">
@@ -3957,11 +4020,51 @@ body.gate-open{overflow:hidden;}
     <main class="highlight-board" id="albumBoard"></main>
   </div>
 
+  <!-- ═══════ LORE CODEX VIEW · AI-generiertes Campaign-Wiki ═══════ -->
+  <div class="view" id="view-codex">
+    <aside class="lpanel">
+      <div class="lp-header">
+        <span class="lp-title">Lore Codex</span>
+        <button class="lp-add" onclick="generateLoreCodex()" title="Wiki aus Campaign-Daten generieren">✦ Gen</button>
+      </div>
+      <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
+        <div style="font-family:'EB Garamond',serif;font-size:12px;color:var(--text-dim);line-height:1.5;font-style:italic;">KI-Wiki aus deinen Charakteren, Sessions & Locations.</div>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;" id="codexLpStats"></div>
+      </div>
+      <div style="padding:8px 12px;border-top:1px solid var(--border);margin-top:auto;">
+        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dimmer);margin-bottom:6px;">FILTER</div>
+        <div class="codex-filter" id="codexFilter">
+          <button class="codex-filter-btn active" data-type="all" onclick="filterCodex('all')">Alle</button>
+          <button class="codex-filter-btn" data-type="character" onclick="filterCodex('character')">Chars</button>
+          <button class="codex-filter-btn" data-type="npc" onclick="filterCodex('npc')">NPCs</button>
+          <button class="codex-filter-btn" data-type="location" onclick="filterCodex('location')">Orte</button>
+          <button class="codex-filter-btn" data-type="event" onclick="filterCodex('event')">Events</button>
+          <button class="codex-filter-btn" data-type="faction" onclick="filterCodex('faction')">Factions</button>
+          <button class="codex-filter-btn" data-type="mystery" onclick="filterCodex('mystery')">Mysteries</button>
+        </div>
+      </div>
+    </aside>
+
+    <main style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="codex-toolbar" style="padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface);">
+        <input class="codex-search" id="codexSearch" placeholder="Wiki durchsuchen…" oninput="renderCodexGrid()" />
+        <button class="codex-gen-btn" id="codexGenBtn" onclick="generateLoreCodex()">📜 Generieren</button>
+      </div>
+      <div class="codex-main" id="codexMain">
+        <div class="codex-empty">
+          <span class="ico">📜</span>
+          Noch kein Codex generiert.<br>Klick auf <strong>Generieren</strong> — Claude baut ein Wiki aus deinen Campaign-Daten.
+        </div>
+      </div>
+    </main>
+  </div>
+
 </div>
 
 <input type="file" id="portraitUploadInput" accept="image/*" style="display:none" onchange="handlePortraitUpload(event)">
 <input type="file" id="sceneUploadInput" accept="image/*" style="display:none" onchange="handleSceneUpload(event)">
 <div class="toast" id="toast"></div>
+<div id="diceStage"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
@@ -5385,6 +5488,7 @@ function switchView(view) {
   if (view === 'chars') renderChars();
   if (view === 'highlights') renderHighlightsBoard();
   if (view === 'album') renderAlbum();
+  if (view === 'codex') renderLoreCodex();
   // Schauplatz: merken welcher Modus zuletzt aktiv war + Toggle-Buttons in beiden Views aktualisieren
   if (view === 'prep' || view === 'session') {
     state.lastSceneMode = view;
@@ -6446,14 +6550,12 @@ async function startDMRollStreamListener() {
       _liveRolls.push(payload.new);
       if (_liveRolls.length > 100) _liveRolls.shift();
       renderDiceStream();
+      showDiceAnimation(payload.new);
       // Tab-Indicator falls Würfel-Tab nicht aktiv
       const tab = document.querySelector('.session-rt-tab[data-srt="dice"]');
       if (tab && !tab.classList.contains('active')) {
         tab.classList.add('has-new');
       }
-      // Kurzes "ding" via Toast falls Crit/Fumble
-      if (payload.new.is_crit) toast(`✦ ${payload.new.player_name || 'Spieler'}: Natural 20!`);
-      else if (payload.new.is_fumble) toast(`◈ ${payload.new.player_name || 'Spieler'}: Natural 1...`);
     })
     .subscribe();
   renderDiceStream();
@@ -13186,6 +13288,201 @@ initAuthState();  // Supabase Google OAuth — no-op if config missing
 
 // Update relative sync status every 30s (keeps "Synced 2min" badge live)
 setInterval(renderSyncStatus, 30000);
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DRAMA-STAGE DICE OVERLAY
+// Triggered by live roll inserts. Crit/Fumble = fullscreen cinematic takeover.
+// Normal rolls = mini corner overlay.
+// ═══════════════════════════════════════════════════════════════════════════
+let _dsTimer = null;
+
+function showDiceAnimation(roll) {
+  if (!roll) return;
+  const isCrit   = !!roll.is_crit;
+  const isFumble = !!roll.is_fumble;
+  const stage = document.getElementById('diceStage');
+  if (!stage) return;
+
+  if (_dsTimer) { clearTimeout(_dsTimer); _dsTimer = null; }
+
+  const mode = isCrit ? 'ds-crit' : isFumble ? 'ds-fumble' : 'ds-normal';
+  stage.className = '';
+  void stage.offsetWidth; // reflow to restart animations
+  stage.classList.add('ds-active', mode);
+
+  const who      = escapeHtml(roll.character_name || roll.player_name || 'Spieler');
+  const statLabel = (roll.stat ? roll.stat.toUpperCase() : 'D20');
+  const finalNum  = roll.total ?? roll.d20 ?? '?';
+  const tag       = isCrit ? '✦ NATURAL 20' : isFumble ? '◈ NATURAL 1' : '';
+
+  if (mode === 'ds-normal') {
+    stage.innerHTML = `
+      <div class="ds-mini-wrap">
+        <div class="ds-die ds-rolling" id="dsDie">
+          <div class="ds-die-body">
+            <div class="ds-hex"></div>
+            <div class="ds-number" id="dsNum">–</div>
+          </div>
+        </div>
+        <div>
+          <div class="ds-who">${who}</div>
+          <div class="ds-stat">${statLabel}</div>
+        </div>
+      </div>`;
+  } else {
+    stage.innerHTML = `
+      ${isCrit ? '<div class="ds-glow-crit"></div><div class="ds-holo"></div>' : '<div class="ds-glow-fumble"></div>'}
+      <div class="ds-die ds-rolling" id="dsDie">
+        <div class="ds-die-body">
+          <div class="ds-hex"></div>
+          <div class="ds-number" id="dsNum">–</div>
+        </div>
+        <div class="ds-who">${who}</div>
+        <div class="ds-stat">${statLabel}</div>
+        <div class="ds-tag">${tag}</div>
+      </div>
+      <div class="ds-dismiss">Klicken zum Schließen</div>`;
+    if (isFumble) {
+      document.body.classList.add('ds-screen-shake');
+      setTimeout(() => document.body.classList.remove('ds-screen-shake'), 600);
+    }
+  }
+
+  // Number roulette
+  const numEl    = document.getElementById('dsNum');
+  const maxRolls = (isCrit || isFumble) ? 26 : 14;
+  const interval = (isCrit || isFumble) ? 55  : 75;
+  let   count    = 0;
+  const ticker   = setInterval(() => {
+    if (count >= maxRolls) {
+      clearInterval(ticker);
+      if (numEl) numEl.textContent = finalNum;
+      document.getElementById('dsDie')?.classList.remove('ds-rolling');
+      stage.classList.add('ds-revealed');
+      return;
+    }
+    if (numEl) numEl.textContent = 1 + Math.floor(Math.random() * 20);
+    count++;
+  }, interval);
+
+  const duration = (isCrit || isFumble) ? 4200 : 2400;
+  _dsTimer = setTimeout(hideDiceAnimation, duration);
+  if (isCrit || isFumble) stage.addEventListener('click', hideDiceAnimation, { once: true });
+}
+
+function hideDiceAnimation() {
+  if (_dsTimer) { clearTimeout(_dsTimer); _dsTimer = null; }
+  const stage = document.getElementById('diceStage');
+  if (!stage) return;
+  stage.style.opacity = '0';
+  setTimeout(() => { stage.className = ''; stage.innerHTML = ''; stage.style.opacity = ''; }, 300);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LORE CODEX — AI-generiertes Campaign-Wiki
+// ═══════════════════════════════════════════════════════════════════════════
+let _codexEntries = [];
+let _codexFilter  = 'all';
+
+const CODEX_TYPE_ICONS = {
+  character: '🧑', npc: '🎭', location: '🗺️',
+  faction: '⚔️', event: '⚡', item: '🗡️', mystery: '🌀'
+};
+
+function renderLoreCodex() {
+  renderCodexSidebar();
+  renderCodexGrid();
+}
+
+function renderCodexSidebar() {
+  const el = document.getElementById('codexLpStats');
+  if (!el) return;
+  if (!_codexEntries.length) { el.innerHTML = ''; return; }
+  const counts = {};
+  _codexEntries.forEach(e => { counts[e.type] = (counts[e.type] || 0) + 1; });
+  el.innerHTML = Object.entries(counts).map(([t, n]) =>
+    `<div style="display:flex;justify-content:space-between;font-family:'EB Garamond',serif;font-size:12.5px;color:var(--text-dim);">
+      <span>${CODEX_TYPE_ICONS[t] || '📌'} ${t}</span><span style="color:var(--gold);font-weight:700;">${n}</span>
+    </div>`
+  ).join('');
+}
+
+function filterCodex(type) {
+  _codexFilter = type;
+  document.querySelectorAll('.codex-filter-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.type === type));
+  renderCodexGrid();
+}
+
+function renderCodexGrid() {
+  const host   = document.getElementById('codexMain');
+  if (!host) return;
+  const query  = (document.getElementById('codexSearch')?.value || '').toLowerCase();
+  const entries = _codexEntries.filter(e => {
+    const typeOk = _codexFilter === 'all' || e.type === _codexFilter;
+    const textOk = !query ||
+      (e.name   || '').toLowerCase().includes(query) ||
+      (e.summary|| '').toLowerCase().includes(query) ||
+      (e.tags   || []).some(t => t.toLowerCase().includes(query));
+    return typeOk && textOk;
+  });
+
+  if (!_codexEntries.length) {
+    host.innerHTML = `<div class="codex-empty"><span class="ico">📜</span>Noch kein Codex generiert.<br>Klick auf <strong>Generieren</strong> — Claude baut ein Wiki aus deinen Campaign-Daten.</div>`;
+    return;
+  }
+  if (!entries.length) {
+    host.innerHTML = `<div class="codex-empty"><span class="ico">🔍</span>Keine Einträge für diesen Filter.</div>`;
+    return;
+  }
+
+  host.innerHTML = `<div class="codex-grid">${entries.map(e => `
+    <div class="codex-card">
+      <div class="codex-card-type"><span class="codex-type-icon">${CODEX_TYPE_ICONS[e.type] || '📌'}</span>${(e.type || 'entry').toUpperCase()}</div>
+      <div class="codex-card-name">${escapeHtml(e.name || '—')}</div>
+      <div class="codex-card-summary">${escapeHtml(e.summary || '')}</div>
+      ${(e.tags || []).length ? `<div class="codex-card-tags">${e.tags.map(t => `<span class="codex-card-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+      ${(e.connections || []).length ? `<div class="codex-card-connections">↔ ${e.connections.map(c => escapeHtml(c)).join(', ')}</div>` : ''}
+      ${e.secrets ? `<div class="codex-secret">🔒 ${escapeHtml(e.secrets)}</div>` : ''}
+    </div>`).join('')}</div>`;
+}
+
+async function generateLoreCodex() {
+  const btn = document.getElementById('codexGenBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generiere…'; }
+
+  try {
+    const c    = campaign();
+    const pcs  = state.characters.filter(ch => ch.type === 'pc');
+    const npcs = state.characters.filter(ch => ch.type === 'npc');
+    const locs = c.locations || [];
+    const sess = c.sessions  || [];
+
+    const body = {
+      campaign:   { name: c.name, description: c.description || '' },
+      characters: pcs.map(ch => ({ name: ch.name, race: ch.race || '', class: ch.class || '', level: ch.level || 1, backstory: ch.backstory || '' })),
+      npcs:       npcs.map(n  => ({ name: n.name, description: n.notes || n.description || '' })),
+      locations:  locs.map(l  => ({ name: l.name, description: l.description || l.notes || '' })),
+      sessions:   sess.map(s  => ({ title: s.title || s.name || '', recap: s.recap || s.notes || '' }))
+    };
+
+    const res  = await fetch(`${API_BASE}/api/lore-codex`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Server-Fehler');
+    _codexEntries = data.entries || [];
+    renderLoreCodex();
+    toast(`✦ Codex generiert · ${_codexEntries.length} Einträge`);
+  } catch (e) {
+    toast(`Codex-Fehler: ${e.message}`);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📜 Generieren'; }
+  }
+}
 </script>
 </body>
 </html>

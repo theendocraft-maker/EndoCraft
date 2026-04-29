@@ -327,15 +327,8 @@ body.gate-open{overflow:hidden;}
 .char-stat:hover{border-color:var(--gold);background:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(147,110,30,0.12);}
 .char-stat:active{transform:translateY(0);}
 .char-stat .roll-hint{position:absolute;top:2px;right:5px;font-family:'Cinzel',serif;font-size:8px;color:var(--text-dimmer);letter-spacing:1px;}
-.roll-flash{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  z-index:300;pointer-events:none;
-  background:rgba(0,0,0,0.55);
-  animation:rollFlashIn .25s ease-out;
-}
-@keyframes rollFlashIn{from{opacity:0;}to{opacity:1;}}
-.roll-flash.fading{animation:rollFlashOut .35s ease-out forwards;}
-@keyframes rollFlashOut{from{opacity:1;}to{opacity:0;}}
+/* legacy — kept for DOM compat but hidden via diceStage */
+.roll-flash{display:none;}
 .roll-flash-inner{
   background:linear-gradient(to bottom,#fbf6e6,#f4ecd4);
   border:2px solid var(--gold);border-radius:18px;
@@ -360,6 +353,43 @@ body.gate-open{overflow:hidden;}
   .char-portrait{width:110px;height:110px;}
   .char-stats-row{grid-template-columns:repeat(3,1fr);}
 }
+
+/* ═══════════ DRAMA-STAGE DICE OVERLAY ═══════════ */
+#diceStage{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s ease;}
+#diceStage.ds-active{opacity:1;}
+#diceStage.ds-normal{align-items:flex-end;justify-content:flex-start;padding:0 0 90px 28px;}
+#diceStage.ds-crit,#diceStage.ds-fumble{background:rgba(4,2,1,.92);backdrop-filter:blur(10px);pointer-events:all;}
+.ds-glow-crit{position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(232,184,109,.18) 0%,transparent 70%);animation:dsGP 1.6s ease-in-out infinite;}
+.ds-glow-fumble{position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(168,35,24,.22) 0%,transparent 70%);animation:dsGP 1s ease-in-out infinite;}
+@keyframes dsGP{0%,100%{opacity:.8;}50%{opacity:1;}}
+.ds-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:1;}
+.ds-die-body{width:170px;height:170px;display:flex;align-items:center;justify-content:center;position:relative;}
+.ds-crit .ds-die-body,.ds-fumble .ds-die-body{width:230px;height:230px;}
+.ds-normal .ds-die-body{width:90px;height:90px;}
+.ds-hex{position:absolute;inset:0;clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:linear-gradient(145deg,rgba(28,18,8,.95),rgba(8,6,3,.98));}
+.ds-crit .ds-hex{background:linear-gradient(145deg,rgba(232,184,109,.3) 0%,rgba(180,120,20,.15) 40%,rgba(8,6,3,.98) 100%);animation:dsHG 1s ease-in-out infinite alternate;}
+.ds-fumble .ds-hex{background:linear-gradient(145deg,rgba(168,35,24,.35) 0%,rgba(80,15,10,.2) 40%,rgba(6,2,2,.98) 100%);}
+@keyframes dsHG{from{filter:drop-shadow(0 0 20px rgba(232,184,109,.5));}to{filter:drop-shadow(0 0 50px rgba(232,184,109,.85));}}
+.ds-number{position:relative;z-index:2;font-family:'Cinzel Decorative',serif;font-size:52px;font-weight:700;color:#fffbf0;line-height:1;text-shadow:0 2px 20px rgba(0,0,0,.9);}
+.ds-crit .ds-number{color:#E8B86D;font-size:70px;text-shadow:0 0 40px rgba(232,184,109,.8),0 2px 20px rgba(0,0,0,.9);}
+.ds-fumble .ds-number{color:#ef4444;font-size:70px;text-shadow:0 0 40px rgba(239,68,68,.7),0 2px 20px rgba(0,0,0,.9);}
+.ds-normal .ds-number{font-size:32px;}
+@keyframes dsFlick{0%,100%{opacity:1;}50%{opacity:.6;}}
+.ds-rolling .ds-number{animation:dsFlick .09s linear infinite;}
+.ds-who{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:rgba(255,255,255,.45);text-align:center;}
+.ds-stat{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:rgba(232,184,109,.65);text-align:center;margin-top:3px;}
+.ds-crit .ds-who,.ds-crit .ds-stat{color:rgba(232,184,109,.9);}
+.ds-fumble .ds-who,.ds-fumble .ds-stat{color:rgba(239,68,68,.8);}
+.ds-tag{font-family:'Cinzel',serif;font-size:13px;letter-spacing:4px;font-weight:700;text-align:center;margin-top:6px;opacity:0;transform:translateY(10px);transition:all .4s ease .85s;}
+.ds-crit .ds-tag{color:#E8B86D;}
+.ds-fumble .ds-tag{color:#ef4444;}
+.ds-revealed .ds-tag{opacity:1;transform:none;}
+.ds-mini-wrap{background:rgba(8,5,2,.96);border:1px solid rgba(232,184,109,.2);border-radius:14px;padding:14px 18px;backdrop-filter:blur(18px);box-shadow:0 8px 40px rgba(0,0,0,.65);display:flex;align-items:center;gap:14px;}
+.ds-holo{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;background:linear-gradient(135deg,rgba(255,0,80,.35) 0%,rgba(255,160,0,.45) 25%,rgba(0,255,120,.35) 50%,rgba(0,200,255,.45) 75%,rgba(255,0,80,.35) 100%);background-size:300% 300%;animation:dsHolo 1.8s ease forwards;}
+@keyframes dsHolo{0%{opacity:0;background-position:0% 0%;}10%{opacity:.7;}50%{background-position:100% 100%;}85%{opacity:.5;}100%{opacity:0;background-position:200% 200%;}}
+.ds-dismiss{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.18);pointer-events:none;}
+@keyframes dsShake{0%,100%{transform:translate(0,0);}15%{transform:translate(-7px,3px);}30%{transform:translate(7px,-4px);}45%{transform:translate(-5px,5px);}60%{transform:translate(4px,-3px);}75%{transform:translate(-2px,2px);}90%{transform:translate(1px,-1px);}}
+.ds-screen-shake{animation:dsShake .55s ease-out;}
 </style>
 </head>
 <body>
@@ -1576,19 +1606,13 @@ function rollStat(stat, mod, opts) {
   const tag = isCrit ? 'NATURAL 20!' : isFumble ? 'NATURAL 1!' : (dc != null && resultKind === 'success' ? 'SUCCESS' : (dc != null && resultKind === 'fail' ? 'FAIL' : ''));
   const tagClass = isCrit ? 'crit' : isFumble ? 'fumble' : (resultKind === 'success' ? 'crit' : (resultKind === 'fail' ? 'fumble' : ''));
   const resultClass = isCrit ? 'crit' : isFumble ? 'fumble' : '';
-  const flash = document.createElement('div');
-  flash.className = 'roll-flash';
-  flash.innerHTML = `
-    <div class="roll-flash-inner">
-      <div class="rf-stat">${opts.label || STAT_LABELS[stat] || stat.toUpperCase()}${dc != null ? ' · DC ' + dc : ''}</div>
-      <div class="rf-result ${resultClass}">${total}</div>
-      <div class="rf-formula">d20 (${d20}) ${mod >= 0 ? '+' : '−'} ${Math.abs(mod)}</div>
-      ${tag ? `<div class="rf-tag ${tagClass}">${tag}</div>` : ''}
-    </div>
-  `;
-  flash.onclick = () => closeRollFlash(flash);
-  document.body.appendChild(flash);
-  setTimeout(() => closeRollFlash(flash), 1800);
+  showDiceAnimation({
+    is_crit: isCrit, is_fumble: isFumble,
+    total, d20, modifier: mod, dc,
+    stat: opts.label || STAT_LABELS[stat] || stat.toUpperCase(),
+    character_name: currentChar()?.name || null,
+    player_name: null
+  });
   try { window.plausible?.('Player View Roll', { props: { stat, result: total } }); } catch(e) {}
 
   // Live-Multiplayer-Sync: Wenn Player in einer Party ist, broadcast den Roll
@@ -1799,6 +1823,75 @@ document.addEventListener('visibilitychange', () => {
     });
   }
 });
+</script>
+
+<div id="diceStage"></div>
+<script>
+let _dsTimer = null;
+function showDiceAnimation(roll) {
+  if (!roll) return;
+  const isCrit   = !!roll.is_crit;
+  const isFumble = !!roll.is_fumble;
+  const stage = document.getElementById('diceStage');
+  if (!stage) return;
+  if (_dsTimer) { clearTimeout(_dsTimer); _dsTimer = null; }
+  const mode = isCrit ? 'ds-crit' : isFumble ? 'ds-fumble' : 'ds-normal';
+  stage.className = '';
+  void stage.offsetWidth;
+  stage.classList.add('ds-active', mode);
+  const who      = roll.character_name || roll.player_name || '';
+  const statLabel = (roll.stat ? String(roll.stat).toUpperCase() : 'D20');
+  const finalNum  = roll.total ?? roll.d20 ?? '?';
+  const tag       = isCrit ? '✦ NATURAL 20' : isFumble ? '◈ NATURAL 1' : '';
+  if (mode === 'ds-normal') {
+    stage.innerHTML = `
+      <div class="ds-mini-wrap">
+        <div class="ds-die ds-rolling" id="dsDie">
+          <div class="ds-die-body"><div class="ds-hex"></div><div class="ds-number" id="dsNum">–</div></div>
+        </div>
+        <div>${who ? `<div class="ds-who">${who}</div>` : ''}<div class="ds-stat">${statLabel}</div></div>
+      </div>`;
+  } else {
+    stage.innerHTML = `
+      ${isCrit ? '<div class="ds-glow-crit"></div><div class="ds-holo"></div>' : '<div class="ds-glow-fumble"></div>'}
+      <div class="ds-die ds-rolling" id="dsDie">
+        <div class="ds-die-body"><div class="ds-hex"></div><div class="ds-number" id="dsNum">–</div></div>
+        ${who ? `<div class="ds-who">${who}</div>` : ''}
+        <div class="ds-stat">${statLabel}</div>
+        <div class="ds-tag">${tag}</div>
+      </div>
+      <div class="ds-dismiss">Klicken zum Schließen</div>`;
+    if (isFumble) {
+      document.body.classList.add('ds-screen-shake');
+      setTimeout(() => document.body.classList.remove('ds-screen-shake'), 600);
+    }
+  }
+  const numEl    = document.getElementById('dsNum');
+  const maxRolls = (isCrit || isFumble) ? 26 : 14;
+  const intv     = (isCrit || isFumble) ? 55 : 75;
+  let   count    = 0;
+  const ticker   = setInterval(() => {
+    if (count >= maxRolls) {
+      clearInterval(ticker);
+      if (numEl) numEl.textContent = finalNum;
+      document.getElementById('dsDie')?.classList.remove('ds-rolling');
+      stage.classList.add('ds-revealed');
+      return;
+    }
+    if (numEl) numEl.textContent = 1 + Math.floor(Math.random() * 20);
+    count++;
+  }, intv);
+  const duration = (isCrit || isFumble) ? 4200 : 2400;
+  _dsTimer = setTimeout(hideDiceAnimation, duration);
+  if (isCrit || isFumble) stage.addEventListener('click', hideDiceAnimation, { once: true });
+}
+function hideDiceAnimation() {
+  if (_dsTimer) { clearTimeout(_dsTimer); _dsTimer = null; }
+  const stage = document.getElementById('diceStage');
+  if (!stage) return;
+  stage.style.opacity = '0';
+  setTimeout(() => { stage.className = ''; stage.innerHTML = ''; stage.style.opacity = ''; }, 300);
+}
 </script>
 </body>
 </html>
