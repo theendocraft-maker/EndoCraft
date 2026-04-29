@@ -13295,52 +13295,114 @@ setInterval(renderSyncStatus, 30000);
 // Normal rolls = mini corner overlay.
 // ═══════════════════════════════════════════════════════════════════════════
 var _dsTimer = null;
+var _dsRenderer = null;
 
-function showDiceAnimation(roll) {
+function loadThreeJS() {
+  return new Promise((resolve, reject) => {
+    if (window.THREE) { resolve(window.THREE); return; }
+    const existing = document.querySelector('script[data-threejs]');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.THREE));
+      existing.addEventListener('error', reject);
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+    s.setAttribute('data-threejs', '1');
+    s.onload = () => resolve(window.THREE);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function playDiceSound(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (type === 'roll') {
+      const bufSize = ctx.sampleRate * 0.4;
+      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const hpf = ctx.createBiquadFilter();
+      hpf.type = 'highpass';
+      hpf.frequency.value = 800;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.35, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+      src.connect(hpf); hpf.connect(gain); gain.connect(ctx.destination);
+      src.start(); src.stop(ctx.currentTime + 0.4);
+    } else if (type === 'impact') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(120, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.18);
+      gain.gain.setValueAtTime(0.6, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 0.2);
+    } else if (type === 'crit') {
+      [440, 554, 659].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t = ctx.currentTime + i * 0.13;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.4, t + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.5);
+      });
+    }
+  } catch(e) { /* audio not available */ }
+}
+
+async function showDiceAnimation(roll) {
   if (!roll) return;
   const isCrit   = !!roll.is_crit;
   const isFumble = !!roll.is_fumble;
   const stage = document.getElementById('diceStage');
   if (!stage) return;
 
-  if (_dsTimer) { clearTimeout(_dsTimer); _dsTimer = null; }
+  if (window._dsTimer) { clearTimeout(window._dsTimer); window._dsTimer = null; }
+  if (stage._animId)   { cancelAnimationFrame(stage._animId); stage._animId = null; }
+  if (stage._renderer) { stage._renderer.dispose(); stage._renderer = null; }
 
   const mode = isCrit ? 'ds-crit' : isFumble ? 'ds-fumble' : 'ds-normal';
   stage.className = '';
-  void stage.offsetWidth; // reflow to restart animations
+  void stage.offsetWidth;
   stage.classList.add('ds-active', mode);
 
-  const who      = escapeHtml(roll.character_name || roll.player_name || 'Spieler');
+  const who       = escapeHtml(roll.character_name || roll.player_name || 'Spieler');
   const statLabel = (roll.stat ? roll.stat.toUpperCase() : 'D20');
   const finalNum  = roll.total ?? roll.d20 ?? '?';
   const tag       = isCrit ? '✦ NATURAL 20' : isFumble ? '◈ NATURAL 1' : '';
 
+  const rollDuration = (isCrit || isFumble) ? 2400 : 1500;
+  const displayDuration = (isCrit || isFumble) ? 5000 : 2800;
+
+  // --- Build HTML scaffold ---
   if (mode === 'ds-normal') {
     stage.innerHTML = `
       <div class="ds-mini-wrap">
-        <div class="ds-die ds-rolling" id="dsDie">
-          <div class="ds-die-body">
-            <div class="ds-hex"></div>
-            <div class="ds-number" id="dsNum">–</div>
-          </div>
-        </div>
+        <canvas id="dsCanvas" style="width:80px;height:80px;display:block;border-radius:8px;"></canvas>
         <div>
           <div class="ds-who">${who}</div>
           <div class="ds-stat">${statLabel}</div>
+          <div class="ds-number" id="dsNum" style="opacity:0;transform:scale(0.7);transition:opacity 0.4s,transform 0.4s;font-size:1.6rem;font-weight:700;color:#e8c97a;"></div>
         </div>
       </div>`;
   } else {
     stage.innerHTML = `
       ${isCrit ? '<div class="ds-glow-crit"></div><div class="ds-holo"></div>' : '<div class="ds-glow-fumble"></div>'}
-      <div class="ds-die ds-rolling" id="dsDie">
-        <div class="ds-die-body">
-          <div class="ds-hex"></div>
-          <div class="ds-number" id="dsNum">–</div>
-        </div>
-        <div class="ds-who">${who}</div>
-        <div class="ds-stat">${statLabel}</div>
-        <div class="ds-tag">${tag}</div>
-      </div>
+      <canvas id="dsCanvas" style="width:220px;height:220px;display:block;border-radius:12px;margin:0 auto;"></canvas>
+      <div class="ds-who" style="text-align:center;margin-top:8px;">${who}</div>
+      <div class="ds-stat" style="text-align:center;">${statLabel}</div>
+      <div class="ds-number" id="dsNum" style="opacity:0;transform:scale(0.7);transition:opacity 0.4s,transform 0.4s;text-align:center;font-size:3rem;font-weight:900;color:${isCrit?'#e8b86d':'#ff4444'};"></div>
+      <div class="ds-tag">${tag}</div>
       <div class="ds-dismiss">Klicken zum Schließen</div>`;
     if (isFumble) {
       document.body.classList.add('ds-screen-shake');
@@ -13348,32 +13410,162 @@ function showDiceAnimation(roll) {
     }
   }
 
-  // Number roulette
-  const numEl    = document.getElementById('dsNum');
-  const maxRolls = (isCrit || isFumble) ? 26 : 14;
-  const interval = (isCrit || isFumble) ? 55  : 75;
-  let   count    = 0;
-  const ticker   = setInterval(() => {
-    if (count >= maxRolls) {
-      clearInterval(ticker);
-      if (numEl) numEl.textContent = finalNum;
-      document.getElementById('dsDie')?.classList.remove('ds-rolling');
-      stage.classList.add('ds-revealed');
-      return;
-    }
-    if (numEl) numEl.textContent = 1 + Math.floor(Math.random() * 20);
-    count++;
-  }, interval);
+  playDiceSound('roll');
 
-  const duration = (isCrit || isFumble) ? 4200 : 2400;
-  _dsTimer = setTimeout(hideDiceAnimation, duration);
+  // --- Try Three.js ---
+  let threeLoaded = false;
+  try {
+    await loadThreeJS();
+    threeLoaded = !!window.THREE;
+  } catch(e) { threeLoaded = false; }
+
+  const canvas = document.getElementById('dsCanvas');
+
+  if (!threeLoaded || !canvas) {
+    // Fallback: CSS number roulette on a placeholder hex
+    if (canvas) canvas.style.display = 'none';
+    // Insert fallback hex element
+    const fallbackHex = document.createElement('div');
+    fallbackHex.className = 'ds-die ds-rolling';
+    fallbackHex.id = 'dsDieFallback';
+    fallbackHex.innerHTML = '<div class="ds-die-body"><div class="ds-hex"></div></div>';
+    if (canvas) canvas.parentNode.insertBefore(fallbackHex, canvas);
+    const numEl    = document.getElementById('dsNum');
+    const maxRolls = (isCrit || isFumble) ? 26 : 14;
+    const intv     = (isCrit || isFumble) ? 55 : 75;
+    let count = 0;
+    const ticker = setInterval(() => {
+      if (count >= maxRolls) {
+        clearInterval(ticker);
+        if (numEl) { numEl.textContent = finalNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
+        document.getElementById('dsDieFallback')?.classList.remove('ds-rolling');
+        stage.classList.add('ds-revealed');
+        playDiceSound('impact');
+        if (isCrit) { playDiceSound('crit'); stage.classList.add('ds-holo'); }
+        return;
+      }
+      if (numEl) numEl.textContent = 1 + Math.floor(Math.random() * 20);
+      count++;
+    }, intv);
+    window._dsTimer = setTimeout(hideDiceAnimation, displayDuration);
+    if (isCrit || isFumble) stage.addEventListener('click', hideDiceAnimation, { once: true });
+    return;
+  }
+
+  // --- Three.js D20 ---
+  const THREE = window.THREE;
+  const w = isCrit || isFumble ? 220 : 80;
+  const h = w;
+  canvas.width  = w * window.devicePixelRatio;
+  canvas.height = h * window.devicePixelRatio;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(w, h);
+  renderer.setClearColor(0x000000, 0);
+  stage._renderer = renderer;
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0, 0, 3.2);
+
+  // Lighting
+  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambient);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  dirLight.position.set(2, 3, 4);
+  scene.add(dirLight);
+
+  const ptColor = isCrit ? 0xe8b86d : isFumble ? 0xff3333 : 0x8888ff;
+  const ptLight = new THREE.PointLight(ptColor, 1.8, 10);
+  ptLight.position.set(-2, 1, 2);
+  scene.add(ptLight);
+
+  // D20 geometry
+  const geo = new THREE.IcosahedronGeometry(1, 0);
+  const bodyColor  = isCrit ? 0x1a1000 : isFumble ? 0x1a0000 : 0x0d0d1a;
+  const edgeColor  = isCrit ? 0xe8b86d : isFumble ? 0xff4444 : 0x4488cc;
+  const mat = new THREE.MeshPhongMaterial({
+    color: bodyColor,
+    emissive: isCrit ? 0x221100 : isFumble ? 0x220000 : 0x050510,
+    shininess: 90,
+    specular: 0x444444
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  scene.add(mesh);
+
+  const edgesGeo = new THREE.EdgesGeometry(geo);
+  const edgesMat = new THREE.LineBasicMaterial({ color: edgeColor, linewidth: 1 });
+  const edges = new THREE.LineSegments(edgesGeo, edgesMat);
+  mesh.add(edges);
+
+  // Random rotation axis (X-dominant, slightly tilted)
+  const axisX = 0.7 + Math.random() * 0.3;
+  const axisY = (Math.random() - 0.5) * 0.5;
+  const axisZ = (Math.random() - 0.5) * 0.3;
+  const rotAxis = new THREE.Vector3(axisX, axisY, axisZ).normalize();
+  const totalRotations = 3 + Math.random();
+  const totalAngle = totalRotations * Math.PI * 2;
+
+  let startTime = null;
+  let settled = false;
+
+  function animate(ts) {
+    stage._animId = requestAnimationFrame(animate);
+    if (!startTime) startTime = ts;
+    const elapsed = ts - startTime;
+    const t = Math.min(elapsed / rollDuration, 1);
+
+    // Easing: exponential deceleration
+    let progress = 1 - Math.exp(-4.5 * t);
+
+    // Bounce at the end
+    if (t > 0.88) {
+      const bt = (t - 0.88) / 0.12;
+      const bounce = Math.sin(bt * Math.PI) * 0.04 * (1 - bt);
+      progress += bounce;
+    }
+
+    const angle = progress * totalAngle;
+    mesh.setRotationFromAxisAngle(rotAxis, angle);
+
+    // Pulse point light
+    ptLight.intensity = 1.8 + Math.sin(elapsed * 0.01) * 0.4;
+
+    renderer.render(scene, camera);
+
+    if (t >= 1 && !settled) {
+      settled = true;
+      cancelAnimationFrame(stage._animId);
+      stage._animId = null;
+      // Show number
+      const numEl = document.getElementById('dsNum');
+      if (numEl) {
+        numEl.textContent = finalNum;
+        numEl.style.opacity = '1';
+        numEl.style.transform = 'scale(1)';
+      }
+      stage.classList.add('ds-revealed');
+      playDiceSound('impact');
+      if (isCrit) {
+        playDiceSound('crit');
+        stage.classList.add('ds-holo');
+      }
+    }
+  }
+
+  stage._animId = requestAnimationFrame(animate);
+
+  window._dsTimer = setTimeout(hideDiceAnimation, displayDuration);
   if (isCrit || isFumble) stage.addEventListener('click', hideDiceAnimation, { once: true });
 }
 
 function hideDiceAnimation() {
-  if (_dsTimer) { clearTimeout(_dsTimer); _dsTimer = null; }
+  if (window._dsTimer) { clearTimeout(window._dsTimer); window._dsTimer = null; }
   const stage = document.getElementById('diceStage');
   if (!stage) return;
+  if (stage._animId) { cancelAnimationFrame(stage._animId); stage._animId = null; }
+  if (stage._renderer) { stage._renderer.dispose(); stage._renderer = null; }
   stage.style.opacity = '0';
   setTimeout(() => { stage.className = ''; stage.innerHTML = ''; stage.style.opacity = ''; }, 300);
 }
