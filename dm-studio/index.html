@@ -13390,6 +13390,7 @@ var CODEX_TYPE_ICONS = {
 };
 
 function renderLoreCodex() {
+  if (!CODEX_TYPE_ICONS) return;
   renderCodexSidebar();
   renderCodexGrid();
 }
