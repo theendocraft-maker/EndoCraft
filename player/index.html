@@ -2169,34 +2169,18 @@ async function showDiceAnimation(roll) {
   });
   world.addContactMaterial(contactMat);
 
-  const wallMat = new CANNON.Material('wall');
-  world.addContactMaterial(new CANNON.ContactMaterial(wallMat, dicePMat, { friction: 0.05, restitution: 0.50 }));
-  const wallDefs = [
-    { pos: [-2.8, 0, 0], axis: [0, 0, 1], angle:  Math.PI / 2 },
-    { pos: [ 2.8, 0, 0], axis: [0, 0, 1], angle: -Math.PI / 2 },
-    { pos: [0, 0, -2.4], axis: [1, 0, 0], angle: -Math.PI / 2 },
-    { pos: [0, 0,  2.4], axis: [1, 0, 0], angle:  Math.PI / 2 },
-  ];
-  wallDefs.forEach(({ pos, axis, angle }) => {
-    const wb = new CANNON.Body({ mass: 0, material: wallMat });
-    wb.addShape(new CANNON.Plane());
-    wb.position.set(pos[0], pos[1], pos[2]);
-    wb.quaternion.setFromAxisAngle(new CANNON.Vec3(axis[0], axis[1], axis[2]), angle);
-    world.addBody(wb);
-  });
-
   const diceBody = new CANNON.Body({
     mass: 1,
     material: dicePMat,
-    linearDamping: 0.18,
-    angularDamping: 0.25,
+    linearDamping: 0.20,
+    angularDamping: 0.28,
   });
   diceBody.addShape(new CANNON.Sphere(diceRadius));
 
-  const spawnX = (Math.random() - 0.5) * 1.6;
-  const spawnZ = (Math.random() - 0.5) * 0.8;
-  diceBody.position.set(spawnX, 6.5, spawnZ);
-  diceBody.velocity.set((Math.random()-0.5)*3.5, -1.0, (Math.random()-0.5)*2.0);
+  const spawnX = (Math.random() - 0.5) * 1.2;
+  const spawnZ = (Math.random() - 0.5) * 0.6;
+  diceBody.position.set(spawnX, 5.8, spawnZ);
+  diceBody.velocity.set((Math.random()-0.5)*2.5, -0.8, (Math.random()-0.5)*1.5);
   diceBody.angularVelocity.set(
     (Math.random()-0.5)*38, (Math.random()-0.5)*30, (Math.random()-0.5)*26
   );
