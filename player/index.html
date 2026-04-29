@@ -1529,11 +1529,10 @@ async function acceptInviteToken(token) {
     const inv = data.invite;
     _activeCampaignRoom = data.campaignRoom;
     localStorage.setItem('ec_active_campaign_room', _activeCampaignRoom);
-    // Char-Auswahl mappen — falls die Kampagne+Charakter via Cloud-Load schon da
-    if (inv.character_id) {
-      state.selectedCharId = inv.character_id;
-      saveState();
-    }
+    // Kampagne UND Char force-setzen damit der Invite die Auswahl gewinnt
+    state.selectedCampaignId = inv.campaign_id;
+    if (inv.character_id) state.selectedCharId = inv.character_id;
+    saveState();
     toast(`✓ Beigetreten: ${inv.character_name || 'Charakter'}`);
     // Live-Dice umstellen auf campaign_room
     if (typeof startLiveDiceListener === 'function') startLiveDiceListener();

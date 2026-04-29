@@ -3806,6 +3806,7 @@ body.gate-open{overflow:hidden;}
           <button class="session-mode-btn" data-mode="combat" onclick="setSessionMode('combat')" title="Combat-Tracker prominent, Statblöcke aufgeklappt, Story-Sections versteckt"><span class="ico">⚔️</span>Kampf</button>
         </div>
         <div class="session-actions">
+          <button class="btn-top" onclick="openEncounterBuilder()" title="Encounter Builder · AI-generierte balanced Encounters mit SRD-Statblöcken">⚔️ Encounter</button>
           <button class="btn-top btn-next-turn" id="btnNextTurn" onclick="nextTurn()" title="Keyboard: Space" style="display:none;">
             <span class="ico">▸</span><span>Nächster Zug</span><span class="kbd-hint">Space</span>
           </button>
@@ -6630,6 +6631,247 @@ function openRollRequestModal() {
 
 function closeRollRequestModal() {
   document.getElementById('rollRequestModal')?.remove();
+}
+
+// ═══════════ ENCOUNTER BUILDER ═══════════
+let _encounterBuilderState = { results: null, loading: false };
+
+function openEncounterBuilder() {
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  const pcs = (state.characters || []).filter(c => c.type === 'pc');
+  const avgLevel = pcs.length ? Math.round(pcs.reduce((s, c) => s + (parseInt(c.level) || 1), 0) / pcs.length) : 5;
+
+  document.getElementById('encounterBuilderModal')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'encounterBuilderModal';
+  modal.className = 'srd-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="closeEncounterBuilder()"></div>
+    <div class="srd-modal-inner" style="max-width:900px;max-height:90vh;">
+      <div class="srd-modal-head">
+        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">⚔️ Encounter Builder</h3>
+        <button onclick="closeEncounterBuilder()">✕</button>
+      </div>
+      <div class="srd-modal-body" style="padding:18px 22px 22px;overflow-y:auto;">
+
+        <div id="ebForm">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+            <div>
+              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">PARTY-GRÖSSE</label>
+              <input id="ebSize" type="number" min="1" max="10" value="${pcs.length || 4}" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;font-weight:700;" />
+            </div>
+            <div>
+              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">⌀ LEVEL</label>
+              <input id="ebLevel" type="number" min="1" max="20" value="${avgLevel}" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;font-weight:700;" />
+            </div>
+            <div>
+              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">DIFFICULTY</label>
+              <select id="ebDiff" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+                <option value="deadly">Deadly</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">ANZAHL</label>
+              <select id="ebCount" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);">
+                <option value="1">1 Encounter</option>
+                <option value="2">2 Encounter</option>
+                <option value="3" selected>3 Encounter</option>
+                <option value="4">4 Encounter</option>
+              </select>
+            </div>
+          </div>
+
+          <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">THEMA / ENVIRONMENT (optional)</label>
+          <input id="ebTheme" type="text" maxlength="120" placeholder="z.B. 'Untoten im Sumpf', 'Goblin-Lager im Wald', 'Strahd-Cultisten im Schloss'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;margin-bottom:12px;" />
+
+          <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">ZUSATZ-KONTEXT (optional)</label>
+          <textarea id="ebContext" rows="2" placeholder="z.B. 'Boss-Encounter mit kleinen Adds', 'Stealth-Möglichkeit reinbauen', 'Party hat letzten Long-Rest verpasst'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);outline:none;resize:vertical;margin-bottom:14px;"></textarea>
+
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn-top" onclick="closeEncounterBuilder()">Abbrechen</button>
+            <button class="btn-top primary" id="ebGenerateBtn" onclick="generateEncounters()">⚡ Generieren</button>
+          </div>
+        </div>
+
+        <div id="ebResults" style="margin-top:18px;"></div>
+
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function closeEncounterBuilder() {
+  document.getElementById('encounterBuilderModal')?.remove();
+  _encounterBuilderState = { results: null, loading: false };
+}
+
+async function generateEncounters() {
+  const size = parseInt(document.getElementById('ebSize')?.value) || 4;
+  const level = parseInt(document.getElementById('ebLevel')?.value) || 5;
+  const diff = document.getElementById('ebDiff')?.value || 'medium';
+  const count = parseInt(document.getElementById('ebCount')?.value) || 3;
+  const theme = document.getElementById('ebTheme')?.value?.trim() || '';
+  const context = document.getElementById('ebContext')?.value?.trim() || '';
+
+  const btn = document.getElementById('ebGenerateBtn');
+  const results = document.getElementById('ebResults');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generiere…'; }
+  results.innerHTML = `
+    <div style="text-align:center;padding:40px 20px;">
+      <div class="spinner" style="margin:0 auto 14px;"></div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--text-dim);">KI baut ${count} balanced Encounter…</div>
+    </div>
+  `;
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/encounter/build`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ partySize: size, partyLevel: level, difficulty: diff, theme, additionalContext: context, count })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) throw new Error(data.error || 'Fehler bei der Generierung');
+    _encounterBuilderState.results = data;
+    renderEncounterResults();
+  } catch (e) {
+    results.innerHTML = `<div style="padding:24px;color:var(--crimson);font-family:'EB Garamond',serif;font-style:italic;text-align:center;">Fehler: ${escapeHtml(e.message)}</div>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '⚡ Neu generieren'; }
+  }
+}
+
+function renderEncounterResults() {
+  const host = document.getElementById('ebResults');
+  if (!host || !_encounterBuilderState.results) return;
+  const { encounters, meta } = _encounterBuilderState.results;
+  if (!encounters?.length) { host.innerHTML = '<div style="padding:20px;font-style:italic;color:var(--text-dim);">Keine Encounter generiert.</div>'; return; }
+  host.innerHTML = `
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:12px;font-weight:700;">${encounters.length} ENCOUNTER · BUDGET ${meta.xpBudget} XP · ${meta.difficulty.toUpperCase()}</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      ${encounters.map((e, i) => renderEncounterCard(e, i)).join('')}
+    </div>
+  `;
+}
+
+function renderEncounterCard(enc, idx) {
+  const monsters = (enc.monsters || []).map(m => `${m.count}× ${m.name} (CR ${m.cr})`).join(' · ');
+  return `
+    <div style="background:var(--surface-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;">
+      <div style="padding:14px 18px 12px;border-bottom:1px solid var(--border);background:linear-gradient(to bottom,#fff,var(--surface-2));">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--ink);font-weight:700;margin-bottom:4px;">${escapeHtml(enc.title || 'Encounter ' + (idx+1))}</div>
+            <div style="font-family:'EB Garamond',serif;font-size:13.5px;color:var(--text);font-style:italic;line-height:1.5;">${escapeHtml(enc.description || '')}</div>
+            <div style="font-size:11.5px;color:var(--text-dim);margin-top:6px;font-family:'JetBrains Mono',monospace;">${escapeHtml(monsters)}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--gold);font-weight:700;">${enc.adjustedXP || enc.totalXP || '—'} XP</div>
+            <div style="font-size:10px;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:1px;">adjusted</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:12px 18px;display:flex;flex-direction:column;gap:8px;">
+        ${(enc.monsters || []).map((m, mi) => `
+          <details style="border:1px solid var(--border);border-radius:7px;background:#fff;">
+            <summary style="padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;list-style:none;">
+              <span style="flex:1;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--ink);">${m.count}× ${escapeHtml(m.name)}</span>
+              <span style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">CR ${m.cr} · ${m.xp || '—'} XP</span>
+              <span style="font-size:10px;color:var(--accent);">▾ Statblock</span>
+            </summary>
+            <div style="padding:10px 14px 12px;border-top:1px dotted var(--border);">
+              ${m.tactics ? `<div style="margin-bottom:10px;padding:8px 12px;background:var(--accent-dim);border-left:3px solid var(--accent);border-radius:4px;font-size:13px;font-style:italic;line-height:1.5;color:var(--text);"><strong style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--accent);font-style:normal;">TAKTIK:</strong> ${escapeHtml(m.tactics)}</div>` : ''}
+              ${renderEncounterMonsterStats(m)}
+            </div>
+          </details>
+        `).join('')}
+      </div>
+      <div style="padding:10px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;gap:6px;justify-content:flex-end;">
+        <button class="btn-top" onclick="copyEncounterToClipboard(${idx})">📋 Kopieren</button>
+        <button class="btn-top primary" onclick="addEncounterToCombat(${idx})">⚔️ Direkt in Combat</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderEncounterMonsterStats(m) {
+  const sb = m.statblock || {};
+  const stats = sb.stats || {};
+  const statRow = ['str','dex','con','int','wis','cha'].map(s =>
+    `<div style="text-align:center;"><div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;color:var(--crimson);font-weight:700;">${s.toUpperCase()}</div><div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ink);">${stats[s] || '—'}</div><div style="font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">${stats[s] != null ? '(' + (Math.floor((stats[s]-10)/2) >= 0 ? '+' : '') + Math.floor((stats[s]-10)/2) + ')' : ''}</div></div>`
+  ).join('');
+  const actions = [...(m.traits || []).map(t => ({ ...t, _kind: 'Trait' })), ...(m.actions || []).map(a => ({ ...a, _kind: 'Action' }))];
+  return `
+    <div style="font-size:12.5px;color:var(--text);font-family:'EB Garamond',serif;line-height:1.5;">
+      <div><strong>AC:</strong> ${sb.ac || '—'} · <strong>HP:</strong> ${sb.hp || '—'}${sb.hitDice ? ' (' + escapeHtml(sb.hitDice) + ')' : ''} · <strong>Speed:</strong> ${escapeHtml(sb.speed || '30 ft.')}</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;background:var(--surface-2);padding:8px;border-radius:5px;margin:8px 0;">${statRow}</div>
+      ${sb.savingThrows ? `<div><strong>Saving Throws:</strong> ${escapeHtml(sb.savingThrows)}</div>` : ''}
+      ${sb.skills ? `<div><strong>Skills:</strong> ${escapeHtml(sb.skills)}</div>` : ''}
+      ${sb.senses ? `<div><strong>Senses:</strong> ${escapeHtml(sb.senses)}</div>` : ''}
+      ${sb.languages ? `<div><strong>Languages:</strong> ${escapeHtml(sb.languages)}</div>` : ''}
+      ${actions.length ? `<div style="margin-top:8px;">${actions.map(a => `<div style="margin-bottom:5px;"><strong style="font-style:italic;">${escapeHtml(a.name)}.</strong> ${escapeHtml(a.text || '')}</div>`).join('')}</div>` : ''}
+    </div>
+  `;
+}
+
+function copyEncounterToClipboard(idx) {
+  const enc = _encounterBuilderState.results?.encounters?.[idx];
+  if (!enc) return;
+  const text = `# ${enc.title}\n\n${enc.description}\n\nXP: ${enc.adjustedXP || enc.totalXP}\n\n` +
+    (enc.monsters || []).map(m =>
+      `## ${m.count}× ${m.name} (CR ${m.cr}, ${m.xp} XP)\n` +
+      (m.tactics ? `Taktik: ${m.tactics}\n` : '') +
+      `AC ${m.statblock?.ac}, HP ${m.statblock?.hp}\n` +
+      ((m.actions || []).map(a => `${a.name}: ${a.text}`).join('\n'))
+    ).join('\n\n');
+  navigator.clipboard?.writeText(text).then(() => toast('Encounter kopiert')).catch(() => toast('Copy fehlgeschlagen', true));
+}
+
+function addEncounterToCombat(idx) {
+  const enc = _encounterBuilderState.results?.encounters?.[idx];
+  if (!enc) return;
+  if (!Array.isArray(state.characters)) state.characters = [];
+  let added = 0;
+  (enc.monsters || []).forEach(m => {
+    for (let i = 0; i < (m.count || 1); i++) {
+      const id = 'c_enc_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+      state.characters.push({
+        id,
+        type: 'npc',
+        name: (m.count > 1 ? m.name + ' ' + (i + 1) : m.name),
+        size: m.statblock?.size || 'Medium',
+        creatureType: m.statblock?.creatureType || '',
+        alignment: m.statblock?.alignment || '',
+        cr: m.cr || '',
+        xp: m.xp || 0,
+        ac: m.statblock?.ac || 10,
+        acType: '',
+        hp: m.statblock?.hp || 10,
+        maxHp: m.statblock?.hp || 10,
+        hitDice: m.statblock?.hitDice || '',
+        speed: m.statblock?.speed || '30 ft.',
+        stats: m.statblock?.stats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+        savingThrows: m.statblock?.savingThrows || '',
+        skills: m.statblock?.skills || '',
+        senses: m.statblock?.senses || '',
+        languages: m.statblock?.languages || '',
+        traits: m.traits || [],
+        actions: m.actions || [],
+        bonusActions: [],
+        reactions: [],
+        legendaryActions: [],
+        notes: m.tactics ? 'TAKTIK: ' + m.tactics : ''
+      });
+      added++;
+    }
+  });
+  campaign().updatedAt = Date.now();
+  saveState();
+  closeEncounterBuilder();
+  toast(`✓ ${added} Combatants in Charaktere geladen — wechsel zu Kampf-Modus für Initiative`);
+  if (state.currentView !== 'session') switchView('session');
 }
 
 // ═══════════ PARTY-MANAGER (DM Studio) ═══════════
