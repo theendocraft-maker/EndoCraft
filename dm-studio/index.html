@@ -13421,24 +13421,24 @@ function _createDiceEmissiveTexture(isCrit, isFumble) {
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const ctx = cv.getContext('2d');
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, W, H);
-  // Realistic painted inlay colors — cream for normal, gold for crit, red for fumble
-  const numCol  = isCrit ? '#ffe9a8' : isFumble ? '#ff9a9a' : '#e8dfd0';
-  const glowCol = isCrit ? '#996600' : isFumble ? '#aa1100' : '#776655';
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const numCol = isCrit ? '#f5d070' : isFumble ? '#e87070' : '#e8e0d0';
+  const glowCol = isCrit ? '#c87800' : isFumble ? '#cc2200' : '#9090cc';
   for (let n = 1; n <= 20; n++) {
     const col = (n - 1) % cols, row = Math.floor((n - 1) / cols);
     const cx = col * cw + cw * 0.5;
-    const cy = row * ch + ch * 0.64;
-    const fontSize = n >= 10 ? ch * 0.50 : ch * 0.60;
+    const cy = row * ch + ch * 0.62;
+    const fontSize = n >= 10 ? ch * 0.52 : ch * 0.62;
     ctx.font = `900 ${Math.round(fontSize)}px "Cinzel","Georgia",serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowColor = glowCol;
-    ctx.shadowBlur = 6;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = glowCol; ctx.shadowBlur = 10;
     ctx.fillStyle = numCol;
     ctx.fillText(String(n), cx, cy);
-    ctx.shadowBlur = 0;
+    ctx.shadowBlur = 3;
+    ctx.fillStyle = '#ffffff';
+    ctx.globalAlpha = 0.55;
+    ctx.fillText(String(n), cx, cy);
+    ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
   }
   return new THREE.CanvasTexture(cv);
 }
@@ -13483,10 +13483,6 @@ async function showDiceAnimation(roll) {
         <div id="dsTag" class="ds-tag" style="opacity:0;transform:translateY(10px);transition:opacity .45s ease .25s,transform .45s ease .25s;">${tag}</div>
       </div>
       <div class="ds-dismiss">Klicken zum Schließen</div>`;
-    if (isFumble) {
-      document.body.classList.add('ds-screen-shake');
-      setTimeout(() => document.body.classList.remove('ds-screen-shake'), 600);
-    }
   } else {
     stage.innerHTML = `
       <div class="ds-mini-wrap" style="flex-direction:column;gap:6px;padding:10px 12px;min-width:${cvW+8}px;">
@@ -13519,7 +13515,7 @@ async function showDiceAnimation(roll) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.45;
+  renderer.toneMappingExposure = 2.1;
   const bgCol = isCrit ? 0x120900 : isFumble ? 0x0f0000 : 0x0c0306;
   renderer.setClearColor(bgCol, 1);
   stage._renderer = renderer;
@@ -13529,9 +13525,9 @@ async function showDiceAnimation(roll) {
   scene.background = new THREE.Color(bgCol);
   scene.fog = new THREE.FogExp2(bgCol, 0.30);
 
-  const camera = new THREE.PerspectiveCamera(50, cvW / cvH, 0.1, 50);
-  const camDist = isFullscreen ? 1.15 : 1.0;
-  camera.position.set(0, 3.8 * camDist, 2.2 * camDist);
+  const camera = new THREE.PerspectiveCamera(44, cvW / cvH, 0.1, 50);
+  const camDist = isFullscreen ? 1.10 : 1.0;
+  camera.position.set(0, 3.2 * camDist, 2.0 * camDist);
   camera.lookAt(0, 0, 0);
 
   // Hand-crafted warm-room IBL — gives clearcoat something real to reflect
@@ -13564,12 +13560,12 @@ async function showDiceAnimation(roll) {
     envTex.dispose(); pmrem.dispose();
   })();
 
-  // ── LIGHTS — warm tavern/lamp feel ──
-  scene.add(new THREE.AmbientLight(0xfff0d8, 0.72));
+  // ── LIGHTS — focused key light for clear die form ──
+  scene.add(new THREE.AmbientLight(0xfff8f0, 0.55));
 
-  // Main overhead lamp — warm tungsten
-  const lampLight = new THREE.DirectionalLight(0xffd890, 3.8);
-  lampLight.position.set(1.5, 7, 2.5);
+  // Strong key light — creates clear face highlights and crisp shadows
+  const lampLight = new THREE.DirectionalLight(0xfff5e0, 5.5);
+  lampLight.position.set(2, 8, 3);
   lampLight.castShadow = true;
   lampLight.shadow.mapSize.set(2048, 2048);
   lampLight.shadow.camera.near = 1;
@@ -13717,8 +13713,8 @@ async function showDiceAnimation(roll) {
   }
   uvAttr.needsUpdate = true;
 
-  // Rich deep body colors — dark but with visible color depth
-  const bodyColor = isCrit ? 0x2e1a02 : isFumble ? 0x200202 : 0x14113a;
+  // Sichtbare, reiche Körperfarbe — wie echte Resin-Würfel
+  const bodyColor = isCrit ? 0x7a4800 : isFumble ? 0x780808 : 0x243090;
   const diceEmissiveTex = _createDiceEmissiveTexture(isCrit, isFumble);
   // Attenuation: light that travels through the resin picks up this color, creating
   // the characteristic "deep glow from within" of premium resin dice
@@ -13730,18 +13726,14 @@ async function showDiceAnimation(roll) {
 
   const diceMat = new THREE.MeshPhysicalMaterial({
     color: bodyColor,
-    roughness: 0.04,
+    roughness: 0.10,
     metalness: 0.0,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.02,
-    transmission: isCrit ? 0.05 : isFumble ? 0.05 : 0.08,
-    thickness: 2.4,
-    ior: 1.58,
-    attenuationColor: attCol,
-    attenuationDistance: 0.55,
+    clearcoat: 0.95,
+    clearcoatRoughness: 0.10,
+    transmission: 0.0,
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
-    emissiveIntensity: isCrit ? 0.80 : isFumble ? 0.80 : 0.70,
+    emissiveIntensity: isCrit ? 0.75 : isFumble ? 0.70 : 0.60,
   });
 
   const diceMesh = new THREE.Mesh(diceGeo, diceMat);
@@ -13768,16 +13760,11 @@ async function showDiceAnimation(roll) {
       if (d.bounce) {
         playDiceSound('bounce');
         if (isCrit && particles) { particles.visible = true; particlesActive = true; }
-        if (d.vel > 2.5) {
-          document.body.classList.remove('ds-bounce-shake');
-          void document.body.offsetWidth;
-          document.body.classList.add('ds-bounce-shake');
-          setTimeout(() => document.body.classList.remove('ds-bounce-shake'), 180);
-        }
       }
     } else if (d.t === 'settled') {
       _diceState = d;
       physicsActive = false;
+      _camLookTarget.set(d.x, 0, d.z);
       let actualNum = finalNum;
       if (_d20FaceNormals && window.THREE) {
         const _faceNums = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
@@ -13841,9 +13828,31 @@ async function showDiceAnimation(roll) {
     scene.add(particles);
   }
 
+  // ── BLOOM PIPELINE SETUP ──
+  const _PR = Math.min(window.devicePixelRatio || 1, 3);
+  const _rtW = Math.round(cvW * _PR), _rtH = Math.round(cvH * _PR);
+  const _bW = Math.max(1, _rtW >> 1), _bH = Math.max(1, _rtH >> 1);
+  const _mainRT = new THREE.WebGLRenderTarget(_rtW, _rtH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+  const _bloomA = new THREE.WebGLRenderTarget(_bW, _bH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false });
+  const _bloomB = new THREE.WebGLRenderTarget(_bW, _bH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false });
+  const _bVert = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}';
+  const _threshM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, thr:{value:0.72} }, vertexShader:_bVert,
+    fragmentShader:'uniform sampler2D tDiffuse;uniform float thr;varying vec2 vUv;void main(){vec4 c=texture2D(tDiffuse,vUv);float b=max(c.r,max(c.g,c.b));gl_FragColor=c*smoothstep(thr,thr+0.20,b)*1.4;}' });
+  const _hBlurM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, px:{value:1.0/_bW} }, vertexShader:_bVert,
+    fragmentShader:'uniform sampler2D tDiffuse;uniform float px;varying vec2 vUv;void main(){vec4 c=vec4(0.);c+=texture2D(tDiffuse,vUv+vec2(-4.*px,0))*.0625;c+=texture2D(tDiffuse,vUv+vec2(-3.*px,0))*.0938;c+=texture2D(tDiffuse,vUv+vec2(-2.*px,0))*.125;c+=texture2D(tDiffuse,vUv+vec2(-1.*px,0))*.1875;c+=texture2D(tDiffuse,vUv)*.25;c+=texture2D(tDiffuse,vUv+vec2(1.*px,0))*.1875;c+=texture2D(tDiffuse,vUv+vec2(2.*px,0))*.125;c+=texture2D(tDiffuse,vUv+vec2(3.*px,0))*.0938;c+=texture2D(tDiffuse,vUv+vec2(4.*px,0))*.0625;gl_FragColor=c;}' });
+  const _vBlurM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, py:{value:1.0/_bH} }, vertexShader:_bVert,
+    fragmentShader:'uniform sampler2D tDiffuse;uniform float py;varying vec2 vUv;void main(){vec4 c=vec4(0.);c+=texture2D(tDiffuse,vUv+vec2(0,-4.*py))*.0625;c+=texture2D(tDiffuse,vUv+vec2(0,-3.*py))*.0938;c+=texture2D(tDiffuse,vUv+vec2(0,-2.*py))*.125;c+=texture2D(tDiffuse,vUv+vec2(0,-1.*py))*.1875;c+=texture2D(tDiffuse,vUv)*.25;c+=texture2D(tDiffuse,vUv+vec2(0,1.*py))*.1875;c+=texture2D(tDiffuse,vUv+vec2(0,2.*py))*.125;c+=texture2D(tDiffuse,vUv+vec2(0,3.*py))*.0938;c+=texture2D(tDiffuse,vUv+vec2(0,4.*py))*.0625;gl_FragColor=c;}' });
+  const _compM = new THREE.ShaderMaterial({ uniforms:{ tBase:{value:null}, tBloom:{value:null}, str:{value: isCrit?0.30:isFumble?0.25:0.18} }, vertexShader:_bVert,
+    fragmentShader:'uniform sampler2D tBase;uniform sampler2D tBloom;uniform float str;varying vec2 vUv;void main(){vec4 b=texture2D(tBase,vUv);vec4 bl=texture2D(tBloom,vUv);gl_FragColor=vec4(b.rgb+bl.rgb*str,1.0);}' });
+  const _orthoBC = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+  const _qMesh = new THREE.Mesh(new THREE.PlaneGeometry(2,2), _threshM);
+  const _orthoS = new THREE.Scene(); _orthoS.add(_qMesh);
+
   // ── ANIMATION LOOP ──
   let physicsActive = true;
   let particlesActive = false;
+  const _camLookAt = new THREE.Vector3(0, 0, 0);
+  const _camLookTarget = new THREE.Vector3(0, 0, 0);
   let lastTs = null;
 
   function frame(ts) {
@@ -13851,6 +13860,9 @@ async function showDiceAnimation(roll) {
     if (!lastTs) lastTs = ts;
     const rawDt = Math.min((ts - lastTs)/1000, 0.05);
     lastTs = ts;
+
+    _camLookAt.lerp(_camLookTarget, rawDt * 3.5);
+    camera.lookAt(_camLookAt);
 
     if (physicsActive) {
       diceMesh.position.set(_diceState.x, _diceState.y, _diceState.z);
@@ -13879,7 +13891,15 @@ async function showDiceAnimation(roll) {
       if (!anyAlive) { particlesActive = false; particles.visible = false; }
     }
 
-    renderer.render(scene, camera);
+    renderer.setRenderTarget(_mainRT); renderer.render(scene, camera);
+    _qMesh.material=_threshM; _threshM.uniforms.tDiffuse.value=_mainRT.texture;
+    renderer.setRenderTarget(_bloomA); renderer.render(_orthoS,_orthoBC);
+    _qMesh.material=_hBlurM; _hBlurM.uniforms.tDiffuse.value=_bloomA.texture;
+    renderer.setRenderTarget(_bloomB); renderer.render(_orthoS,_orthoBC);
+    _qMesh.material=_vBlurM; _vBlurM.uniforms.tDiffuse.value=_bloomB.texture;
+    renderer.setRenderTarget(_bloomA); renderer.render(_orthoS,_orthoBC);
+    _qMesh.material=_compM; _compM.uniforms.tBase.value=_mainRT.texture; _compM.uniforms.tBloom.value=_bloomA.texture;
+    renderer.setRenderTarget(null); renderer.render(_orthoS,_orthoBC);
   }
 
   stage._animId = requestAnimationFrame(frame);
