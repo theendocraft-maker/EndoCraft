@@ -82,9 +82,9 @@ function tick() {
     bounce = true; lastBounceTs = now;
   }
 
-  if (grounded && vel < 0.07 && angVel < 0.10) {
+  if (grounded && vel < 0.04 && angVel < 0.05) {
     settleFrames++;
-    if (settleFrames >= 18) {
+    if (settleFrames >= 35) {
       settled = true;
       clearInterval(tickId);
       self.postMessage({ t: 'settled', x: p.x, y: p.y, z: p.z, qx: q.x, qy: q.y, qz: q.z, qw: q.w });
