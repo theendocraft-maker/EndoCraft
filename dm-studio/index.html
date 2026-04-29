@@ -13457,8 +13457,11 @@ async function generateLoreCodex() {
     const c    = campaign();
     const pcs  = state.characters.filter(ch => ch.type === 'pc');
     const npcs = state.characters.filter(ch => ch.type === 'npc');
-    const locs = c.locations || [];
-    const sess = c.sessions  || [];
+    const sess = c.sessions || [];
+    // c.locations is a keyed object {id: {name, meta, dmNote, ...}}, flatten to array
+    const locs = c.locations
+      ? Object.entries(c.locations).map(([id, l]) => ({ name: l.name || id, description: (l.meta || l.dmNote || '').slice(0, 300) }))
+      : [];
 
     const body = {
       campaign:   { name: c.name, description: c.description || '' },
