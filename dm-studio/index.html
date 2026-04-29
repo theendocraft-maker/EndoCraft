@@ -13299,17 +13299,11 @@ var _d20FaceNormals = null;
 
 function loadDiceLibraries() {
   return new Promise((resolve, reject) => {
-    if (window.THREE && window.CANNON) { resolve(); return; }
-    const loadScript = (src, key) => new Promise((res, rej) => {
-      if (window[key]) { res(); return; }
-      const s = document.createElement('script');
-      s.src = src;
-      s.onload = res; s.onerror = rej;
-      document.head.appendChild(s);
-    });
-    loadScript('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js', 'THREE')
-      .then(() => loadScript('https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js', 'CANNON'))
-      .then(resolve).catch(reject);
+    if (window.THREE) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
   });
 }
 
@@ -13450,8 +13444,9 @@ async function showDiceAnimation(roll) {
   if (window._dsTimer) { clearTimeout(window._dsTimer); window._dsTimer = null; }
   const stage = document.getElementById('diceStage');
   if (!stage) return;
-  if (stage._animId)   { cancelAnimationFrame(stage._animId);   stage._animId   = null; }
-  if (stage._renderer) { try{stage._renderer.dispose();}catch(e){} stage._renderer = null; }
+  if (stage._animId)    { cancelAnimationFrame(stage._animId);   stage._animId   = null; }
+  if (stage._renderer)  { try{stage._renderer.dispose();}catch(e){} stage._renderer = null; }
+  if (stage._diceWorker){ try{stage._diceWorker.postMessage({t:'stop'}); stage._diceWorker.terminate();}catch(e){} stage._diceWorker = null; }
 
   const mode = isCrit ? 'ds-crit' : isFumble ? 'ds-fumble' : 'ds-normal';
   stage.className = '';
@@ -13492,7 +13487,7 @@ async function showDiceAnimation(roll) {
   playDiceSound('roll');
 
   let loaded = false;
-  try { await loadDiceLibraries(); loaded = !!(window.THREE && window.CANNON); } catch(e) {}
+  try { await loadDiceLibraries(); loaded = !!window.THREE; } catch(e) {}
 
   const canvas = document.getElementById('dsCanvas');
   if (!loaded || !canvas) {
@@ -13500,16 +13495,14 @@ async function showDiceAnimation(roll) {
     return;
   }
 
-  const THREE  = window.THREE;
-  const CANNON = window.CANNON;
+  const THREE = window.THREE;
   _computeD20FaceNormals();
 
   // ── RENDERER ──
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setSize(cvW, cvH, false);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled = false;
   renderer.toneMapping       = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
   stage._renderer = renderer;
@@ -13536,11 +13529,6 @@ async function showDiceAnimation(roll) {
 
   const sun = new THREE.DirectionalLight(0xfff5e8, 1.1);
   sun.position.set(4, 9, 5);
-  sun.castShadow = true;
-  sun.shadow.mapSize.setScalar(1024);
-  sun.shadow.camera.near = 0.5;
-  sun.shadow.camera.far  = 25;
-  sun.shadow.radius = 4;
   scene.add(sun);
 
   const accentColor = isCrit ? 0xe8b86d : isFumble ? 0xff2222 : 0x5566ff;
@@ -13573,7 +13561,6 @@ async function showDiceAnimation(roll) {
   const tableMat = new THREE.MeshStandardMaterial({ map: feltTex, roughness: 0.95, metalness: 0.0 });
   const table = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), tableMat);
   table.rotation.x = -Math.PI / 2;
-  table.receiveShadow = true;
   scene.add(table);
 
   // Table glow ring
@@ -13611,20 +13598,16 @@ async function showDiceAnimation(roll) {
   const bodyColor = isCrit ? 0x100800 : isFumble ? 0x100000 : 0x060420;
   const diceEmissiveTex = _createDiceEmissiveTexture(isCrit, isFumble);
 
-  const diceMat = new THREE.MeshPhysicalMaterial({
+  const diceMat = new THREE.MeshPhongMaterial({
     color: bodyColor,
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
     emissiveIntensity: 1.10,
-    metalness: 0.05,
-    roughness: 0.05,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.03,
-    envMapIntensity: 0.6,
+    shininess: 140,
+    specular: new THREE.Color(0.45, 0.45, 0.55),
   });
 
   const diceMesh = new THREE.Mesh(diceGeo, diceMat);
-  diceMesh.castShadow = true;
   scene.add(diceMesh);
 
   // Edges — use original indexed geo for clean de-duplicated edges
@@ -13644,40 +13627,44 @@ async function showDiceAnimation(roll) {
     diceMesh.add(dot);
   }
 
-  // ── CANNON PHYSICS ──
-  const world = new CANNON.World();
-  world.gravity.set(0, -24, 0);
-  world.broadphase = new CANNON.NaiveBroadphase();
-  world.solver.iterations = 20;
-
-  const groundMat = new CANNON.Material('ground');
-  const groundBody = new CANNON.Body({ mass: 0, material: groundMat });
-  groundBody.addShape(new CANNON.Plane());
-  groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), -Math.PI/2);
-  world.addBody(groundBody);
-
-  const dicePMat = new CANNON.Material('dice');
-  const contactMat = new CANNON.ContactMaterial(groundMat, dicePMat, {
-    friction: 0.32, restitution: 0.42
-  });
-  world.addContactMaterial(contactMat);
-
-  const diceBody = new CANNON.Body({
-    mass: 1,
-    material: dicePMat,
-    linearDamping: 0.20,
-    angularDamping: 0.28,
-  });
-  diceBody.addShape(new CANNON.Sphere(diceRadius));
-
+  // ── PHYSICS WORKER ──
   const spawnX = (Math.random() - 0.5) * 0.5;
   const spawnZ = (Math.random() - 0.5) * 0.3;
-  diceBody.position.set(spawnX, 5.5, spawnZ);
-  diceBody.velocity.set((Math.random()-0.5)*0.8, -0.4, (Math.random()-0.5)*0.6);
-  diceBody.angularVelocity.set(
-    (Math.random()-0.5)*40, (Math.random()-0.5)*32, (Math.random()-0.5)*28
-  );
-  world.addBody(diceBody);
+  let _diceState = { x: spawnX, y: 5.5, z: spawnZ, qx: 0, qy: 0, qz: 0, qw: 1 };
+
+  const diceWorker = new Worker('/dice-worker.js');
+  diceWorker.onmessage = function(e) {
+    const d = e.data;
+    if (d.t === 'f') {
+      _diceState = d;
+      if (d.bounce) {
+        playDiceSound('bounce');
+        if (isCrit && particles) { particles.visible = true; particlesActive = true; }
+      }
+    } else if (d.t === 'settled') {
+      _diceState = d;
+      physicsActive = false;
+      if (_d20FaceNormals) {
+        const FACE_NUMS_LOCAL = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
+        const faceIdx = FACE_NUMS_LOCAL.indexOf(finalNum);
+        const fn = _d20FaceNormals[faceIdx >= 0 ? faceIdx : 0];
+        targetQuat = new THREE.Quaternion().setFromUnitVectors(fn, new THREE.Vector3(0, 1, 0));
+      } else {
+        targetQuat = new THREE.Quaternion();
+      }
+      snapPhase = true;
+      playDiceSound('settle');
+      if (isCrit)   playDiceSound('crit');
+      if (isFumble) playDiceSound('fumble');
+    }
+  };
+  diceWorker.postMessage({
+    t: 'init', r: diceRadius,
+    sx: spawnX, sz: spawnZ,
+    vx: (Math.random()-0.5)*0.8, vy: -0.4, vz: (Math.random()-0.5)*0.6,
+    avx: (Math.random()-0.5)*40, avy: (Math.random()-0.5)*32, avz: (Math.random()-0.5)*28
+  });
+  stage._diceWorker = diceWorker;
 
   // ── PARTICLES (crit only) ──
   let particles = null;
@@ -13688,9 +13675,9 @@ async function showDiceAnimation(roll) {
     const pPos = new Float32Array(N * 3);
     particleVelocities = [];
     for (let i = 0; i < N; i++) {
-      pPos[i*3]   = diceBody.position.x;
+      pPos[i*3]   = spawnX;
       pPos[i*3+1] = 0.05;
-      pPos[i*3+2] = diceBody.position.z;
+      pPos[i*3+2] = spawnZ;
       particleVelocities.push({
         x: (Math.random()-0.5)*5,
         y: Math.random()*7 + 2,
@@ -13710,15 +13697,11 @@ async function showDiceAnimation(roll) {
   }
 
   // ── ANIMATION LOOP ──
-  let settleFrames = 0;
   let physicsActive = true;
   let snapPhase = false, snapProgress = 0;
   let targetQuat = null;
   let particlesActive = false;
-  let lastBounceTs = -999;
-  let slowMo = false;
   let lastTs = null;
-  const fixedStep = 1/60;
 
   function frame(ts) {
     stage._animId = requestAnimationFrame(frame);
@@ -13727,60 +13710,11 @@ async function showDiceAnimation(roll) {
     lastTs = ts;
 
     if (physicsActive) {
-      // Nat 20 slow-motion: engage when die is close to settling
-      if (isCrit && !slowMo) {
-        const sv = diceBody.velocity.length();
-        const sw = diceBody.angularVelocity.length();
-        if (diceBody.position.y < diceRadius + 1.0 && sv < 3.5 && sw < 5.0 && ts > 600) slowMo = true;
-      }
-      const dt = slowMo ? rawDt * 0.22 : rawDt;
-
-      world.step(fixedStep, dt, 4);
-      diceMesh.position.set(diceBody.position.x, diceBody.position.y, diceBody.position.z);
-      diceMesh.quaternion.set(diceBody.quaternion.x, diceBody.quaternion.y, diceBody.quaternion.z, diceBody.quaternion.w);
-
-      // Key light tracks die position
-      keyLight.position.set(
-        diceBody.position.x - 1.5,
-        diceBody.position.y + 3.5,
-        diceBody.position.z + 1.5
-      );
+      diceMesh.position.set(_diceState.x, _diceState.y, _diceState.z);
+      diceMesh.quaternion.set(_diceState.qx, _diceState.qy, _diceState.qz, _diceState.qw);
+      keyLight.position.set(_diceState.x - 1.5, _diceState.y + 3.5, _diceState.z + 1.5);
       keyLight.intensity = 4.5 + Math.sin(ts * 0.008) * 0.8;
-      fillLight.position.set(diceBody.position.x, -0.3, diceBody.position.z);
-
-      // Bounce sound on each significant table impact
-      const vel = diceBody.velocity.length();
-      if (diceBody.position.y < diceRadius + 0.22 && vel > 1.2 && ts - lastBounceTs > 180) {
-        lastBounceTs = ts;
-        playDiceSound('bounce');
-        if (isCrit && particles) { particles.visible = true; particlesActive = true; }
-      }
-
-      // Settle check
-      const w = diceBody.angularVelocity.length();
-      const grounded = diceBody.position.y < diceRadius + 0.25;
-      if (grounded && vel < 0.07 && w < 0.10) {
-        settleFrames++;
-        if (settleFrames >= 20) {
-          physicsActive = false;
-          diceBody.type = CANNON.Body.STATIC;
-          if (_d20FaceNormals) {
-            // Find which face normal is closest to up — use FACE_NUMS to find face for finalNum
-            const FACE_NUMS_LOCAL = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
-            const faceIdx = FACE_NUMS_LOCAL.indexOf(finalNum);
-            const fn = _d20FaceNormals[faceIdx >= 0 ? faceIdx : 0];
-            targetQuat = new THREE.Quaternion().setFromUnitVectors(fn, new THREE.Vector3(0, 1, 0));
-          } else {
-            targetQuat = new THREE.Quaternion();
-          }
-          snapPhase = true;
-          playDiceSound('settle');
-          if (isCrit)   playDiceSound('crit');
-          if (isFumble) playDiceSound('fumble');
-        }
-      } else if (grounded) {
-        settleFrames = 0;
-      }
+      fillLight.position.set(_diceState.x, -0.3, _diceState.z);
     }
 
     // Snap phase: slerp to result face
@@ -13854,6 +13788,7 @@ function hideDiceAnimation() {
   if (!stage) return;
   if (stage._animId) { cancelAnimationFrame(stage._animId); stage._animId = null; }
   if (stage._renderer) { try{stage._renderer.dispose();}catch(e){} stage._renderer = null; }
+  if (stage._diceWorker) { try{stage._diceWorker.postMessage({t:'stop'}); stage._diceWorker.terminate();}catch(e){} stage._diceWorker = null; }
   stage.style.opacity = '0';
   setTimeout(() => { stage.className=''; stage.innerHTML=''; stage.style.opacity=''; }, 350);
 }
