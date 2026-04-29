@@ -13398,6 +13398,21 @@ function _computeD20FaceNormals() {
   geo.dispose();
 }
 
+// Maps Three.js IcosahedronGeometry face index → D20 face number
+const _D20_FACE_NUMS = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
+
+function _getTopFace(qx, qy, qz, qw) {
+  if (!_d20FaceNormals || !window.THREE) return null;
+  const q = new window.THREE.Quaternion(qx, qy, qz, qw);
+  const up = new window.THREE.Vector3(0, 1, 0);
+  let best = -Infinity, result = 1;
+  for (let i = 0; i < _d20FaceNormals.length; i++) {
+    const dot = _d20FaceNormals[i].clone().applyQuaternion(q).dot(up);
+    if (dot > best) { best = dot; result = _D20_FACE_NUMS[i]; }
+  }
+  return result;
+}
+
 function _createDiceEmissiveTexture(isCrit, isFumble) {
   const W = 1024, H = 512, cols = 5, rows = 4;
   const cw = W / cols, ch = H / rows;
@@ -13406,23 +13421,20 @@ function _createDiceEmissiveTexture(isCrit, isFumble) {
   const ctx = cv.getContext('2d');
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, W, H);
-  const numCol  = isCrit ? '#ffd580' : isFumble ? '#ff8888' : '#aabbff';
-  const glowCol = isCrit ? '#e08800' : isFumble ? '#cc0000' : '#3355dd';
+  // Realistic painted inlay colors — cream for normal, gold for crit, red for fumble
+  const numCol  = isCrit ? '#ffe9a8' : isFumble ? '#ff9a9a' : '#e8dfd0';
+  const glowCol = isCrit ? '#996600' : isFumble ? '#aa1100' : '#776655';
   for (let n = 1; n <= 20; n++) {
     const col = (n - 1) % cols, row = Math.floor((n - 1) / cols);
     const cx = col * cw + cw * 0.5;
-    // Draw at centroid of UV triangle (2/3 down the cell height)
     const cy = row * ch + ch * 0.64;
     const fontSize = n >= 10 ? ch * 0.50 : ch * 0.60;
     ctx.font = `900 ${Math.round(fontSize)}px "Cinzel","Georgia",serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.shadowColor = glowCol;
-    ctx.shadowBlur = 28;
+    ctx.shadowBlur = 6;
     ctx.fillStyle = numCol;
-    ctx.fillText(String(n), cx, cy);
-    // Double-pass for stronger glow
-    ctx.shadowBlur = 12;
     ctx.fillText(String(n), cx, cy);
     ctx.shadowBlur = 0;
   }
@@ -13499,24 +13511,29 @@ async function showDiceAnimation(roll) {
   _computeD20FaceNormals();
 
   // ── RENDERER ──
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(cvW, cvH, false);
-  renderer.shadowMap.enabled = false;
-  renderer.toneMapping       = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  const bgCol = isCrit ? 0x120900 : isFumble ? 0x0f0000 : 0x090b0d;
+  renderer.setClearColor(bgCol, 1);
   stage._renderer = renderer;
 
   // ── SCENE ──
   const scene = new THREE.Scene();
-  const fogColor = isCrit ? 0x110800 : isFumble ? 0x110000 : 0x060412;
-  scene.fog = new THREE.Fog(fogColor, 7, 20);
+  scene.background = new THREE.Color(bgCol);
+  scene.fog = new THREE.FogExp2(bgCol, 0.20);
 
   const camera = new THREE.PerspectiveCamera(38, cvW / cvH, 0.1, 50);
-  camera.position.set(0, 2.2, 2.8);
+  // Scale camera distance with canvas size — mini view closer, fullscreen further back
+  const camDist = isFullscreen ? 1.15 : 1.0;
+  camera.position.set(0, 2.2 * camDist, 2.8 * camDist);
   camera.lookAt(0, 0.4, 0);
 
-  // IBL
+  // IBL for reflections on clearcoat
   try {
     const pmrem = new THREE.PMREMGenerator(renderer);
     pmrem.compileEquirectangularShader();
@@ -13524,61 +13541,95 @@ async function showDiceAnimation(roll) {
     pmrem.dispose();
   } catch(e) {}
 
-  // ── LIGHTS ──
-  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  // ── LIGHTS — warm tavern/lamp feel ──
+  scene.add(new THREE.AmbientLight(0xfff0d8, 0.40));
 
-  const sun = new THREE.DirectionalLight(0xfff5e8, 1.1);
-  sun.position.set(4, 9, 5);
-  scene.add(sun);
+  // Main overhead lamp — warm tungsten
+  const lampLight = new THREE.DirectionalLight(0xffd890, 2.8);
+  lampLight.position.set(2, 9, 3);
+  lampLight.castShadow = true;
+  lampLight.shadow.mapSize.set(512, 512);
+  lampLight.shadow.camera.near = 1;
+  lampLight.shadow.camera.far = 20;
+  lampLight.shadow.camera.left = lampLight.shadow.camera.bottom = -4;
+  lampLight.shadow.camera.right = lampLight.shadow.camera.top = 4;
+  lampLight.shadow.bias = -0.002;
+  lampLight.shadow.radius = 4;
+  scene.add(lampLight);
 
-  const accentColor = isCrit ? 0xe8b86d : isFumble ? 0xff2222 : 0x5566ff;
-  const keyLight = new THREE.PointLight(accentColor, 5, 12);
-  keyLight.position.set(0, 4, 2); // will track die in frame loop
-  scene.add(keyLight);
-
-  const rimLight = new THREE.PointLight(isCrit ? 0xffa040 : isFumble ? 0xff0000 : 0x3344cc, 2.5, 8);
-  rimLight.position.set(2.5, 2, -2);
-  scene.add(rimLight);
-
-  // Upward bounce fill from table
-  const fillLight = new THREE.PointLight(accentColor, 0.8, 5);
-  fillLight.position.set(0, -0.5, 0);
+  // Cool fill from opposite side — moonlight/ambient
+  const fillLight = new THREE.DirectionalLight(0x8899bb, 0.45);
+  fillLight.position.set(-3, 4, -3);
   scene.add(fillLight);
 
-  // ── TABLE (felt texture) ──
-  const feltCv = document.createElement('canvas'); feltCv.width = 256; feltCv.height = 256;
+  // Warm bounce off table surface
+  const bounceLight = new THREE.PointLight(isCrit ? 0x6a3800 : isFumble ? 0x550000 : 0x1a2210, 1.2, 4);
+  bounceLight.position.set(0, 0.05, 0.3);
+  scene.add(bounceLight);
+
+  // Dramatic rim accent
+  const rimAccent = new THREE.PointLight(isCrit ? 0xff8800 : isFumble ? 0xff2000 : 0x2244aa, 2.5, 10);
+  rimAccent.position.set(-2.5, 2.5, -1.5);
+  scene.add(rimAccent);
+
+  // ── TABLE — dark felt dice tray ──
+  const feltSz = 512;
+  const feltCv = document.createElement('canvas'); feltCv.width = feltSz; feltCv.height = feltSz;
   const fctx = feltCv.getContext('2d');
-  const feltBase = isCrit ? '#180d00' : isFumble ? '#120303' : '#080618';
-  fctx.fillStyle = feltBase; fctx.fillRect(0, 0, 256, 256);
-  for (let i = 0; i < 6000; i++) {
-    const x = Math.random()*256, y = Math.random()*256, r = Math.random()*1.2 + 0.2;
-    fctx.beginPath(); fctx.arc(x, y, r, 0, Math.PI*2);
-    fctx.fillStyle = `rgba(255,255,255,${Math.random()*0.028})`; fctx.fill();
+  // Base: rich dark felt color — deep forest green / burgundy
+  const feltBase = isCrit ? '#2a1a06' : isFumble ? '#220808' : '#122018';
+  fctx.fillStyle = feltBase; fctx.fillRect(0, 0, feltSz, feltSz);
+  // Felt weave — horizontal fibers
+  for (let i = 0; i < 4500; i++) {
+    const x = Math.random()*feltSz, y = Math.random()*feltSz;
+    const len = Math.random()*14+3, a = (Math.random()-0.5)*0.35;
+    fctx.beginPath(); fctx.moveTo(x, y);
+    fctx.lineTo(x+Math.cos(a)*len, y+Math.sin(a)*len);
+    const b = 70+Math.random()*70;
+    fctx.strokeStyle = `rgba(${b},${b},${b},${0.07+Math.random()*0.11})`;
+    fctx.lineWidth = 0.7; fctx.stroke();
+  }
+  // Cross fibers
+  for (let i = 0; i < 2500; i++) {
+    const x = Math.random()*feltSz, y = Math.random()*feltSz;
+    const len = Math.random()*8+2, a = Math.PI/2+(Math.random()-0.5)*0.35;
+    fctx.beginPath(); fctx.moveTo(x, y);
+    fctx.lineTo(x+Math.cos(a)*len, y+Math.sin(a)*len);
+    const b = 50+Math.random()*50;
+    fctx.strokeStyle = `rgba(${b},${b},${b},${0.04+Math.random()*0.07})`;
+    fctx.lineWidth = 0.4; fctx.stroke();
   }
   const feltTex = new THREE.CanvasTexture(feltCv);
   feltTex.wrapS = feltTex.wrapT = THREE.RepeatWrapping;
-  feltTex.repeat.set(4, 4);
-  const tableMat = new THREE.MeshStandardMaterial({ map: feltTex, roughness: 0.95, metalness: 0.0 });
-  const table = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), tableMat);
-  table.rotation.x = -Math.PI / 2;
+  feltTex.repeat.set(5, 5);
+  const feltColor = isCrit ? 0x4a2a0a : isFumble ? 0x3e0a0a : 0x1e3820;
+  const tableMat = new THREE.MeshStandardMaterial({
+    map: feltTex, color: feltColor, roughness: 1.0, metalness: 0.0, envMapIntensity: 0
+  });
+  const table = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), tableMat);
+  table.rotation.x = -Math.PI/2;
+  table.receiveShadow = true;
   scene.add(table);
 
-  // Table glow ring
-  const ringMat = new THREE.MeshBasicMaterial({ color: accentColor, transparent: true, opacity: 0.06 });
-  const ring = new THREE.Mesh(new THREE.CircleGeometry(1.6, 64), ringMat);
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.y = 0.005;
-  scene.add(ring);
+  // Vignette ring — gentle darkening toward edges
+  const vigShape = new THREE.Shape();
+  vigShape.absarc(0, 0, 9, 0, Math.PI*2);
+  const vigHole = new THREE.Path(); vigHole.absarc(0, 0, 2.6, 0, Math.PI*2);
+  vigShape.holes.push(vigHole);
+  const vigMesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(vigShape, 64),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45 })
+  );
+  vigMesh.rotation.x = -Math.PI/2; vigMesh.position.y = 0.002; scene.add(vigMesh);
 
-  // ── D20 MESH with emissive face numbers ──
-  // FACE_NUMS: face index → number displayed on that face (plausible D20 layout)
+  // ── D20 MESH — polished dark resin ──
   const FACE_NUMS = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
   const diceRadius = 0.92;
   const rawGeo  = new THREE.IcosahedronGeometry(diceRadius, 0);
   const diceGeo = rawGeo.toNonIndexed();
   diceGeo.computeVertexNormals();
 
-  // Remap UVs: each face maps to its cell in the 5×4 emissive atlas
+  // Remap UVs: each face → cell in the 5×4 atlas
   const uvAttr = diceGeo.attributes.uv;
   const ATLAS_C = 5, ATLAS_R = 4;
   for (let f = 0; f < 20; f++) {
@@ -13588,44 +13639,38 @@ async function showDiceAnimation(roll) {
     const u0  = (col + pad) / ATLAS_C, u1 = (col + 1 - pad) / ATLAS_C;
     const v0  = 1 - (row + 1 - pad) / ATLAS_R, v1 = 1 - (row + pad) / ATLAS_R;
     const uc  = (u0 + u1) / 2;
-    // Triangle UVs: top-center, bottom-left, bottom-right
     uvAttr.setXY(f*3,     uc, v1);
     uvAttr.setXY(f*3 + 1, u0, v0);
     uvAttr.setXY(f*3 + 2, u1, v0);
   }
   uvAttr.needsUpdate = true;
 
-  const bodyColor = isCrit ? 0x100800 : isFumble ? 0x100000 : 0x060420;
+  // Deep midnight-blue body — like a classic Chessex die
+  const bodyColor = isCrit ? 0x120c02 : isFumble ? 0x110002 : 0x0d0a1e;
   const diceEmissiveTex = _createDiceEmissiveTexture(isCrit, isFumble);
 
-  const diceMat = new THREE.MeshPhongMaterial({
+  // MeshPhysicalMaterial: clearcoat gives the lacquered resin look
+  const diceMat = new THREE.MeshPhysicalMaterial({
     color: bodyColor,
+    roughness: 0.10,
+    metalness: 0.0,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.08,
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
-    emissiveIntensity: 1.10,
-    shininess: 25,
-    specular: new THREE.Color(0.12, 0.10, 0.08),
+    emissiveIntensity: isCrit ? 0.55 : isFumble ? 0.55 : 0.45,
   });
 
   const diceMesh = new THREE.Mesh(diceGeo, diceMat);
+  diceMesh.castShadow = true;
   scene.add(diceMesh);
 
-  // Edges — use original indexed geo for clean de-duplicated edges
+  // Subtle dark edges — sharp geometry lines like a real polished die
   const edgeMat = new THREE.LineBasicMaterial({
-    color: isCrit ? 0xe8b86d : isFumble ? 0xff4040 : 0x5577ee,
-    transparent: true, opacity: 0.92
+    color: isCrit ? 0xcc9933 : isFumble ? 0xcc2222 : 0x3344aa,
+    transparent: true, opacity: 0.55
   });
   diceMesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(rawGeo), edgeMat));
-
-  // Vertex glow dots — 12 unique vertices from indexed geo
-  const dotGeo = new THREE.SphereGeometry(0.038, 6, 6);
-  const dotMat = new THREE.MeshBasicMaterial({ color: isCrit ? 0xe8b86d : isFumble ? 0xff4444 : 0x6688ff });
-  const origPos = rawGeo.attributes.position;
-  for (let i = 0; i < origPos.count; i++) {
-    const dot = new THREE.Mesh(dotGeo, dotMat);
-    dot.position.set(origPos.getX(i), origPos.getY(i), origPos.getZ(i));
-    diceMesh.add(dot);
-  }
 
   // ── PHYSICS WORKER ──
   const spawnX = (Math.random() - 0.5) * 0.5;
@@ -13644,15 +13689,29 @@ async function showDiceAnimation(roll) {
     } else if (d.t === 'settled') {
       _diceState = d;
       physicsActive = false;
+      let actualNum = finalNum;
+      if (_d20FaceNormals && window.THREE) {
+        const _faceNums = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
+        const _q = new THREE.Quaternion(d.qx, d.qy, d.qz, d.qw);
+        const _up = new THREE.Vector3(0, 1, 0);
+        let _best = -Infinity;
+        for (let _i = 0; _i < _d20FaceNormals.length; _i++) {
+          const _dot = _d20FaceNormals[_i].clone().applyQuaternion(_q).dot(_up);
+          if (_dot > _best) { _best = _dot; actualNum = _faceNums[_i]; }
+        }
+      }
+      const actualIsCrit = actualNum === 20;
+      const actualFumble = actualNum === 1;
+      const actualTag    = actualIsCrit ? '✦ NATURAL 20' : actualFumble ? '◈ NATURAL 1' : '';
       playDiceSound('settle');
-      if (isCrit)   playDiceSound('crit');
-      if (isFumble) playDiceSound('fumble');
+      if (actualIsCrit)  playDiceSound('crit');
+      if (actualFumble)  playDiceSound('fumble');
       const numEl = document.getElementById('dsNum');
-      if (numEl) { numEl.textContent = finalNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
+      if (numEl) { numEl.textContent = actualNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
       const tagEl = document.getElementById('dsTag');
-      if (tagEl) { tagEl.style.opacity='1'; tagEl.style.transform='translateY(0)'; }
+      if (tagEl) { tagEl.textContent = actualTag; tagEl.style.opacity='1'; tagEl.style.transform='translateY(0)'; }
       stage.classList.add('ds-revealed');
-      if (isCrit) { diceMat.emissiveIntensity = 1.6; diceMat.needsUpdate = true; }
+      if (actualIsCrit) { diceMat.emissiveIntensity = 1.6; diceMat.needsUpdate = true; }
     }
   };
   diceWorker.postMessage({
@@ -13707,9 +13766,8 @@ async function showDiceAnimation(roll) {
     if (physicsActive) {
       diceMesh.position.set(_diceState.x, _diceState.y, _diceState.z);
       diceMesh.quaternion.set(_diceState.qx, _diceState.qy, _diceState.qz, _diceState.qw);
-      keyLight.position.set(_diceState.x - 1.5, _diceState.y + 3.5, _diceState.z + 1.5);
-      keyLight.intensity = 4.5 + Math.sin(ts * 0.008) * 0.8;
-      fillLight.position.set(_diceState.x, -0.3, _diceState.z);
+      rimAccent.position.set(_diceState.x - 2.5, _diceState.y + 2.5, _diceState.z - 1.5);
+      bounceLight.position.set(_diceState.x, 0.05, _diceState.z + 0.3);
     }
 
     // Particle update
