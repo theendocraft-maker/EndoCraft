@@ -2554,6 +2554,8 @@ body{
 .char-row-tag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;padding:2px 6px;border-radius:3px;font-weight:700;}
 .char-row-tag.pc{background:var(--accent-dim);color:var(--accent);}
 .char-row-tag.npc{background:var(--gold-dim);color:var(--gold);}
+.char-row-invite{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:5px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:13px;transition:all .12s;}
+.char-row-invite:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.08);}
 
 .char-editor{flex:1;background:var(--bg);overflow-y:auto;padding:26px 32px 40px;min-width:0;}
 .char-form-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start;max-width:1400px;margin:0 auto;}
@@ -2750,6 +2752,9 @@ body{
 .sb-item{font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.45;}
 .sb-item:last-child{margin-bottom:0;}
 .sb-item strong{font-weight:600;font-style:italic;}
+.sb-roll-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:5px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:13px;margin-left:4px;vertical-align:middle;transition:all .12s;}
+.sb-roll-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.08);}
+.sb-roll-btn:active{transform:scale(.96);}
 .sb-item em{font-style:italic;}
 
 /* Statblock with HP-tracker header (used in Combat Overview) */
@@ -5191,7 +5196,14 @@ function renderStatblock(c, opts = {}) {
     if (!items || !items.length) return '';
     return `<div class="sb-section">
       <div class="sb-section-h">${title}</div>
-      ${items.map(it => `<div class="sb-item"><strong>${escapeHtml(it.name)}.</strong> ${mdInline(it.text || '')}</div>`).join('')}
+      ${items.map(it => {
+        const name = it.name || '';
+        const text = it.text || '';
+        const parsed = parseAbilityForRoll(text);
+        const triggerLabel = parsed.dc != null ? `DC ${parsed.dc}${parsed.stat ? ' · ' + parsed.stat.toUpperCase() : ''}` : 'Roll';
+        const btn = `<button class="sb-roll-btn" onclick="requestRollFromAbility(this)" data-name="${escapeAttr(name)}" data-stat="${parsed.stat || ''}" data-dc="${parsed.dc != null ? parsed.dc : ''}" title="Roll bei der Party anfragen — ${escapeAttr(triggerLabel)}">🎲</button>`;
+        return `<div class="sb-item"><strong>${escapeHtml(name)}.</strong> ${mdInline(text)} ${btn}</div>`;
+      }).join('')}
     </div>`;
   };
 
@@ -6392,26 +6404,42 @@ async function _ensureActiveParty() {
   } catch(e) { return null; }
 }
 
+// Berechnet den Campaign-Room für die aktive Kampagne des DMs
+function getDMCampaignRoom() {
+  const s = syncSettings();
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  if (!s?.email || !camp?.id) return null;
+  return `${s.email.toLowerCase().trim()}::${camp.id}`;
+}
+
 async function startDMRollStreamListener() {
   stopDMRollStreamListener();
-  const party = await _ensureActiveParty();
-  if (!party?.code) return;
+  // Bevorzugt: campaign_room (neuer Invite-Flow). Fallback: party_code (Legacy).
+  const room = getDMCampaignRoom();
+  const party = !room ? await _ensureActiveParty() : null;
   const sb = initSupabaseClient();
   if (!sb) return;
+  if (!room && !party?.code) return;
+
   // Initial-Load
   try {
-    const r = await fetch(`${API_BASE}/api/live/stream/${encodeURIComponent(party.code)}`);
+    const url = room
+      ? `${API_BASE}/api/live/stream/CAMPAIGN?room=${encodeURIComponent(room)}`
+      : `${API_BASE}/api/live/stream/${encodeURIComponent(party.code)}`;
+    const r = await fetch(url);
     const d = await r.json();
-    _liveRolls = (d.rolls || []).reverse();   // ältest zuerst, neueste unten
+    _liveRolls = (d.rolls || []).reverse();
   } catch(e){ console.warn('[live-dice DM] initial fetch fail:', e); }
 
+  const filter = room ? `campaign_room=eq.${room}` : `party_code=eq.${party.code}`;
+  const channelKey = room ? ('room-' + room) : ('party-' + party.code);
   _liveRollChannel = sb
-    .channel('dm-dice-' + party.code)
+    .channel('dm-dice-' + channelKey)
     .on('postgres_changes', {
       event: 'INSERT',
       schema: 'public',
       table: 'live_rolls',
-      filter: `party_code=eq.${party.code}`
+      filter: filter
     }, (payload) => {
       if (!payload?.new) return;
       _liveRolls.push(payload.new);
@@ -6441,19 +6469,24 @@ function renderDiceStream() {
   const list = document.getElementById('diceStreamList');
   const status = document.getElementById('diceStreamStatus');
   if (!list || !status) return;
-  if (!_activePartyDM?.code) {
-    status.innerHTML = `<span style="color:var(--crimson);">Keine aktive Party</span> · <a href="#" onclick="event.preventDefault();openPartyManager();" style="color:var(--accent);text-decoration:underline;font-style:normal;">Party verwalten</a>`;
+  // Bevorzugt: Campaign-Room (Invite-Flow). Fallback: Party (Legacy).
+  const room = getDMCampaignRoom();
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  if (!room && !_activePartyDM?.code) {
+    status.innerHTML = `<span style="color:var(--crimson);">Keine aktive Kampagne · nicht eingeloggt</span>`;
     list.innerHTML = `
       <div style="text-align:center;padding:30px 16px;color:var(--text-dim);font-size:13px;line-height:1.6;">
         <div style="font-size:32px;margin-bottom:10px;">🎲</div>
-        <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--ink);font-weight:700;margin-bottom:8px;">PARTY ERFORDERLICH</div>
-        <p style="margin-bottom:14px;">Live-Würfeln verbindet DM und Spieler über einen Party-Code. Erstelle eine, teile den Code an deine Spieler, dann landen ihre Rolls hier.</p>
-        <button class="btn-top primary" onclick="openPartyManager()">+ Party erstellen / wählen</button>
+        <p>Logge dich ein und wähle eine Kampagne — Spieler können dann via Charakter-Einladung beitreten und live mitwürfeln.</p>
       </div>
     `;
     return;
   }
-  status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(_activePartyDM.name)}</strong> · Code: <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;cursor:pointer;" onclick="navigator.clipboard?.writeText('${escapeAttr(_activePartyDM.code)}');toast('Code kopiert');" title="Klick zum Kopieren">${escapeHtml(_activePartyDM.code)}</code> · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · <a href="#" onclick="event.preventDefault();openPartyManager();" style="color:var(--accent);text-decoration:underline;font-style:normal;">verwalten</a>`;
+  if (room) {
+    status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(camp?.name || 'Kampagne')}</strong> · Live-Room · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · <a href="#" onclick="event.preventDefault();switchView('chars');" style="color:var(--accent);text-decoration:underline;font-style:normal;">Spieler einladen</a>`;
+  } else {
+    status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(_activePartyDM.name)}</strong> · Code: <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;cursor:pointer;" onclick="navigator.clipboard?.writeText('${escapeAttr(_activePartyDM.code)}');toast('Code kopiert');" title="Klick zum Kopieren">${escapeHtml(_activePartyDM.code)}</code> · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · <a href="#" onclick="event.preventDefault();openPartyManager();" style="color:var(--accent);text-decoration:underline;font-style:normal;">verwalten</a>`;
+  }
   if (!_liveRolls.length) {
     list.innerHTML = '<div style="text-align:center;padding:30px 12px;color:var(--text-dim);font-style:italic;font-size:13px;">Noch keine Würfe. Klick „+ Roll anfragen" um eine Wurf-Anfrage zu schicken.</div>';
     return;
@@ -6479,6 +6512,59 @@ function renderDiceStream() {
       </div>
     `;
   }).join('');
+}
+
+// ═══════════ ABILITY-TEXT-PARSER ═══════════
+// Versucht aus Statblock-Action-Text die geforderte Save/Check zu extrahieren.
+// Beispiele:
+//   "Each creature within 30 ft. must make a DC 16 Wisdom saving throw"  → wis, 16
+//   "Constitution saving throw DC 14"                                    → con, 14
+//   "DC 12 Strength check"                                                → str, 12
+const _STAT_KEYS = {
+  strength:'str', str:'str',
+  dexterity:'dex', dex:'dex',
+  constitution:'con', con:'con',
+  intelligence:'int', int:'int',
+  wisdom:'wis', wis:'wis',
+  charisma:'cha', cha:'cha'
+};
+function parseAbilityForRoll(text) {
+  if (!text) return { stat: null, dc: null };
+  const t = String(text);
+  // Pattern 1: DC 16 Wisdom save
+  let m = t.match(/DC\s*(\d{1,2})\s*(?:on\s+a\s+)?(strength|dexterity|constitution|intelligence|wisdom|charisma|str|dex|con|int|wis|cha)\b/i);
+  if (m) return { dc: parseInt(m[1]), stat: _STAT_KEYS[m[2].toLowerCase()] };
+  // Pattern 2: Wisdom save DC 16  / Wisdom saving throw DC 16
+  m = t.match(/\b(strength|dexterity|constitution|intelligence|wisdom|charisma|str|dex|con|int|wis|cha)\b[^.]*?\bDC\s*(\d{1,2})/i);
+  if (m) return { dc: parseInt(m[2]), stat: _STAT_KEYS[m[1].toLowerCase()] };
+  // Pattern 3: nur DC ohne klaren Stat
+  m = t.match(/DC\s*(\d{1,2})/i);
+  if (m) return { dc: parseInt(m[1]), stat: null };
+  return { stat: null, dc: null };
+}
+
+// Click-Handler für 🎲-Button neben Statblock-Abilities.
+// Öffnet Roll-Request-Modal mit prefilled Werten.
+function requestRollFromAbility(btn) {
+  if (!btn) return;
+  const name = btn.dataset.name || 'Roll';
+  const stat = btn.dataset.stat || '';
+  const dc = btn.dataset.dc ? parseInt(btn.dataset.dc) : null;
+  // Stoppt Bubble damit keine andere Action triggert
+  if (window.event) { window.event.stopPropagation(); window.event.preventDefault(); }
+  // Modal öffnen + nach Frame Werte setzen (Modal rendert async)
+  openRollRequestModal();
+  setTimeout(() => {
+    const promptEl = document.getElementById('rrPrompt');
+    const statEl = document.getElementById('rrStat');
+    const dcEl = document.getElementById('rrDC');
+    if (promptEl) promptEl.value = name;
+    if (statEl && stat) statEl.value = stat;
+    if (dcEl && dc != null) dcEl.value = dc;
+    // Falls Stat erkannt + DC erkannt → user kann direkt senden
+    promptEl?.focus();
+    promptEl?.select();
+  }, 80);
 }
 
 function openRollRequestModal() {
@@ -6669,14 +6755,20 @@ async function submitRollRequest() {
   const dc = dcRaw ? parseInt(dcRaw) : null;
   const secret = document.getElementById('rrSecret')?.checked;
   if (!prompt) { toast('Prompt eingeben', true); return; }
-  const party = await _ensureActiveParty();
-  if (!party?.code) { toast('Keine aktive Party', true); return; }
   const s = syncSettings();
+  // Bevorzugt: campaign_room (Invite-Flow). Fallback: party_code (Legacy).
+  const room = getDMCampaignRoom();
+  let party = null;
+  if (!room) {
+    party = await _ensureActiveParty();
+    if (!party?.code) { toast('Keine Kampagne und keine Party aktiv', true); return; }
+  }
   try {
     const resp = await fetch(`${API_BASE}/api/live/request`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        partyCode: party.code,
+        campaignRoom: room || null,
+        partyCode: !room && party ? party.code : null,
         dmEmail: s.email,
         prompt, statType: stat, dc,
         visibility: secret ? 'dm_only' : 'public'
@@ -7989,6 +8081,7 @@ function renderCharList() {
 function charRowHTML(c) {
   const active = state.currentCharId === c.id;
   const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const inviteBtn = c.type === 'pc' ? `<button class="char-row-invite" onclick="event.stopPropagation();inviteCharacterPlayer('${c.id}')" title="Spieler einladen — Magic-Link für ${escapeAttr(c.name)}">🔗</button>` : '';
   return `
     <div class="char-row ${active ? 'active' : ''}" onclick="openChar('${c.id}')">
       <div class="char-row-av">${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : initials}</div>
@@ -7996,6 +8089,7 @@ function charRowHTML(c) {
         <div class="char-row-n">${escapeHtml(c.name)}</div>
         <div class="char-row-m">${escapeHtml(c.race)} · ${escapeHtml(c.class)}</div>
       </div>
+      ${inviteBtn}
       <span class="char-row-tag ${c.type}">${c.type.toUpperCase()}</span>
     </div>
   `;
@@ -8005,6 +8099,100 @@ function openChar(id) {
   state.currentCharId = id; saveState();
   if (state.currentView !== 'chars') switchView('chars');
   else { renderCharList(); renderCharEditor(); }
+}
+
+// ═══════════ CHARAKTER-EINLADUNG · MAGIC-LINK ═══════════
+async function inviteCharacterPlayer(charId) {
+  const s = syncSettings();
+  if (!s.email) { toast('Bitte erst einloggen', true); return; }
+  const c = state.characters.find(x => x.id === charId);
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  if (!c || !camp) { toast('Charakter oder Kampagne nicht gefunden', true); return; }
+  const meta = [c.race, c.class, c.level ? 'Lvl ' + c.level : ''].filter(Boolean).join(' · ');
+
+  toast('Erstelle Einladung...');
+  try {
+    const resp = await fetch(`${API_BASE}/api/invites/create`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaignId: camp.id,
+        dmEmail: s.email,
+        characterId: c.id,
+        characterName: c.name,
+        characterMeta: meta,
+        role: 'player',
+        invitedBy: s.email,
+        expiresInDays: 30
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) throw new Error(data.error || 'Einladung fehlgeschlagen');
+    showInviteShareModal(data.invite, c, camp);
+  } catch (e) { toast('Fehler: ' + e.message, true); }
+}
+
+function showInviteShareModal(invite, char, camp) {
+  const url = window.location.origin + '/player/?invite=' + encodeURIComponent(invite.token);
+  const text = `Du bist eingeladen zu „${camp.name}" als ${char.name} (${char.race} ${char.class})!\nÖffne den Link um beizutreten:\n${url}`;
+  document.getElementById('inviteShareModal')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'inviteShareModal';
+  modal.className = 'srd-modal';
+  modal.innerHTML = `
+    <div class="srd-modal-backdrop" onclick="closeInviteShareModal()"></div>
+    <div class="srd-modal-inner" style="max-width:520px;">
+      <div class="srd-modal-head">
+        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">🔗 Einladung für ${escapeHtml(char.name)}</h3>
+        <button onclick="closeInviteShareModal()">✕</button>
+      </div>
+      <div class="srd-modal-body" style="padding:18px 22px 22px;">
+        <p style="font-size:13.5px;color:var(--text);line-height:1.55;margin-bottom:14px;">Teile diesen Link mit deinem Spieler. Sobald sie ihn öffnen, sind sie als <strong>${escapeHtml(char.name)}</strong> in <strong>${escapeHtml(camp.name)}</strong> eingeloggt — kein Code-Eintippen nötig.</p>
+
+        <div style="display:flex;gap:6px;margin-bottom:14px;">
+          <input id="inviteUrlField" type="text" value="${escapeAttr(url)}" readonly style="flex:1;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);outline:none;" onclick="this.select();" />
+          <button class="btn-top primary" onclick="copyInviteLink()">📋 Kopieren</button>
+        </div>
+
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+          <div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:6px;">VORSCHAU-NACHRICHT</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;">${escapeHtml(text)}</div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-top primary" onclick="shareInviteNative('${escapeAttr(url)}','${escapeAttr(char.name)}','${escapeAttr(camp.name)}')">📤 Teilen via WhatsApp/Mail</button>
+          <button class="btn-top" onclick="closeInviteShareModal()">Schließen</button>
+        </div>
+
+        <p style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;margin-top:12px;">Link gültig für 30 Tage. Der Spieler ist nach Klick automatisch in der Live-Würfel-Session.</p>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('inviteUrlField')?.select(), 80);
+}
+
+function closeInviteShareModal() {
+  document.getElementById('inviteShareModal')?.remove();
+}
+
+function copyInviteLink() {
+  const field = document.getElementById('inviteUrlField');
+  if (!field) return;
+  const url = field.value;
+  navigator.clipboard?.writeText(url).then(() => toast('Link kopiert')).catch(() => {
+    field.select();
+    document.execCommand('copy');
+    toast('Link kopiert');
+  });
+}
+
+async function shareInviteNative(url, charName, campName) {
+  const text = `Du bist eingeladen zu „${campName}" als ${charName}!\n${url}`;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'EndoCraft · Einladung', text, url }); return; } catch(e) {}
+  }
+  // Fallback: Mailto
+  window.location.href = 'mailto:?subject=' + encodeURIComponent('EndoCraft · Einladung zu ' + campName) + '&body=' + encodeURIComponent(text);
 }
 
 // ═══════════ CHARACTER WIZARD (Guided Build) ═══════════
@@ -8574,7 +8762,8 @@ function renderCharEditor() {
           <div class="char-portrait-actions">
             ${c.type === 'pc'
               ? `<button class="char-portrait-btn" onclick="triggerPortraitUpload()">📸 Foto hochladen</button>
-                 ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}`
+                 ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}
+                 <button class="char-portrait-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);" onclick="inviteCharacterPlayer('${c.id}')" title="Magic-Link für diesen Spieler erstellen">🔗 Spieler einladen</button>`
               : `<button class="char-portrait-btn" onclick="generateCharPortrait()">⚡ Portrait generieren</button>
                  <button class="char-portrait-btn" onclick="triggerPortraitUpload()">Foto hochladen</button>
                  ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}`}

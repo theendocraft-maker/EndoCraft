@@ -1442,14 +1442,26 @@ async function renderAlbum() {
   }
 }
 
-// Auto-join wenn URL ?party=CODE — DM kann teilen, Spieler klickt Link, ist dabei.
+// Auto-join wenn URL ?party=CODE oder ?invite=TOKEN — DM kann teilen, Spieler klickt, ist dabei.
 async function _maybeAutoJoinFromUrl() {
   try {
     const params = new URLSearchParams(window.location.search);
+    // 1. Charakter-Einladung (Magic-Link) — neuer Weg
+    const inviteToken = params.get('invite');
+    if (inviteToken) {
+      if (!syncSettings().email) {
+        localStorage.setItem('ec_pending_invite_token', inviteToken);
+        return;
+      }
+      await acceptInviteToken(inviteToken);
+      const cleanUrl = window.location.pathname + window.location.hash;
+      history.replaceState(null, '', cleanUrl);
+      return;
+    }
+    // 2. Party-Code (Legacy)
     const code = params.get('party');
     if (!code) return;
     if (!syncSettings().email) {
-      // Nicht eingeloggt — Code merken, nach Login auto-join
       localStorage.setItem('ec_pending_party_code', code);
       return;
     }
@@ -1461,11 +1473,47 @@ async function _maybeAutoJoinFromUrl() {
     } else {
       await joinPartyByCode(code);
     }
-    // URL säubern (history-state, kein reload)
     const cleanUrl = window.location.pathname + window.location.hash;
     history.replaceState(null, '', cleanUrl);
     if (state.currentView !== 'album') switchView('album');
-  } catch (e) { console.warn('[Party autojoin]', e); }
+  } catch (e) { console.warn('[autojoin]', e); }
+}
+
+// ═══════════ CHARAKTER-EINLADUNG ANNEHMEN ═══════════
+let _activeCampaignRoom = null;       // "${dm_email}::${campaign_id}" wenn via Invite beigetreten
+
+async function acceptInviteToken(token) {
+  const s = syncSettings();
+  if (!s.email) return null;
+  try {
+    const resp = await fetch(`${API_BASE}/api/invites/${encodeURIComponent(token)}/accept`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: s.email })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      toast('Einladung ungültig: ' + (data.error || 'Fehler'), true);
+      return null;
+    }
+    const inv = data.invite;
+    _activeCampaignRoom = data.campaignRoom;
+    localStorage.setItem('ec_active_campaign_room', _activeCampaignRoom);
+    // Char-Auswahl mappen — falls die Kampagne+Charakter via Cloud-Load schon da
+    if (inv.character_id) {
+      state.selectedCharId = inv.character_id;
+      saveState();
+    }
+    toast(`✓ Beigetreten: ${inv.character_name || 'Charakter'}`);
+    // Live-Dice umstellen auf campaign_room
+    if (typeof startLiveDiceListener === 'function') startLiveDiceListener();
+    // Kampagnen neu laden vom DM
+    await loadAllCampaignsFromCloud();
+    initialRender();
+    return data;
+  } catch (e) {
+    toast('Einladung-Fehler: ' + e.message, true);
+    return null;
+  }
 }
 
 // ═══════════ HIGHLIGHT → SCROLL ═══════════
@@ -1535,7 +1583,10 @@ let _activeRollRequest = null;        // aktuelle DM-Anfrage (UI-Banner)
 let _seenRequestIds = new Set();      // dedupliziert wiederkehrende Subscriptions
 
 async function publishLiveRoll({ stat, modifier, d20, dc, requestId, visibility }) {
-  if (!_activeParty?.code) return;
+  // Scope: campaign_room (neuer Weg via Invite) ODER party_code (Legacy)
+  const room = _activeCampaignRoom || localStorage.getItem('ec_active_campaign_room');
+  const code = _activeParty?.code;
+  if (!room && !code) return;
   const s = syncSettings();
   if (!s.email) return;
   const char = currentChar();
@@ -1543,7 +1594,8 @@ async function publishLiveRoll({ stat, modifier, d20, dc, requestId, visibility 
     await fetch(`${API_BASE}/api/live/roll`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        partyCode: _activeParty.code,
+        campaignRoom: room || null,
+        partyCode: !room && code ? code : null,
         playerEmail: s.email,
         playerName: s.email.split('@')[0],
         characterName: char?.name || null,
@@ -1553,20 +1605,24 @@ async function publishLiveRoll({ stat, modifier, d20, dc, requestId, visibility 
   } catch (e) { console.warn('[live-dice] publish fail:', e); }
 }
 
-// Subscribe auf Realtime: roll_requests für aktive Party
+// Subscribe auf Realtime: roll_requests für aktive Party ODER Campaign-Room
 function startLiveDiceListener() {
   stopLiveDiceListener();
-  if (!_activeParty?.code) return;
+  // Bevorzugt campaign_room (neuer Invite-Flow), fallback party_code (Legacy)
+  const room = _activeCampaignRoom || localStorage.getItem('ec_active_campaign_room');
+  const code = _activeParty?.code;
+  if (!room && !code) return;
   const sb = initSupabaseClient();
   if (!sb) return;
-  const code = _activeParty.code;
+  const filter = room ? `campaign_room=eq.${room}` : `party_code=eq.${code}`;
+  const channelKey = room ? ('room-' + room) : ('party-' + code);
   _liveDiceChannel = sb
-    .channel('live-dice-' + code)
+    .channel('live-dice-' + channelKey)
     .on('postgres_changes', {
       event: 'INSERT',
       schema: 'public',
       table: 'roll_requests',
-      filter: `party_code=eq.${code}`
+      filter: filter
     }, (payload) => {
       const req = payload.new;
       if (!req || _seenRequestIds.has(req.id)) return;
@@ -1578,7 +1634,7 @@ function startLiveDiceListener() {
       renderRollRequestBanner();
     })
     .subscribe();
-  console.log('[live-dice] subscribed to', code);
+  console.log('[live-dice] subscribed to', room ? ('room ' + room) : ('party ' + code));
   // Auch beim Start: offene Requests fetchen falls einer schon vor unserem Subscribe kam
   fetchOpenRequests();
 }
@@ -1594,9 +1650,14 @@ function stopLiveDiceListener() {
 }
 
 async function fetchOpenRequests() {
-  if (!_activeParty?.code) return;
+  const room = _activeCampaignRoom || localStorage.getItem('ec_active_campaign_room');
+  const code = _activeParty?.code;
+  if (!room && !code) return;
   try {
-    const resp = await fetch(`${API_BASE}/api/live/stream/${encodeURIComponent(_activeParty.code)}`);
+    const url = room
+      ? `${API_BASE}/api/live/stream/CAMPAIGN?room=${encodeURIComponent(room)}`
+      : `${API_BASE}/api/live/stream/${encodeURIComponent(code)}`;
+    const resp = await fetch(url);
     const data = await resp.json();
     if (!resp.ok) return;
     const open = (data.openRequests || []).filter(r => {
