@@ -3612,6 +3612,8 @@ body.gate-open{overflow:hidden;}
 .ds-dismiss{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.18);pointer-events:none;}
 @keyframes dsShake{0%,100%{transform:translate(0,0) rotate(0);}15%{transform:translate(-7px,3px) rotate(-.5deg);}30%{transform:translate(7px,-4px) rotate(.5deg);}45%{transform:translate(-5px,5px) rotate(-.3deg);}60%{transform:translate(4px,-3px) rotate(.2deg);}75%{transform:translate(-2px,2px);}90%{transform:translate(1px,-1px);}}
 .ds-screen-shake{animation:dsShake .55s ease-out;}
+@keyframes dsBounce{0%,100%{transform:translate(0,0);}20%{transform:translate(-3px,2px);}50%{transform:translate(3px,-2px);}80%{transform:translate(-1px,1px);}}
+.ds-bounce-shake{animation:dsBounce .18s ease-out;}
 
 /* ═══════════ LORE CODEX ═══════════ */
 .codex-main{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
@@ -13512,26 +13514,25 @@ async function showDiceAnimation(roll) {
 
   // ── RENDERER ──
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
   renderer.setSize(cvW, cvH, false);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
-  const bgCol = isCrit ? 0x120900 : isFumble ? 0x0f0000 : 0x090b0d;
+  const bgCol = isCrit ? 0x120900 : isFumble ? 0x0f0000 : 0x0c0306;
   renderer.setClearColor(bgCol, 1);
   stage._renderer = renderer;
 
   // ── SCENE ──
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(bgCol);
-  scene.fog = new THREE.FogExp2(bgCol, 0.20);
+  scene.fog = new THREE.FogExp2(bgCol, 0.30);
 
-  const camera = new THREE.PerspectiveCamera(38, cvW / cvH, 0.1, 50);
-  // Scale camera distance with canvas size — mini view closer, fullscreen further back
+  const camera = new THREE.PerspectiveCamera(50, cvW / cvH, 0.1, 50);
   const camDist = isFullscreen ? 1.15 : 1.0;
-  camera.position.set(0, 2.2 * camDist, 2.8 * camDist);
-  camera.lookAt(0, 0.4, 0);
+  camera.position.set(0, 3.8 * camDist, 2.2 * camDist);
+  camera.lookAt(0, 0, 0);
 
   // IBL for reflections on clearcoat
   try {
@@ -13548,7 +13549,7 @@ async function showDiceAnimation(roll) {
   const lampLight = new THREE.DirectionalLight(0xffd890, 2.8);
   lampLight.position.set(2, 9, 3);
   lampLight.castShadow = true;
-  lampLight.shadow.mapSize.set(512, 512);
+  lampLight.shadow.mapSize.set(2048, 2048);
   lampLight.shadow.camera.near = 1;
   lampLight.shadow.camera.far = 20;
   lampLight.shadow.camera.left = lampLight.shadow.camera.bottom = -4;
@@ -13573,11 +13574,11 @@ async function showDiceAnimation(roll) {
   scene.add(rimAccent);
 
   // ── TABLE — dark felt dice tray ──
-  const feltSz = 512;
+  const feltSz = 1024;
   const feltCv = document.createElement('canvas'); feltCv.width = feltSz; feltCv.height = feltSz;
   const fctx = feltCv.getContext('2d');
   // Base: rich dark felt color — deep forest green / burgundy
-  const feltBase = isCrit ? '#2a1a06' : isFumble ? '#220808' : '#122018';
+  const feltBase = isCrit ? '#2a1a06' : isFumble ? '#220808' : '#3d0a10';
   fctx.fillStyle = feltBase; fctx.fillRect(0, 0, feltSz, feltSz);
   // Felt weave — horizontal fibers
   for (let i = 0; i < 4500; i++) {
@@ -13602,25 +13603,29 @@ async function showDiceAnimation(roll) {
   const feltTex = new THREE.CanvasTexture(feltCv);
   feltTex.wrapS = feltTex.wrapT = THREE.RepeatWrapping;
   feltTex.repeat.set(5, 5);
-  const feltColor = isCrit ? 0x4a2a0a : isFumble ? 0x3e0a0a : 0x1e3820;
+  const feltColor = isCrit ? 0x4a2a0a : isFumble ? 0x3e0a0a : 0x6b1520;
   const tableMat = new THREE.MeshStandardMaterial({
     map: feltTex, color: feltColor, roughness: 1.0, metalness: 0.0, envMapIntensity: 0
   });
-  const table = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), tableMat);
+  const table = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 4.8), tableMat);
   table.rotation.x = -Math.PI/2;
   table.receiveShadow = true;
   scene.add(table);
 
-  // Vignette ring — gentle darkening toward edges
-  const vigShape = new THREE.Shape();
-  vigShape.absarc(0, 0, 9, 0, Math.PI*2);
-  const vigHole = new THREE.Path(); vigHole.absarc(0, 0, 2.6, 0, Math.PI*2);
-  vigShape.holes.push(vigHole);
-  const vigMesh = new THREE.Mesh(
-    new THREE.ShapeGeometry(vigShape, 64),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.45 })
-  );
-  vigMesh.rotation.x = -Math.PI/2; vigMesh.position.y = 0.002; scene.add(vigMesh);
+  // Wooden dice tray frame
+  const woodCol = isCrit ? 0x1a0e04 : isFumble ? 0x140606 : 0x2a1208;
+  const woodMat = new THREE.MeshStandardMaterial({ color: woodCol, roughness: 0.82, metalness: 0.0 });
+  const wallH = 0.45, wallT = 0.28, halfIn = 2.4, outerPos = halfIn + wallT / 2;
+  [[-outerPos, 0, wallT, halfIn * 2 + wallT * 2],
+   [ outerPos, 0, wallT, halfIn * 2 + wallT * 2],
+   [0, -outerPos, halfIn * 2 + wallT * 2, wallT],
+   [0,  outerPos, halfIn * 2 + wallT * 2, wallT]
+  ].forEach(([wx, wz, ww, wd]) => {
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(ww, wallH, wd), woodMat);
+    wall.position.set(wx, wallH / 2, wz);
+    wall.castShadow = true; wall.receiveShadow = true;
+    scene.add(wall);
+  });
 
   // ── D20 MESH — polished dark resin ──
   const FACE_NUMS = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
@@ -13649,16 +13654,19 @@ async function showDiceAnimation(roll) {
   const bodyColor = isCrit ? 0x120c02 : isFumble ? 0x110002 : 0x0d0a1e;
   const diceEmissiveTex = _createDiceEmissiveTexture(isCrit, isFumble);
 
-  // MeshPhysicalMaterial: clearcoat gives the lacquered resin look
+  // MeshPhysicalMaterial: clearcoat + transmission = polished translucent resin
   const diceMat = new THREE.MeshPhysicalMaterial({
     color: bodyColor,
-    roughness: 0.10,
+    roughness: 0.08,
     metalness: 0.0,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.08,
+    clearcoatRoughness: 0.06,
+    transmission: isCrit ? 0.15 : isFumble ? 0.15 : 0.38,
+    thickness: 0.9,
+    ior: 1.52,
     emissiveMap: diceEmissiveTex,
     emissive: new THREE.Color(1, 1, 1),
-    emissiveIntensity: isCrit ? 0.55 : isFumble ? 0.55 : 0.45,
+    emissiveIntensity: isCrit ? 0.80 : isFumble ? 0.80 : 0.70,
   });
 
   const diceMesh = new THREE.Mesh(diceGeo, diceMat);
@@ -13685,6 +13693,12 @@ async function showDiceAnimation(roll) {
       if (d.bounce) {
         playDiceSound('bounce');
         if (isCrit && particles) { particles.visible = true; particlesActive = true; }
+        if (d.vel > 2.5) {
+          document.body.classList.remove('ds-bounce-shake');
+          void document.body.offsetWidth;
+          document.body.classList.add('ds-bounce-shake');
+          setTimeout(() => document.body.classList.remove('ds-bounce-shake'), 180);
+        }
       }
     } else if (d.t === 'settled') {
       _diceState = d;
@@ -13715,10 +13729,10 @@ async function showDiceAnimation(roll) {
     }
   };
   diceWorker.postMessage({
-    t: 'init', r: diceRadius, sy: 5.0,
+    t: 'init', r: diceRadius, sy: 3.5,
     sx: spawnX, sz: spawnZ,
-    vx: (Math.random()-0.5)*1.5, vy: -12, vz: (Math.random()-0.5)*0.8,
-    avx: (Math.random()-0.5)*60, avy: (Math.random()-0.5)*50, avz: (Math.random()-0.5)*40
+    vx: (Math.random()-0.5)*2.2, vy: -14, vz: (Math.random()-0.5)*1.4,
+    avx: (Math.random()-0.5)*85, avy: (Math.random()-0.5)*75, avz: (Math.random()-0.5)*65
   });
   stage._diceWorker = diceWorker;
 
