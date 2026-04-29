@@ -13644,18 +13644,15 @@ async function showDiceAnimation(roll) {
     } else if (d.t === 'settled') {
       _diceState = d;
       physicsActive = false;
-      if (_d20FaceNormals) {
-        const FACE_NUMS_LOCAL = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
-        const faceIdx = FACE_NUMS_LOCAL.indexOf(finalNum);
-        const fn = _d20FaceNormals[faceIdx >= 0 ? faceIdx : 0];
-        targetQuat = new THREE.Quaternion().setFromUnitVectors(fn, new THREE.Vector3(0, 1, 0));
-      } else {
-        targetQuat = new THREE.Quaternion();
-      }
-      snapPhase = true;
       playDiceSound('settle');
       if (isCrit)   playDiceSound('crit');
       if (isFumble) playDiceSound('fumble');
+      const numEl = document.getElementById('dsNum');
+      if (numEl) { numEl.textContent = finalNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
+      const tagEl = document.getElementById('dsTag');
+      if (tagEl) { tagEl.style.opacity='1'; tagEl.style.transform='translateY(0)'; }
+      stage.classList.add('ds-revealed');
+      if (isCrit) { diceMat.emissiveIntensity = 1.6; diceMat.needsUpdate = true; }
     }
   };
   diceWorker.postMessage({
@@ -13698,8 +13695,6 @@ async function showDiceAnimation(roll) {
 
   // ── ANIMATION LOOP ──
   let physicsActive = true;
-  let snapPhase = false, snapProgress = 0;
-  let targetQuat = null;
   let particlesActive = false;
   let lastTs = null;
 
@@ -13715,23 +13710,6 @@ async function showDiceAnimation(roll) {
       keyLight.position.set(_diceState.x - 1.5, _diceState.y + 3.5, _diceState.z + 1.5);
       keyLight.intensity = 4.5 + Math.sin(ts * 0.008) * 0.8;
       fillLight.position.set(_diceState.x, -0.3, _diceState.z);
-    }
-
-    // Snap phase: slerp to result face
-    if (snapPhase && targetQuat) {
-      snapProgress = Math.min(snapProgress + rawDt / 0.60, 1);
-      const ease = 1 - Math.pow(1 - snapProgress, 3);
-      diceMesh.quaternion.slerp(targetQuat, ease);
-      if (snapProgress >= 1) {
-        snapPhase = false;
-        const numEl = document.getElementById('dsNum');
-        if (numEl) { numEl.textContent = finalNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
-        const tagEl = document.getElementById('dsTag');
-        if (tagEl) { tagEl.style.opacity='1'; tagEl.style.transform='translateY(0)'; }
-        stage.classList.add('ds-revealed');
-        // Crit: boost emissive intensity for reveal pulse
-        if (isCrit) { diceMat.emissiveIntensity = 1.6; diceMat.needsUpdate = true; }
-      }
     }
 
     // Particle update
