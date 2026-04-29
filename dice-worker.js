@@ -27,7 +27,7 @@ function makeIcosahedron(r) {
 
 function init(cfg) {
   world = new CANNON.World();
-  world.gravity.set(0, -24, 0);
+  world.gravity.set(0, -30, 0);
   world.broadphase = new CANNON.NaiveBroadphase();
   world.solver.iterations = 10;
 
@@ -52,10 +52,10 @@ function init(cfg) {
 
   var dMat = new CANNON.Material('d');
   world.addContactMaterial(new CANNON.ContactMaterial(gMat, dMat, {
-    friction: 0.50, restitution: 0.40
+    friction: 0.45, restitution: 0.52
   }));
 
-  diceBody = new CANNON.Body({ mass: 1, material: dMat, linearDamping: 0.25, angularDamping: 0.40 });
+  diceBody = new CANNON.Body({ mass: 1, material: dMat, linearDamping: 0.10, angularDamping: 0.28 });
   diceBody.addShape(makeIcosahedron(cfg.r));
   diceBody.position.set(cfg.sx, cfg.sy || 2.5, cfg.sz);
   diceBody.velocity.set(cfg.vx, cfg.vy, cfg.vz);
