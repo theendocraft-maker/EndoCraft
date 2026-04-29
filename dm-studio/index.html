@@ -13294,7 +13294,7 @@ setInterval(renderSyncStatus, 30000);
 // Triggered by live roll inserts. Crit/Fumble = fullscreen cinematic takeover.
 // Normal rolls = mini corner overlay.
 // ═══════════════════════════════════════════════════════════════════════════
-let _dsTimer = null;
+var _dsTimer = null;
 
 function showDiceAnimation(roll) {
   if (!roll) return;
@@ -13381,10 +13381,10 @@ function hideDiceAnimation() {
 // ═══════════════════════════════════════════════════════════════════════════
 // LORE CODEX — AI-generiertes Campaign-Wiki
 // ═══════════════════════════════════════════════════════════════════════════
-let _codexEntries = [];
-let _codexFilter  = 'all';
+var _codexEntries = [];
+var _codexFilter  = 'all';
 
-const CODEX_TYPE_ICONS = {
+var CODEX_TYPE_ICONS = {
   character: '🧑', npc: '🎭', location: '🗺️',
   faction: '⚔️', event: '⚡', item: '🗡️', mystery: '🌀'
 };
