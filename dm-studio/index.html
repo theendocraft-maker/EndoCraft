@@ -6688,7 +6688,17 @@ function openEncounterBuilder() {
           <input id="ebTheme" type="text" maxlength="120" placeholder="z.B. 'Untoten im Sumpf', 'Goblin-Lager im Wald', 'Strahd-Cultisten im Schloss'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;margin-bottom:12px;" />
 
           <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">ZUSATZ-KONTEXT (optional)</label>
-          <textarea id="ebContext" rows="2" placeholder="z.B. 'Boss-Encounter mit kleinen Adds', 'Stealth-Möglichkeit reinbauen', 'Party hat letzten Long-Rest verpasst'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);outline:none;resize:vertical;margin-bottom:14px;"></textarea>
+          <textarea id="ebContext" rows="2" placeholder="z.B. 'Boss-Encounter mit kleinen Adds', 'Stealth-Möglichkeit reinbauen', 'Party hat letzten Long-Rest verpasst'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);outline:none;resize:vertical;margin-bottom:12px;"></textarea>
+
+          <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+            <div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:8px;">📚 KAMPAGNEN-KONTEXT</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUseLocation" checked style="width:14px;height:14px;cursor:pointer;" /> Aktueller Standort + Read-Aloud + DM-Notiz</label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUseNpcs" style="width:14px;height:14px;cursor:pointer;" /> Vorhandene Kampagnen-NPCs einbeziehen (kann sie als Bösewichte/Verbündete nutzen)</label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUseRecap" checked style="width:14px;height:14px;cursor:pointer;" /> Letzter Session-Recap (für narrativen Anschluss)</label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUsePartyState" style="width:14px;height:14px;cursor:pointer;" /> Party-State (HP, Conditions, Resources)</label>
+            </div>
+          </div>
 
           <div style="display:flex;gap:8px;justify-content:flex-end;">
             <button class="btn-top" onclick="closeEncounterBuilder()">Abbrechen</button>
@@ -6716,6 +6726,57 @@ async function generateEncounters() {
   const count = parseInt(document.getElementById('ebCount')?.value) || 3;
   const theme = document.getElementById('ebTheme')?.value?.trim() || '';
   const context = document.getElementById('ebContext')?.value?.trim() || '';
+  const useLocation = document.getElementById('ebUseLocation')?.checked;
+  const useNpcs = document.getElementById('ebUseNpcs')?.checked;
+  const useRecap = document.getElementById('ebUseRecap')?.checked;
+  const usePartyState = document.getElementById('ebUsePartyState')?.checked;
+
+  // Campaign-Context zusammenstellen
+  const camp = (typeof campaign === 'function') ? campaign() : null;
+  const campaignContext = {};
+  if (camp?.name) campaignContext.campaignName = camp.name;
+  if (useLocation) {
+    const loc = (typeof currentLoc === 'function') ? currentLoc() : null;
+    if (loc) {
+      campaignContext.currentLocation = {
+        name: loc.name,
+        meta: loc.meta || '',
+        readAloud: (loc.readAloud || '').slice(0, 800),
+        dmNote: (loc.dmNote || '').slice(0, 600)
+      };
+    }
+  }
+  if (useNpcs) {
+    const npcs = (state.characters || []).filter(c => c.type === 'npc').slice(0, 12);
+    campaignContext.existingNpcs = npcs.map(n => ({
+      name: n.name,
+      cr: n.cr || '',
+      type: [n.size, n.creatureType].filter(Boolean).join(' '),
+      role: (n.notes || '').slice(0, 100)
+    }));
+  }
+  if (useRecap) {
+    const sessions = camp?.sessions || [];
+    const last = sessions[sessions.length - 1];
+    if (last?.recap) {
+      campaignContext.lastRecap = {
+        sessionNumber: last.number,
+        title: last.title || '',
+        recap: String(last.recap).slice(0, 1500)
+      };
+    }
+  }
+  if (usePartyState) {
+    const pcs = (state.characters || []).filter(c => c.type === 'pc');
+    campaignContext.partyState = pcs.map(c => ({
+      name: c.name,
+      class: c.class,
+      level: c.level,
+      hp: c.hp,
+      maxHp: c.maxHp,
+      conditions: (state.initiative || []).find(e => e.id === c.id)?.conditions || []
+    }));
+  }
 
   const btn = document.getElementById('ebGenerateBtn');
   const results = document.getElementById('ebResults');
@@ -6723,14 +6784,14 @@ async function generateEncounters() {
   results.innerHTML = `
     <div style="text-align:center;padding:40px 20px;">
       <div class="spinner" style="margin:0 auto 14px;"></div>
-      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--text-dim);">KI baut ${count} balanced Encounter…</div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--text-dim);">KI baut ${count} balanced Encounter mit Campaign-Context…</div>
     </div>
   `;
 
   try {
     const resp = await fetch(`${API_BASE}/api/encounter/build`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ partySize: size, partyLevel: level, difficulty: diff, theme, additionalContext: context, count })
+      body: JSON.stringify({ partySize: size, partyLevel: level, difficulty: diff, theme, additionalContext: context, count, campaignContext })
     });
     const data = await resp.json();
     if (!resp.ok || !data.ok) throw new Error(data.error || 'Fehler bei der Generierung');
@@ -8105,7 +8166,7 @@ function rollInitiative(opts) {
         <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
       </div>
       <div style="padding:8px 22px 4px;font-size:12.5px;color:var(--text-dim);line-height:1.55;font-style:italic;">
-        Am Tisch würfeln — Initiative-Wert eintragen. <strong style="color:var(--ink);font-style:normal;">Leeres Feld = Charakter kämpft NICHT mit</strong> (z.B. Spieler abwesend, NPC nicht in der Szene).
+        PCs würfeln am Tisch — du gibst die Werte ein. <strong style="color:var(--ink);font-style:normal;">NPCs sind bereits gewürfelt</strong> (kannst du noch ändern). Leeres Feld = Charakter kämpft NICHT mit.
       </div>
       <div style="flex:1;overflow-y:auto;padding:14px 22px 18px;">
         <div class="init-setup-grid">
@@ -8113,8 +8174,10 @@ function rollInitiative(opts) {
             const dexMod = c.stats?.dex ? Math.floor((c.stats.dex - 10) / 2) : 0;
             const isPC = c.type === 'pc';
             const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+            // NPCs auto-rollen (d20 + dexMod), PCs leer lassen (Spieler würfelt am Tisch)
+            const npcRoll = !isPC ? (1 + Math.floor(Math.random() * 20) + dexMod) : null;
             return `
-              <div class="init-setup-card ${isPC ? 'pc' : 'npc'}" data-init-card-idx="${i}">
+              <div class="init-setup-card ${isPC ? 'pc' : 'npc'}${!isPC ? ' filled' : ''}" data-init-card-idx="${i}">
                 <div class="isc-portrait">
                   ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span class="isc-initials">${initials}</span>`}
                 </div>
@@ -8128,10 +8191,11 @@ function rollInitiative(opts) {
                 <div class="isc-input-wrap">
                   <input id="init-input-${i}" type="number" data-char-id="${c.id}"
                     placeholder="${10 + dexMod}"
+                    ${npcRoll != null ? `value="${npcRoll}"` : ''}
                     class="isc-input"
                     oninput="updateInitSetupCard(${i})"
                     onkeydown="if(event.key==='Enter')submitManualInitiative()">
-                  <span class="isc-hint" id="isc-hint-${i}">übersprungen</span>
+                  <span class="isc-hint" id="isc-hint-${i}">${npcRoll != null ? 'gewürfelt' : 'übersprungen'}</span>
                 </div>
               </div>
             `;
@@ -8148,7 +8212,15 @@ function rollInitiative(opts) {
     </div>
   `;
   document.body.appendChild(modal);
-  setTimeout(() => document.getElementById('init-input-0')?.focus(), 50);
+  // Pre-Filled NPC-Werte als "included" markieren damit Summary stimmt
+  combatants.forEach((c, i) => {
+    if (c.type !== 'pc') updateInitSetupCard(i);
+  });
+  // Fokus auf erstes leeres (PC-)Feld
+  setTimeout(() => {
+    const firstEmpty = Array.from(document.querySelectorAll('.isc-input')).find(el => !el.value);
+    (firstEmpty || document.getElementById('init-input-0'))?.focus();
+  }, 50);
   updateInitSetupSummary();
 }
 
