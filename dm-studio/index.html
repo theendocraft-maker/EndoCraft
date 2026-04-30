@@ -1597,7 +1597,7 @@ body{
   display:flex;flex-direction:column;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  min-width:1100px;
+  min-width:768px;
 }
 
 /* ═══════ TOP BAR ═══════ */
@@ -3689,7 +3689,7 @@ body.gate-open{overflow:hidden;}
 <div class="topbar">
   <a href="/" class="logo">
     <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
-    EndoCraft <span class="sub">DM Studio</span>
+    EndoCraft
   </a>
   <div class="topbar-sep"></div>
   <div class="campaign-pill" onclick="toggleCampaignMenu(event)" title="Kampagne wechseln" id="campaignPill">
@@ -3702,12 +3702,9 @@ body.gate-open{overflow:hidden;}
   </div>
   <div class="campaign-menu" id="campaignMenu" style="display:none;"></div>
   <div class="tabnav">
-    <div class="tab" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Briefing</span></div>
-    <div class="tab active" data-view="scene" onclick="openScene()"><span class="ico">🎲</span><span>Schauplatz</span></div>
+    <div class="tab active" data-view="scene" onclick="openScene()"><span class="ico">🎲</span><span>Session</span></div>
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
-    <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
-    <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
-    <div class="tab" data-view="codex" onclick="switchView('codex')"><span class="ico">📜</span><span>Lore Codex</span></div>
+    <div class="tab" data-view="sammlung" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Sammlung</span></div>
   </div>
   <div class="topbar-right">
     <div class="theme-toggle" role="group" aria-label="Theme">
@@ -3987,8 +3984,12 @@ body.gate-open{overflow:hidden;}
   <div class="view" id="view-highlights">
     <aside class="lpanel">
       <div class="lp-header">
-        <span class="lp-title">Highlights</span>
+        <span class="lp-title">Sammlung</span>
         <button class="lp-add" onclick="addManualHighlight()" title="Eigener Highlight-Eintrag">+ Neu</button>
+      </div>
+      <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);">
+        <button id="subtab-highlights" onclick="switchView('highlights')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;">🌟 Highlights</button>
+        <button id="subtab-album" onclick="switchView('album')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;">📚 Album</button>
       </div>
       <div class="char-filter" id="highlightFilter">
         <button class="active" data-f="all" onclick="filterHighlights('all')">Alle</button>
@@ -4006,8 +4007,12 @@ body.gate-open{overflow:hidden;}
   <div class="view" id="view-album">
     <aside class="lpanel">
       <div class="lp-header">
-        <span class="lp-title">Party Album</span>
+        <span class="lp-title">Sammlung</span>
         <button class="lp-add" onclick="reloadAlbum()" title="Karten aus Cloud neu laden">↻</button>
+      </div>
+      <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);">
+        <button id="subtab-highlights2" onclick="switchView('highlights')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;">🌟 Highlights</button>
+        <button id="subtab-album2" onclick="switchView('album')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;">📚 Album</button>
       </div>
       <div class="char-filter" id="albumRarityFilter">
         <button class="active" data-r="all" onclick="filterAlbumRarity('all')">Alle</button>
@@ -5480,8 +5485,10 @@ function currentChar() { return state.characters.find(c => c.id === state.curren
 // ═══════════ TOP BAR + VIEW SWITCH ═══════════
 function switchView(view) {
   state.currentView = view; saveState();
-  // Tab-Mapping: prep + session sind beide unter dem "Schauplatz"-Tab (data-view="scene")
-  const tabKey = (view === 'prep' || view === 'session') ? 'scene' : view;
+  // Tab-Mapping: prep+session → scene; highlights+album → sammlung
+  const tabKey = (view === 'prep' || view === 'session') ? 'scene'
+               : (view === 'highlights' || view === 'album') ? 'sammlung'
+               : view;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === tabKey));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
   if (view === 'briefing') renderBriefing();
