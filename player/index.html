@@ -2050,6 +2050,60 @@ function _createDiceColorMap(isCrit, isFumble) {
   return new THREE.CanvasTexture(cv);
 }
 
+function _createDiceNormalMap() {
+  const W = 512, H = 256, cols = 5, rows = 4;
+  const cw = W/cols, ch = H/rows;
+  const hcv = document.createElement('canvas');
+  hcv.width = W; hcv.height = H;
+  const hctx = hcv.getContext('2d');
+  hctx.fillStyle = '#000'; hctx.fillRect(0, 0, W, H);
+  hctx.shadowBlur = 5; hctx.shadowColor = '#fff';
+  hctx.fillStyle = '#fff';
+  for (let n = 1; n <= 20; n++) {
+    const col = (n-1)%cols, row = Math.floor((n-1)/cols);
+    const cx = col*cw + cw*0.5, cy = row*ch + ch*0.60;
+    const fs = n >= 10 ? Math.round(ch*0.50) : Math.round(ch*0.60);
+    hctx.font = `900 ${fs}px "Cinzel","Georgia",serif`;
+    hctx.textAlign = 'center'; hctx.textBaseline = 'middle';
+    hctx.fillText(String(n), cx, cy);
+  }
+  const src = hctx.getImageData(0, 0, W, H).data;
+  const ncv = document.createElement('canvas');
+  ncv.width = W; ncv.height = H;
+  const nctx = ncv.getContext('2d');
+  const nImg = nctx.createImageData(W, H);
+  const dst = nImg.data;
+  const st = 5.0;
+  const g = (x, y) => src[(Math.max(0,Math.min(H-1,y))*W+Math.max(0,Math.min(W-1,x)))*4]/255;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const dx = ((g(x+1,y-1)+2*g(x+1,y)+g(x+1,y+1))-(g(x-1,y-1)+2*g(x-1,y)+g(x-1,y+1)))*st;
+    const dy = ((g(x-1,y+1)+2*g(x,y+1)+g(x+1,y+1))-(g(x-1,y-1)+2*g(x,y-1)+g(x+1,y-1)))*st;
+    const dz = 1, len = Math.sqrt(dx*dx+dy*dy+dz*dz), i = (y*W+x)*4;
+    dst[i]=(dx/len*0.5+0.5)*255|0; dst[i+1]=(dy/len*0.5+0.5)*255|0; dst[i+2]=(dz/len*0.5+0.5)*255|0; dst[i+3]=255;
+  }
+  nctx.putImageData(nImg, 0, 0);
+  return new THREE.CanvasTexture(ncv);
+}
+
+function _createDiceRoughnessMap() {
+  const W = 1024, H = 512, cols = 5, rows = 4;
+  const cw = W/cols, ch = H/rows;
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = 'rgb(20,20,20)'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgb(95,95,95)';
+  for (let n = 1; n <= 20; n++) {
+    const col = (n-1)%cols, row = Math.floor((n-1)/cols);
+    const cx = col*cw + cw*0.5, cy = row*ch + ch*0.60;
+    const fs = n >= 10 ? Math.round(ch*0.50) : Math.round(ch*0.60);
+    ctx.font = `900 ${fs}px "Cinzel","Georgia",serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(n), cx, cy);
+  }
+  return new THREE.CanvasTexture(cv);
+}
+
 async function showDiceAnimation(roll) {
   if (!roll) return;
   const isCrit   = !!roll.is_crit;
@@ -2193,6 +2247,11 @@ async function showDiceAnimation(roll) {
   rimAccent.position.set(-2.5, 2.5, -1.5);
   scene.add(rimAccent);
 
+  // Hard back-rim — defines silhouette, separates die from dark background
+  const rimBack = new THREE.DirectionalLight(isCrit ? 0xff9933 : isFumble ? 0xff3311 : 0x5577ee, 3.2);
+  rimBack.position.set(1.5, 4, -6);
+  scene.add(rimBack);
+
   // ── TABLE — casino-grade felt with fiber normal map ──
   const feltSz = 2048;
   const feltCv = document.createElement('canvas'); feltCv.width = feltSz; feltCv.height = feltSz;
@@ -2307,12 +2366,17 @@ async function showDiceAnimation(roll) {
   }
   uvAttr.needsUpdate = true;
 
-  const diceColorTex = _createDiceColorMap(isCrit, isFumble);
+  const diceColorTex   = _createDiceColorMap(isCrit, isFumble);
+  const diceNormalTex  = _createDiceNormalMap();
+  const diceRoughTex   = _createDiceRoughnessMap();
 
   const diceMat = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     map: diceColorTex,
-    roughness: 0.08,
+    normalMap: diceNormalTex,
+    normalScale: new THREE.Vector2(0.6, 0.6),
+    roughnessMap: diceRoughTex,
+    roughness: 1.0,
     metalness: 0.0,
     clearcoat: 1.0,
     clearcoatRoughness: 0.05,
@@ -2349,11 +2413,13 @@ async function showDiceAnimation(roll) {
       if (d.bounce) {
         playDiceSound('bounce');
         if (isCrit && particles) { particles.visible = true; particlesActive = true; }
+        if (d.vel > 2.0) { _chromAb = Math.min(1.0, _chromAb + d.vel * 0.12); _compM.uniforms.uChrom.value = _chromAb; }
       }
     } else if (d.t === 'settled') {
       _diceState = d;
       physicsActive = false;
       _camLookTarget.set(d.x, 0, d.z);
+      _fovTarget = 38;
       let actualNum = finalNum;
       if (_d20FaceNormals && window.THREE) {
         const _faceNums = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
@@ -2431,8 +2497,22 @@ async function showDiceAnimation(roll) {
     fragmentShader:'uniform sampler2D tDiffuse;uniform float px;varying vec2 vUv;void main(){vec4 c=vec4(0.);c+=texture2D(tDiffuse,vUv+vec2(-4.*px,0))*.0625;c+=texture2D(tDiffuse,vUv+vec2(-3.*px,0))*.0938;c+=texture2D(tDiffuse,vUv+vec2(-2.*px,0))*.125;c+=texture2D(tDiffuse,vUv+vec2(-1.*px,0))*.1875;c+=texture2D(tDiffuse,vUv)*.25;c+=texture2D(tDiffuse,vUv+vec2(1.*px,0))*.1875;c+=texture2D(tDiffuse,vUv+vec2(2.*px,0))*.125;c+=texture2D(tDiffuse,vUv+vec2(3.*px,0))*.0938;c+=texture2D(tDiffuse,vUv+vec2(4.*px,0))*.0625;gl_FragColor=c;}' });
   const _vBlurM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, py:{value:1.0/_bH} }, vertexShader:_bVert,
     fragmentShader:'uniform sampler2D tDiffuse;uniform float py;varying vec2 vUv;void main(){vec4 c=vec4(0.);c+=texture2D(tDiffuse,vUv+vec2(0,-4.*py))*.0625;c+=texture2D(tDiffuse,vUv+vec2(0,-3.*py))*.0938;c+=texture2D(tDiffuse,vUv+vec2(0,-2.*py))*.125;c+=texture2D(tDiffuse,vUv+vec2(0,-1.*py))*.1875;c+=texture2D(tDiffuse,vUv)*.25;c+=texture2D(tDiffuse,vUv+vec2(0,1.*py))*.1875;c+=texture2D(tDiffuse,vUv+vec2(0,2.*py))*.125;c+=texture2D(tDiffuse,vUv+vec2(0,3.*py))*.0938;c+=texture2D(tDiffuse,vUv+vec2(0,4.*py))*.0625;gl_FragColor=c;}' });
-  const _compM = new THREE.ShaderMaterial({ uniforms:{ tBase:{value:null}, tBloom:{value:null}, str:{value: isCrit?0.30:isFumble?0.25:0.18} }, vertexShader:_bVert,
-    fragmentShader:'uniform sampler2D tBase;uniform sampler2D tBloom;uniform float str;varying vec2 vUv;void main(){vec4 b=texture2D(tBase,vUv);vec4 bl=texture2D(tBloom,vUv);gl_FragColor=vec4(b.rgb+bl.rgb*str,1.0);}' });
+  const _compM = new THREE.ShaderMaterial({
+    uniforms: { tBase:{value:null}, tBloom:{value:null}, str:{value:isCrit?0.30:isFumble?0.25:0.18}, uChrom:{value:0.0} },
+    vertexShader: _bVert,
+    fragmentShader: `uniform sampler2D tBase;uniform sampler2D tBloom;uniform float str;uniform float uChrom;varying vec2 vUv;
+      void main(){
+        vec2 d=vUv-0.5;
+        float ca=uChrom*0.014;
+        float r=texture2D(tBase,vUv+d*ca).r;
+        float g=texture2D(tBase,vUv).g;
+        float b=texture2D(tBase,vUv-d*ca).b;
+        vec4 bl=texture2D(tBloom,vUv);
+        vec3 col=vec3(r,g,b)+bl.rgb*str;
+        float vig=1.0-smoothstep(0.28,0.72,length(d*vec2(1.1,1.4)));
+        gl_FragColor=vec4(col*vig,1.0);
+      }`
+  });
   const _orthoBC = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
   const _qMesh = new THREE.Mesh(new THREE.PlaneGeometry(2,2), _threshM);
   const _orthoS = new THREE.Scene(); _orthoS.add(_qMesh);
@@ -2443,6 +2523,8 @@ async function showDiceAnimation(roll) {
   let lastTs = null;
   const _camLookAt = new THREE.Vector3(0, 0, 0);
   const _camLookTarget = new THREE.Vector3(0, 0, 0);
+  let _chromAb = 0.0;
+  let _fovCur = 44, _fovTarget = 44;
 
   function frame(ts) {
     stage._animId = requestAnimationFrame(frame);
@@ -2456,6 +2538,10 @@ async function showDiceAnimation(roll) {
       rimAccent.position.set(_diceState.x - 2.5, _diceState.y + 2.5, _diceState.z - 1.5);
       bounceLight.position.set(_diceState.x, 0.05, _diceState.z + 0.3);
     }
+    // Chromatic aberration decay
+    if (_chromAb > 0.001) { _chromAb -= rawDt * 3.8; if (_chromAb < 0) _chromAb = 0; _compM.uniforms.uChrom.value = _chromAb; }
+    // Settle-zoom FOV
+    if (Math.abs(_fovCur - _fovTarget) > 0.05) { _fovCur += (_fovTarget - _fovCur) * Math.min(1, rawDt * 2.2); camera.fov = _fovCur; camera.updateProjectionMatrix(); }
     // Smooth camera follow — always frame the die
     _camLookAt.lerp(_camLookTarget, rawDt * 3.5);
     camera.lookAt(_camLookAt);
