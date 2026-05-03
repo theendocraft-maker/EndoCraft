@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft DM Studio — Jarvis for D&D</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #080810;
+  --bg-mid: #0f0f1a;
+  --bg-card: #12121f;
+  --text: #f0ede8;
+  --text-muted: #8a8070;
+  --text-faint: #4a4540;
+  --gold: #c8a84b;
+  --gold-dim: #7a5010;
+  --gold-light: rgba(200,168,75,0.1);
+  --accent: #6c5de4;
+  --accent-light: rgba(108,93,228,0.1);
+  --crimson: #a82318;
+  --border: rgba(200,168,75,0.15);
+  --border-bright: rgba(200,168,75,0.4);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'EB Garamond', serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* NOISE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  background: linear-gradient(to bottom, rgba(8,8,16,0.95), transparent);
+  backdrop-filter: blur(8px);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.nav-logo-text {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+
+.nav-logo-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-link {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-link:hover { color: var(--gold); }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--gold);
+  color: #0a0800;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #e0c060;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(200,168,75,0.3);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  border-color: var(--border-bright);
+  color: var(--gold);
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Atmospheric background */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(200,168,75,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 30%; left: 20%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(108,93,228,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-eyebrow::before {
+  content: '✦';
+  font-size: 8px;
+}
+
+.hero-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 16px;
+  animation: fadeUp 0.8s ease 0.1s both;
+}
+
+.hero-title-accent {
+  background: linear-gradient(135deg, var(--gold), #e8c870, var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(12px, 2vw, 16px);
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s ease 0.15s both;
+}
+
+.hero-desc {
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: var(--text-muted);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+  font-style: italic;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 80px;
+  animation: fadeUp 0.8s ease 0.25s both;
+}
+
+.hero-actions .btn-primary { padding: 14px 32px; font-size: 11px; }
+.hero-actions .btn-ghost { padding: 14px 32px; font-size: 11px; }
+
+/* SCROLL INDICATOR */
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: fadeUp 1s ease 0.5s both;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--gold));
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.scroll-text {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+/* SECTION */
+section {
+  padding: 100px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+  max-width: 200px;
+}
+
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.section-desc {
+  font-size: 18px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 600px;
+  font-style: italic;
+}
+
+/* FEATURES GRID */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  padding: 36px 32px;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.feature-card:hover { background: #16162a; }
+
+.feature-card::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 20%; bottom: 20%;
+  width: 1px;
+  background: var(--border);
+}
+
+.feature-card:nth-child(3n)::after { display: none; }
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.feature-title {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.feature-tag {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 3px 10px;
+  background: var(--gold-light);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+/* TWO PATHS */
+.paths-section {
+  padding: 100px 48px;
+  background: var(--bg-mid);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.paths-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.paths-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.path-card {
+  background: var(--bg-card);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  transition: background 0.3s;
+  border-right: 1px solid var(--border);
+}
+
+.path-card:last-child { border-right: none; }
+.path-card:hover { background: #16162a; }
+
+.path-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.path-tag.beginner {
+  background: var(--gold-light);
+  border: 1px solid var(--border-bright);
+  color: var(--gold);
+}
+
+.path-tag.veteran {
+  background: var(--accent-light);
+  border: 1px solid rgba(108,93,228,0.3);
+  color: #a090ff;
+}
+
+.path-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 24px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.path-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-style: italic;
+  flex: 1;
+}
+
+.path-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.path-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.path-feature::before {
+  content: '✦';
+  color: var(--gold);
+  font-size: 8px;
+  flex-shrink: 0;
+}
+
+/* SYL QUOTE */
+.syl-section {
+  padding: 120px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.syl-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(200,168,75,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.syl-emoji {
+  font-size: 64px;
+  margin-bottom: 32px;
+  display: block;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.syl-quote {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(20px, 3vw, 32px);
+  color: var(--text);
+  line-height: 1.4;
+  max-width: 700px;
+  margin: 0 auto 16px;
+}
+
+.syl-quote em {
+  color: var(--gold);
+  font-style: normal;
+}
+
+.syl-attribution {
+  font-size: 13px;
+  color: var(--text-faint);
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+/* HOW IT WORKS */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 64px;
+  position: relative;
+}
+
+.steps-grid::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), var(--border), transparent);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  position: relative;
+}
+
+.step-number {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-title {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* CTA SECTION */
+.cta-section {
+  padding: 120px 48px;
+  text-align: center;
+  background: var(--bg-mid);
+  border-top: 1px solid var(--border);
+}
+
+.cta-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.cta-title em {
+  color: var(--gold);
+  font-style: normal;
+}
+
+.cta-desc {
+  font-size: 18px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 48px;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-actions .btn-primary { padding: 16px 40px; font-size: 12px; }
+.cta-actions .btn-ghost { padding: 16px 40px; font-size: 12px; }
+
+.cta-note {
+  margin-top: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+/* FOOTER */
+footer {
+  padding: 40px 48px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-brand {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.footer-tagline {
+  font-size: 13px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-link {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-faint);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.footer-link:hover { color: var(--gold); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* DIVIDER */
+.gold-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  margin: 24px auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .paths-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps-grid::before { display: none; }
+  section { padding: 60px 24px; }
+  .paths-section { padding: 60px 24px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="https://endocraft.app" class="nav-logo">
+    <div class="nav-logo-icon">🎲</div>
+    <div>
+      <div class="nav-logo-text">EndoCraft</div>
+      <div class="nav-logo-sub">DM Studio</div>
+    </div>
+  </a>
+  <div class="nav-cta">
+    <a href="https://endocraft.app" class="nav-link">For Players</a>
+    <a href="https://endocraft.app/dm-studio" class="btn-primary">Start for free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Introducing Whisper — AI for Dungeon Masters</div>
+  <h1 class="hero-title">
+    <span class="hero-title-accent">Jarvis</span><br>for D&D.
+  </h1>
+  <p class="hero-subtitle">EndoCraft DM Studio</p>
+  <p class="hero-desc">
+    Meet Whisper — your AI that knows your entire campaign.
+    NPCs, locations, lore, sessions. Prep less. Play more.
+  </p>
+  <div class="hero-actions">
+    <a href="https://endocraft.app/dm-studio" class="btn-primary">✦ Start for free</a>
+    <a href="#how" class="btn-ghost">See how it works</a>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <div class="section-eyebrow">What it does</div>
+  <h2 class="section-title">Everything a DM needs.<br>Nothing they don't.</h2>
+  <p class="section-desc">One place for your entire campaign. An AI that reads all of it and helps you run better sessions.</p>
+
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <span class="feature-icon">🧠</span>
+      <div class="feature-title">Living Wiki</div>
+      <div class="feature-desc">NPCs, locations, lore — all connected. The AI knows your world as well as you do.</div>
+      <span class="feature-tag">Lore Codex</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⚔️</span>
+      <div class="feature-title">Whisper</div>
+      <div class="feature-desc">Ask Whisper anything mid-session. Rules, NPC reactions, consequences — instant answers with full campaign context. Whisper is always listening.</div>
+      <span class="feature-tag">Whisper knows everything</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🖼️</span>
+      <div class="feature-title">Scene Images</div>
+      <div class="feature-desc">Cinematic AI-generated images for every location. Describe the scene — we paint it.</div>
+      <span class="feature-tag">Seedream 4.5</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">👥</span>
+      <div class="feature-title">NPC Generator</div>
+      <div class="feature-desc">Instant NPCs that fit your world. Not generic — contextual. They feel like they belong.</div>
+      <span class="feature-tag">AI-powered</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-title">Encounter Generator</div>
+      <div class="feature-desc">Balanced encounters tuned to your party. Tactical, narrative, or somewhere in between.</div>
+      <span class="feature-tag">CR-balanced</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🃏</span>
+      <div class="feature-title">Session Cards</div>
+      <div class="feature-desc">Every unforgettable moment becomes a collectible trading card. Your players will want one.</div>
+      <span class="feature-tag">EndoCraft</span>
+    </div>
+  </div>
+</section>
+
+<!-- TWO PATHS -->
+<div class="paths-section">
+  <div class="paths-inner">
+    <div class="section-eyebrow">Your starting point</div>
+    <h2 class="section-title">Two ways in.<br>One destination.</h2>
+    <p class="section-desc">Whether you're running your first session or your hundredth — DM Studio grows with you.</p>
+
+    <div class="paths-grid reveal">
+      <div class="path-card">
+        <span class="path-tag beginner">✦ New DM</span>
+        <h3 class="path-title">Start with<br>Ashford Wyrmling</h3>
+        <p class="path-desc">A ready-to-run beginner adventure. Load it in one click — your first session starts in minutes. Meet Syl. Make a choice that matters.</p>
+        <div class="path-features">
+          <div class="path-feature">Complete campaign pre-loaded</div>
+          <div class="path-feature">Whisper knows every NPC and location</div>
+          <div class="path-feature">One moral decision. Three endings.</div>
+          <div class="path-feature">Your first card generated automatically</div>
+        </div>
+        <a href="https://endocraft.app/dm-studio" class="btn-primary" style="margin-top:24px;width:fit-content">Load Ashford →</a>
+      </div>
+      <div class="path-card">
+        <span class="path-tag veteran">⚔️ Experienced DM</span>
+        <h3 class="path-title">Bring your<br>own world</h3>
+        <p class="path-desc">Already running a campaign? Import your notes, PDFs, or Google Docs. The AI reads everything and knows your world in minutes.</p>
+        <div class="path-features">
+          <div class="path-feature">Import PDF, text, or JSON</div>
+          <div class="path-feature">AI structures your existing content</div>
+          <div class="path-feature">Works with any system or homebrew</div>
+          <div class="path-feature">Your campaign. Your rules.</div>
+        </div>
+        <a href="https://endocraft.app/dm-studio" class="btn-ghost" style="margin-top:24px;width:fit-content">Build my world →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SYL QUOTE -->
+<div class="syl-section reveal">
+  <span class="syl-emoji">🐉</span>
+  <h2 class="syl-quote">
+    "Every story starts somewhere.<br>
+    <em>This is yours.</em>"
+  </h2>
+  <div class="gold-divider"></div>
+  <p class="syl-attribution">— Syl, DM Studio mascot · Ashford Wyrmling, Session 1</p>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-eyebrow">How it works</div>
+  <h2 class="section-title">From zero to session<br>in minutes.</h2>
+
+  <div class="steps-grid reveal">
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-title">Load or Import</div>
+      <div class="step-desc">Start with Ashford or bring your own campaign notes.</div>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-title">Build your world</div>
+      <div class="step-desc">Add locations, NPCs, lore. The AI connects everything.</div>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-title">Run your session</div>
+      <div class="step-desc">Whisper answers questions. Encounter generator balances fights.</div>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-title">Seal the moment</div>
+      <div class="step-desc">Great moments become collectible cards your players keep forever.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner reveal">
+    <h2 class="cta-title">Your campaign.<br><em>Come alive.</em></h2>
+    <p class="cta-desc">
+      Join DMs who prep less and play more. 
+      Free to start. No credit card required.
+    </p>
+    <div class="cta-actions">
+      <a href="https://endocraft.app/dm-studio" class="btn-primary">✦ Start for free</a>
+      <a href="https://endocraft.app" class="btn-ghost">For players →</a>
+    </div>
+    <p class="cta-note">✦ Free · No credit card · Works with any D&D campaign</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">EndoCraft DM Studio</div>
+  <div class="footer-tagline">Your world. Every moment sealed.</div>
+  <div class="footer-links">
+    <a href="https://endocraft.app" class="footer-link">EndoCraft</a>
+    <a href="https://endocraft.app/dm-studio" class="footer-link">DM Studio</a>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

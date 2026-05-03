@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft — Player Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #eceae5;
+  --bg-dark: #e0ddd7;
+  --bg-darker: #d4d0c8;
+  --bg-input: #f5f3ef;
+  --text: #0f0f0f;
+  --text-muted: #5a5550;
+  --text-faint: #9b9590;
+  --accent: #6c5de4;
+  --accent-light: rgba(108,93,228,0.08);
+  --gold: #936e1e;
+  --gold-light: rgba(147,110,30,0.12);
+  --crimson: #a82318;
+  --crimson-light: rgba(168,35,24,0.08);
+  --green: #2d6a4f;
+  --green-light: rgba(45,106,79,0.1);
+  --border: rgba(0,0,0,0.08);
+  --border-gold: rgba(147,110,30,0.25);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Syne', sans-serif;
+}
+
+body {
+  background: #2a2520;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+/* ── OUTER SHELL ── */
+.player-view {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  grid-template-rows: auto 1fr;
+  background: var(--bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  min-height: 780px;
+  position: relative;
+}
+
+/* Parchment noise */
+.player-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1 / -1;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border-gold);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #c8a84b, #7a5010);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.logo-text {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-gold);
+  flex-shrink: 0;
+}
+
+.campaign-info { flex: 1; }
+
+.campaign-name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.session-info {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.tab:hover { color: var(--text); background: rgba(0,0,0,0.06); }
+.tab.active {
+  color: var(--gold);
+  background: var(--gold-light);
+  border-color: var(--border-gold);
+}
+
+/* LIVE badge */
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(168,35,24,0.1);
+  border: 1px solid rgba(168,35,24,0.3);
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--crimson);
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.live-text {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--crimson);
+  text-transform: uppercase;
+}
+
+/* ── LEFT COLUMN — Character ── */
+.left-col {
+  background: var(--bg-dark);
+  border-right: 1px solid var(--border-gold);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+  overflow-y: auto;
+}
+
+.char-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.char-portrait {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a1f0a, #4a3515);
+  border: 2px solid var(--border-gold);
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  position: relative;
+}
+
+.char-portrait::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--border-gold);
+  opacity: 0.5;
+}
+
+.char-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.char-class {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Stat bars */
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-label span {
+  color: var(--text-muted);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+
+.hp-bar {
+  height: 8px;
+  background: var(--bg-darker);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.hp-fill {
+  height: 100%;
+  background: linear-gradient(to right, #2d6a4f, #40916c);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.hp-fill.medium { background: linear-gradient(to right, #936e1e, #b8860b); }
+.hp-fill.low { background: linear-gradient(to right, #a82318, #c0392b); }
+
+/* Ability grid */
+.abilities {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.ability {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+}
+
+.ability-score {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.ability-mod {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: var(--gold);
+  font-style: italic;
+}
+
+.ability-name {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Warning box */
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--crimson-light);
+  border: 1px solid rgba(168,35,24,0.25);
+  border-radius: 8px;
+  border-left: 3px solid var(--crimson);
+}
+
+.warning-icon { font-size: 14px; flex-shrink: 0; }
+
+.warning-text {
+  font-family: 'EB Garamond', serif;
+  font-size: 11.5px;
+  color: var(--crimson);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Resources pips */
+.resources { display: flex; flex-direction: column; gap: 6px; }
+
+.resource {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resource-name {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.resource-pips { display: flex; gap: 3px; }
+
+.pip {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--border-gold);
+  background: var(--gold-light);
+}
+
+.pip.used {
+  background: var(--bg-darker);
+  border-color: var(--border);
+}
+
+/* ── MIDDLE COLUMN ── */
+.mid-col {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+  overflow-y: auto;
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border-gold), transparent);
+}
+
+/* Recap card */
+.recap-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 16px;
+  border-left: 3px solid var(--gold);
+}
+
+.recap-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.recap-text {
+  font-family: 'EB Garamond', serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  font-style: italic;
+}
+
+.recap-text strong {
+  font-style: normal;
+  color: var(--text);
+}
+
+/* Open threads */
+.threads { display: flex; flex-direction: column; gap: 6px; }
+
+.thread {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+  cursor: default;
+}
+
+.thread:hover { border-color: var(--border-gold); }
+
+.thread-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+.thread-content { flex: 1; }
+
+.thread-text {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.thread-meta {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Highlights */
+.highlights { display: flex; flex-direction: column; gap: 8px; }
+
+.highlight {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.highlight:hover {
+  border-color: var(--border-gold);
+  background: var(--gold-light);
+}
+
+.highlight-rarity {
+  width: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.highlight-rarity.epic   { background: var(--accent); }
+.highlight-rarity.legendary { background: var(--gold); }
+.highlight-rarity.common { background: var(--text-faint); }
+
+.highlight-content { flex: 1; }
+
+.highlight-text {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.highlight-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highlight-who {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.highlight-rarity-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.highlight-rarity-label.epic      { color: var(--accent); }
+.highlight-rarity-label.legendary { color: var(--gold); }
+
+/* ── RIGHT COLUMN ── */
+.right-col {
+  background: var(--bg-dark);
+  border-left: 1px solid var(--border-gold);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+  overflow-y: auto;
+}
+
+/* Party list */
+.party-list { display: flex; flex-direction: column; gap: 8px; }
+
+.party-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.party-member:hover { border-color: var(--border-gold); }
+
+.member-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg-darker);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  border: 1px solid var(--border-gold);
+  flex-shrink: 0;
+}
+
+.member-info { flex: 1; min-width: 0; }
+
+.member-name {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+
+.member-class {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.member-status {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.member-status.online  { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.4); }
+.member-status.offline { background: var(--text-faint); }
+
+/* NPC list */
+.npc-list { display: flex; flex-direction: column; gap: 6px; }
+
+.npc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.npc:hover { border-color: var(--border-gold); }
+
+.npc-trust {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.npc-trust.trust   { background: var(--green); }
+.npc-trust.danger  { background: var(--crimson); }
+.npc-trust.unknown { background: var(--text-faint); }
+
+.npc-name {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: var(--text);
+  flex: 1;
+}
+
+.npc-relation {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* Cards preview */
+.cards-preview { display: flex; flex-direction: column; gap: 8px; }
+
+.card-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-item:hover {
+  border-color: var(--border-gold);
+  background: var(--gold-light);
+}
+
+.card-thumb {
+  width: 36px; height: 48px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-gold);
+}
+
+.card-thumb.legendary { background: linear-gradient(135deg, #1a1000, #2a2000); }
+.card-thumb.epic      { background: linear-gradient(135deg, #120a28, #1e1040); }
+.card-thumb.new {
+  background: linear-gradient(135deg, #c8a84b, #936e1e);
+  animation: newPulse 2s ease-in-out infinite;
+}
+
+@keyframes newPulse {
+  0%,100% { box-shadow: 0 0 8px rgba(147,110,30,0.4); }
+  50%     { box-shadow: 0 0 18px rgba(147,110,30,0.8); }
+}
+
+.card-info { flex: 1; min-width: 0; }
+
+.card-session {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.card-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.card-rarity.legendary { color: var(--gold); }
+.card-rarity.epic      { color: var(--accent); }
+.card-rarity.new       { color: var(--crimson); }
+
+/* Pack ready banner */
+.pack-ready {
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(147,110,30,0.15), rgba(108,93,228,0.1));
+  border: 1px solid var(--border-gold);
+  border-radius: 10px;
+  text-align: center;
+  animation: packGlow 2s ease-in-out infinite;
+}
+
+@keyframes packGlow {
+  0%,100% { box-shadow: 0 0 12px rgba(147,110,30,0.2); }
+  50%     { box-shadow: 0 0 24px rgba(147,110,30,0.4); }
+}
+
+.pack-ready-text {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.pack-ready-btn {
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(135deg, var(--gold), #c8a84b);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #1a0f00;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.pack-ready-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(147,110,30,0.4);
+}
+
+/* ── ALTERNATE TAB VIEWS ── */
+
+/* Full-width content panel for My Cards / Party / World tabs */
+.full-view {
+  grid-column: 1 / -1;
+  display: none;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.full-view.active { display: block; }
+
+/* When Tonight is NOT active, hide the 3-col layout */
+.player-view.tab-cards .left-col,
+.player-view.tab-cards .mid-col,
+.player-view.tab-cards .right-col,
+.player-view.tab-party .left-col,
+.player-view.tab-party .mid-col,
+.player-view.tab-party .right-col,
+.player-view.tab-world .left-col,
+.player-view.tab-world .mid-col,
+.player-view.tab-world .right-col {
+  display: none;
+}
+
+/* My Cards view grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.card-big {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.card-big:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+  border-color: rgba(147,110,30,0.5);
+}
+
+.card-big-art {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.card-big-art.legendary { background: linear-gradient(135deg, #1a1000, #3a2800); }
+.card-big-art.epic      { background: linear-gradient(135deg, #120a28, #281060); }
+.card-big-art.common    { background: linear-gradient(135deg, #1a1a1a, #2a2a2a); }
+.card-big-art.new       { background: linear-gradient(135deg, #c8a84b, #7a5010); animation: newPulse 2s ease-in-out infinite; }
+
+.card-big-body {
+  padding: 12px;
+}
+
+.card-big-session {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.card-big-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 14px;
+  color: var(--text);
+  font-style: italic;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.card-big-rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.card-big-rarity.legendary { color: var(--gold); }
+.card-big-rarity.epic      { color: var(--accent); }
+.card-big-rarity.common    { color: var(--text-faint); }
+.card-big-rarity.new       { color: var(--crimson); }
+
+/* Party full view */
+.party-full {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.party-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.party-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.party-avatar-lg {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a1f0a, #4a3515);
+  border: 2px solid var(--border-gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+
+.party-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.party-class {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.party-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.party-stat-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.party-stat-val {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: var(--text);
+  font-style: italic;
+}
+
+/* World / NPC full view */
+.world-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.world-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.npc-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+
+.npc-card:hover { border-color: var(--border-gold); }
+
+.npc-trust-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.npc-trust-dot.trust   { background: var(--green); }
+.npc-trust-dot.danger  { background: var(--crimson); }
+.npc-trust-dot.unknown { background: var(--text-faint); }
+
+.npc-card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.npc-card-note {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.location-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+
+.location-card:hover { border-color: var(--border-gold); }
+
+.location-name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.location-note {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Full-view page header */
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.view-title {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+
+.view-sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 14px;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+/* dice link */
+.dice-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-gold);
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.dice-link:hover {
+  background: var(--gold-light);
+}
+</style>
+</head>
+<body>
+
+<div class="player-view" id="playerView">
+
+  <!-- ── TOP BAR ── -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🎲</div>
+      <span class="logo-text">EndoCraft</span>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="campaign-info">
+      <div class="campaign-name" id="campaignName">Curse of Strahd</div>
+      <div class="session-info" id="sessionInfo">Session 15 · DM: Marco · Castle Ravenloft</div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('tonight')">Tonight</div>
+      <div class="tab" onclick="switchTab('cards')">My Cards</div>
+      <div class="tab" onclick="switchTab('party')">Party</div>
+      <div class="tab" onclick="switchTab('world')">World</div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span class="live-text">Live</span>
+    </div>
+  </div>
+
+  <!-- ══ TONIGHT VIEW (3-col) ══ -->
+
+  <!-- LEFT — Character Sheet -->
+  <div class="left-col">
+
+    <div class="char-header">
+      <div class="char-portrait">⚔️</div>
+      <div class="char-name">Gattok</div>
+      <div class="char-class">Half-Orc Barbarian · Level 6</div>
+    </div>
+
+    <div class="stat-block">
+      <div class="stat-row">
+        <div class="stat-label">Hit Points <span>67 / 72</span></div>
+        <div class="hp-bar"><div class="hp-fill" style="width:93%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label">Rage Uses <span>2 / 3</span></div>
+        <div class="hp-bar"><div class="hp-fill medium" style="width:66%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label">Armor Class <span>16</span></div>
+        <div class="hp-bar"><div class="hp-fill" style="width:80%;background:linear-gradient(to right,#5a4a2a,#8a6a3a)"></div></div>
+      </div>
+    </div>
+
+    <div class="abilities">
+      <div class="ability">
+        <div class="ability-score">20</div>
+        <div class="ability-mod">+5</div>
+        <div class="ability-name">STR</div>
+      </div>
+      <div class="ability">
+        <div class="ability-score">14</div>
+        <div class="ability-mod">+2</div>
+        <div class="ability-name">DEX</div>
+      </div>
+      <div class="ability">
+        <div class="ability-score">18</div>
+        <div class="ability-mod">+4</div>
+        <div class="ability-name">CON</div>
+      </div>
+      <div class="ability">
+        <div class="ability-score">8</div>
+        <div class="ability-mod">−1</div>
+        <div class="ability-name">INT</div>
+      </div>
+      <div class="ability">
+        <div class="ability-score">12</div>
+        <div class="ability-mod">+1</div>
+        <div class="ability-name">WIS</div>
+      </div>
+      <div class="ability">
+        <div class="ability-score">10</div>
+        <div class="ability-mod">+0</div>
+        <div class="ability-name">CHA</div>
+      </div>
+    </div>
+
+    <div class="warning">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">Wound Infection Risk active — CON save required next long rest</div>
+    </div>
+
+    <div class="resources">
+      <div class="resource">
+        <span class="resource-name">Relentless Rage</span>
+        <div class="resource-pips">
+          <div class="pip"></div>
+          <div class="pip used"></div>
+        </div>
+      </div>
+      <div class="resource">
+        <span class="resource-name">Danger Sense</span>
+        <div class="resource-pips">
+          <div class="pip"></div>
+        </div>
+      </div>
+      <div class="resource">
+        <span class="resource-name">Feral Instinct</span>
+        <div class="resource-pips">
+          <div class="pip"></div>
+          <div class="pip"></div>
+        </div>
+      </div>
+    </div>
+
+    <a href="index.html" class="dice-link" style="margin-top:auto;justify-content:center">🎲 Dice Roller →</a>
+
+  </div>
+
+  <!-- MIDDLE — Session Content -->
+  <div class="mid-col">
+
+    <!-- Last Session Recap -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">Last Session Recap</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="recap-card">
+        <div class="recap-eyebrow">✦ From Gattok's perspective</div>
+        <div class="recap-text">
+          The party descended into the crypts beneath Castle Ravenloft. <strong>You held the line</strong> as Larrymäus pulled Ireena from Strahd's grasp — three vampires at once, rage burning through your veins. The wound on your arm hasn't healed right since. Akseth's wolf form bought you the seconds you needed. <strong>Telro vanished</strong> somewhere in the east wing. Nobody has mentioned it yet.
+        </div>
+      </div>
+    </div>
+
+    <!-- Open Threads -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">Your Open Threads</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="threads">
+        <div class="thread">
+          <div class="thread-icon">🗡️</div>
+          <div class="thread-content">
+            <div class="thread-text">You promised Ireena you would protect her — even from your own party if necessary</div>
+            <div class="thread-meta">Session 12 · Ongoing</div>
+          </div>
+        </div>
+        <div class="thread">
+          <div class="thread-icon">❓</div>
+          <div class="thread-content">
+            <div class="thread-text">The bite on your arm — Strahd's mark or something else?</div>
+            <div class="thread-meta">Session 14 · Unresolved</div>
+          </div>
+        </div>
+        <div class="thread">
+          <div class="thread-icon">⚔️</div>
+          <div class="thread-content">
+            <div class="thread-text">You don't trust the Abbot of Krezk — but haven't told the party why</div>
+            <div class="thread-meta">Session 9 · Tension building</div>
+          </div>
+        </div>
+        <div class="thread">
+          <div class="thread-icon">👁️</div>
+          <div class="thread-content">
+            <div class="thread-text">Telro vanished in the east wing. Your instincts say something is wrong</div>
+            <div class="thread-meta">Session 15 · New</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tonight's Highlights -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">Tonight's Highlights</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="highlights">
+        <div class="highlight" title="Click to mark as card moment">
+          <div class="highlight-rarity legendary"></div>
+          <div class="highlight-content">
+            <div class="highlight-text">Gattok charges through three guards to reach Strahd — takes 34 damage and stays standing</div>
+            <div class="highlight-meta">
+              <span class="highlight-who">✦ Your moment</span>
+              <span class="highlight-rarity-label legendary">Legendary</span>
+            </div>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-rarity epic"></div>
+          <div class="highlight-content">
+            <div class="highlight-text">Larrymäus casts Spiritual Weapon — the hammer takes the shape of his dead father</div>
+            <div class="highlight-meta">
+              <span class="highlight-who">Larrymäus</span>
+              <span class="highlight-rarity-label epic">Epic</span>
+            </div>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-rarity common"></div>
+          <div class="highlight-content">
+            <div class="highlight-text">Akseth wildshapes into a Dire Wolf and drags Rahadin away from the altar</div>
+            <div class="highlight-meta">
+              <span class="highlight-who">Akseth</span>
+              <span class="highlight-rarity-label" style="color:var(--text-faint)">Common</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT — Pack + Party + NPCs + Cards -->
+  <div class="right-col">
+
+    <div class="pack-ready">
+      <div class="pack-ready-text">✦ Session 14 pack is ready</div>
+      <button class="pack-ready-btn" onclick="openPack()">Open Your Pack →</button>
+    </div>
+
+    <div>
+      <div class="section-header">
+        <div class="section-title">Party</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="party-list">
+        <div class="party-member">
+          <div class="member-avatar">⚔️</div>
+          <div class="member-info">
+            <div class="member-name">Gattok</div>
+            <div class="member-class">Barbarian 6 — You</div>
+          </div>
+          <div class="member-status online"></div>
+        </div>
+        <div class="party-member">
+          <div class="member-avatar">✝️</div>
+          <div class="member-info">
+            <div class="member-name">Larrymäus</div>
+            <div class="member-class">Cleric 5</div>
+          </div>
+          <div class="member-status online"></div>
+        </div>
+        <div class="party-member">
+          <div class="member-avatar">🐺</div>
+          <div class="member-info">
+            <div class="member-name">Akseth</div>
+            <div class="member-class">Druid 5</div>
+          </div>
+          <div class="member-status online"></div>
+        </div>
+        <div class="party-member">
+          <div class="member-avatar">🗡️</div>
+          <div class="member-info">
+            <div class="member-name">Telro</div>
+            <div class="member-class">Rogue 5</div>
+          </div>
+          <div class="member-status offline"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-header">
+        <div class="section-title">Key NPCs</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="npc-list">
+        <div class="npc">
+          <div class="npc-trust trust"></div>
+          <div class="npc-name">Ireena Kolyana</div>
+          <div class="npc-relation">protected</div>
+        </div>
+        <div class="npc">
+          <div class="npc-trust danger"></div>
+          <div class="npc-name">Strahd von Zarovich</div>
+          <div class="npc-relation">enemy</div>
+        </div>
+        <div class="npc">
+          <div class="npc-trust danger"></div>
+          <div class="npc-name">Rahadin</div>
+          <div class="npc-relation">dangerous</div>
+        </div>
+        <div class="npc">
+          <div class="npc-trust unknown"></div>
+          <div class="npc-name">The Abbot</div>
+          <div class="npc-relation">suspicious</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-header">
+        <div class="section-title">My Cards</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-preview">
+        <div class="card-item" onclick="switchTab('cards')">
+          <div class="card-thumb new">✨</div>
+          <div class="card-info">
+            <div class="card-session">Session 14 · New</div>
+            <div class="card-title">Open to reveal</div>
+          </div>
+          <div class="card-rarity new">New</div>
+        </div>
+        <div class="card-item" onclick="switchTab('cards')">
+          <div class="card-thumb legendary">👑</div>
+          <div class="card-info">
+            <div class="card-session">Session 13</div>
+            <div class="card-title">The Last Stand</div>
+          </div>
+          <div class="card-rarity legendary">Legendary</div>
+        </div>
+        <div class="card-item" onclick="switchTab('cards')">
+          <div class="card-thumb epic">⚡</div>
+          <div class="card-info">
+            <div class="card-session">Session 11</div>
+            <div class="card-title">Rage Unbroken</div>
+          </div>
+          <div class="card-rarity epic">Epic</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ MY CARDS VIEW ══ -->
+  <div class="full-view" id="view-cards">
+    <div class="view-header">
+      <div>
+        <div class="view-title">My Cards</div>
+        <div class="view-sub">Gattok's collection · 7 cards sealed</div>
+      </div>
+      <a href="../session/" class="dice-link">✦ Open on EndoCraft →</a>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card-big">
+        <div class="card-big-art new">✨</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 14 · Not opened</div>
+          <div class="card-big-title">Waiting to be revealed...</div>
+          <div class="card-big-rarity new">Sealed</div>
+        </div>
+      </div>
+      <div class="card-big">
+        <div class="card-big-art legendary">👑</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 13</div>
+          <div class="card-big-title">The Last Stand</div>
+          <div class="card-big-rarity legendary">Legendary</div>
+        </div>
+      </div>
+      <div class="card-big">
+        <div class="card-big-art epic">⚡</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 11</div>
+          <div class="card-big-title">Rage Unbroken</div>
+          <div class="card-big-rarity epic">Epic</div>
+        </div>
+      </div>
+      <div class="card-big">
+        <div class="card-big-art epic">🔥</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 10</div>
+          <div class="card-big-title">The Bridge Fight</div>
+          <div class="card-big-rarity epic">Epic</div>
+        </div>
+      </div>
+      <div class="card-big">
+        <div class="card-big-art common">⚔️</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 8</div>
+          <div class="card-big-title">First Blood</div>
+          <div class="card-big-rarity common">Common</div>
+        </div>
+      </div>
+      <div class="card-big">
+        <div class="card-big-art common">🛡️</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 6</div>
+          <div class="card-big-title">Held the Gate</div>
+          <div class="card-big-rarity common">Common</div>
+        </div>
+      </div>
+      <div class="card-big">
+        <div class="card-big-art common">💀</div>
+        <div class="card-big-body">
+          <div class="card-big-session">Session 3</div>
+          <div class="card-big-title">Down But Not Out</div>
+          <div class="card-big-rarity common">Common</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PARTY VIEW ══ -->
+  <div class="full-view" id="view-party">
+    <div class="view-header">
+      <div>
+        <div class="view-title">The Party</div>
+        <div class="view-sub">Curse of Strahd · 4 adventurers</div>
+      </div>
+    </div>
+
+    <div class="party-full">
+      <div class="party-card">
+        <div class="party-card-header">
+          <div class="party-avatar-lg">⚔️</div>
+          <div>
+            <div class="party-name">Gattok</div>
+            <div class="party-class">Half-Orc Barbarian · Level 6</div>
+          </div>
+        </div>
+        <div class="party-stat"><span class="party-stat-label">HP</span><span class="party-stat-val">67 / 72</span></div>
+        <div class="party-stat"><span class="party-stat-label">AC</span><span class="party-stat-val">16</span></div>
+        <div class="party-stat"><span class="party-stat-label">Status</span><span class="party-stat-val" style="color:var(--crimson)">Infected wound</span></div>
+        <div class="party-stat"><span class="party-stat-label">Cards</span><span class="party-stat-val">7 cards</span></div>
+      </div>
+      <div class="party-card">
+        <div class="party-card-header">
+          <div class="party-avatar-lg">✝️</div>
+          <div>
+            <div class="party-name">Larrymäus</div>
+            <div class="party-class">Human Cleric · Level 5</div>
+          </div>
+        </div>
+        <div class="party-stat"><span class="party-stat-label">HP</span><span class="party-stat-val">38 / 38</span></div>
+        <div class="party-stat"><span class="party-stat-label">AC</span><span class="party-stat-val">18</span></div>
+        <div class="party-stat"><span class="party-stat-label">Status</span><span class="party-stat-val" style="color:var(--green)">Healthy</span></div>
+        <div class="party-stat"><span class="party-stat-label">Cards</span><span class="party-stat-val">5 cards</span></div>
+      </div>
+      <div class="party-card">
+        <div class="party-card-header">
+          <div class="party-avatar-lg">🐺</div>
+          <div>
+            <div class="party-name">Akseth</div>
+            <div class="party-class">Wood Elf Druid · Level 5</div>
+          </div>
+        </div>
+        <div class="party-stat"><span class="party-stat-label">HP</span><span class="party-stat-val">44 / 44</span></div>
+        <div class="party-stat"><span class="party-stat-label">AC</span><span class="party-stat-val">14</span></div>
+        <div class="party-stat"><span class="party-stat-label">Status</span><span class="party-stat-val" style="color:var(--green)">Healthy</span></div>
+        <div class="party-stat"><span class="party-stat-label">Cards</span><span class="party-stat-val">6 cards</span></div>
+      </div>
+      <div class="party-card" style="opacity:0.7">
+        <div class="party-card-header">
+          <div class="party-avatar-lg">🗡️</div>
+          <div>
+            <div class="party-name">Telro</div>
+            <div class="party-class">Half-Elf Rogue · Level 5</div>
+          </div>
+        </div>
+        <div class="party-stat"><span class="party-stat-label">HP</span><span class="party-stat-val">—</span></div>
+        <div class="party-stat"><span class="party-stat-label">AC</span><span class="party-stat-val">15</span></div>
+        <div class="party-stat"><span class="party-stat-label">Status</span><span class="party-stat-val" style="color:var(--text-faint)">Missing — east wing</span></div>
+        <div class="party-stat"><span class="party-stat-label">Cards</span><span class="party-stat-val">4 cards</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WORLD VIEW ══ -->
+  <div class="full-view" id="view-world">
+    <div class="view-header">
+      <div>
+        <div class="view-title">World</div>
+        <div class="view-sub">NPCs · Locations · Lore</div>
+      </div>
+    </div>
+
+    <div class="world-sections">
+      <div>
+        <div class="world-section-title">NPCs</div>
+        <div class="npc-card">
+          <div class="npc-trust-dot trust"></div>
+          <div>
+            <div class="npc-card-name">Ireena Kolyana</div>
+            <div class="npc-card-note">Protected by the party. Strahd's obsession. Last seen in the crypts.</div>
+          </div>
+        </div>
+        <div class="npc-card">
+          <div class="npc-trust-dot danger"></div>
+          <div>
+            <div class="npc-card-name">Strahd von Zarovich</div>
+            <div class="npc-card-note">The vampire lord of Barovia. Ancient, patient, terrifying. Has taken notice of Gattok specifically.</div>
+          </div>
+        </div>
+        <div class="npc-card">
+          <div class="npc-trust-dot danger"></div>
+          <div>
+            <div class="npc-card-name">Rahadin</div>
+            <div class="npc-card-note">Strahd's chamberlain. Carries the death screams of thousands. Do not provoke.</div>
+          </div>
+        </div>
+        <div class="npc-card">
+          <div class="npc-trust-dot unknown"></div>
+          <div>
+            <div class="npc-card-name">The Abbot of Krezk</div>
+            <div class="npc-card-note">Claims to be a healer. Gattok doesn't trust him — something is off about his eyes.</div>
+          </div>
+        </div>
+        <div class="npc-card">
+          <div class="npc-trust-dot trust"></div>
+          <div>
+            <div class="npc-card-name">Ezmerelda d'Avenir</div>
+            <div class="npc-card-note">Monster hunter. Ally. Missing her leg below the knee — doesn't talk about it.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="world-section-title">Locations</div>
+        <div class="location-card">
+          <div class="location-name">Castle Ravenloft — Crypts</div>
+          <div class="location-note">Current location. Vampire spawn patrol. Ireena was found here.</div>
+        </div>
+        <div class="location-card">
+          <div class="location-name">Village of Barovia</div>
+          <div class="location-note">Where it started. The Mad Mage's house. The church with the undead in the basement.</div>
+        </div>
+        <div class="location-card">
+          <div class="location-name">Vallaki</div>
+          <div class="location-note">Festival town run by a paranoid burgomaster. Party helped (sort of) stop a coup.</div>
+        </div>
+        <div class="location-card">
+          <div class="location-name">Krezk</div>
+          <div class="location-note">Walled village. Home of the suspicious Abbot. Party has access.</div>
+        </div>
+        <div class="location-card">
+          <div class="location-name">The East Wing</div>
+          <div class="location-note">Ravenloft castle. Telro's last known position. Nobody has gone back yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .player-view -->
+
+<script>
+const view = document.getElementById('playerView');
+const tabEls = document.querySelectorAll('.topbar .tab');
+
+function switchTab(name) {
+  // update tab buttons
+  tabEls.forEach(t => t.classList.toggle('active', t.textContent.trim().toLowerCase() === nameToLabel(name)));
+
+  // toggle root class for column visibility
+  view.className = view.className.replace(/\btab-\w+\b/, '');
+  if (name !== 'tonight') view.classList.add('tab-' + name);
+
+  // toggle full-view panels
+  document.querySelectorAll('.full-view').forEach(el => {
+    el.classList.toggle('active', el.id === 'view-' + name);
+  });
+}
+
+function nameToLabel(name) {
+  return { tonight: 'tonight', cards: 'my cards', party: 'party', world: 'world' }[name] || name;
+}
+
+function openPack() {
+  // Navigate to the EndoCraft session/pack reveal
+  window.location.href = '../session/';
+}
+</script>
+</body>
+</html>

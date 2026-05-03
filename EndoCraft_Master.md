@@ -181,8 +181,8 @@ Anthropomorphic rabbit bard sitting alone on stone steps, warm brown fur, forest
 ```
 Some moments are too legendary to forget.
 Turn your D&D session into a collectible card.
-Roll. Reveal. Remember.
-endocraft.app
+🎲 Roll. Reveal. Remember.
+🔗 endocraft.app
 ```
 - **Profilbild:** Pixar Caspian (Version 2) — morgen generieren
 
@@ -192,20 +192,20 @@ endocraft.app
 | Sekunde | Content |
 |---------|---------|
 | 0–2s | Caspian Karte erscheint (Hook) |
-| 0.5s | Text: *"That moment your party will never let you forget"* |
+| 0.5s | Text: *"That moment your party will never let you forget 💀"* |
 | 2–9s | Story-Overlays: Grimhilda → Caspian → "Natural 2." → "She kissed him anyway." → "My party hasn't stopped laughing since." |
 | 9–16s | Pack Reveal (7s) |
 | 16–22s | CTA: *"Turn your moment into a card."* + endocraft.app |
 | 22s | Loop |
 
-Caption: `POV: you rolled a 2 and she kissed you anyway endocraft.app`
+Caption: `POV: you rolled a 2 and she kissed you anyway 💀 endocraft.app`
 Hashtags: `#dnd #dndtiktok #dungeonsanddragons #ttrpg #nat2 #bardlife #dndmemes #dndstory`
 
 ---
 
 **Spot 2 — "The Misprint" (FOMO/Curiosity)**
 Hook: Misprint Karte sofort sichtbar — Glitch-Effekt
-Caption: `Nat 1. I pulled the rarest card. endocraft.app`
+Caption: `Nat 1. I pulled the rarest card. 👀 endocraft.app`
 Hashtags: `#dnd #dndtiktok #dungeonsanddragons #ttrpg #nat1 #misprint #rarepull #dndmemes`
 
 ---
@@ -313,14 +313,8 @@ Hashtags: `#dnd #dndtiktok #dungeonsanddragons #ttrpg #dndcommunity #tabletop #r
 ## 12. OFFENE TODOS
 
 - [ ] Caspian Pixar Profilbild generieren und auf TikTok setzen
-- [ ] ~~Reddit Post (warten bis Share-Link funktioniert)~~ — **Direct Self-Promo in D&D-Subs verboten (verifiziert). Stattdessen:**
-  - Show-&-Tell ohne Link (Screenshot + Story, Link nur in Comments auf Nachfrage)
-  - UGC-Strategie (echte User posten ihre Karten → organic)
-  - Founder-Journey-Posts in r/tabletopgamedesign / r/indiegaming erlaubt
-  - r/DungeonsAndDragons offener als r/DnD
-- [ ] **Superstonk Post** — PARKEN für Phase 4 (NFT-Launch). Marco hat 10k+ Karma dort = Gold-Standard-Credibility. NICHT vorher verbrennen. MiCA EU-Window 2025-26 timen.
-- [ ] Product Hunt Launch als Reddit-Ersatz für Tool-Discovery
-- [ ] D&D YouTube-Creator-Outreach (Ginny Di, Matt Colville, XP to Level 3)
+- [ ] Reddit Post (warten bis Share-Link funktioniert)
+- [ ] Superstonk Post (warten bis NFT-Layer ready)
 - [ ] Gerald → verschoben auf DM Vorlagen Feature (später)
 - [ ] Mobile komplett testen
 
@@ -338,7 +332,54 @@ Hashtags: `#dnd #dndtiktok #dungeonsanddragons #ttrpg #dndcommunity #tabletop #r
 
 ---
 
-## 14. GAMIFICATION & NFT VISION
+## 14. DM STUDIO
+
+**Was ist DM Studio?**
+2nd-Screen-Tool für Dungeon Masters. PC-optimiert (min-width 1100px), Mobile später. Companion zu Owlbear Rodeo. Teil des EndoCraft Ökosystems.
+
+**URL:** endocraft.app/dm-studio/
+**Status:** Privater MVP — Marco + 1 Freund als Tester
+
+**Key Feature:** `🃏 Als Karte` Button — Session-Moment direkt in EndoCraft-Karte wandeln via `endocraft.app/session/?story=...&source=dm-studio`
+
+**3 Tabs:** Vorbereitung · Session Live · Charaktere
+
+---
+
+### ⚠️ RECHTLICHES — SRD NUTZUNG
+
+**Was erlaubt ist (CC-BY-4.0):**
+- Alle 15 SRD Conditions ✅
+- Basis Monster Statblocks aus SRD ✅
+- D&D Grundregeln ✅
+- Kommerziell nutzbar ✅
+
+**Was NICHT erlaubt ist:**
+- Curse of Strahd Adventure-Text ❌ — muss vor Public Launch raus
+- Ikonische Monster die nicht im SRD stehen (z.B. Beholder) ❌
+- Alles was Wizards IP ist aber nicht im SRD steht ❌
+
+**Pflicht-Attribution irgendwo im Tool:**
+> *"Based on D&D SRD 5.1/5.2, used under CC-BY-4.0"*
+
+**Wichtig:** CC-BY-4.0 ist irrevokabel — Wizards kann es nie zurückziehen.
+
+---
+
+### Offene Aufgaben DM Studio
+1. Optik-Revision (teilweise erledigt)
+2. Kartenfunktion vollständig fertigstellen
+3. Import-Funktion für JSON-Exports
+4. SRD Monster Library auf 300+ erweitern (via separatem API Endpoint)
+5. NPC Portrait Consistency (Seedream Seed + Character Bible)
+6. Owlbear Extension Phase 1
+7. Session Transcript Flow
+8. PDF Export
+9. Player View (erst wenn DM-Side 100% solid)
+
+---
+
+## 15. GAMIFICATION & NFT VISION
 
 ### Das Kernproblem
 Ein AI-Bild ersetzt keine Erinnerung — es gibt ihr eine Form. Wie ein Foto, eine Trophäe, ein Tagebucheintrag. Der Trigger. Nicht die Erinnerung selbst.
@@ -402,75 +443,366 @@ Nach jeder Session — Karten öffnen. Wie Pokemon freitags nach der Schule. Rit
 
 ---
 
-## 15. DM TOOL VISION (FUTURE — NICHT JETZT BAUEN)
-
-*Idee aus Cowork-Session April 2026. Langfristige Produkt-Erweiterung, nicht kurzfristig umsetzen.*
-
-### Kernidee
-EndoCraft ist heute die **Capture-Schicht am Ende der Session**. Der logische nächste große Produkt-Schritt ist die **Context-Schicht davor und währenddessen** — ein integriertes DM-Tool, das Prep und Live-Session abdeckt und dabei eine gemeinsame Datenbasis mit dem Karten-System teilt.
-
-### Das Flywheel
-```
-DM bereitet Session im Tool vor (NPCs, Szenen, Plot-Beats als strukturierte Daten)
-→ Session läuft → Tool logged mit, kennt Kontext
-→ Nach Session → Tool schlägt vor: "deine 3 legendärsten Momente — als Karten versiegeln?"
-→ Karten haben mehr Tiefe (NPC, Fraktion, Szenenkontext bereits bekannt)
-→ Party Album wird echte Kampagnenchronik, nicht nur lose Karten
-→ Mehr Prep = bessere Karten = Anreiz = mehr Recurring Revenue
-```
-
-### Löst ein strukturelles Problem
-Aktuell muss der User einen Moment *aktiv beschreiben*, damit eine Karte entsteht. Das ist Friction. Mit einem DM-Tool, das den Kontext kennt, wird aus "beschreibe deinen Moment in zwei Absätzen" ein "Klick hier — der KI-Co-DM weiß schon, was passiert ist."
-
-### Die drei Produkt-Säulen
-| Säule | Was | Phase |
-|-------|-----|-------|
-| **The Tome** | DM-Prep + Kampagnen-Graph (NPCs, Orte, Plots, Beziehungen relational verlinkt) | Vorbereitung |
-| **The Session** | Live-Companion (Notizen, Dialog-Anker, NPC-Quick-Access, Handouts, Auto-Log) | Spiel |
-| **The Card** | Was EndoCraft heute ist — wird zum Höhepunkt statt einzigem Produkt | Erinnerung |
-
-Alle drei teilen sich **eine Datenbasis**.
-
-### Positioning
-> *EndoCraft ist die Erinnerung deiner Kampagne — von der Vorbereitung bis zum versiegelten Moment.*
-
-### Strategischer Knackpunkt: NICHT Foundry bauen
-Owlbear + Foundry + Roll20 haben ~2 Dekaden Feature-Vorsprung bei Maps, Dynamic Lighting, Token-Management, Combat-Automation. Da reinzugehen = Geldverbrennung.
-
-Stattdessen die **Narrative/Story-Schicht**, die keiner dieser Tools hat:
-- Kampagnen-Graph (NPCs, Orte, Plots, Beziehungen — relational verlinkt)
-- Szenen-Prep mit AI-Assist, der die *eigene* Kampagne kennt
-- Live-Session-Begleiter (Notizen, NPC-Quick-Access, Handouts)
-- Auto-Logging + Post-Session-Zusammenfassung → direkter Hook zu Karten
-- Party-geteilter Kampagnen-Kanon
-
-Läuft **parallel** zu Foundry/Roll20 — User können beides nebeneinander benutzen. EndoCraft ist nicht der VTT, sondern der Kanon. Kampagnen-Daten sind extrem klebrig (wer steckt seine 2-Jahres-Kampagne in ein Tool rein, wechselt ungern) = starker Retention-Hebel.
-
-### Brand-Fit
-- *"Make Every Session Legendary"* deckt explizit **jede Phase** ab — Tagline ist heute schon größer als das Produkt
-- *"Some moments are too legendary to forget"* — Momente entstehen in Prep *und* Spiel. Karte ist Siegel, nicht Erzeuger.
-- **Caspian als Maskottchen** — ein Barde, ein Chronist, ein Geschichtenerzähler. Kein Maskottchen ist natürlicher in einen DM-Begleiter gewachsen. Naming-Idee: *"Caspian's Tome"* / *"The Bard's Ledger"*
-- Kompatibel mit Prinzip "Ernst wenn ernst, witzig wenn witzig"
-
-### Zusammenhang mit bestehender Roadmap
-Folgende Roadmap-Items sind eigentlich Bausteine dieses Tools — gehören strategisch zusammen:
-- Campaign Memory
-- Session Upload + Highlights
-- Party Code (Multiplayer)
-- Party Album (Phase 1 der NFT-Vision)
-- DM Vorlagen Feature (Gerald)
-
-### Empfohlener Phasenplan (wenn das ernst wird)
-1. **Messaging vorbereiten** — Landing Page & Vision-Texte so formulieren, dass DM-Tool-Pfad offen bleibt. Keine widersprüchlichen Claims.
-2. **Daten-Architektur heute schon dafür auslegen** — Kampagnen-, Party-, NPC-Objekte im Backend vorsehen, auch mit minimalen Feldern. Vermeidet späteres Schema-Chaos.
-3. **Kleiner Wedge als Phase 2** — bevor Vollbau: "Campaign Memory" Feature (User speichert NPCs/Orte, die in mehreren Karten auftauchen, kleiner Graph-View). Günstig, testet Appetit, sofortiger User-Value.
-
-### Warum jetzt nicht bauen
-- Launch des Kernprodukts hat Priorität
-- Scope-Creep-Risiko
-- Erst Karten-Produkt muss Revenue generieren + Community aufbauen
-- DM-Tool ist Vertiefung einer bestehenden User-Basis, nicht Akquise-Tool
+*EndoCraft — Some moments are too legendary to forget.* 🎲
 
 ---
 
-*EndoCraft — Some moments are too legendary to forget.*
+## UPDATE — Heutige Session
+
+### TikTok Status & Warum pausiert
+- Erster Spot: 700 Views, 0 Klicks, 2 Sekunden Durchschnittswiedergabe
+- Hook funktioniert nicht — User scrollen sofort weiter
+- Karten alleine reichen nicht für viral
+- Eigene Party findet es gut aber ist nicht begeistert
+- **Fazit: Produkt-Problem, kein Marketing-Problem**
+- **TikTok bleibt pausiert bis Player View + Party Album fertig**
+
+### Was den ersten viralen Moment auslöst
+Party öffnet gleichzeitig ihre Packs nach einer echten Session:
+- Jemand zieht Legendary → Schock
+- Jemand zieht Misprint → Lachen  
+- Echte Emotionen, echte Menschen, kein Facecam nötig
+- Das ist der erste TikTok der funktioniert
+
+### Reihenfolge bis zum ersten viralen Moment
+```
+Player View fertig
+→ Party Album fertig
+→ Eigene Party testet gemeinsam
+→ Alle öffnen gleichzeitig Pack nach Session
+→ Reaktionen filmen
+→ TikTok
+```
+
+### TikTok Strategie wenn ready
+- Hook: "My friends and I stayed up until 4am" — universal, kein D&D-Wissen nötig
+- Emotion über D&D hinaus — Erinnerungen die jeder kennt
+- Posting: Donnerstag + Samstag + Dienstag, 19:00 CET
+- Unter 500 Views → Hook ändern
+- Über 500 Views → €20-30 boosten
+
+---
+
+### Player View — Was rein muss
+**Vor der Session:**
+- Personalisierter Recap aus Spieler-Perspektive
+- Offene Charakterfäden
+- NPC Beziehungslog
+
+**Nach der Session:**
+- Pack Reveal
+- Eigene Karte
+- Party Album
+- Session zusammengefasst
+
+**Während der Session:**
+- Passiv — Charakterbogen als Referenz
+- Kein Live Feed, keine Updates
+- Kein extra Input vom DM nötig
+
+**Design:** PC first, Parchment Style wie DM Studio
+**Mockup:** player_view_mockup.html
+
+---
+
+### Owlbear Extension — Revidierte Strategie
+- Extension = reiner Acquisition-Kanal, kein Feature für bestehende User
+- Einziger Job: DMs die Owlbear nutzen zu EndoCraft bringen
+- Timing: erst wenn Kernprodukt solid ist
+- Konkurrenz existiert bereits für Token Generator, Scene Generation
+- Unser Differenzierungsmerkmal: Kampagnen-Kontinuität + EndoCraft Bridge
+
+---
+
+### Gamification & NFT — Revidiert
+**Party Album:** Alle Karten einer Session automatisch gruppiert ✅ Priorität
+**Community Voting:** Beste Karten nach oben — braucht User-Base
+**Hall of Fame:** Top 100 aller Zeit — historisch, begehrt, NFT-ready
+**Karte #000001:** Caspians "Unwanted Kiss" — bereits Geschichte
+
+**Warum NFT Markt funktioniert:**
+- Nicht Spekulation wie CryptoPunks
+- Sondern Bedeutung — Hall of Fame Karten haben externen Wert
+- Creator Marketplace später: DMs verkaufen eigene Sets
+- Matchmaking / "Airbnb für D&D" — Vision 2028
+
+---
+
+### Zukunft — Die klare Linie
+```
+Jetzt: DM Studio + Player View + Party Album
+→ Eigene Party begeistert
+→ Erster viraler TikTok
+→ Erste echte User
+→ Community Voting + Hall of Fame
+→ Owlbear Extension
+→ Matchmaking
+→ Eigenes Spielbrett
+→ NFT Layer
+```
+
+**Kernprinzip:** Erst Produkt fertig, dann Marketing.
+Nicht umgekehrt.
+
+---
+
+*EndoCraft — Some moments are too legendary to forget.* 🎲
+
+---
+
+## UPDATE 2 — Living Wiki & Neue Positionierung
+
+### Die drei Kern-Positionierungen
+
+| Zielgruppe | Satz |
+|------------|------|
+| DMs | *"The living wiki for your D&D world"* |
+| Spieler | *"Some moments are too legendary to forget"* |
+| EndoCraft gesamt | *"Your world. Every moment sealed."* |
+
+---
+
+### Was "Living Wiki" bedeutet
+
+Nicht statisch wie Notion oder World Anvil — sondern:
+- Während der Session aktiv genutzt
+- Sich selbst ergänzend durch Recaps und Session Logs
+- Von der AI abgefragt werden kann
+- Connections zwischen NPCs, Locations, Events kennt
+
+**Der Nordstern für alle DM Studio Features:**
+> *"Macht das das Wiki lebendiger?"*
+
+---
+
+### Was Living Wiki noch braucht
+
+| Feature | Status | Macht Wiki lebendiger? |
+|---------|--------|----------------------|
+| PDF Import D&D Beyond | ❌ | ✅ Charaktere leben im Wiki |
+| Loot Generator kontextuell | 🔨 | ✅ Items werden Teil der Welt |
+| NPC Beziehungslog | ❌ | ✅ Verbindungen sichtbar |
+| Location History | ❌ | ✅ Orte haben Gedächtnis |
+| Connections AI | ❌ | ✅ AI verbindet vergessene Punkte |
+| Kampagne exportieren/teilen | ❌ | ✅ Wiki wird teilbar |
+| Würfel komplett (alle D-Types) | 🔨 | 🤔 Nice-to-have |
+
+---
+
+### Karten sind Nebenprodukt — nicht Hauptfeature für DMs
+
+- DM wirbt nicht mit Karten
+- Karten entstehen als magisches Nebenprodukt
+- Spieler entdecken sie nach der Session selbst
+- **Karten sind das Ergebnis — nicht der Grund**
+
+---
+
+### Spieler ansprechen — zwei Kanäle
+
+**Über DM:**
+DM nutzt DM Studio → Spieler erleben bessere Sessions → wollen Player View → entdecken Karten
+
+**Direkt:**
+TikTok wenn Party Album + Player View fertig sind
+Hook: *"My friends and I stayed up until 4am"*
+Echter viraler Moment: alle öffnen gleichzeitig ihren Pack
+
+---
+
+### Design
+- Claude Design Update bereits gemacht
+- Living Wiki braucht eigene visuelle Identität
+- Parchment Style für DM Studio bleibt
+- EndoCraft Karten bleiben dark/cinematic
+- Player View: PC first, Parchment Style
+
+---
+
+*EndoCraft — Your world. Every moment sealed.* 🎲
+
+---
+
+## UPDATE 3 — Syl & Demo Campaign Vision
+
+### Syl — DM Studio Maskottchen
+
+**Was Syl ist:**
+Ein junger Drache — immer allein, immer schutzbedürftig, immer eine moralische Entscheidung.
+Nicht ein Charakter mit fixierter Geschichte — ein Format.
+
+**Syl's Rolle:**
+- Maskottchen für DM Studio (Caspian ist für EndoCraft/Spieler)
+- Symbol für den Einstieg — *"Every story starts somewhere."*
+- Türöffner, nicht das Produkt selbst
+
+**Was Syl NICHT ist:**
+- Kein komplettes Universum mit 20 Abenteuern
+- Kein Sammel-Mechanismus (erstmal)
+- Keine Ablenkung vom Core Product
+
+---
+
+### The Ashford Wyrmling — Das erste Abenteuer
+
+**Zweck:** Einziges offizielles Starter-Abenteuer. Perfekt, nicht viel.
+
+**Was es lehrt:**
+- Wie DM Studio funktioniert
+- Wie eine Session aufgebaut wird
+- Wie moralische Entscheidungen in D&D funktionieren
+- Wie Karten am Ende entstehen
+
+**Der Twist:** Syl's Farbe wird erst am Ende enthüllt — abhängig von der Entscheidung der Gruppe.
+
+| Entscheidung | Farbe | Rarity |
+|-------------|-------|--------|
+| Töten | Grün (Chromatic) | Rare |
+| Retten | Silber (Metallic) | Legendary |
+| Vertreiben | Unbekannt | Epic |
+
+**Was danach passiert:**
+Jede Gruppe schreibt ihre eigene Geschichte. Ashford war nur der Anfang.
+Syl war nur der Türöffner.
+
+---
+
+### Syl Stats — Hatchling (eigene Kreatur, kein offizieller Wyrmling)
+
+Syl ist jünger als ein offizieller Wyrmling — ein "Hatchling."
+Eigene Stats damit der Kampf für Level 1-2 Gruppen fair ist:
+- HP: 18
+- AC: 13
+- Breath Weapon: 1x pro Tag, 2d6 (Typ je nach Ending)
+- Spricht: "Mine." "Hurt." "Stay."
+
+Offizieller Green Wyrmling wäre CR 2, AC 17, 38 HP — zu stark für Level 1.
+
+---
+
+### Zwei Maskottchen — Zwei Zielgruppen
+
+| Maskottchen | Für wen | Wo |
+|------------|---------|-----|
+| Caspian | Spieler | EndoCraft, TikTok, Karten |
+| Syl | DMs | DM Studio, Onboarding |
+
+*EndoCraft — Your world. Every moment sealed.* 🎲
+
+---
+
+## UPDATE 4 — Jarvis Vision & UX
+
+### DM Studio — Die neue Kernvision
+
+> *"Jarvis for D&D."*
+
+Nicht ein Tool das der DM bedient — ein Assistent der mitdenkt.
+Kennt den kompletten Kontext. Gibt Informationen im richtigen Moment.
+Macht Vorschläge ohne aufzudrängen.
+
+**Als Nordstern für jede Feature-Entscheidung:**
+> *"Would Jarvis do this?"*
+
+---
+
+### Co-DM als aktiver Guide — Beispiele
+
+```
+"You have 3 NPCs but no locations — want me to suggest where they live?"
+"Your party hasn't rested in 4 sessions — Gattok's infection risk is critical."
+"This sounds like a Legendary moment — shall I create a card?"
+"You're entering combat — switching to tactical mode."
+"I notice you haven't added any NPCs yet — want me to generate some?"
+```
+
+---
+
+### UX Philosophie — Priorisieren, nicht verstecken
+
+**Falsch:** Features verstecken bis User bereit ist
+**Richtig:** Alles sichtbar, aber mit klarer Hierarchie
+
+Features die noch nicht relevant sind → sichtbar aber deaktiviert
+Tooltip erklärt warum: *"Add a location first"*
+Sobald relevant → leuchtet auf, bereit
+
+---
+
+### Progressive Disclosure — Der richtige Weg
+
+**Tab Reihenfolge:**
+1. Vorbereitung — immer der Start
+2. Live — wird prominent wenn Kampagne existiert
+3. Sammlung — wird prominent nach erster Karte
+
+**Innerhalb Vorbereitung:**
+- Hauptbereich: Location + NPC + Import — groß, prominent
+- Sidebar: Co-DM + Szenen-Bild + Lore Codex — sichtbar, kleiner
+- Unten: Live Tab + Sammlung — da aber dezent
+
+---
+
+### Onboarding Intros
+
+**Intro A — Ashford Wyrmling:**
+Syl erscheint auf schwarzem Screen.
+Text erscheint langsam:
+*"Somewhere in the Thornwood, something is waiting."*
+*"The village of Ashford hasn't heard from its woodcutters in three days."*
+*"That's you."*
+Button: "Begin →"
+Dauer: 8-10 Sekunden. Überspringbar.
+
+**Intro B — Build My Own World:**
+Syl schaut neugierig rein.
+*"Every legend begins with a blank page."*
+*"What's yours called?"*
+Direkt darunter: Textfeld für Kampagnenname.
+Dauer: 5 Sekunden. Sofort interaktiv.
+
+---
+
+### Reddit Post — Ready wenn alles steht
+
+**Titel:**
+*"I built an AI assistant for Dungeon Masters — like Jarvis, but for D&D. Looking for testers."*
+
+**Body:**
+> It knows your entire campaign — NPCs, locations, lore, sessions.
+> Already have a campaign? Import it.
+> Starting fresh? Load our starter adventure.
+>
+> Prep less. Play more.
+>
+> Looking for DMs to test it. Free, no strings. Drop a comment.
+
+**Subreddits:** r/DMAcademy → r/DungeonMasters → r/rpg → r/DnD
+**Timing:** Erst wenn Englisch komplett + Ashford Demo läuft + kein offensichtlicher Bug
+
+---
+
+### Syl — Visuell definiert für Seedream
+
+**Cinematic:**
+```
+Young dragon hatchling, pale iridescent scales not yet fully formed, 
+large expressive eyes, curled protectively around a large egg, 
+enchanted forest clearing, soft golden light through trees, 
+cinematic fantasy, photorealistic, emotional, 8K, no text, no watermark
+```
+
+**Maskottchen (Pixar Style):**
+```
+Young dragon hatchling, pale shimmering scales, oversized expressive eyes, 
+small wings, charming and vulnerable expression, 3D animated style, 
+soft warm lighting, clean forest background, emotionally expressive, 
+no text, no watermark
+```
+
+**Syl in einem Satz:**
+*"Small enough to be vulnerable. Determined enough to be dangerous."*
+
+---
+
+*EndoCraft — Your world. Every moment sealed.* 🎲
