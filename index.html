@@ -350,6 +350,69 @@ footer a:hover{color:var(--text);}
   </div>
 </section>
 
+<!-- ONBOARDING — First time? Start here -->
+<section style="padding:90px 32px 60px;background:linear-gradient(180deg,var(--bg) 0%,#0d0a18 50%,var(--bg) 100%);">
+  <div class="sec-inner" style="max-width:1080px;">
+    <div style="text-align:center;">
+      <span class="sec-tag">✦ First time at the table?</span>
+      <h2 class="sec-head" style="margin:0 auto 22px;">Start with <em>Ashford Wyrmling</em>.<br>Syl will guide you.</h2>
+      <p class="sec-sub" style="margin:0 auto 50px;">A complete 90-minute starter adventure, pre-loaded into your Cockpit. One moral choice with three endings — and your first card generated automatically. Built specifically to teach you EndoCraft while you actually play.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:36px;align-items:center;background:linear-gradient(135deg,rgba(232,184,109,0.06),rgba(123,108,246,0.04));border:1px solid rgba(232,184,109,0.18);border-radius:18px;padding:40px 38px;">
+
+      <!-- Syl mascot side -->
+      <div style="text-align:center;">
+        <div style="font-size:140px;line-height:1;filter:drop-shadow(0 16px 40px rgba(232,184,109,0.4));animation:sylBreathe 5s ease-in-out infinite;">🐉</div>
+        <div style="font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--gold);margin-top:18px;font-weight:700;letter-spacing:.02em;">Syl</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--text-dim);margin-top:4px;font-weight:600;text-transform:uppercase;">DM Studio Mascot</div>
+        <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-dim);margin-top:14px;line-height:1.5;max-width:240px;margin-left:auto;margin-right:auto;">
+          "Every story starts somewhere.<br>This is yours."
+        </div>
+      </div>
+
+      <!-- Walkthrough side -->
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--accent);font-weight:700;margin-bottom:18px;">YOUR FIRST 5 MINUTES</div>
+
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.4);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);">1</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;">Click „Load Ashford"</div>
+              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">A complete campaign loads — 4 locations, 6 NPCs, 3 statblocks. Syl appears as a dragon hatchling that guides you through the next steps with little tooltips.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.4);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);">2</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;">Invite your players</div>
+              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">One magic-link per character. They open it on their phone — they're in. No code-typing, no signup hurdles. The Companion is ready.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.4);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);">3</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;">Run the session — make the choice</div>
+              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">Adventure ends with a moral decision. Whichever you pick determines Syl's color reveal — and the rarity of your first session card. Saved forever in your Album.</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="./dm-studio/" class="btn-primary" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--gold);border-color:var(--gold);color:#1a1410;">
+          <span>🐉</span> <span>Start with Ashford</span> <span style="opacity:.65;">→</span>
+        </a>
+        <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:12.5px;color:var(--text-dimmer);margin-top:12px;">Free for DMs. No credit card. ~5 min setup.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+<style>
+  @keyframes sylBreathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.04) translateY(-6px);}}
+  @media(max-width:780px){section .sec-inner > div[style*="grid-template-columns:1fr 1.3fr"]{grid-template-columns:1fr !important;gap:28px !important;padding:28px 22px !important;}}
+</style>
+
 <!-- HOW IT WORKS -->
 <section id="how">
   <div class="sec-inner">

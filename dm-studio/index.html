@@ -5428,46 +5428,48 @@ function renderBriefing() {
     host.innerHTML = `
       <div class="briefing-empty">
         <div class="briefing-empty-inner">
-          <div class="briefing-empty-crest">✦</div>
-          <h1 class="briefing-empty-title">Willkommen beim <em>DM Studio</em></h1>
+          <div class="briefing-empty-crest" style="font-size:64px;animation:sylBreathe 5s ease-in-out infinite;">🐉</div>
+          <h1 class="briefing-empty-title">Willkommen, <em>neuer DM</em></h1>
           <p class="briefing-empty-sub">
-            Dein privater Arbeitsplatz für D&D-Kampagnen. Charakter-Sheets mit D&D-Beyond-Style-Rolls,
-            Live-Combat-Tracker, KI-Co-DM, Session-Recaps mit automatischen Highlights, die sich direkt
-            in Sammelkarten verwandeln lassen.
+            Dein privater Arbeitsplatz wartet — leer, weil das deine Kampagne werden soll. Du hast zwei Wege:
+            mit einem fertigen Starter loslegen, oder eigene Notizen importieren.
           </p>
-          <div class="briefing-empty-steps">
-            <div class="bes-card" onclick="switchView('chars');setTimeout(()=>newCharacter(),100)">
-              <div class="bes-num">1</div>
+
+          <div class="briefing-empty-steps" style="grid-template-columns:1fr;gap:14px;max-width:680px;">
+            <div class="bes-card" onclick="loadAshfordWyrmling()" style="background:linear-gradient(135deg,rgba(232,184,109,0.15),rgba(123,108,246,0.06));border:2px solid var(--gold);">
+              <div class="bes-num" style="background:var(--gold);color:#1a1410;">🐉</div>
               <div>
-                <div class="bes-h">Charakter anlegen</div>
-                <div class="bes-p">Spieler oder NPC. Der Wizard führt dich durch Race, Class, Background, Stats.</div>
+                <div class="bes-h" style="color:var(--gold);">Empfohlen · Start mit Ashford Wyrmling</div>
+                <div class="bes-p">Komplettes 90-Min-Starter-Abenteuer mit Syl, der Drachen-Maskottchen-Hatchling. 4 Locations, 6 NPCs, ein moralisches Dilemma das die Rarity deiner ersten Karte bestimmt. <strong>Lehrt dir EndoCraft während du echt spielst.</strong></div>
               </div>
               <div class="bes-arrow">→</div>
             </div>
-            <div class="bes-card" onclick="switchView('prep')">
-              <div class="bes-num">2</div>
+            <div class="bes-card" onclick="openContentImporter && openContentImporter()">
+              <div class="bes-num">📥</div>
               <div>
-                <div class="bes-h">Locations & Szenen vorbereiten</div>
-                <div class="bes-p">Ort mit Read-Aloud, NPC-Dialogen und Szenarien füllen — wird dann im Live-Tab abrufbar.</div>
+                <div class="bes-h">Eigene Notizen importieren</div>
+                <div class="bes-p">PDF, Markdown oder Text-Datei hochladen — KI extrahiert Locations, NPCs, Plot-Hooks. Funktioniert mit homebrew, Roll20-Exports, Google-Docs.</div>
               </div>
               <div class="bes-arrow">→</div>
             </div>
-            <div class="bes-card" onclick="switchView('session');setTimeout(()=>startNewSession(),100)">
-              <div class="bes-num">3</div>
+            <div class="bes-card" onclick="switchView('chars');setTimeout(()=>newCharacter && newCharacter(),100)">
+              <div class="bes-num">✏️</div>
               <div>
-                <div class="bes-h">Session starten</div>
-                <div class="bes-p">Live-Log, Initiative-Tracker, KI-Co-DM parallel. Nach der Session auf "Session beenden" klicken für den Recap + Highlights.</div>
+                <div class="bes-h">Bei Null anfangen</div>
+                <div class="bes-p">Eigene Charaktere und Locations manuell anlegen. Vollständige Kontrolle. Charakter-Wizard führt durch Race / Class / Background / Stats.</div>
               </div>
               <div class="bes-arrow">→</div>
             </div>
           </div>
-          <div class="briefing-empty-foot">
-            <strong>Tipp:</strong> Alles wird lokal in deinem Browser gespeichert. ${state.syncSettings?.email
-              ? 'Du bist eingeloggt als <em>' + escapeHtml(state.syncSettings.email) + '</em> — Cloud-Sync aktivierbar.'
-              : 'Logge dich ein für Cloud-Sync über mehrere Geräte.'}
+
+          <div class="briefing-empty-foot" style="margin-top:32px;">
+            <strong>Tipp:</strong> Egal welchen Weg — du kannst jederzeit wechseln. Alles lokal gespeichert. ${state.syncSettings?.email
+              ? 'Eingeloggt als <em>' + escapeHtml(state.syncSettings.email) + '</em> · Cloud-Sync aktiv.'
+              : 'Login für Cloud-Sync über mehrere Geräte.'}
           </div>
         </div>
       </div>
+      <style>@keyframes sylBreathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.06) translateY(-4px);}}</style>
     `;
     return;
   }
@@ -10080,6 +10082,154 @@ const SESSION_14_PREP = {
       imagePrompt: 'Portrait of Verna, tired older druid woman around 50 with gray-streaked brown hair, intricate bark-pattern tattoos wrapping her arms and throat, weary kind eyes with dark circles, wearing torn forest-green druid robes with fallen leaves stuck in folds, dim candlelight in abandoned wine cellar room, exhausted-but-dignified expression, cinematic moody lighting, photorealistic, 8K, no text, no deformed hands' }
   ]
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ASHFORD WYRMLING — Starter-Adventure für neue DMs (90 min, ein-Klick-Load)
+// Lehrt EndoCraft während echter Session: 4 Locations, 6 NPCs, ein moralisches
+// Dilemma am Ende → bestimmt Syl's Farbe → Rarity der ersten Karte.
+// ═══════════════════════════════════════════════════════════════════════════
+const ASHFORD_WYRMLING = {
+  campaign: {
+    id: 'ashford-wyrmling',
+    name: 'Ashford Wyrmling',
+    role: 'dm',
+    session: { number: 1, title: 'The Hatchling Found', level: '3' },
+    sessions: [],
+    party: [],
+    tree: [
+      { id: 'ashford-village', label: 'Ashford', locations: [
+        { id: 'aw-tavern', name: 'The Crooked Crow', status: 'pending' },
+        { id: 'aw-elder', name: 'Old Elder Mira\'s Cottage', status: 'pending' }
+      ]},
+      { id: 'ashford-wilds', label: 'The Wilds', locations: [
+        { id: 'aw-cave', name: 'Hatchling\'s Cave', status: 'pending' },
+        { id: 'aw-altar', name: 'Forgotten Altar of Bahamut', status: 'pending' }
+      ]}
+    ],
+    locations: {
+      'aw-tavern': {
+        name: 'The Crooked Crow',
+        meta: 'Tavern · Evening',
+        readAloud: 'The Crooked Crow leans like its name — its timbers warped from a hundred winters. Inside, smoke curls around oil lamps. A bard sings half-heartedly. The locals stop talking when you enter.',
+        dmNote: 'Where the adventure starts. Innkeeper Hadric tells of children disappearing near the Wilds. Old Elder Mira sits in the corner — knows more than she says. Hook: 50 gp for whoever finds the missing kids.',
+        scenarios: [
+          { title: 'Hadric reveals the rumor', probability: 'wahrscheinlich', body: 'After 1d4 minutes, the innkeeper offers ale on the house and asks if the party hunts beasts. Mentions the cave east of town.' },
+          { title: 'Elder Mira approaches', probability: 'möglich', body: 'If party seems honorable, Mira pulls them aside: "There\'s something old in those wilds. Older than dragons. Be kind to what you find."' }
+        ],
+        log: ''
+      },
+      'aw-elder': {
+        name: 'Old Elder Mira\'s Cottage',
+        meta: 'Healer / Lorekeeper',
+        readAloud: 'The cottage smells of dried sage and lavender. Mira sits at her loom, weaving threads that catch the firelight strangely. "I knew you\'d come," she says without looking up. "The hatchling has been singing for three nights now."',
+        dmNote: 'Mira is a retired adventurer. Knows the cave holds a baby chromatic dragon — but its color hasn\'t set yet. The hatchling chooses based on first kindness or cruelty it experiences. CRITICAL CONTEXT for the moral choice at the end.',
+        scenarios: [],
+        log: ''
+      },
+      'aw-cave': {
+        name: 'Hatchling\'s Cave',
+        meta: 'Combat-möglich · Stealth-möglich',
+        readAloud: 'The cave entrance breathes warm air, scented with smoke and something like cinnamon. Inside, golden light flickers — not torchfire. Something is humming softly. A child\'s humming.',
+        dmNote: 'Two missing children are inside, fed by the hatchling who imprinted on them. Three Kobold Cultists outside guard "their" dragon. Combat is optional — clever parties can sneak past or parley. The hatchling itself is harmless. CR ½ Kobolds × 3.',
+        scenarios: [
+          { title: 'Stealth past the Kobolds', probability: 'wahrscheinlich', body: 'DC 13 Stealth, group check. Success = direct dialog with hatchling.' },
+          { title: 'Combat with Kobolds', probability: 'möglich', body: '3× Kobolds, easy fight. Hatchling watches in the corner, wide-eyed.' },
+          { title: 'Parley', probability: 'möglich', body: 'Kobolds revere the dragon. DC 15 Persuasion to convince them they\'re harming it by keeping the children captive.' }
+        ],
+        log: ''
+      },
+      'aw-altar': {
+        name: 'Forgotten Altar of Bahamut',
+        meta: 'Climax · Moral Choice',
+        readAloud: 'Past the cave, a worn stone altar half-swallowed by moss. The hatchling has been laying its food here. Three skulls (small, recent). The children\'s shoes are at the base of the altar.',
+        dmNote: 'CLIMAX: The hatchling is hungry. The children are gone — followed deeper into the wilds. The party must decide:\n\n• KILL the hatchling (it killed three kobolds and ate the food). → Syl\'s color = WHITE/GREY (mourning). Card rarity = COMMON.\n• PROTECT it — return it to Mira to raise. → Syl\'s color = GOLD (loyalty). Card rarity = RARE.\n• RELEASE it into the wilds. → Syl\'s color = depends on alignment. Card rarity = EPIC.\n• A clever 4th option (forge bond between hatchling and one PC) → Syl\'s color = MIRRORS BONDED PC. Card rarity = LEGENDARY.\n\nThe choice determines Syl\'s evolution — Syl becomes the DM\'s permanent assistant in the next campaigns, with this color memory.',
+        scenarios: [],
+        log: ''
+      }
+    }
+  },
+  characters: [
+    { id: 'aw-mira',  type: 'npc', name: 'Elder Mira',  size: 'Medium', creatureType: 'humanoid (human)', alignment: 'neutral good', cr: '½', xp: 100,
+      ac: 12, hp: 22, maxHp: 22, hitDice: '4d8+4', speed: '30 ft.',
+      stats: { str: 10, dex: 12, con: 13, int: 16, wis: 18, cha: 14 },
+      savingThrows: 'Wis +6', skills: 'Insight +6, Arcana +5, Nature +5', senses: 'passive Perception 14',
+      languages: 'Common, Draconic, Sylvan',
+      traits: [{ name: 'Knows More', text: 'Mira gives one prophetic hint per scene if asked sincerely.' }],
+      actions: [{ name: 'Quarterstaff', text: 'Melee Weapon Attack: +2 to hit, reach 5 ft. Hit: 3 (1d6) bludgeoning.' }],
+      notes: 'Retired adventurer · knows the dragon hatchling story · GOOD-aligned · alive at end' },
+    { id: 'aw-hadric', type: 'npc', name: 'Hadric (Innkeeper)', size: 'Medium', creatureType: 'humanoid (human)', alignment: 'lawful neutral', cr: '0', xp: 10,
+      ac: 11, hp: 11, maxHp: 11, speed: '30 ft.',
+      stats: { str: 12, dex: 10, con: 12, int: 11, wis: 10, cha: 13 },
+      senses: 'passive Perception 10', languages: 'Common',
+      traits: [{ name: 'Knows the Rumors', text: 'Knows everyone in town. Pays 50gp for finding the kids.' }],
+      actions: [], notes: 'Quest-Giver in der Tavern' },
+    { id: 'aw-syl', type: 'npc', name: 'Syl (Wyrmling)', size: 'Tiny', creatureType: 'dragon (chromatic, color undecided)', alignment: 'neutral', cr: '¼', xp: 50,
+      ac: 13, hp: 14, maxHp: 14, hitDice: '4d4+4', speed: '20 ft., fly 40 ft.',
+      stats: { str: 10, dex: 14, con: 12, int: 10, wis: 12, cha: 15 },
+      savingThrows: 'Dex +4, Cha +4', skills: 'Perception +5',
+      senses: 'darkvision 60 ft., passive Perception 15', languages: 'Draconic (understands Common)',
+      traits: [
+        { name: 'Color Awakening', text: 'Syl\'s scale color sets based on the first major moral act it experiences. Determines its alignment forever.' },
+        { name: 'Imprint', text: 'After 24h of kindness from one creature, Syl bonds to them — appears in future EndoCraft campaigns as their assistant.' }
+      ],
+      actions: [
+        { name: 'Bite', text: 'Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4+2) piercing.' },
+        { name: 'Soft Cry', text: 'Recharge 5–6. All creatures within 30ft must succeed DC 12 WIS save or be Charmed for 1 minute (no aggression).' }
+      ],
+      notes: 'CLIMAX-NPC · color decides Rarity of session-card · Syl follows DM into all future campaigns' },
+    { id: 'aw-kobold-1', type: 'npc', name: 'Kobold Cultist (1)', size: 'Small', creatureType: 'humanoid (kobold)', alignment: 'lawful evil', cr: '⅛', xp: 25,
+      ac: 12, hp: 5, maxHp: 5, speed: '30 ft.',
+      stats: { str: 7, dex: 15, con: 9, int: 8, wis: 7, cha: 8 },
+      senses: 'darkvision 60 ft., passive Perception 8', languages: 'Common, Draconic',
+      traits: [{ name: 'Pack Tactics', text: 'Advantage on attack rolls if ally is within 5 ft of target.' }],
+      actions: [{ name: 'Dagger', text: 'Melee Weapon Attack: +4 to hit, reach 5 ft. Hit: 4 (1d4+2) piercing.' }],
+      notes: 'Reveres Syl as "small dragon god"' },
+    { id: 'aw-kobold-2', type: 'npc', name: 'Kobold Cultist (2)', size: 'Small', creatureType: 'humanoid (kobold)', alignment: 'lawful evil', cr: '⅛', xp: 25,
+      ac: 12, hp: 5, maxHp: 5, speed: '30 ft.',
+      stats: { str: 7, dex: 15, con: 9, int: 8, wis: 7, cha: 8 },
+      senses: 'darkvision 60 ft., passive Perception 8', languages: 'Common, Draconic',
+      traits: [{ name: 'Pack Tactics', text: 'Advantage on attack rolls if ally is within 5 ft of target.' }],
+      actions: [{ name: 'Sling', text: 'Ranged Weapon Attack: +4 to hit, range 30/120 ft. Hit: 4 (1d4+2) bludgeoning.' }],
+      notes: 'Reveres Syl as "small dragon god"' },
+    { id: 'aw-kobold-3', type: 'npc', name: 'Kobold Leader', size: 'Small', creatureType: 'humanoid (kobold)', alignment: 'lawful evil', cr: '¼', xp: 50,
+      ac: 13, hp: 12, maxHp: 12, speed: '30 ft.',
+      stats: { str: 8, dex: 15, con: 11, int: 9, wis: 8, cha: 10 },
+      senses: 'darkvision 60 ft., passive Perception 9', languages: 'Common, Draconic',
+      traits: [{ name: 'Pack Tactics', text: 'Advantage on attack rolls if ally is within 5 ft of target.' }],
+      actions: [
+        { name: 'Multiattack', text: 'Two scimitar attacks.' },
+        { name: 'Scimitar', text: 'Melee Weapon Attack: +4 to hit, reach 5 ft. Hit: 5 (1d6+2) slashing.' }
+      ],
+      notes: 'Speaks broken Common · can parley at DC 15' }
+  ]
+};
+
+function loadAshfordWyrmling() {
+  if (!confirm('🐉 Ashford Wyrmling laden?\n\nKomplettes Starter-Abenteuer wird in deine aktive Kampagne geladen.\nVorhandene Charaktere und Locations werden überschrieben.\n\nVorher 💾 Export für Sicherheit klicken!')) return;
+  // In aktive Kampagne laden — passt zum Multi-Campaign-Modell
+  const ashford = JSON.parse(JSON.stringify(ASHFORD_WYRMLING.campaign));
+  // Falls schon Kampagnen existieren, neue dazufügen statt zu überschreiben
+  if (!state.campaigns) state.campaigns = [];
+  const existing = state.campaigns.findIndex(c => c.id === 'ashford-wyrmling');
+  if (existing >= 0) state.campaigns[existing] = ashford;
+  else state.campaigns.unshift(ashford);
+  state.currentCampaignId = 'ashford-wyrmling';
+  // Characters via Proxy in die aktive Kampagne (state.characters proxy → campaign().characters)
+  ashford.characters = JSON.parse(JSON.stringify(ASHFORD_WYRMLING.characters));
+  state.currentLocationId = 'aw-tavern';
+  state.currentCharId = null;
+  state.images = {};
+  state.threads = {};
+  state.initiative = [];
+  state.currentView = 'briefing';
+  state.sessionMode = 'scene';
+  saveState();
+  renderCampaignMeta && renderCampaignMeta();
+  if (typeof renderCampaignMenu === 'function') renderCampaignMenu();
+  switchView('briefing');
+  toast('🐉 Ashford Wyrmling geladen — willkommen, neuer DM. Syl wartet im Cave.');
+  if (typeof plausibleTrack === 'function') plausibleTrack('DMStudio · Ashford Loaded');
+}
 
 function loadSession14Prep() {
   if (!confirm('Session 14 Prep-Daten laden?\n\nAktuelle Kampagne + Charaktere werden überschrieben.\nVorher 💾 Export zur Sicherheit klicken!')) return;
