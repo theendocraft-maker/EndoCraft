@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoCraft — Player Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1085,10 +1086,11 @@ body {
       <div class="tab" onclick="switchTab('party')">Party</div>
       <div class="tab" onclick="switchTab('world')">World</div>
     </div>
-    <div class="live-badge">
+    <div class="live-badge" id="liveBadge" style="display:none;">
       <div class="live-dot"></div>
       <span class="live-text">Live</span>
     </div>
+    <button id="ecAuthBtn" onclick="ecToggleAuth()" style="display:none;background:transparent;border:1px solid var(--border-gold);color:var(--text);font-family:'Syne',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;letter-spacing:.4px;">Anmelden</button>
   </div>
 
   <!-- ══ TONIGHT VIEW (3-col) ══ -->
@@ -1096,28 +1098,28 @@ body {
   <!-- LEFT — Character Sheet -->
   <div class="left-col">
 
-    <div class="char-header">
-      <div class="char-portrait">⚔️</div>
-      <div class="char-name">Gattok</div>
-      <div class="char-class">Half-Orc Barbarian · Level 6</div>
+    <div class="char-header" id="charHeader">
+      <div class="char-portrait" id="charPortrait">⚔️</div>
+      <div class="char-name" id="charName">Gattok</div>
+      <div class="char-class" id="charClass">Half-Orc Barbarian · Level 6</div>
     </div>
 
-    <div class="stat-block">
+    <div class="stat-block" id="charStatBlock">
       <div class="stat-row">
-        <div class="stat-label">Hit Points <span>67 / 72</span></div>
-        <div class="hp-bar"><div class="hp-fill" style="width:93%"></div></div>
+        <div class="stat-label">Hit Points <span id="charHpText">67 / 72</span></div>
+        <div class="hp-bar"><div class="hp-fill" id="charHpFill" style="width:93%"></div></div>
       </div>
       <div class="stat-row">
         <div class="stat-label">Rage Uses <span>2 / 3</span></div>
         <div class="hp-bar"><div class="hp-fill medium" style="width:66%"></div></div>
       </div>
       <div class="stat-row">
-        <div class="stat-label">Armor Class <span>16</span></div>
-        <div class="hp-bar"><div class="hp-fill" style="width:80%;background:linear-gradient(to right,#5a4a2a,#8a6a3a)"></div></div>
+        <div class="stat-label">Armor Class <span id="charAcText">16</span></div>
+        <div class="hp-bar"><div class="hp-fill" id="charAcFill" style="width:80%;background:linear-gradient(to right,#5a4a2a,#8a6a3a)"></div></div>
       </div>
     </div>
 
-    <div class="abilities">
+    <div class="abilities" id="charAbilities">
       <div class="ability">
         <div class="ability-score">20</div>
         <div class="ability-mod">+5</div>
@@ -1192,8 +1194,8 @@ body {
         <div class="section-line"></div>
       </div>
       <div class="recap-card">
-        <div class="recap-eyebrow">✦ From Gattok's perspective</div>
-        <div class="recap-text">
+        <div class="recap-eyebrow" id="recapEyebrow">✦ From Gattok's perspective</div>
+        <div class="recap-text" id="recapText">
           The party descended into the crypts beneath Castle Ravenloft. <strong>You held the line</strong> as Larrymäus pulled Ireena from Strahd's grasp — three vampires at once, rage burning through your veins. The wound on your arm hasn't healed right since. Akseth's wolf form bought you the seconds you needed. <strong>Telro vanished</strong> somewhere in the east wing. Nobody has mentioned it yet.
         </div>
       </div>
@@ -1205,7 +1207,7 @@ body {
         <div class="section-title">Your Open Threads</div>
         <div class="section-line"></div>
       </div>
-      <div class="threads">
+      <div class="threads" id="threadsList">
         <div class="thread">
           <div class="thread-icon">🗡️</div>
           <div class="thread-content">
@@ -1243,7 +1245,7 @@ body {
         <div class="section-title">Tonight's Highlights</div>
         <div class="section-line"></div>
       </div>
-      <div class="highlights">
+      <div class="highlights" id="highlightsList">
         <div class="highlight" title="Click to mark as card moment">
           <div class="highlight-rarity legendary"></div>
           <div class="highlight-content">
@@ -1282,8 +1284,8 @@ body {
   <!-- RIGHT — Pack + Party + NPCs + Cards -->
   <div class="right-col">
 
-    <div class="pack-ready">
-      <div class="pack-ready-text">✦ Session 14 pack is ready</div>
+    <div class="pack-ready" id="packReady">
+      <div class="pack-ready-text" id="packReadyText">✦ Session 14 pack is ready</div>
       <button class="pack-ready-btn" onclick="openPack()">Open Your Pack →</button>
     </div>
 
@@ -1292,7 +1294,7 @@ body {
         <div class="section-title">Party</div>
         <div class="section-line"></div>
       </div>
-      <div class="party-list">
+      <div class="party-list" id="partyList">
         <div class="party-member">
           <div class="member-avatar">⚔️</div>
           <div class="member-info">
@@ -1333,7 +1335,7 @@ body {
         <div class="section-title">Key NPCs</div>
         <div class="section-line"></div>
       </div>
-      <div class="npc-list">
+      <div class="npc-list" id="npcList">
         <div class="npc">
           <div class="npc-trust trust"></div>
           <div class="npc-name">Ireena Kolyana</div>
@@ -1362,7 +1364,7 @@ body {
         <div class="section-title">My Cards</div>
         <div class="section-line"></div>
       </div>
-      <div class="cards-preview">
+      <div class="cards-preview" id="cardsPreview">
         <div class="card-item" onclick="switchTab('cards')">
           <div class="card-thumb new">✨</div>
           <div class="card-info">
@@ -1396,13 +1398,19 @@ body {
   <div class="full-view" id="view-cards">
     <div class="view-header">
       <div>
-        <div class="view-title">My Cards</div>
-        <div class="view-sub">Gattok's collection · 7 cards sealed</div>
+        <div class="view-title" id="cardsViewTitle">My Cards</div>
+        <div class="view-sub" id="cardsViewSub">Gattok's collection · 7 cards sealed</div>
       </div>
-      <a href="../session/" class="dice-link">✦ Open on EndoCraft →</a>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:inline-flex;background:var(--bg-input);border:1px solid var(--border-gold);border-radius:8px;padding:3px;">
+          <button id="cardsScopeMine" onclick="ecSwitchAlbumScope('mine')" style="background:var(--bg);border:none;padding:6px 14px;border-radius:6px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.2px;font-weight:700;cursor:pointer;color:var(--text);text-transform:uppercase;">Meine</button>
+          <button id="cardsScopeParty" onclick="ecSwitchAlbumScope('party')" style="background:transparent;border:none;padding:6px 14px;border-radius:6px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.2px;font-weight:700;cursor:pointer;color:var(--text-muted);text-transform:uppercase;">Party Album</button>
+        </div>
+        <a href="../session/" class="dice-link">✦ Open on EndoCraft →</a>
+      </div>
     </div>
 
-    <div class="cards-grid">
+    <div class="cards-grid" id="cardsGrid">
       <div class="card-big">
         <div class="card-big-art new">✨</div>
         <div class="card-big-body">
@@ -1471,7 +1479,7 @@ body {
       </div>
     </div>
 
-    <div class="party-full">
+    <div class="party-full" id="partyFull">
       <div class="party-card">
         <div class="party-card-header">
           <div class="party-avatar-lg">⚔️</div>
@@ -1605,31 +1613,515 @@ body {
 </div><!-- end .player-view -->
 
 <script>
+// ═══════════════════════════════════════════════════════════════════════════
+// PLAYER COMPANION · TAB-NAV (existing, unchanged)
+// ═══════════════════════════════════════════════════════════════════════════
 const view = document.getElementById('playerView');
 const tabEls = document.querySelectorAll('.topbar .tab');
 
 function switchTab(name) {
-  // update tab buttons
   tabEls.forEach(t => t.classList.toggle('active', t.textContent.trim().toLowerCase() === nameToLabel(name)));
-
-  // toggle root class for column visibility
   view.className = view.className.replace(/\btab-\w+\b/, '');
   if (name !== 'tonight') view.classList.add('tab-' + name);
-
-  // toggle full-view panels
   document.querySelectorAll('.full-view').forEach(el => {
     el.classList.toggle('active', el.id === 'view-' + name);
   });
 }
-
-function nameToLabel(name) {
-  return { tonight: 'tonight', cards: 'my cards', party: 'party', world: 'world' }[name] || name;
-}
-
+function nameToLabel(name) { return { tonight: 'tonight', cards: 'my cards', party: 'party', world: 'world' }[name] || name; }
 function openPack() {
-  // Navigate to the EndoCraft session/pack reveal
-  window.location.href = '../session/';
+  // Erste neue Karte (falls vorhanden) öffnen, sonst zur Card-Erstellung
+  const ctx = window._ecContext;
+  if (ctx?.latestCardId) { window.location.href = '../session/?id=' + encodeURIComponent(ctx.latestCardId); return; }
+  window.location.href = '../scroll/';
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PLAYER COMPANION · BACKEND-WIRING (Auth + Cloud-Sync + Live-Mode)
+// Lädt Auth → Memberships → Campaigns → rendert Char-Sheet, Recap, Cards, etc.
+// Wenn nicht authentifiziert: Demo-Inhalt bleibt sichtbar.
+// ═══════════════════════════════════════════════════════════════════════════
+const EC_API = 'https://endocraft-production.up.railway.app';
+const EC_SUPABASE_URL = 'https://dtlzsbhyngafhxkjjlst.supabase.co';
+const EC_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0bHpzYmh5bmdhZmh4a2pqbHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTUwNTgsImV4cCI6MjA5MTgzMTA1OH0.hjB96zqn85y-uZ1SEWMiTHEJjvEEkO504vSzLbSQgWA';
+
+window._ecContext = {
+  email: null,
+  campaign: null,
+  character: null,
+  cards: [],
+  latestCardId: null,
+  members: []
+};
+
+let _ecSb = null;
+function ecInitSupabase() {
+  if (_ecSb) return _ecSb;
+  if (!window.supabase) return null;
+  _ecSb = window.supabase.createClient(EC_SUPABASE_URL, EC_SUPABASE_KEY);
+  return _ecSb;
+}
+
+function ecEscape(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function ecMod(score) { return Math.floor(((score || 10) - 10) / 2); }
+function ecFormatMod(n) { return (n >= 0 ? '+' : '') + n; }
+
+async function ecCheckAuth() {
+  const sb = ecInitSupabase();
+  if (!sb) return null;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user?.email) {
+      window._ecContext.email = session.user.email;
+      ecUpdateAuthBtn(true);
+      return session.user.email;
+    }
+  } catch (e) { console.warn('[ec] auth check', e); }
+  ecUpdateAuthBtn(false);
+  return null;
+}
+
+function ecUpdateAuthBtn(loggedIn) {
+  const btn = document.getElementById('ecAuthBtn');
+  if (!btn) return;
+  btn.style.display = '';
+  if (loggedIn) {
+    btn.textContent = window._ecContext.email?.split('@')[0] || 'Account';
+    btn.title = 'Klicken zum Abmelden';
+  } else {
+    btn.textContent = 'Anmelden';
+    btn.title = 'Mit Google einloggen';
+  }
+}
+
+async function ecToggleAuth() {
+  const sb = ecInitSupabase();
+  if (!sb) { alert('Supabase nicht verfügbar'); return; }
+  if (window._ecContext.email) {
+    if (!confirm('Abmelden?')) return;
+    await sb.auth.signOut();
+    location.reload();
+    return;
+  }
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href.split('?')[0].split('#')[0] }
+  });
+  if (error) alert('Login-Fehler: ' + error.message);
+}
+
+async function ecAcceptInviteFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('invite');
+  if (!token) return;
+  if (!window._ecContext.email) {
+    localStorage.setItem('ec_pending_invite_token', token);
+    return;
+  }
+  try {
+    const resp = await fetch(`${EC_API}/api/invites/${encodeURIComponent(token)}/accept`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: window._ecContext.email })
+    });
+    const data = await resp.json();
+    if (resp.ok && data.ok) {
+      localStorage.setItem('ec_companion_invite_room', data.campaignRoom);
+      localStorage.setItem('ec_companion_invite_charId', data.invite.character_id || '');
+      localStorage.setItem('ec_companion_invite_campId', data.invite.campaign_id || '');
+      localStorage.setItem('ec_companion_invite_dmEmail', data.invite.dm_email || '');
+      // URL säubern
+      history.replaceState(null, '', window.location.pathname + window.location.hash);
+    }
+  } catch (e) { console.warn('[ec] invite accept', e); }
+}
+
+async function ecLoadCampaignData() {
+  const email = window._ecContext.email;
+  if (!email) return null;
+
+  // Pending-Invite nach Login einlösen falls da
+  const pending = localStorage.getItem('ec_pending_invite_token');
+  if (pending) {
+    localStorage.removeItem('ec_pending_invite_token');
+    try {
+      const r = await fetch(`${EC_API}/api/invites/${encodeURIComponent(pending)}/accept`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const d = await r.json();
+      if (r.ok && d.ok) {
+        localStorage.setItem('ec_companion_invite_room', d.campaignRoom);
+        localStorage.setItem('ec_companion_invite_charId', d.invite.character_id || '');
+        localStorage.setItem('ec_companion_invite_campId', d.invite.campaign_id || '');
+        localStorage.setItem('ec_companion_invite_dmEmail', d.invite.dm_email || '');
+      }
+    } catch (e) {}
+  }
+
+  // Memberships fetchen + Kampagne laden
+  let dmEmail = localStorage.getItem('ec_companion_invite_dmEmail');
+  let campId = localStorage.getItem('ec_companion_invite_campId');
+  let charId = localStorage.getItem('ec_companion_invite_charId');
+
+  if (!dmEmail || !campId) {
+    try {
+      const memResp = await fetch(`${EC_API}/api/campaigns/by-member?email=${encodeURIComponent(email)}`);
+      const memData = await memResp.json();
+      const m = (memData.memberships || [])[0];
+      if (m) {
+        dmEmail = m.dm_email;
+        campId = m.campaign_id;
+        charId = charId || m.character_id;
+      }
+    } catch (e) {}
+  }
+
+  if (!dmEmail || !campId) {
+    // Letzter Fallback: User ist eigene DM
+    try {
+      const listResp = await fetch(`${EC_API}/api/dm-studio/campaigns?email=${encodeURIComponent(email)}`);
+      const listData = await listResp.json();
+      const c = (listData.campaigns || [])[0];
+      if (c) { dmEmail = email; campId = c.campaign_id; }
+    } catch (e) {}
+  }
+
+  if (!dmEmail || !campId) return null;
+
+  try {
+    const loadResp = await fetch(`${EC_API}/api/dm-studio/load?email=${encodeURIComponent(dmEmail)}&campaignId=${encodeURIComponent(campId)}`);
+    const loadData = await loadResp.json();
+    if (loadResp.ok && loadData.found && loadData.state?.campaign) {
+      const camp = loadData.state.campaign;
+      window._ecContext.campaign = camp;
+      window._ecContext.dmEmail = dmEmail;
+      // Charakter wählen — invite-charId hat Priorität
+      const chars = (camp.characters || []).filter(c => c.type === 'pc');
+      let char = charId ? chars.find(c => c.id === charId) : null;
+      if (!char) char = chars[0] || null;
+      window._ecContext.character = char;
+      return camp;
+    }
+  } catch (e) { console.warn('[ec] load camp', e); }
+  return null;
+}
+
+// Party Album: Karten aller Member der aktuellen Kampagne
+async function ecLoadPartyAlbum() {
+  const dm = window._ecContext.dmEmail;
+  const campId = window._ecContext.campaign?.id;
+  if (!dm || !campId) return { members: [], cards: [] };
+  try {
+    const resp = await fetch(`${EC_API}/api/campaigns/${encodeURIComponent(dm)}/${encodeURIComponent(campId)}/album`);
+    const data = await resp.json();
+    if (!resp.ok) return { members: [], cards: [] };
+    return { members: data.members || [], cards: data.cards || [] };
+  } catch (e) { console.warn('[ec] party album', e); return { members: [], cards: [] }; }
+}
+
+let _ecAlbumScope = 'mine';
+async function ecSwitchAlbumScope(scope) {
+  _ecAlbumScope = scope;
+  document.getElementById('cardsScopeMine').style.background = scope === 'mine' ? 'var(--bg)' : 'transparent';
+  document.getElementById('cardsScopeMine').style.color = scope === 'mine' ? 'var(--text)' : 'var(--text-muted)';
+  document.getElementById('cardsScopeParty').style.background = scope === 'party' ? 'var(--bg)' : 'transparent';
+  document.getElementById('cardsScopeParty').style.color = scope === 'party' ? 'var(--text)' : 'var(--text-muted)';
+  if (scope === 'party') {
+    const album = await ecLoadPartyAlbum();
+    ecRenderPartyAlbumCards(album.cards, album.members);
+  } else {
+    ecRenderCards(window._ecContext.cards);
+  }
+}
+
+function ecRenderPartyAlbumCards(cards, members) {
+  const grid = document.getElementById('cardsGrid');
+  if (!grid) return;
+  if (!cards.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--text-faint);font-style:italic;">Noch keine Karten in der Party.${members.length ? ' (' + members.length + ' Member · 0 Karten)' : ''}</div>`;
+    return;
+  }
+  grid.innerHTML = cards.map(c => {
+    const r = (c.rarity || 'common').toLowerCase();
+    const member = c._memberName || c.character_name || 'Spieler';
+    return `
+      <div class="card-big" onclick="window.location.href='../session/?id=${ecEscape(c.id)}'" style="cursor:pointer;">
+        <div class="card-big-art ${r}" style="${c.image_url ? `background-image:url('${ecEscape(c.image_url)}');background-size:cover;background-position:center top;` : ''}">${c.image_url ? '' : (r === 'legendary' ? '👑' : r === 'epic' ? '⚡' : '⚔️')}</div>
+        <div class="card-big-body">
+          <div class="card-big-session">${ecEscape(c.session_title || 'Session')} · ${ecEscape(member)}</div>
+          <div class="card-big-title">${ecEscape((c.legendary_moment || '—').slice(0, 60))}</div>
+          <div class="card-big-rarity ${r}">${r.charAt(0).toUpperCase() + r.slice(1)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  const sub = document.getElementById('cardsViewSub');
+  if (sub) sub.textContent = `Party-Album · ${cards.length} Karte${cards.length === 1 ? '' : 'n'} · ${members.length} Member`;
+  const title = document.getElementById('cardsViewTitle');
+  if (title) title.textContent = `${window._ecContext.campaign?.name || 'Party'} Album`;
+}
+
+async function ecLoadMyCards() {
+  const email = window._ecContext.email;
+  if (!email) return [];
+  try {
+    // SHA-256 Slug aus Email berechnen
+    const enc = new TextEncoder();
+    const hash = await crypto.subtle.digest('SHA-256', enc.encode(email.toLowerCase().trim()));
+    const slug = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('').slice(0, 16);
+    const resp = await fetch(`${EC_SUPABASE_URL}/rest/v1/cards?owner_slug=eq.${slug}&select=id,number,session_title,legendary_moment,character_name,character_class,rarity,image_url,created_at&order=created_at.desc&limit=50`, {
+      headers: { 'apikey': EC_SUPABASE_KEY, 'Authorization': 'Bearer ' + EC_SUPABASE_KEY }
+    });
+    const data = await resp.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) { console.warn('[ec] cards', e); return []; }
+}
+
+// ── RENDERER ─────────────────────────────────────────────────────────────
+function ecRenderCampaignHeader() {
+  const camp = window._ecContext.campaign;
+  if (!camp) return;
+  const sess = camp.sessions?.[camp.sessions?.length - 1];
+  document.getElementById('campaignName').textContent = camp.name || 'Kampagne';
+  const dmName = (window._ecContext.dmEmail || '').split('@')[0];
+  document.getElementById('sessionInfo').textContent = `Session ${sess?.number || (camp.sessions?.length || 0)}${dmName ? ' · DM: ' + dmName : ''}${sess?.title ? ' · ' + sess.title : ''}`;
+
+  // Live-Badge zeigen wenn letzte Session keinen Recap hat (= läuft gerade)
+  const liveBadge = document.getElementById('liveBadge');
+  if (liveBadge) liveBadge.style.display = (sess && !sess.recap) ? '' : 'none';
+}
+
+function ecRenderCharacter() {
+  const c = window._ecContext.character;
+  if (!c) return;
+  // Header
+  document.getElementById('charName').textContent = c.name || '—';
+  const meta = [c.race, c.class, c.level ? 'Level ' + c.level : ''].filter(Boolean).join(' · ');
+  document.getElementById('charClass').textContent = meta;
+  const portrait = document.getElementById('charPortrait');
+  if (c.portraitUrl) {
+    portrait.innerHTML = `<img src="${ecEscape(c.portraitUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`;
+  } else {
+    portrait.textContent = (c.name || '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase() || '⚔️';
+  }
+  // HP
+  const hp = c.hp || 0, maxHp = c.maxHp || c.hp || 1;
+  const hpPct = Math.max(0, Math.min(100, Math.round((hp / maxHp) * 100)));
+  const hpText = document.getElementById('charHpText');
+  const hpFill = document.getElementById('charHpFill');
+  if (hpText) hpText.textContent = `${hp} / ${maxHp}`;
+  if (hpFill) {
+    hpFill.style.width = hpPct + '%';
+    hpFill.className = 'hp-fill' + (hpPct < 25 ? ' low' : hpPct < 50 ? ' medium' : '');
+  }
+  // AC
+  const ac = c.ac || 10;
+  const acText = document.getElementById('charAcText');
+  if (acText) acText.textContent = String(ac);
+  const acFill = document.getElementById('charAcFill');
+  if (acFill) acFill.style.width = Math.min(100, ac * 4) + '%';
+  // Stats
+  const abilities = document.getElementById('charAbilities');
+  if (abilities && c.stats) {
+    abilities.innerHTML = ['str','dex','con','int','wis','cha'].map(s => {
+      const v = c.stats[s] || 10;
+      const m = ecMod(v);
+      return `
+        <div class="ability">
+          <div class="ability-score">${v}</div>
+          <div class="ability-mod">${ecFormatMod(m)}</div>
+          <div class="ability-name">${s.toUpperCase()}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function ecRenderRecap() {
+  const camp = window._ecContext.campaign;
+  const c = window._ecContext.character;
+  if (!camp) return;
+  const sessions = camp.sessions || [];
+  // Letzten Session mit Recap finden
+  const last = [...sessions].reverse().find(s => s.recap && s.recap.trim());
+  const recapText = document.getElementById('recapText');
+  const eyebrow = document.getElementById('recapEyebrow');
+  if (last && recapText) {
+    recapText.textContent = last.recap;
+    if (eyebrow) eyebrow.textContent = `✦ Session ${last.number || ''}${last.title ? ' · ' + last.title : ''}${c?.name ? ' · From ' + c.name + '\'s perspective' : ''}`;
+  } else if (recapText) {
+    recapText.innerHTML = '<em style="color:var(--text-faint);">Noch kein Recap. Dein DM hat die letzte Session noch nicht abgeschlossen.</em>';
+    if (eyebrow) eyebrow.textContent = '✦ Awaiting recap';
+  }
+}
+
+function ecRenderHighlights() {
+  const camp = window._ecContext.campaign;
+  if (!camp) return;
+  const last = [...(camp.sessions || [])].reverse().find(s => s.highlights?.length);
+  const host = document.getElementById('highlightsList');
+  if (!host || !last) return;
+  host.innerHTML = (last.highlights || []).slice(0, 4).map(h => {
+    const r = (h.rarity || 'common').toLowerCase();
+    const isMine = h.character && window._ecContext.character?.name?.toLowerCase().includes((h.character || '').toLowerCase().split(' ')[0]);
+    return `
+      <div class="highlight">
+        <div class="highlight-rarity ${r}"></div>
+        <div class="highlight-content">
+          <div class="highlight-text">${ecEscape(h.title || h.description || '')}</div>
+          <div class="highlight-meta">
+            <span class="highlight-who">${isMine ? '✦ Your moment' : ecEscape(h.character || '—')}</span>
+            <span class="highlight-rarity-label ${r}">${r.charAt(0).toUpperCase() + r.slice(1)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function ecRenderParty() {
+  const camp = window._ecContext.campaign;
+  const me = window._ecContext.character;
+  if (!camp) return;
+  const pcs = (camp.characters || []).filter(c => c.type === 'pc');
+  const host = document.getElementById('partyList');
+  if (!host) return;
+  host.innerHTML = pcs.map(c => {
+    const isMe = me && c.id === me.id;
+    const initials = (c.name || '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    return `
+      <div class="party-member">
+        <div class="member-avatar">${c.portraitUrl ? `<img src="${ecEscape(c.portraitUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">` : initials}</div>
+        <div class="member-info">
+          <div class="member-name">${ecEscape(c.name)}</div>
+          <div class="member-class">${ecEscape((c.class || '') + ' ' + (c.level || ''))}${isMe ? ' — You' : ''}</div>
+        </div>
+        <div class="member-status online"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function ecRenderNpcs() {
+  const camp = window._ecContext.campaign;
+  if (!camp) return;
+  const npcs = (camp.characters || []).filter(c => c.type === 'npc').slice(0, 6);
+  const host = document.getElementById('npcList');
+  if (!host) return;
+  if (!npcs.length) return;  // Demo lassen
+  host.innerHTML = npcs.map(n => {
+    // Trust: Wenn notes/personality "ally", "freund", "verbündet" → trust, "feind"/"enemy" → danger, sonst unknown
+    const text = ((n.notes || '') + ' ' + (n.personality || '')).toLowerCase();
+    let trustClass = 'unknown';
+    if (/ally|freund|verbünd|protect|schütz/i.test(text)) trustClass = 'trust';
+    else if (/enemy|feind|danger|gefähr|threat/i.test(text)) trustClass = 'danger';
+    return `
+      <div class="npc">
+        <div class="npc-trust ${trustClass}"></div>
+        <div class="npc-name">${ecEscape(n.name)}</div>
+        <div class="npc-relation">${trustClass}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function ecRenderCards(cards) {
+  window._ecContext.cards = cards || [];
+  if (cards.length) window._ecContext.latestCardId = cards[0].id;
+
+  // Pack-Banner: zeige wenn neue Karte (jünger als 24h und vom DM erstellt)
+  const packReady = document.getElementById('packReady');
+  const newest = cards[0];
+  const isNew = newest && (Date.now() - new Date(newest.created_at).getTime() < 24 * 3600 * 1000);
+  if (packReady) {
+    if (isNew) {
+      const txt = document.getElementById('packReadyText');
+      if (txt) txt.textContent = `✦ ${ecEscape(newest.session_title || 'Neue Karte')} bereit`;
+      packReady.style.display = '';
+    } else {
+      packReady.style.display = 'none';
+    }
+  }
+
+  // Cards-Preview (Tonight-Tab Right-Col)
+  const preview = document.getElementById('cardsPreview');
+  if (preview && cards.length) {
+    preview.innerHTML = cards.slice(0, 3).map(c => {
+      const r = (c.rarity || 'common').toLowerCase();
+      return `
+        <div class="card-item" onclick="window.location.href='../session/?id=${ecEscape(c.id)}'">
+          <div class="card-thumb ${r}" style="${c.image_url ? `background-image:url('${ecEscape(c.image_url)}');background-size:cover;background-position:center;` : ''}">${c.image_url ? '' : (r === 'legendary' ? '👑' : r === 'epic' ? '⚡' : '⚔️')}</div>
+          <div class="card-info">
+            <div class="card-session">${ecEscape(c.session_title || 'Session')}</div>
+            <div class="card-title">${ecEscape(c.legendary_moment || '—').slice(0, 40)}</div>
+          </div>
+          <div class="card-rarity ${r}">${r.charAt(0).toUpperCase() + r.slice(1)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Cards-Grid (My Cards Full-View)
+  const grid = document.getElementById('cardsGrid');
+  if (grid && cards.length) {
+    grid.innerHTML = cards.map(c => {
+      const r = (c.rarity || 'common').toLowerCase();
+      return `
+        <div class="card-big" onclick="window.location.href='../session/?id=${ecEscape(c.id)}'" style="cursor:pointer;">
+          <div class="card-big-art ${r}" style="${c.image_url ? `background-image:url('${ecEscape(c.image_url)}');background-size:cover;background-position:center top;` : ''}">${c.image_url ? '' : (r === 'legendary' ? '👑' : r === 'epic' ? '⚡' : '⚔️')}</div>
+          <div class="card-big-body">
+            <div class="card-big-session">${ecEscape(c.session_title || 'Session')}${c.character_name ? ' · ' + ecEscape(c.character_name) : ''}</div>
+            <div class="card-big-title">${ecEscape((c.legendary_moment || '—').slice(0, 60))}</div>
+            <div class="card-big-rarity ${r}">${r.charAt(0).toUpperCase() + r.slice(1)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Subtitle update
+  const sub = document.getElementById('cardsViewSub');
+  const charName = window._ecContext.character?.name;
+  if (sub) sub.textContent = `${charName || 'Deine'}'s collection · ${cards.length} Karte${cards.length === 1 ? '' : 'n'}`;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+async function ecInit() {
+  const email = await ecCheckAuth();
+
+  // Auth-State-Listener für post-Login auto-load
+  const sb = ecInitSupabase();
+  if (sb) {
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email) {
+        window._ecContext.email = session.user.email;
+        ecUpdateAuthBtn(true);
+        await ecAcceptInviteFromUrl();
+        await ecBoot();
+      } else if (event === 'SIGNED_OUT') {
+        location.reload();
+      }
+    });
+  }
+
+  await ecAcceptInviteFromUrl();
+  if (email) await ecBoot();
+}
+
+async function ecBoot() {
+  await ecLoadCampaignData();
+  ecRenderCampaignHeader();
+  ecRenderCharacter();
+  ecRenderRecap();
+  ecRenderHighlights();
+  ecRenderParty();
+  ecRenderNpcs();
+
+  const cards = await ecLoadMyCards();
+  ecRenderCards(cards);
+}
+
+// Start
+ecInit();
 </script>
 </body>
 </html>

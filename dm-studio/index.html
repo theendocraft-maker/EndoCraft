@@ -6,7 +6,7 @@
 <title>EndoCraft DM Studio — Your AI Co-DM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
 <script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
 <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
@@ -20,40 +20,45 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
-/* ═══════ PROFESSIONAL LIGHT THEME · Unified Warm-Paper Palette ═══════
-   Single tonal family: cream → parchment → ivory. No gray-slate intrusions.
-   Mirrors how Twilight is one slate-ink family. */
+/* ═══════ DAYLIGHT THEME · Inverted Twilight · 4 strict tiers ═══════
+   Same hierarchy as twilight, just flipped: one cream/ivory family,
+   gold accents, crimson reserved for combat/HP. Clear contrast steps:
+     bg (deepest tan)  →  bg2 (panel cream)  →  surface (ivory card)  →  surface-2 (near-white input)
+*/
 :root{
-  --bg:#f0e9d6;               /* warm parchment — main canvas */
-  --bg2:#e8dfc6;              /* sidebar / panel — slightly deeper parchment */
-  --surface:#fbf6e6;           /* cream paper — cards, panels */
-  --surface-2:#f4ecd4;          /* secondary surface — inputs, hover */
-  --text:#2a1f10;             /* warm sepia black — softer than pure black on cream */
+  --bg:#e6d9b8;               /* deepest tan — outer canvas */
+  --bg2:#efe4c6;              /* panel parchment — sidebar */
+  --surface:#fbf6e6;           /* card ivory */
+  --surface-2:#fffcf2;          /* near-white — inputs / hover floor */
+  --text:#1c140a;             /* deep ink */
   --text-dim:#5b4a30;
   --text-dimmer:#8a7a5a;
-  --border:rgba(91,61,24,0.18);
-  --border-strong:rgba(91,61,24,0.32);
-  --accent:#936e1e;           /* gold-led accent like dark mode */
-  --accent-dim:rgba(147,110,30,0.13);
-  --gold:#936e1e;
-  --gold-dim:rgba(147,110,30,0.14);
-  --gold-br:#b48829;
-  --crimson:#a82318;
-  --crimson-dim:rgba(168,35,24,0.08);
+  --border:rgba(91,61,24,0.16);
+  --border-strong:rgba(91,61,24,0.30);
+  --accent:#8a6418;           /* gold accent */
+  --accent-dim:rgba(138,100,24,0.12);
+  --gold:#8a6418;
+  --gold-dim:rgba(138,100,24,0.13);
+  --gold-br:#a87a1d;
+  --crimson:#9d2516;
+  --crimson-dim:rgba(157,37,22,0.08);
   --forest:#27684f;
-  --ink:#1f150a;              /* deepest warm-black — for headings */
-  --shadow-sm:0 1px 2px rgba(91,61,24,0.10);
-  --shadow-md:0 3px 12px rgba(91,61,24,0.13);
-  --shadow-lg:0 10px 40px rgba(91,61,24,0.20);
-  --topbar-bg:rgba(232,223,198,0.92);  /* parchment topbar, no slate */
+  --ink:#15100a;              /* deepest warm-black */
+  --shadow-sm:0 1px 2px rgba(60,40,15,0.08);
+  --shadow-md:0 4px 14px rgba(60,40,15,0.10);
+  --shadow-lg:0 14px 44px rgba(60,40,15,0.18);
+  --topbar-bg:rgba(230,217,184,0.92);  /* deeper than panel — sits as a shelf */
   --hp-track:rgba(91,61,24,0.10);
 }
-/* Subtle warm-paper texture for light mode body */
+/* Body — quieter than before; the contrast comes from the tiered surfaces, not gradients */
 html[data-theme="light"] body,
 html:not([data-theme]) body{
   background-image:
-    radial-gradient(at 20% 10%, rgba(201,162,95,0.10) 0%, transparent 55%),
-    radial-gradient(at 80% 90%, rgba(168,35,24,0.04) 0%, transparent 55%);
+    radial-gradient(at 20% 10%, rgba(138,100,24,0.06) 0%, transparent 60%),
+    radial-gradient(at 80% 90%, rgba(157,37,22,0.025) 0%, transparent 55%),
+    /* faint horizontal ruling like aged paper */
+    linear-gradient(transparent 96%, rgba(91,61,24,0.04) 96%);
+  background-size:auto, auto, 100% 1.6em;
 }
 
 /* ═══════ TWILIGHT THEME · Dark mode for evening sessions ═══════ */
@@ -654,11 +659,27 @@ html[data-theme="light"] .panel-left{
 /* Topbar gets a warm border-bottom that ties it into the paper system */
 html[data-theme="light"] .topbar{
   background:var(--topbar-bg) !important;
-  border-bottom:1px solid rgba(91,61,24,0.15) !important;
+  border-bottom:1px solid var(--border-strong) !important;
+  box-shadow:0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 0 var(--gold-dim);
 }
 html[data-theme="light"] .topbar .logo,
 html[data-theme="light"] .topbar .logo .sub{
   color:var(--ink) !important;
+}
+
+/* Sidebar / right-panel — slight inner highlight + gold hairline against canvas */
+html[data-theme="light"] .lpanel,
+html[data-theme="light"] .prep-right,
+html[data-theme="light"] .session-right{
+  background:var(--bg2) !important;
+  box-shadow:1px 0 0 rgba(255,255,255,0.5) inset !important;
+}
+html[data-theme="light"] .lpanel{
+  border-right:1px solid var(--border-strong) !important;
+}
+html[data-theme="light"] .prep-right,
+html[data-theme="light"] .session-right{
+  border-left:1px solid var(--border-strong) !important;
 }
 
 /* Read-Aloud panel — was salmon-pink rgba(168,35,24,0.06); now warm parchment band */
@@ -1271,6 +1292,32 @@ html[data-theme="twilight"] .roll-log-panel{
   border-color:var(--gold) !important;
   box-shadow:inset 0 0 0 1px var(--surface), 0 2px 0 rgba(201,162,95,0.40), 0 6px 22px rgba(0,0,0,0.4) !important;
 }
+/* Override earlier phases that set border-color individually */
+html[data-theme="light"] .briefing-card,
+html[data-theme="light"] .side-widget,
+html[data-theme="light"] .mod-section,
+html[data-theme="light"] .mod-scen,
+html[data-theme="light"] .recap-block,
+html[data-theme="light"] .welcome-opt,
+html[data-theme="light"] .roll-log-panel{
+  border-color:var(--ink) !important;
+}
+
+/* Kill any leftover crimson/cream banner gradients on card headers
+   from earlier phases — engraved transparent header is the system. */
+html[data-theme="twilight"] .briefing-card-h,
+html[data-theme="twilight"] .sheet-section-h,
+html[data-theme="twilight"] .roll-log-h,
+html[data-theme="twilight"] .side-widget-h,
+html[data-theme="twilight"] .mod-section-head,
+html[data-theme="light"] .briefing-card-h,
+html[data-theme="light"] .sheet-section-h,
+html[data-theme="light"] .roll-log-h,
+html[data-theme="light"] .side-widget-h,
+html[data-theme="light"] .mod-section-head{
+  background:transparent !important;
+  background-image:none !important;
+}
 
 /* Inner-frame outline (the "second rule" that gives the engraved look) */
 .briefing-card::before,
@@ -1597,7 +1644,7 @@ body{
   display:flex;flex-direction:column;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  min-width:768px;
+  min-width:1100px;
 }
 
 /* ═══════ TOP BAR ═══════ */
@@ -1649,7 +1696,7 @@ body{
   display:flex;align-items:center;gap:7px;transition:all .15s;
 }
 .tab:hover{color:var(--text);background:rgba(91,61,24,0.06);}
-.tab.active{color:var(--ink);background:var(--accent-dim);box-shadow:inset 0 0 0 1px rgba(108,93,228,0.3);}
+.tab.active{color:var(--ink);background:var(--accent-dim);box-shadow:inset 0 0 0 1px var(--gold-dim);}
 .tab .ico{font-size:15px;}
 
 .topbar-right{margin-left:auto;display:flex;gap:6px;align-items:center;}
@@ -1769,7 +1816,7 @@ body{
 .add-row:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
 
 /* Prep right panel — image + chat */
-.prep-right{width:480px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.prep-right{width:380px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
 .prep-right-head{padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
 .prep-right-tabs{display:flex;gap:2px;flex:1;}
 .prep-rt-tab{padding:6px 12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;border-radius:7px;transition:all .1s;}
@@ -2489,7 +2536,7 @@ body{
 .sq-stat-row span:last-child{color:var(--text);font-weight:500;}
 
 /* Session right panel — tab system (Chat / Szene / Musik) */
-.session-right{width:480px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.session-right{width:520px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;min-width:0;}
 .session-rt-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
 .session-rt-tab{
   flex:1;padding:12px 10px;border:none;background:transparent;cursor:pointer;
@@ -2499,9 +2546,6 @@ body{
 }
 .session-rt-tab:hover{color:var(--text);background:var(--surface-2);}
 .session-rt-tab.active{color:var(--ink);border-bottom-color:var(--accent);background:var(--surface-2);}
-.session-rt-tab.has-new{position:relative;}
-.session-rt-tab.has-new::after{content:'';position:absolute;top:8px;right:10px;width:6px;height:6px;border-radius:50%;background:var(--crimson);box-shadow:0 0 6px rgba(168,35,24,0.6);animation:pulseRT 1.4s ease-in-out infinite;}
-@keyframes pulseRT{0%,100%{opacity:1;}50%{opacity:.4;}}
 .session-rt-pane{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
 .session-rt-pane.active{display:flex;}
 .session-rt-head{padding:12px 16px 8px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;flex-shrink:0;}
@@ -2554,8 +2598,6 @@ body{
 .char-row-tag{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;padding:2px 6px;border-radius:3px;font-weight:700;}
 .char-row-tag.pc{background:var(--accent-dim);color:var(--accent);}
 .char-row-tag.npc{background:var(--gold-dim);color:var(--gold);}
-.char-row-invite{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:5px;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:13px;transition:all .12s;}
-.char-row-invite:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.08);}
 
 .char-editor{flex:1;background:var(--bg);overflow-y:auto;padding:26px 32px 40px;min-width:0;}
 .char-form-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start;max-width:1400px;margin:0 auto;}
@@ -2752,9 +2794,6 @@ body{
 .sb-item{font-size:14px;color:var(--ink);margin-bottom:8px;line-height:1.45;}
 .sb-item:last-child{margin-bottom:0;}
 .sb-item strong{font-weight:600;font-style:italic;}
-.sb-roll-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:5px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-size:13px;margin-left:4px;vertical-align:middle;transition:all .12s;}
-.sb-roll-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.08);}
-.sb-roll-btn:active{transform:scale(.96);}
 .sb-item em{font-style:italic;}
 
 /* Statblock with HP-tracker header (used in Combat Overview) */
@@ -3196,12 +3235,12 @@ body{
 .welcome-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:19px;color:var(--text);max-width:540px;margin:0 auto 36px;line-height:1.55;}
 .welcome-options{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:640px;margin:0 auto 24px;}
 .welcome-opt{
-  background:#fbf6e6;border:1px solid #d9c89a;border-radius:8px;padding:26px 24px;
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;padding:26px 24px;
   cursor:pointer;transition:all .2s;text-align:left;
-  box-shadow:0 2px 8px rgba(91,61,24,0.08);
+  box-shadow:var(--shadow-sm);
 }
-.welcome-opt:hover{border-color:var(--crimson);transform:translateY(-2px);box-shadow:0 6px 18px rgba(91,61,24,0.14);}
-.welcome-opt.primary{border-color:var(--crimson);background:linear-gradient(to bottom,#fbf6e6,#f4ecd4);}
+.welcome-opt:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.welcome-opt.primary{border-color:var(--crimson);background:linear-gradient(to bottom,var(--surface),var(--surface-2));}
 .welcome-opt.full{grid-column:1/-1;}
 .welcome-opt-ico{font-size:32px;margin-bottom:10px;}
 .welcome-opt-title{font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--crimson);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
@@ -3454,46 +3493,50 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
   content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);
   width:60px;height:3px;background:var(--gold);
 }
-.landing-logo{width:54px;height:54px;border-radius:8px;border:2px solid var(--gold);box-shadow:inset 0 0 0 2px rgba(20,20,28,0.9), 0 4px 20px rgba(147,110,30,0.4);}
+.landing-logo{width:58px;height:58px;border-radius:6px;border:2px solid var(--gold);background:#0e0d12;padding:3px;box-shadow:0 4px 20px rgba(147,110,30,0.4);object-fit:contain;}
 .landing-brand-text{text-align:left;}
 .landing-title{
-  font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:#fdf6e8;
-  letter-spacing:0.12em;text-transform:uppercase;line-height:1;
+  font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:#fdf6e8;
+  letter-spacing:0.18em;text-transform:uppercase;line-height:1;
 }
 .landing-sub{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3.5px;color:var(--gold);text-transform:uppercase;margin-top:6px;font-weight:700;}
 
-/* Headline — engraved with flanking diamonds */
+/* Headline — engraved cap-line + flowing italic prose underneath */
 .landing-h1{
-  font-family:'Cinzel',serif;font-size:24px;font-weight:700;line-height:1.4;
-  margin:0 0 8px;color:#fdf6e8;
-  letter-spacing:0.04em;text-transform:uppercase;
+  font-family:'Cinzel',serif;font-size:14px;font-weight:700;line-height:1.5;
+  margin:0 0 6px;color:rgba(253,246,232,0.78);
+  letter-spacing:0.32em;text-transform:uppercase;
   text-align:center;
   position:relative;
-  padding:14px 0 4px;
+  padding:18px 0 0;
 }
 .landing-h1::before{
   content:"◆";
   display:block;
-  font-size:11px;color:var(--gold);opacity:.7;
-  margin-bottom:14px;
+  font-size:11px;color:var(--gold);opacity:.85;
+  margin-bottom:18px;
   text-transform:none;letter-spacing:0;
 }
 .landing-h1 em{
+  display:block;
   font-family:'EB Garamond',Georgia,serif;
-  font-style:italic;color:var(--gold);font-weight:600;
-  text-transform:none;letter-spacing:0.01em;font-size:1.05em;
-  white-space:nowrap;
+  font-style:italic;color:#fdf6e8;font-weight:600;
+  text-transform:none;letter-spacing:0;
+  font-size:30px;line-height:1.15;
+  margin-top:6px;
 }
+.landing-h1 em > span{color:var(--gold);}
 
-/* Description — Cinzel-labeled "PROLOG" form-field style */
+/* Description — italic "prologue" stamp framed by visible dotted rules */
 .landing-p{
-  font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.7;
-  color:rgba(253,246,232,0.78);margin:18px auto 32px;
-  max-width:440px;
-  padding:14px 0;
-  border-top:1px dotted rgba(201,162,95,0.30);
-  border-bottom:1px dotted rgba(201,162,95,0.30);
+  font-family:'EB Garamond',serif;font-style:italic;font-size:15px;line-height:1.65;
+  color:rgba(253,246,232,0.72);margin:24px auto 32px;
+  max-width:420px;
+  padding:16px 8px;
+  border-top:1px dotted rgba(201,162,95,0.55);
+  border-bottom:1px dotted rgba(201,162,95,0.55);
 }
+.landing-p strong{color:var(--gold);font-weight:600;font-style:normal;font-family:'Cinzel',serif;font-size:0.78em;letter-spacing:0.18em;text-transform:uppercase;}
 
 .landing-actions{display:flex;flex-direction:column;gap:14px;max-width:340px;margin:0 auto;}
 
@@ -3528,9 +3571,19 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
     0 2px 6px rgba(0,0,0,0.3);
 }
 .landing-btn.secondary{
-  background:transparent;color:rgba(253,246,232,0.75);
+  background:transparent;color:rgba(253,246,232,0.65);
   border:1.5px solid rgba(201,162,95,0.40);
   box-shadow:0 2px 0 rgba(201,162,95,0.25);
+  font-size:10.5px;letter-spacing:2.2px;
+  padding:12px 18px;
+}
+.landing-btn.secondary::before{
+  content:"◆";
+  font-size:7px;
+  color:var(--gold);
+  opacity:.55;
+  margin-right:10px;
+  letter-spacing:0;
 }
 .landing-btn.secondary:hover{
   background:rgba(201,162,95,0.08);
@@ -3544,16 +3597,27 @@ body.is-welcome .topbar,body.is-welcome .shell{display:none;}
 }
 
 .landing-foot{
-  margin-top:32px;padding-top:18px;
+  margin-top:36px;padding-top:20px;
   border-top:1px solid rgba(201,162,95,0.20);
-  font-family:'Cinzel',serif;font-size:9px;
-  color:rgba(253,246,232,0.45);
-  font-style:normal;
-  letter-spacing:2.5px;text-transform:uppercase;
+  font-family:'EB Garamond',serif;font-size:12px;
+  color:rgba(253,246,232,0.50);
+  font-style:italic;
+  letter-spacing:0.01em;text-transform:none;
+  line-height:1.5;
+}
+.landing-foot::before{
+  content:"";
+  display:block;
+  width:6px;height:6px;
+  margin:0 auto 12px;
+  background:var(--gold);
+  opacity:.5;
+  transform:rotate(45deg);
 }
 body.gate-open{overflow:hidden;}
 @media (max-width:620px){
-  .landing-h1{font-size:18px;letter-spacing:0.03em;}
+  .landing-h1{font-size:12px;letter-spacing:0.22em;}
+  .landing-h1 em{font-size:24px;}
   .landing-p{font-size:14px;}
   .landing-inner{padding:36px 22px 28px;}
 }
@@ -3575,70 +3639,6 @@ body.gate-open{overflow:hidden;}
   .lpanel{width:180px;}
   .prep-right,.session-right{display:none;}
 }
-
-/* ═══════════ DRAMA-STAGE DICE OVERLAY ═══════════ */
-#diceStage{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s ease;}
-#diceStage.ds-active{opacity:1;}
-#diceStage.ds-normal{align-items:flex-end;justify-content:flex-start;padding:0 0 90px 28px;}
-#diceStage.ds-crit,#diceStage.ds-fumble{background:rgba(4,2,1,.92);backdrop-filter:blur(10px);pointer-events:all;}
-.ds-glow-crit{position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(232,184,109,.18) 0%,transparent 70%);animation:dsGP 1.6s ease-in-out infinite;}
-.ds-glow-fumble{position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(168,35,24,.22) 0%,transparent 70%);animation:dsGP 1s ease-in-out infinite;}
-@keyframes dsGP{0%,100%{opacity:.8;}50%{opacity:1;}}
-.ds-die{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:1;}
-.ds-die-body{width:170px;height:170px;display:flex;align-items:center;justify-content:center;position:relative;}
-.ds-crit .ds-die-body,.ds-fumble .ds-die-body{width:230px;height:230px;}
-.ds-normal .ds-die-body{width:90px;height:90px;}
-.ds-hex{position:absolute;inset:0;clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);background:linear-gradient(145deg,rgba(28,18,8,.95),rgba(8,6,3,.98));}
-.ds-crit .ds-hex{background:linear-gradient(145deg,rgba(232,184,109,.3) 0%,rgba(180,120,20,.15) 40%,rgba(8,6,3,.98) 100%);animation:dsHG 1s ease-in-out infinite alternate;}
-.ds-fumble .ds-hex{background:linear-gradient(145deg,rgba(168,35,24,.35) 0%,rgba(80,15,10,.2) 40%,rgba(6,2,2,.98) 100%);}
-@keyframes dsHG{from{filter:drop-shadow(0 0 20px rgba(232,184,109,.5));}to{filter:drop-shadow(0 0 50px rgba(232,184,109,.85));}}
-.ds-number{position:relative;z-index:2;font-family:'Cinzel Decorative',serif;font-size:52px;font-weight:700;color:#fffbf0;line-height:1;text-shadow:0 2px 20px rgba(0,0,0,.9);}
-.ds-crit .ds-number{color:#E8B86D;font-size:70px;text-shadow:0 0 40px rgba(232,184,109,.8),0 2px 20px rgba(0,0,0,.9);}
-.ds-fumble .ds-number{color:#ef4444;font-size:70px;text-shadow:0 0 40px rgba(239,68,68,.7),0 2px 20px rgba(0,0,0,.9);}
-.ds-normal .ds-number{font-size:32px;}
-@keyframes dsFlick{0%,100%{opacity:1;}50%{opacity:.6;}}
-.ds-rolling .ds-number{animation:dsFlick .09s linear infinite;}
-.ds-who{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:rgba(255,255,255,.45);text-align:center;}
-.ds-stat{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:rgba(232,184,109,.65);text-align:center;margin-top:3px;}
-.ds-crit .ds-who,.ds-crit .ds-stat{color:rgba(232,184,109,.9);}
-.ds-fumble .ds-who,.ds-fumble .ds-stat{color:rgba(239,68,68,.8);}
-.ds-tag{font-family:'Cinzel',serif;font-size:13px;letter-spacing:4px;font-weight:700;text-align:center;margin-top:6px;opacity:0;transform:translateY(10px);transition:all .4s ease .85s;}
-.ds-crit .ds-tag{color:#E8B86D;}
-.ds-fumble .ds-tag{color:#ef4444;}
-.ds-revealed .ds-tag{opacity:1;transform:none;}
-.ds-mini-wrap{background:rgba(8,5,2,.96);border:1px solid rgba(232,184,109,.2);border-radius:14px;padding:14px 18px;backdrop-filter:blur(18px);box-shadow:0 8px 40px rgba(0,0,0,.65);display:flex;align-items:center;gap:14px;}
-.ds-holo{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:0;background:linear-gradient(135deg,rgba(255,0,80,.35) 0%,rgba(255,160,0,.45) 25%,rgba(0,255,120,.35) 50%,rgba(0,200,255,.45) 75%,rgba(255,0,80,.35) 100%);background-size:300% 300%;animation:dsHolo 1.8s ease forwards;}
-@keyframes dsHolo{0%{opacity:0;background-position:0% 0%;}10%{opacity:.7;}50%{background-position:100% 100%;}85%{opacity:.5;}100%{opacity:0;background-position:200% 200%;}}
-.ds-dismiss{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.18);pointer-events:none;}
-@keyframes dsShake{0%,100%{transform:translate(0,0) rotate(0);}15%{transform:translate(-7px,3px) rotate(-.5deg);}30%{transform:translate(7px,-4px) rotate(.5deg);}45%{transform:translate(-5px,5px) rotate(-.3deg);}60%{transform:translate(4px,-3px) rotate(.2deg);}75%{transform:translate(-2px,2px);}90%{transform:translate(1px,-1px);}}
-.ds-screen-shake{animation:dsShake .55s ease-out;}
-@keyframes dsBounce{0%,100%{transform:translate(0,0);}20%{transform:translate(-3px,2px);}50%{transform:translate(3px,-2px);}80%{transform:translate(-1px,1px);}}
-.ds-bounce-shake{animation:dsBounce .18s ease-out;}
-
-/* ═══════════ LORE CODEX ═══════════ */
-.codex-main{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
-.codex-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.codex-search{flex:1;min-width:160px;padding:9px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;font-family:'EB Garamond',serif;font-size:14px;color:var(--text);outline:none;}
-.codex-search:focus{border-color:var(--gold);}
-.codex-filter{display:flex;gap:6px;flex-wrap:wrap;}
-.codex-filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:var(--text-dim);cursor:pointer;transition:all .15s;}
-.codex-filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
-.codex-gen-btn{padding:9px 18px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;cursor:pointer;font-weight:700;transition:opacity .2s;}
-.codex-gen-btn:hover{opacity:.9;}
-.codex-gen-btn:disabled{opacity:.5;cursor:default;}
-.codex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
-.codex-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:border-color .2s,transform .2s;cursor:pointer;}
-.codex-card:hover{border-color:rgba(147,110,30,.35);transform:translateY(-2px);}
-.codex-card-type{display:inline-flex;align-items:center;gap:6px;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:2.5px;color:var(--text-dimmer);margin-bottom:8px;text-transform:uppercase;}
-.codex-card-name{font-family:'Cinzel Decorative',serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.2;}
-.codex-card-summary{font-family:'EB Garamond',serif;font-size:13.5px;color:var(--text-dim);line-height:1.55;margin-bottom:10px;}
-.codex-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
-.codex-card-tag{background:var(--gold-dim);color:var(--gold);font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;padding:2px 8px;border-radius:10px;}
-.codex-card-connections{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--text-dimmer);border-top:1px solid var(--border);padding-top:8px;margin-top:4px;}
-.codex-secret{background:var(--crimson-dim);border:1px solid rgba(168,35,24,.2);border-radius:6px;padding:8px 10px;margin-top:8px;font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--crimson);}
-.codex-empty{text-align:center;padding:60px 20px;color:var(--text-dim);font-family:'EB Garamond',serif;font-style:italic;font-size:15px;line-height:1.8;}
-.codex-empty .ico{font-size:40px;margin-bottom:12px;display:block;}
-.codex-type-icon{font-size:13px;}
 </style>
 </head>
 <body>
@@ -3667,10 +3667,10 @@ body.gate-open{overflow:hidden;}
         <div class="landing-sub">DM Studio</div>
       </div>
     </div>
-    <h1 class="landing-h1">Der <em>AI-gestützte Arbeitsplatz</em> für Dungeon Master</h1>
+    <h1 class="landing-h1">Der Arbeitsplatz für Dungeon Master<em>Mit <span>KI</span> an deiner Seite.</em></h1>
     <p class="landing-p">
-      Kampagnen-Memory, Session-Vorbereitung, Live-Combat-Tracker, Co-DM-KI, Charakterbögen mit D&D-Beyond-Style-Rolls.
-      Einmal einloggen, alles bleibt in deinem Account synchronisiert.
+      <strong>Was dich erwartet —</strong>
+      Kampagnen-Memory, Session-Vorbereitung und Live-Combat-Tracker. Co-DM-KI für Plot-Twists in Echtzeit. Charakterbögen mit Rolls im D&D-Beyond-Stil. Einmal einloggen, alles synchronisiert.
     </p>
     <div class="landing-actions">
       <button class="landing-btn primary" onclick="gateSignIn()">
@@ -3689,7 +3689,7 @@ body.gate-open{overflow:hidden;}
 <div class="topbar">
   <a href="/" class="logo">
     <img src="https://endocraft.app/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
-    EndoCraft
+    EndoCraft <span class="sub">DM Studio</span>
   </a>
   <div class="topbar-sep"></div>
   <div class="campaign-pill" onclick="toggleCampaignMenu(event)" title="Kampagne wechseln" id="campaignPill">
@@ -3702,9 +3702,12 @@ body.gate-open{overflow:hidden;}
   </div>
   <div class="campaign-menu" id="campaignMenu" style="display:none;"></div>
   <div class="tabnav">
-    <div class="tab active" data-view="scene" onclick="openScene()"><span class="ico">🎲</span><span>Session</span></div>
+    <div class="tab" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Briefing</span></div>
+    <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
+    <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
     <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
-    <div class="tab" data-view="sammlung" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Sammlung</span></div>
+    <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
+    <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
   </div>
   <div class="topbar-right">
     <div class="theme-toggle" role="group" aria-label="Theme">
@@ -3730,7 +3733,7 @@ body.gate-open{overflow:hidden;}
         apply(current);
       })();
     </script>
-    <button class="btn-top" onclick="window.location.href='/hall-of-fame/'" title="Karten-Layer: Hall of Fame · Trending · Karten erstellen">🃏 Karten</button>
+    <button class="btn-top" onclick="window.open('/player/companion.html','_blank')" title="Player Companion · Spieler-Sicht auf Kampagne">🎭 Player View</button>
     <button class="btn-top" onclick="openConditionsModal()" title="SRD 5.1 Regel-Referenz">📖 Regeln</button>
     <button class="btn-top" onclick="openPostSessionRecap()" title="Post-Session Recap · KI-gestützt">📝 Recap</button>
     <button class="btn-top" onclick="loadSession14Prep()" title="Session 14 Prep-Daten laden · Ctrl+Shift+D toggles this" id="demoLoadBtn" style="background:var(--crimson);color:#fff;border-color:var(--crimson);display:none;">🎲 Demo laden</button>
@@ -3744,17 +3747,6 @@ body.gate-open{overflow:hidden;}
 
   <!-- ═══════ VIEW: BRIEFING — Pre-Session-Überblick ═══════ -->
   <div class="view" id="view-briefing">
-    <aside class="lpanel">
-      <div class="lp-header">
-        <span class="lp-title">Briefing</span>
-        <button class="lp-add" onclick="switchView('session')" title="Session starten">▶ Live</button>
-      </div>
-      <div class="lp-body" id="briefingSidebar"></div>
-      <div class="lp-footer">
-        <div class="sb-label-sm">Party</div>
-        <div class="party-chips" id="briefingPartyChips"></div>
-      </div>
-    </aside>
     <main class="briefing-main" id="briefingMain"></main>
   </div>
 
@@ -3783,10 +3775,6 @@ body.gate-open{overflow:hidden;}
           <div class="prep-head-meta" id="prepMeta" contenteditable="true" onblur="updateLocField('meta', this.innerText)"></div>
         </div>
         <div class="prep-head-actions">
-          <div class="scene-mode-toggle" title="Wechsel zwischen Vorbereitung und Live-Session">
-            <button class="btn-top scene-mode-btn active" onclick="switchView('prep')">📋 Prep</button>
-            <button class="btn-top scene-mode-btn" onclick="switchView('session')">🎲 Live</button>
-          </div>
           <button class="btn-top" onclick="markLocStatus('active')" title="Diesen Ort in der Tree-Navigation als 'aktuell' markieren — gold-pulsierender Punkt zeigt wo die Party gerade ist">● Als aktueller Ort</button>
           <button class="btn-top" onclick="markLocStatus('done')" title="Ort als abgeschlossen markieren — Tree-Punkt wird grau, sodass du auf einen Blick siehst was schon durch ist">✓ Als abgehakt</button>
           <button class="btn-top" onclick="markLocStatus('pending')" title="Status zurücksetzen — Ort ist wieder offen / steht noch an">↺ Zurücksetzen</button>
@@ -3859,16 +3847,11 @@ body.gate-open{overflow:hidden;}
           <div class="session-strip-loc-name" id="sessLocName">—</div>
           <div class="session-strip-loc-meta" id="sessLocMeta"></div>
         </div>
-        <div class="scene-mode-toggle" title="Wechsel zwischen Vorbereitung und Live-Session" style="margin-right:8px;">
-          <button class="btn-top scene-mode-btn" onclick="switchView('prep')">📋 Prep</button>
-          <button class="btn-top scene-mode-btn active" onclick="switchView('session')">🎲 Live</button>
-        </div>
         <div class="session-modes" id="sessionModes">
           <button class="session-mode-btn active" data-mode="scene" onclick="setSessionMode('scene')" title="Standard: Read-Aloud, NPCs, Dialoge, Szenarien"><span class="ico">🎭</span>Szene</button>
           <button class="session-mode-btn" data-mode="combat" onclick="setSessionMode('combat')" title="Combat-Tracker prominent, Statblöcke aufgeklappt, Story-Sections versteckt"><span class="ico">⚔️</span>Kampf</button>
         </div>
         <div class="session-actions">
-          <button class="btn-top" onclick="openEncounterBuilder()" title="Encounter Builder · AI-generierte balanced Encounters mit SRD-Statblöcken">⚔️ Encounter</button>
           <button class="btn-top btn-next-turn" id="btnNextTurn" onclick="nextTurn()" title="Keyboard: Space" style="display:none;">
             <span class="ico">▸</span><span>Nächster Zug</span><span class="kbd-hint">Space</span>
           </button>
@@ -3902,7 +3885,6 @@ body.gate-open{overflow:hidden;}
         <aside class="session-right">
           <div class="session-rt-tabs">
             <button class="session-rt-tab active" data-srt="chat" onclick="switchSessionRT('chat')"><span>✦</span>Co-DM</button>
-            <button class="session-rt-tab" data-srt="dice" onclick="switchSessionRT('dice')"><span>🎲</span>Würfel</button>
             <button class="session-rt-tab" data-srt="image" onclick="switchSessionRT('image')"><span>🏛️</span>Szene</button>
             <button class="session-rt-tab" data-srt="music" onclick="switchSessionRT('music')"><span>🎵</span>Musik</button>
           </div>
@@ -3921,17 +3903,6 @@ body.gate-open{overflow:hidden;}
                   <button class="chat-send-btn">Senden</button>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div class="session-rt-pane" data-srt="dice">
-            <div class="session-rt-head">
-              <strong>Würfel-Stream</strong> · Live-Rolls deiner Party
-              <button class="btn-top" style="font-size:11px;padding:5px 10px;margin-left:8px;" onclick="openRollRequestModal()" title="Wurf bei der Party anfragen">+ Roll anfragen</button>
-            </div>
-            <div id="diceStreamPanel" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
-              <div id="diceStreamStatus" style="padding:10px 16px;font-size:11.5px;color:var(--text-dim);font-family:'EB Garamond',serif;font-style:italic;border-bottom:1px solid var(--border);"></div>
-              <div id="diceStreamList" style="flex:1;overflow-y:auto;padding:8px 12px;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
           </div>
 
@@ -3984,12 +3955,8 @@ body.gate-open{overflow:hidden;}
   <div class="view" id="view-highlights">
     <aside class="lpanel">
       <div class="lp-header">
-        <span class="lp-title">Sammlung</span>
+        <span class="lp-title">Highlights</span>
         <button class="lp-add" onclick="addManualHighlight()" title="Eigener Highlight-Eintrag">+ Neu</button>
-      </div>
-      <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);">
-        <button id="subtab-highlights" onclick="switchView('highlights')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;">🌟 Highlights</button>
-        <button id="subtab-album" onclick="switchView('album')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;">📚 Album</button>
       </div>
       <div class="char-filter" id="highlightFilter">
         <button class="active" data-f="all" onclick="filterHighlights('all')">Alle</button>
@@ -4007,12 +3974,8 @@ body.gate-open{overflow:hidden;}
   <div class="view" id="view-album">
     <aside class="lpanel">
       <div class="lp-header">
-        <span class="lp-title">Sammlung</span>
+        <span class="lp-title">Party Album</span>
         <button class="lp-add" onclick="reloadAlbum()" title="Karten aus Cloud neu laden">↻</button>
-      </div>
-      <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);">
-        <button id="subtab-highlights2" onclick="switchView('highlights')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;">🌟 Highlights</button>
-        <button id="subtab-album2" onclick="switchView('album')" style="flex:1;padding:8px 4px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;border:none;background:transparent;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;">📚 Album</button>
       </div>
       <div class="char-filter" id="albumRarityFilter">
         <button class="active" data-r="all" onclick="filterAlbumRarity('all')">Alle</button>
@@ -4027,51 +3990,11 @@ body.gate-open{overflow:hidden;}
     <main class="highlight-board" id="albumBoard"></main>
   </div>
 
-  <!-- ═══════ LORE CODEX VIEW · AI-generiertes Campaign-Wiki ═══════ -->
-  <div class="view" id="view-codex">
-    <aside class="lpanel">
-      <div class="lp-header">
-        <span class="lp-title">Lore Codex</span>
-        <button class="lp-add" onclick="generateLoreCodex()" title="Wiki aus Campaign-Daten generieren">✦ Gen</button>
-      </div>
-      <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
-        <div style="font-family:'EB Garamond',serif;font-size:12px;color:var(--text-dim);line-height:1.5;font-style:italic;">KI-Wiki aus deinen Charakteren, Sessions & Locations.</div>
-        <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;" id="codexLpStats"></div>
-      </div>
-      <div style="padding:8px 12px;border-top:1px solid var(--border);margin-top:auto;">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-dimmer);margin-bottom:6px;">FILTER</div>
-        <div class="codex-filter" id="codexFilter">
-          <button class="codex-filter-btn active" data-type="all" onclick="filterCodex('all')">Alle</button>
-          <button class="codex-filter-btn" data-type="character" onclick="filterCodex('character')">Chars</button>
-          <button class="codex-filter-btn" data-type="npc" onclick="filterCodex('npc')">NPCs</button>
-          <button class="codex-filter-btn" data-type="location" onclick="filterCodex('location')">Orte</button>
-          <button class="codex-filter-btn" data-type="event" onclick="filterCodex('event')">Events</button>
-          <button class="codex-filter-btn" data-type="faction" onclick="filterCodex('faction')">Factions</button>
-          <button class="codex-filter-btn" data-type="mystery" onclick="filterCodex('mystery')">Mysteries</button>
-        </div>
-      </div>
-    </aside>
-
-    <main style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-      <div class="codex-toolbar" style="padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface);">
-        <input class="codex-search" id="codexSearch" placeholder="Wiki durchsuchen…" oninput="renderCodexGrid()" />
-        <button class="codex-gen-btn" id="codexGenBtn" onclick="generateLoreCodex()">📜 Generieren</button>
-      </div>
-      <div class="codex-main" id="codexMain">
-        <div class="codex-empty">
-          <span class="ico">📜</span>
-          Noch kein Codex generiert.<br>Klick auf <strong>Generieren</strong> — Claude baut ein Wiki aus deinen Campaign-Daten.
-        </div>
-      </div>
-    </main>
-  </div>
-
 </div>
 
 <input type="file" id="portraitUploadInput" accept="image/*" style="display:none" onchange="handlePortraitUpload(event)">
 <input type="file" id="sceneUploadInput" accept="image/*" style="display:none" onchange="handleSceneUpload(event)">
 <div class="toast" id="toast"></div>
-<div id="diceStage"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
@@ -5307,14 +5230,7 @@ function renderStatblock(c, opts = {}) {
     if (!items || !items.length) return '';
     return `<div class="sb-section">
       <div class="sb-section-h">${title}</div>
-      ${items.map(it => {
-        const name = it.name || '';
-        const text = it.text || '';
-        const parsed = parseAbilityForRoll(text);
-        const triggerLabel = parsed.dc != null ? `DC ${parsed.dc}${parsed.stat ? ' · ' + parsed.stat.toUpperCase() : ''}` : 'Roll';
-        const btn = `<button class="sb-roll-btn" onclick="requestRollFromAbility(this)" data-name="${escapeAttr(name)}" data-stat="${parsed.stat || ''}" data-dc="${parsed.dc != null ? parsed.dc : ''}" title="Roll bei der Party anfragen — ${escapeAttr(triggerLabel)}">🎲</button>`;
-        return `<div class="sb-item"><strong>${escapeHtml(name)}.</strong> ${mdInline(text)} ${btn}</div>`;
-      }).join('')}
+      ${items.map(it => `<div class="sb-item"><strong>${escapeHtml(it.name)}.</strong> ${mdInline(it.text || '')}</div>`).join('')}
     </div>`;
   };
 
@@ -5485,11 +5401,7 @@ function currentChar() { return state.characters.find(c => c.id === state.curren
 // ═══════════ TOP BAR + VIEW SWITCH ═══════════
 function switchView(view) {
   state.currentView = view; saveState();
-  // Tab-Mapping: prep+session → scene; highlights+album → sammlung
-  const tabKey = (view === 'prep' || view === 'session') ? 'scene'
-               : (view === 'highlights' || view === 'album') ? 'sammlung'
-               : view;
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === tabKey));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
   if (view === 'briefing') renderBriefing();
   if (view === 'prep') renderPrep();
@@ -5497,35 +5409,7 @@ function switchView(view) {
   if (view === 'chars') renderChars();
   if (view === 'highlights') renderHighlightsBoard();
   if (view === 'album') renderAlbum();
-  if (view === 'codex') renderLoreCodex();
-  // Schauplatz: merken welcher Modus zuletzt aktiv war + Toggle-Buttons in beiden Views aktualisieren
-  if (view === 'prep' || view === 'session') {
-    state.lastSceneMode = view;
-    saveState();
-  }
-  updateSceneModeToggles();
   plausibleTrack('DMStudio · View', { view });
-}
-
-// Hält die "📋 Prep / 🎲 Live"-Toggle-Buttons in beiden Views synchron mit currentView.
-// .btn-top.primary signalisiert aktiv (existing CSS class wird wiederverwendet).
-function updateSceneModeToggles() {
-  const v = state.currentView;
-  document.querySelectorAll('.scene-mode-toggle').forEach(group => {
-    const btns = group.querySelectorAll('.scene-mode-btn');
-    btns.forEach((b, i) => {
-      // Convention: erster Button = prep, zweiter = session/live
-      const btnView = (i === 0) ? 'prep' : 'session';
-      b.classList.toggle('primary', btnView === v);
-      b.classList.toggle('active', btnView === v);
-    });
-  });
-}
-
-// "Schauplatz"-Tab geklickt → öffnet den zuletzt benutzten Modus (prep oder session)
-function openScene() {
-  const mode = state.lastSceneMode === 'session' ? 'session' : 'prep';
-  switchView(mode);
 }
 
 // ═══════════ BRIEFING — Pre-Session Dashboard ═══════════
@@ -5537,9 +5421,6 @@ function renderBriefing() {
   const loc = currentLoc();
   const pcs = state.characters.filter(ch => ch.type === 'pc');
   const npcs = state.characters.filter(ch => ch.type === 'npc');
-
-  // Sidebar (lpanel-Stil wie Vorbereitung etc.) damit beim Tab-Wechsel kein Layout-Sprung passiert
-  renderBriefingSidebar(c, sessions, pcs);
 
   // Empty-State: Neuer User mit leerer Kampagne → Welcome-Screen statt Live-Dashboard
   const isEmpty = !sessions.length && !pcs.length && !npcs.length && (!c.tree || !c.tree.length);
@@ -6043,75 +5924,6 @@ function deleteCampaign(id) {
   toast(`„${c.name}" gelöscht`);
 }
 
-// Briefing-Sidebar — Sessions-Liste + Party-Chips. Reused .lpanel/.tree-* Klassen damit
-// die Optik 1:1 mit Vorbereitung/Session-Live übereinstimmt.
-function renderBriefingSidebar(camp, sessions, pcs) {
-  const sb = document.getElementById('briefingSidebar');
-  if (!sb) return;
-  const sessionsArr = Array.isArray(sessions) ? sessions.slice().reverse() : [];   // newest first
-  const lastIdx = (sessions || []).length - 1;
-
-  let html = '';
-
-  // Sessions-Block — kompakt mit Status (live / completed / upcoming)
-  if (sessionsArr.length) {
-    html += '<div class="tree-group">';
-    html += '<div class="tree-group-label">SESSIONS</div>';
-    sessionsArr.forEach((s, idxRev) => {
-      const realIdx = sessionsArr.length - 1 - idxRev;
-      const isLast = realIdx === lastIdx;
-      const hasRecap = s.recap && s.recap.trim();
-      const isLive = isLast && !hasRecap;
-      const dotColor = isLive ? 'var(--crimson)' : (hasRecap ? 'var(--forest)' : 'var(--text-dimmer)');
-      const tag = isLive ? '· LIVE' : (hasRecap ? '✓' : '');
-      const title = s.title ? escapeHtml(s.title) : ('Session ' + (s.number || ''));
-      html += `
-        <div class="tree-item${isLive ? ' selected' : ''}" onclick="openSessionInView(${realIdx})">
-          <span class="dot" style="background:${dotColor};"></span>
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">#${s.number || (realIdx+1)} ${title}</span>
-          ${tag ? `<span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:${dotColor};font-weight:700;">${tag}</span>` : ''}
-        </div>
-      `;
-    });
-    html += '</div>';
-  }
-
-  // Quick-Actions (öffnen Recap/Highlights/Player-View)
-  html += `
-    <div class="tree-group" style="margin-top:14px;">
-      <div class="tree-group-label">SCHNELL-ZUGRIFF</div>
-      <div class="tree-item" onclick="openPostSessionRecap()">
-        <span class="dot" style="background:var(--gold);"></span>
-        <span>Recap erstellen</span>
-      </div>
-      <div class="tree-item" onclick="switchView('highlights')">
-        <span class="dot" style="background:var(--accent);"></span>
-        <span>Highlights ansehen</span>
-      </div>
-      <div class="tree-item" onclick="switchView('album')">
-        <span class="dot" style="background:#1e6fd9;"></span>
-        <span>Party Album</span>
-      </div>
-      <div class="tree-item" onclick="window.open('/player/','_blank')">
-        <span class="dot" style="background:var(--text-dim);"></span>
-        <span>Player View ↗</span>
-      </div>
-    </div>
-  `;
-
-  if (!sessionsArr.length) {
-    html = `
-      <div style="padding:14px 16px;font-size:12px;color:var(--text-dim);font-style:italic;line-height:1.55;">
-        Noch keine Sessions. Im Tab <strong style="color:var(--text);">Session Live</strong> kannst du eine starten.
-      </div>
-    ` + html;
-  }
-
-  sb.innerHTML = html;
-  // Footer-Party-Chips konsistent mit Vorbereitung/Charakter
-  if (typeof renderPartyChips === 'function') renderPartyChips('briefingPartyChips');
-}
-
 // ═══════════ PREP VIEW ═══════════
 function renderPrep() {
   renderPrepTree();
@@ -6474,733 +6286,12 @@ function renderSession() {
   switchSessionRT(state.sessionRTTab || 'chat');
 }
 
-// Session right-panel tab switcher (Chat / Würfel / Szene / Musik)
+// Session right-panel tab switcher (Chat / Szene / Musik)
 function switchSessionRT(tab) {
   state.sessionRTTab = tab; saveState();
   document.querySelectorAll('.session-rt-tab').forEach(b => b.classList.toggle('active', b.dataset.srt === tab));
   document.querySelectorAll('.session-rt-pane').forEach(p => p.classList.toggle('active', p.dataset.srt === tab));
   if (tab === 'chat') setTimeout(() => document.querySelector('[data-chat-host="session"] .chat-input')?.focus(), 40);
-  if (tab === 'dice') {
-    // "has-new"-Indicator zurücksetzen wenn Tab geöffnet
-    document.querySelector('.session-rt-tab[data-srt="dice"]')?.classList.remove('has-new');
-    // Listener starten falls noch nicht aktiv
-    if (!_liveRollChannel) startDMRollStreamListener();
-    else renderDiceStream();
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// LIVE MULTIPLAYER DICE — DM-Side Roll-Stream + Roll-Anfrage
-// Aktive Party benötigt (state._activeParty oder lokal _activePartyDM)
-// ═══════════════════════════════════════════════════════════════════════════
-let _liveRolls = [];                  // Roll-Stream Cache
-let _liveRollChannel = null;
-let _activePartyDM = null;            // DM hat eine Party im Album geladen
-
-async function _ensureActiveParty() {
-  // Versucht aktive Party zu finden — entweder aus geladenen Daten oder via API
-  if (_activePartyDM?.code) return _activePartyDM;
-  if (typeof _activeParty !== 'undefined' && _activeParty?.code) {
-    _activePartyDM = _activeParty;
-    return _activePartyDM;
-  }
-  const s = syncSettings();
-  if (!s.email) return null;
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/list?email=${encodeURIComponent(s.email)}`);
-    const data = await resp.json();
-    const parties = data.parties || [];
-    const savedCode = localStorage.getItem('ec_active_party_code');
-    let active = savedCode ? parties.find(p => p.parties?.code === savedCode) : null;
-    if (!active && parties.length) active = parties[0];
-    _activePartyDM = active?.parties || null;
-    return _activePartyDM;
-  } catch(e) { return null; }
-}
-
-// Berechnet den Campaign-Room für die aktive Kampagne des DMs
-function getDMCampaignRoom() {
-  const s = syncSettings();
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  if (!s?.email || !camp?.id) return null;
-  return `${s.email.toLowerCase().trim()}::${camp.id}`;
-}
-
-async function startDMRollStreamListener() {
-  stopDMRollStreamListener();
-  // Bevorzugt: campaign_room (neuer Invite-Flow). Fallback: party_code (Legacy).
-  const room = getDMCampaignRoom();
-  const party = !room ? await _ensureActiveParty() : null;
-  const sb = initSupabaseClient();
-  if (!sb) return;
-  if (!room && !party?.code) return;
-
-  // Initial-Load
-  try {
-    const url = room
-      ? `${API_BASE}/api/live/stream/CAMPAIGN?room=${encodeURIComponent(room)}`
-      : `${API_BASE}/api/live/stream/${encodeURIComponent(party.code)}`;
-    const r = await fetch(url);
-    const d = await r.json();
-    _liveRolls = (d.rolls || []).reverse();
-  } catch(e){ console.warn('[live-dice DM] initial fetch fail:', e); }
-
-  const filter = room ? `campaign_room=eq.${room}` : `party_code=eq.${party.code}`;
-  const channelKey = room ? ('room-' + room) : ('party-' + party.code);
-  _liveRollChannel = sb
-    .channel('dm-dice-' + channelKey)
-    .on('postgres_changes', {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'live_rolls',
-      filter: filter
-    }, (payload) => {
-      if (!payload?.new) return;
-      _liveRolls.push(payload.new);
-      if (_liveRolls.length > 100) _liveRolls.shift();
-      renderDiceStream();
-      showDiceAnimation(payload.new);
-      // Tab-Indicator falls Würfel-Tab nicht aktiv
-      const tab = document.querySelector('.session-rt-tab[data-srt="dice"]');
-      if (tab && !tab.classList.contains('active')) {
-        tab.classList.add('has-new');
-      }
-    })
-    .subscribe();
-  renderDiceStream();
-}
-
-function stopDMRollStreamListener() {
-  if (_liveRollChannel) {
-    try { _liveRollChannel.unsubscribe(); } catch(e) {}
-    _liveRollChannel = null;
-  }
-}
-
-function renderDiceStream() {
-  const list = document.getElementById('diceStreamList');
-  const status = document.getElementById('diceStreamStatus');
-  if (!list || !status) return;
-  // Bevorzugt: Campaign-Room (Invite-Flow). Fallback: Party (Legacy).
-  const room = getDMCampaignRoom();
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  if (!room && !_activePartyDM?.code) {
-    status.innerHTML = `<span style="color:var(--crimson);">Keine aktive Kampagne · nicht eingeloggt</span>`;
-    list.innerHTML = `
-      <div style="text-align:center;padding:30px 16px;color:var(--text-dim);font-size:13px;line-height:1.6;">
-        <div style="font-size:32px;margin-bottom:10px;">🎲</div>
-        <p>Logge dich ein und wähle eine Kampagne — Spieler können dann via Charakter-Einladung beitreten und live mitwürfeln.</p>
-      </div>
-    `;
-    return;
-  }
-  if (room) {
-    status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(camp?.name || 'Kampagne')}</strong> · Live-Room · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · <a href="#" onclick="event.preventDefault();switchView('chars');" style="color:var(--accent);text-decoration:underline;font-style:normal;">Spieler einladen</a>`;
-  } else {
-    status.innerHTML = `<strong style="color:var(--ink);">${escapeHtml(_activePartyDM.name)}</strong> · Code: <code style="color:var(--accent);font-family:'JetBrains Mono',monospace;cursor:pointer;" onclick="navigator.clipboard?.writeText('${escapeAttr(_activePartyDM.code)}');toast('Code kopiert');" title="Klick zum Kopieren">${escapeHtml(_activePartyDM.code)}</code> · ${_liveRolls.length} Roll${_liveRolls.length === 1 ? '' : 's'} · <a href="#" onclick="event.preventDefault();openPartyManager();" style="color:var(--accent);text-decoration:underline;font-style:normal;">verwalten</a>`;
-  }
-  if (!_liveRolls.length) {
-    list.innerHTML = '<div style="text-align:center;padding:30px 12px;color:var(--text-dim);font-style:italic;font-size:13px;">Noch keine Würfe. Klick „+ Roll anfragen" um eine Wurf-Anfrage zu schicken.</div>';
-    return;
-  }
-  list.innerHTML = _liveRolls.slice().reverse().map(r => {
-    const time = new Date(r.created_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    const resultColor = r.is_crit ? 'var(--gold-br)' : (r.is_fumble ? 'var(--crimson)' : (r.result_kind === 'success' ? 'var(--forest)' : (r.result_kind === 'fail' ? 'var(--crimson)' : 'var(--ink)')));
-    const resultBg = r.is_crit ? 'rgba(184,133,31,0.12)' : (r.is_fumble ? 'rgba(168,35,24,0.10)' : 'transparent');
-    const tag = r.is_crit ? '✦ NAT 20' : (r.is_fumble ? '◈ NAT 1' : (r.result_kind === 'success' ? '✓' : (r.result_kind === 'fail' ? '✗' : '')));
-    const who = escapeHtml(r.character_name || r.player_name || 'Spieler');
-    const statLabel = r.stat ? r.stat.toUpperCase() : 'D20';
-    return `
-      <div style="display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:8px 10px;background:${resultBg};border:1px solid var(--border);border-radius:7px;">
-        <div style="font-family:'Cinzel Decorative',serif;font-size:20px;font-weight:700;color:${resultColor};text-align:center;">${r.total}</div>
-        <div style="min-width:0;">
-          <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${who}</div>
-          <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">${statLabel} · d20(${r.d20}) ${r.modifier >= 0 ? '+' : '−'}${Math.abs(r.modifier)}${r.dc != null ? ' · DC ' + r.dc : ''}</div>
-        </div>
-        <div style="text-align:right;">
-          ${tag ? `<div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.2px;color:${resultColor};font-weight:700;">${tag}</div>` : ''}
-          <div style="font-size:10px;color:var(--text-dimmer);font-family:'JetBrains Mono',monospace;margin-top:1px;">${time}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// ═══════════ ABILITY-TEXT-PARSER ═══════════
-// Versucht aus Statblock-Action-Text die geforderte Save/Check zu extrahieren.
-// Beispiele:
-//   "Each creature within 30 ft. must make a DC 16 Wisdom saving throw"  → wis, 16
-//   "Constitution saving throw DC 14"                                    → con, 14
-//   "DC 12 Strength check"                                                → str, 12
-const _STAT_KEYS = {
-  strength:'str', str:'str',
-  dexterity:'dex', dex:'dex',
-  constitution:'con', con:'con',
-  intelligence:'int', int:'int',
-  wisdom:'wis', wis:'wis',
-  charisma:'cha', cha:'cha'
-};
-function parseAbilityForRoll(text) {
-  if (!text) return { stat: null, dc: null };
-  const t = String(text);
-  // Pattern 1: DC 16 Wisdom save
-  let m = t.match(/DC\s*(\d{1,2})\s*(?:on\s+a\s+)?(strength|dexterity|constitution|intelligence|wisdom|charisma|str|dex|con|int|wis|cha)\b/i);
-  if (m) return { dc: parseInt(m[1]), stat: _STAT_KEYS[m[2].toLowerCase()] };
-  // Pattern 2: Wisdom save DC 16  / Wisdom saving throw DC 16
-  m = t.match(/\b(strength|dexterity|constitution|intelligence|wisdom|charisma|str|dex|con|int|wis|cha)\b[^.]*?\bDC\s*(\d{1,2})/i);
-  if (m) return { dc: parseInt(m[2]), stat: _STAT_KEYS[m[1].toLowerCase()] };
-  // Pattern 3: nur DC ohne klaren Stat
-  m = t.match(/DC\s*(\d{1,2})/i);
-  if (m) return { dc: parseInt(m[1]), stat: null };
-  return { stat: null, dc: null };
-}
-
-// Click-Handler für 🎲-Button neben Statblock-Abilities.
-// Öffnet Roll-Request-Modal mit prefilled Werten.
-function requestRollFromAbility(btn) {
-  if (!btn) return;
-  const name = btn.dataset.name || 'Roll';
-  const stat = btn.dataset.stat || '';
-  const dc = btn.dataset.dc ? parseInt(btn.dataset.dc) : null;
-  // Stoppt Bubble damit keine andere Action triggert
-  if (window.event) { window.event.stopPropagation(); window.event.preventDefault(); }
-  // Modal öffnen + nach Frame Werte setzen (Modal rendert async)
-  openRollRequestModal();
-  setTimeout(() => {
-    const promptEl = document.getElementById('rrPrompt');
-    const statEl = document.getElementById('rrStat');
-    const dcEl = document.getElementById('rrDC');
-    if (promptEl) promptEl.value = name;
-    if (statEl && stat) statEl.value = stat;
-    if (dcEl && dc != null) dcEl.value = dc;
-    // Falls Stat erkannt + DC erkannt → user kann direkt senden
-    promptEl?.focus();
-    promptEl?.select();
-  }, 80);
-}
-
-function openRollRequestModal() {
-  if (!_activePartyDM?.code) {
-    _ensureActiveParty().then(p => {
-      if (p?.code) openRollRequestModal();
-      else openPartyManager();   // direkt zum Party-Manager statt nur Toast
-    });
-    return;
-  }
-  const existing = document.getElementById('rollRequestModal');
-  if (existing) existing.remove();
-  const modal = document.createElement('div');
-  modal.id = 'rollRequestModal';
-  modal.className = 'srd-modal';
-  modal.innerHTML = `
-    <div class="srd-modal-backdrop" onclick="closeRollRequestModal()"></div>
-    <div class="srd-modal-inner" style="max-width:440px;">
-      <div class="srd-modal-head">
-        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">🎲 Roll bei der Party anfragen</h3>
-        <button onclick="closeRollRequestModal()">✕</button>
-      </div>
-      <div class="srd-modal-body" style="padding:16px 22px 22px;">
-        <label style="display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:5px;">PROMPT (z.B. „Wisdom Save · Deathly Choir")</label>
-        <input id="rrPrompt" type="text" maxlength="200" placeholder="Wisdom Save" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;margin-bottom:14px;" />
-
-        <div style="display:grid;grid-template-columns:1fr 100px;gap:10px;margin-bottom:14px;">
-          <div>
-            <label style="display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:5px;">STAT</label>
-            <select id="rrStat" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);">
-              <option value="">— frei —</option>
-              <option value="str">Strength</option>
-              <option value="dex">Dexterity</option>
-              <option value="con">Constitution</option>
-              <option value="int">Intelligence</option>
-              <option value="wis" selected>Wisdom</option>
-              <option value="cha">Charisma</option>
-              <option value="attack">Attack</option>
-              <option value="damage">Damage</option>
-            </select>
-          </div>
-          <div>
-            <label style="display:block;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:5px;">DC</label>
-            <input id="rrDC" type="number" min="1" max="40" placeholder="16" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;" />
-          </div>
-        </div>
-
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:18px;cursor:pointer;">
-          <input id="rrSecret" type="checkbox" style="width:16px;height:16px;cursor:pointer;" />
-          Geheim · nur DM sieht Resultate
-        </label>
-
-        <div style="display:flex;gap:8px;justify-content:flex-end;">
-          <button class="btn-top" onclick="closeRollRequestModal()">Abbrechen</button>
-          <button class="btn-top primary" onclick="submitRollRequest()">→ Anfrage senden</button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  setTimeout(() => document.getElementById('rrPrompt')?.focus(), 50);
-}
-
-function closeRollRequestModal() {
-  document.getElementById('rollRequestModal')?.remove();
-}
-
-// ═══════════ ENCOUNTER BUILDER ═══════════
-let _encounterBuilderState = { results: null, loading: false };
-
-function openEncounterBuilder() {
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  const pcs = (state.characters || []).filter(c => c.type === 'pc');
-  const avgLevel = pcs.length ? Math.round(pcs.reduce((s, c) => s + (parseInt(c.level) || 1), 0) / pcs.length) : 5;
-
-  document.getElementById('encounterBuilderModal')?.remove();
-  const modal = document.createElement('div');
-  modal.id = 'encounterBuilderModal';
-  modal.className = 'srd-modal';
-  modal.innerHTML = `
-    <div class="srd-modal-backdrop" onclick="closeEncounterBuilder()"></div>
-    <div class="srd-modal-inner" style="max-width:900px;max-height:90vh;">
-      <div class="srd-modal-head">
-        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">⚔️ Encounter Builder</h3>
-        <button onclick="closeEncounterBuilder()">✕</button>
-      </div>
-      <div class="srd-modal-body" style="padding:18px 22px 22px;overflow-y:auto;">
-
-        <div id="ebForm">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
-            <div>
-              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">PARTY-GRÖSSE</label>
-              <input id="ebSize" type="number" min="1" max="10" value="${pcs.length || 4}" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;font-weight:700;" />
-            </div>
-            <div>
-              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">⌀ LEVEL</label>
-              <input id="ebLevel" type="number" min="1" max="20" value="${avgLevel}" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;font-weight:700;" />
-            </div>
-            <div>
-              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">DIFFICULTY</label>
-              <select id="ebDiff" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);">
-                <option value="easy">Easy</option>
-                <option value="medium" selected>Medium</option>
-                <option value="hard">Hard</option>
-                <option value="deadly">Deadly</option>
-              </select>
-            </div>
-            <div>
-              <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">ANZAHL</label>
-              <select id="ebCount" style="width:100%;padding:9px 10px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);">
-                <option value="1">1 Encounter</option>
-                <option value="2">2 Encounter</option>
-                <option value="3" selected>3 Encounter</option>
-                <option value="4">4 Encounter</option>
-              </select>
-            </div>
-          </div>
-
-          <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">THEMA / ENVIRONMENT (optional)</label>
-          <input id="ebTheme" type="text" maxlength="120" placeholder="z.B. 'Untoten im Sumpf', 'Goblin-Lager im Wald', 'Strahd-Cultisten im Schloss'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);outline:none;margin-bottom:12px;" />
-
-          <label style="display:block;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:4px;font-weight:700;">ZUSATZ-KONTEXT (optional)</label>
-          <textarea id="ebContext" rows="2" placeholder="z.B. 'Boss-Encounter mit kleinen Adds', 'Stealth-Möglichkeit reinbauen', 'Party hat letzten Long-Rest verpasst'" style="width:100%;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);outline:none;resize:vertical;margin-bottom:12px;"></textarea>
-
-          <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
-            <div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:8px;">📚 KAMPAGNEN-KONTEXT</div>
-            <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUseLocation" checked style="width:14px;height:14px;cursor:pointer;" /> Aktueller Standort + Read-Aloud + DM-Notiz</label>
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUseNpcs" style="width:14px;height:14px;cursor:pointer;" /> Vorhandene Kampagnen-NPCs einbeziehen (kann sie als Bösewichte/Verbündete nutzen)</label>
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUseRecap" checked style="width:14px;height:14px;cursor:pointer;" /> Letzter Session-Recap (für narrativen Anschluss)</label>
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text);"><input type="checkbox" id="ebUsePartyState" style="width:14px;height:14px;cursor:pointer;" /> Party-State (HP, Conditions, Resources)</label>
-            </div>
-          </div>
-
-          <div style="display:flex;gap:8px;justify-content:flex-end;">
-            <button class="btn-top" onclick="closeEncounterBuilder()">Abbrechen</button>
-            <button class="btn-top primary" id="ebGenerateBtn" onclick="generateEncounters()">⚡ Generieren</button>
-          </div>
-        </div>
-
-        <div id="ebResults" style="margin-top:18px;"></div>
-
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-}
-
-function closeEncounterBuilder() {
-  document.getElementById('encounterBuilderModal')?.remove();
-  _encounterBuilderState = { results: null, loading: false };
-}
-
-async function generateEncounters() {
-  const size = parseInt(document.getElementById('ebSize')?.value) || 4;
-  const level = parseInt(document.getElementById('ebLevel')?.value) || 5;
-  const diff = document.getElementById('ebDiff')?.value || 'medium';
-  const count = parseInt(document.getElementById('ebCount')?.value) || 3;
-  const theme = document.getElementById('ebTheme')?.value?.trim() || '';
-  const context = document.getElementById('ebContext')?.value?.trim() || '';
-  const useLocation = document.getElementById('ebUseLocation')?.checked;
-  const useNpcs = document.getElementById('ebUseNpcs')?.checked;
-  const useRecap = document.getElementById('ebUseRecap')?.checked;
-  const usePartyState = document.getElementById('ebUsePartyState')?.checked;
-
-  // Campaign-Context zusammenstellen
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  const campaignContext = {};
-  if (camp?.name) campaignContext.campaignName = camp.name;
-  if (useLocation) {
-    const loc = (typeof currentLoc === 'function') ? currentLoc() : null;
-    if (loc) {
-      campaignContext.currentLocation = {
-        name: loc.name,
-        meta: loc.meta || '',
-        readAloud: (loc.readAloud || '').slice(0, 800),
-        dmNote: (loc.dmNote || '').slice(0, 600)
-      };
-    }
-  }
-  if (useNpcs) {
-    const npcs = (state.characters || []).filter(c => c.type === 'npc').slice(0, 12);
-    campaignContext.existingNpcs = npcs.map(n => ({
-      name: n.name,
-      cr: n.cr || '',
-      type: [n.size, n.creatureType].filter(Boolean).join(' '),
-      role: (n.notes || '').slice(0, 100)
-    }));
-  }
-  if (useRecap) {
-    const sessions = camp?.sessions || [];
-    const last = sessions[sessions.length - 1];
-    if (last?.recap) {
-      campaignContext.lastRecap = {
-        sessionNumber: last.number,
-        title: last.title || '',
-        recap: String(last.recap).slice(0, 1500)
-      };
-    }
-  }
-  if (usePartyState) {
-    const pcs = (state.characters || []).filter(c => c.type === 'pc');
-    campaignContext.partyState = pcs.map(c => ({
-      name: c.name,
-      class: c.class,
-      level: c.level,
-      hp: c.hp,
-      maxHp: c.maxHp,
-      conditions: (state.initiative || []).find(e => e.id === c.id)?.conditions || []
-    }));
-  }
-
-  const btn = document.getElementById('ebGenerateBtn');
-  const results = document.getElementById('ebResults');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generiere…'; }
-  results.innerHTML = `
-    <div style="text-align:center;padding:40px 20px;">
-      <div class="spinner" style="margin:0 auto 14px;"></div>
-      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--text-dim);">KI baut ${count} balanced Encounter mit Campaign-Context…</div>
-    </div>
-  `;
-
-  try {
-    const resp = await fetch(`${API_BASE}/api/encounter/build`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ partySize: size, partyLevel: level, difficulty: diff, theme, additionalContext: context, count, campaignContext })
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.error || 'Fehler bei der Generierung');
-    _encounterBuilderState.results = data;
-    renderEncounterResults();
-  } catch (e) {
-    results.innerHTML = `<div style="padding:24px;color:var(--crimson);font-family:'EB Garamond',serif;font-style:italic;text-align:center;">Fehler: ${escapeHtml(e.message)}</div>`;
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '⚡ Neu generieren'; }
-  }
-}
-
-function renderEncounterResults() {
-  const host = document.getElementById('ebResults');
-  if (!host || !_encounterBuilderState.results) return;
-  const { encounters, meta } = _encounterBuilderState.results;
-  if (!encounters?.length) { host.innerHTML = '<div style="padding:20px;font-style:italic;color:var(--text-dim);">Keine Encounter generiert.</div>'; return; }
-  host.innerHTML = `
-    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-bottom:12px;font-weight:700;">${encounters.length} ENCOUNTER · BUDGET ${meta.xpBudget} XP · ${meta.difficulty.toUpperCase()}</div>
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      ${encounters.map((e, i) => renderEncounterCard(e, i)).join('')}
-    </div>
-  `;
-}
-
-function renderEncounterCard(enc, idx) {
-  const monsters = (enc.monsters || []).map(m => `${m.count}× ${m.name} (CR ${m.cr})`).join(' · ');
-  return `
-    <div style="background:var(--surface-2);border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;">
-      <div style="padding:14px 18px 12px;border-bottom:1px solid var(--border);background:linear-gradient(to bottom,#fff,var(--surface-2));">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;">
-          <div style="flex:1;min-width:0;">
-            <div style="font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--ink);font-weight:700;margin-bottom:4px;">${escapeHtml(enc.title || 'Encounter ' + (idx+1))}</div>
-            <div style="font-family:'EB Garamond',serif;font-size:13.5px;color:var(--text);font-style:italic;line-height:1.5;">${escapeHtml(enc.description || '')}</div>
-            <div style="font-size:11.5px;color:var(--text-dim);margin-top:6px;font-family:'JetBrains Mono',monospace;">${escapeHtml(monsters)}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;">
-            <div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--gold);font-weight:700;">${enc.adjustedXP || enc.totalXP || '—'} XP</div>
-            <div style="font-size:10px;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:1px;">adjusted</div>
-          </div>
-        </div>
-      </div>
-      <div style="padding:12px 18px;display:flex;flex-direction:column;gap:8px;">
-        ${(enc.monsters || []).map((m, mi) => `
-          <details style="border:1px solid var(--border);border-radius:7px;background:#fff;">
-            <summary style="padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;list-style:none;">
-              <span style="flex:1;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--ink);">${m.count}× ${escapeHtml(m.name)}</span>
-              <span style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">CR ${m.cr} · ${m.xp || '—'} XP</span>
-              <span style="font-size:10px;color:var(--accent);">▾ Statblock</span>
-            </summary>
-            <div style="padding:10px 14px 12px;border-top:1px dotted var(--border);">
-              ${m.tactics ? `<div style="margin-bottom:10px;padding:8px 12px;background:var(--accent-dim);border-left:3px solid var(--accent);border-radius:4px;font-size:13px;font-style:italic;line-height:1.5;color:var(--text);"><strong style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--accent);font-style:normal;">TAKTIK:</strong> ${escapeHtml(m.tactics)}</div>` : ''}
-              ${renderEncounterMonsterStats(m)}
-            </div>
-          </details>
-        `).join('')}
-      </div>
-      <div style="padding:10px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;gap:6px;justify-content:flex-end;">
-        <button class="btn-top" onclick="copyEncounterToClipboard(${idx})">📋 Kopieren</button>
-        <button class="btn-top primary" onclick="addEncounterToCombat(${idx})">⚔️ Direkt in Combat</button>
-      </div>
-    </div>
-  `;
-}
-
-function renderEncounterMonsterStats(m) {
-  const sb = m.statblock || {};
-  const stats = sb.stats || {};
-  const statRow = ['str','dex','con','int','wis','cha'].map(s =>
-    `<div style="text-align:center;"><div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1px;color:var(--crimson);font-weight:700;">${s.toUpperCase()}</div><div style="font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--ink);">${stats[s] || '—'}</div><div style="font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">${stats[s] != null ? '(' + (Math.floor((stats[s]-10)/2) >= 0 ? '+' : '') + Math.floor((stats[s]-10)/2) + ')' : ''}</div></div>`
-  ).join('');
-  const actions = [...(m.traits || []).map(t => ({ ...t, _kind: 'Trait' })), ...(m.actions || []).map(a => ({ ...a, _kind: 'Action' }))];
-  return `
-    <div style="font-size:12.5px;color:var(--text);font-family:'EB Garamond',serif;line-height:1.5;">
-      <div><strong>AC:</strong> ${sb.ac || '—'} · <strong>HP:</strong> ${sb.hp || '—'}${sb.hitDice ? ' (' + escapeHtml(sb.hitDice) + ')' : ''} · <strong>Speed:</strong> ${escapeHtml(sb.speed || '30 ft.')}</div>
-      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;background:var(--surface-2);padding:8px;border-radius:5px;margin:8px 0;">${statRow}</div>
-      ${sb.savingThrows ? `<div><strong>Saving Throws:</strong> ${escapeHtml(sb.savingThrows)}</div>` : ''}
-      ${sb.skills ? `<div><strong>Skills:</strong> ${escapeHtml(sb.skills)}</div>` : ''}
-      ${sb.senses ? `<div><strong>Senses:</strong> ${escapeHtml(sb.senses)}</div>` : ''}
-      ${sb.languages ? `<div><strong>Languages:</strong> ${escapeHtml(sb.languages)}</div>` : ''}
-      ${actions.length ? `<div style="margin-top:8px;">${actions.map(a => `<div style="margin-bottom:5px;"><strong style="font-style:italic;">${escapeHtml(a.name)}.</strong> ${escapeHtml(a.text || '')}</div>`).join('')}</div>` : ''}
-    </div>
-  `;
-}
-
-function copyEncounterToClipboard(idx) {
-  const enc = _encounterBuilderState.results?.encounters?.[idx];
-  if (!enc) return;
-  const text = `# ${enc.title}\n\n${enc.description}\n\nXP: ${enc.adjustedXP || enc.totalXP}\n\n` +
-    (enc.monsters || []).map(m =>
-      `## ${m.count}× ${m.name} (CR ${m.cr}, ${m.xp} XP)\n` +
-      (m.tactics ? `Taktik: ${m.tactics}\n` : '') +
-      `AC ${m.statblock?.ac}, HP ${m.statblock?.hp}\n` +
-      ((m.actions || []).map(a => `${a.name}: ${a.text}`).join('\n'))
-    ).join('\n\n');
-  navigator.clipboard?.writeText(text).then(() => toast('Encounter kopiert')).catch(() => toast('Copy fehlgeschlagen', true));
-}
-
-function addEncounterToCombat(idx) {
-  const enc = _encounterBuilderState.results?.encounters?.[idx];
-  if (!enc) return;
-  if (!Array.isArray(state.characters)) state.characters = [];
-  const newIds = [];
-  (enc.monsters || []).forEach(m => {
-    for (let i = 0; i < (m.count || 1); i++) {
-      const id = 'c_enc_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6) + '_' + i;
-      state.characters.push({
-        id,
-        type: 'npc',
-        name: (m.count > 1 ? m.name + ' ' + (i + 1) : m.name),
-        size: m.statblock?.size || 'Medium',
-        creatureType: m.statblock?.creatureType || '',
-        alignment: m.statblock?.alignment || '',
-        cr: m.cr || '',
-        xp: m.xp || 0,
-        ac: m.statblock?.ac || 10,
-        acType: '',
-        hp: m.statblock?.hp || 10,
-        maxHp: m.statblock?.hp || 10,
-        hitDice: m.statblock?.hitDice || '',
-        speed: m.statblock?.speed || '30 ft.',
-        stats: m.statblock?.stats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-        savingThrows: m.statblock?.savingThrows || '',
-        skills: m.statblock?.skills || '',
-        senses: m.statblock?.senses || '',
-        languages: m.statblock?.languages || '',
-        traits: m.traits || [],
-        actions: m.actions || [],
-        bonusActions: [],
-        reactions: [],
-        legendaryActions: [],
-        notes: m.tactics ? 'TAKTIK: ' + m.tactics : ''
-      });
-      newIds.push(id);
-    }
-  });
-  campaign().updatedAt = Date.now();
-  saveState();
-  closeEncounterBuilder();
-  toast(`✓ ${newIds.length} Combatants geladen · Initiative wird gestartet…`);
-  // Auf Session-View wechseln + Combat-Mode + Initiative direkt mit den neuen IDs starten
-  if (state.currentView !== 'session') switchView('session');
-  // Re-render damit Charaktere-Liste die neuen NPCs zeigt
-  if (state.currentView === 'chars') renderCharList();
-  setTimeout(() => {
-    setSessionMode('combat');
-    setTimeout(() => rollInitiative({ extraNpcIds: newIds }), 200);
-  }, 300);
-}
-
-// ═══════════ PARTY-MANAGER (DM Studio) ═══════════
-// Minimaler UI um Parties zu erstellen, anzusehen, aktiv zu setzen.
-// Nicht in dein Album-Design eingebaut — eigenständiges Modal das von der
-// Würfel-Tab oder Roll-Anfrage geöffnet wird.
-
-async function openPartyManager() {
-  const s = syncSettings();
-  if (!s.email) { toast('Bitte erst einloggen', true); return; }
-
-  // Lade aktuelle Parties
-  let parties = [];
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/list?email=${encodeURIComponent(s.email)}`);
-    const data = await resp.json();
-    parties = data.parties || [];
-  } catch(e) { console.warn('[party-mgr] load fail:', e); }
-
-  const activeCode = _activePartyDM?.code || localStorage.getItem('ec_active_party_code') || '';
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  const defaultName = camp?.name ? camp.name + ' Tisch' : 'Mein Tisch';
-
-  document.getElementById('partyManagerModal')?.remove();
-  const modal = document.createElement('div');
-  modal.id = 'partyManagerModal';
-  modal.className = 'srd-modal';
-  modal.innerHTML = `
-    <div class="srd-modal-backdrop" onclick="closePartyManager()"></div>
-    <div class="srd-modal-inner" style="max-width:520px;">
-      <div class="srd-modal-head">
-        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">🃏 Party verwalten</h3>
-        <button onclick="closePartyManager()">✕</button>
-      </div>
-      <div class="srd-modal-body" style="padding:18px 22px 22px;">
-
-        <div style="margin-bottom:18px;">
-          <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:700;margin-bottom:8px;">DEINE PARTIES</div>
-          ${parties.length ? `
-            <div style="display:flex;flex-direction:column;gap:6px;">
-              ${parties.map(p => {
-                const isActive = p.parties.code === activeCode;
-                const role = p.role === 'dm' ? 'DM' : 'Spieler';
-                return `
-                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${isActive ? 'rgba(123,108,246,0.08)' : 'var(--surface-2)'};border:1px solid ${isActive ? 'var(--accent)' : 'var(--border)'};border-radius:8px;">
-                    <div style="flex:1;min-width:0;">
-                      <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--ink);font-weight:700;">${escapeHtml(p.parties.name)} ${isActive ? '<span style="color:var(--accent);font-size:10px;letter-spacing:1.5px;margin-left:4px;">· AKTIV</span>' : ''}</div>
-                      <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-top:2px;">${escapeHtml(p.parties.code)} · Rolle: ${role}</div>
-                    </div>
-                    ${!isActive ? `<button class="btn-top" style="font-size:11px;padding:5px 10px;" onclick="setActivePartyDM('${escapeAttr(p.parties.code)}','${escapeAttr(p.parties.name)}')">Aktivieren</button>` : ''}
-                    <button class="btn-top" style="font-size:11px;padding:5px 10px;" onclick="copyPartyShareLink('${escapeAttr(p.parties.code)}')" title="Einladungs-Link kopieren">📋 Teilen</button>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          ` : `
-            <div style="padding:18px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:8px;text-align:center;font-size:13px;color:var(--text-dim);font-style:italic;">
-              Noch keine Party. Erstelle eine — Spieler treten dann via Code bei.
-            </div>
-          `}
-        </div>
-
-        <div style="border-top:1px solid var(--border);padding-top:18px;">
-          <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:700;margin-bottom:8px;">+ NEUE PARTY ERSTELLEN</div>
-          <div style="display:flex;gap:8px;">
-            <input id="pmNewName" type="text" maxlength="80" placeholder="${escapeAttr(defaultName)}" value="${escapeAttr(defaultName)}" style="flex:1;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--ink);outline:none;" />
-            <button class="btn-top primary" onclick="createPartyFromManager()">+ Erstellen</button>
-          </div>
-          <div style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;margin-top:8px;">Nach dem Erstellen kriegst du einen Code (z.B. STRAHD-7K2X). Den teilst du an deine Spieler — die geben ihn im Player View ein.</div>
-        </div>
-
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-}
-
-function closePartyManager() {
-  document.getElementById('partyManagerModal')?.remove();
-}
-
-async function createPartyFromManager() {
-  const s = syncSettings();
-  if (!s.email) { toast('Bitte erst einloggen', true); return; }
-  const name = document.getElementById('pmNewName')?.value?.trim();
-  if (!name) { toast('Name eingeben', true); return; }
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  toast('Erstelle Party...');
-  try {
-    const resp = await fetch(`${API_BASE}/api/parties/create`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dmEmail: s.email, name, campaignId: camp?.id || null })
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.error || 'Fehler');
-    _activePartyDM = data.party;
-    localStorage.setItem('ec_active_party_code', data.party.code);
-    toast(`✓ Party erstellt — Code: ${data.party.code}`);
-    closePartyManager();
-    // Roll-Stream neu subscriben + UI updaten
-    await startDMRollStreamListener();
-  } catch (e) { toast('Fehler: ' + e.message, true); }
-}
-
-function setActivePartyDM(code, name) {
-  _activePartyDM = { code, name };
-  localStorage.setItem('ec_active_party_code', code);
-  toast('→ ' + name);
-  closePartyManager();
-  startDMRollStreamListener();
-}
-
-function copyPartyShareLink(code) {
-  const url = window.location.origin + '/player/?party=' + encodeURIComponent(code);
-  const text = `Tritt unserer EndoCraft-Party bei:\nCode: ${code}\n${url}`;
-  navigator.clipboard?.writeText(text).then(() => toast('Einladung kopiert'));
-}
-
-async function submitRollRequest() {
-  const prompt = document.getElementById('rrPrompt')?.value?.trim();
-  const stat = document.getElementById('rrStat')?.value || null;
-  const dcRaw = document.getElementById('rrDC')?.value;
-  const dc = dcRaw ? parseInt(dcRaw) : null;
-  const secret = document.getElementById('rrSecret')?.checked;
-  if (!prompt) { toast('Prompt eingeben', true); return; }
-  const s = syncSettings();
-  // Bevorzugt: campaign_room (Invite-Flow). Fallback: party_code (Legacy).
-  const room = getDMCampaignRoom();
-  let party = null;
-  if (!room) {
-    party = await _ensureActiveParty();
-    if (!party?.code) { toast('Keine Kampagne und keine Party aktiv', true); return; }
-  }
-  try {
-    const resp = await fetch(`${API_BASE}/api/live/request`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignRoom: room || null,
-        partyCode: !room && party ? party.code : null,
-        dmEmail: s.email,
-        prompt, statType: stat, dc,
-        visibility: secret ? 'dm_only' : 'public'
-      })
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Fehler');
-    toast('🎲 Anfrage gesendet — Spieler bekommen Banner');
-    closeRollRequestModal();
-    switchSessionRT('dice');
-  } catch (e) { toast('Fehler: ' + e.message, true); }
 }
 
 function setSessionMode(mode) {
@@ -8250,12 +7341,9 @@ function closeCharSlideIn() {
 
 // Manual Initiative: Modal öffnet mit Eingabe-Feldern für jeden Combatant.
 // Marco würfelt am Tisch physisch, trägt die Werte ein.
-function rollInitiative(opts) {
-  opts = opts || {};
-  const extraIds = new Set(opts.extraNpcIds || []);
+function rollInitiative() {
   const locNpcs = state.characters.filter(c => {
     if (c.type !== 'npc') return false;
-    if (extraIds.has(c.id)) return true;   // direkt aus Encounter-Builder zugefügt
     const loc = currentLoc(); if (!loc) return false;
     const ln = (loc.name + ' ' + (loc.dmNote || '')).toLowerCase();
     return ln.includes(c.name.toLowerCase().split(' ')[0]);
@@ -8277,7 +7365,7 @@ function rollInitiative(opts) {
         <button onclick="this.closest('.srd-modal').remove()" style="background:transparent;border:none;font-size:24px;color:var(--text-dim);cursor:pointer;padding:4px 10px;">×</button>
       </div>
       <div style="padding:8px 22px 4px;font-size:12.5px;color:var(--text-dim);line-height:1.55;font-style:italic;">
-        PCs würfeln am Tisch — du gibst die Werte ein. <strong style="color:var(--ink);font-style:normal;">NPCs sind bereits gewürfelt</strong> (kannst du noch ändern). Leeres Feld = Charakter kämpft NICHT mit.
+        Am Tisch würfeln — Initiative-Wert eintragen. <strong style="color:var(--ink);font-style:normal;">Leeres Feld = Charakter kämpft NICHT mit</strong> (z.B. Spieler abwesend, NPC nicht in der Szene).
       </div>
       <div style="flex:1;overflow-y:auto;padding:14px 22px 18px;">
         <div class="init-setup-grid">
@@ -8285,10 +7373,8 @@ function rollInitiative(opts) {
             const dexMod = c.stats?.dex ? Math.floor((c.stats.dex - 10) / 2) : 0;
             const isPC = c.type === 'pc';
             const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
-            // NPCs auto-rollen (d20 + dexMod), PCs leer lassen (Spieler würfelt am Tisch)
-            const npcRoll = !isPC ? (1 + Math.floor(Math.random() * 20) + dexMod) : null;
             return `
-              <div class="init-setup-card ${isPC ? 'pc' : 'npc'}${!isPC ? ' filled' : ''}" data-init-card-idx="${i}">
+              <div class="init-setup-card ${isPC ? 'pc' : 'npc'}" data-init-card-idx="${i}">
                 <div class="isc-portrait">
                   ${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : `<span class="isc-initials">${initials}</span>`}
                 </div>
@@ -8302,11 +7388,10 @@ function rollInitiative(opts) {
                 <div class="isc-input-wrap">
                   <input id="init-input-${i}" type="number" data-char-id="${c.id}"
                     placeholder="${10 + dexMod}"
-                    ${npcRoll != null ? `value="${npcRoll}"` : ''}
                     class="isc-input"
                     oninput="updateInitSetupCard(${i})"
                     onkeydown="if(event.key==='Enter')submitManualInitiative()">
-                  <span class="isc-hint" id="isc-hint-${i}">${npcRoll != null ? 'gewürfelt' : 'übersprungen'}</span>
+                  <span class="isc-hint" id="isc-hint-${i}">übersprungen</span>
                 </div>
               </div>
             `;
@@ -8323,15 +7408,7 @@ function rollInitiative(opts) {
     </div>
   `;
   document.body.appendChild(modal);
-  // Pre-Filled NPC-Werte als "included" markieren damit Summary stimmt
-  combatants.forEach((c, i) => {
-    if (c.type !== 'pc') updateInitSetupCard(i);
-  });
-  // Fokus auf erstes leeres (PC-)Feld
-  setTimeout(() => {
-    const firstEmpty = Array.from(document.querySelectorAll('.isc-input')).find(el => !el.value);
-    (firstEmpty || document.getElementById('init-input-0'))?.focus();
-  }, 50);
+  setTimeout(() => document.getElementById('init-input-0')?.focus(), 50);
   updateInitSetupSummary();
 }
 
@@ -8516,7 +7593,6 @@ function renderCharList() {
 function charRowHTML(c) {
   const active = state.currentCharId === c.id;
   const initials = c.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
-  const inviteBtn = c.type === 'pc' ? `<button class="char-row-invite" onclick="event.stopPropagation();inviteCharacterPlayer('${c.id}')" title="Spieler einladen — Magic-Link für ${escapeAttr(c.name)}">🔗</button>` : '';
   return `
     <div class="char-row ${active ? 'active' : ''}" onclick="openChar('${c.id}')">
       <div class="char-row-av">${c.portraitUrl ? `<img src="${escapeAttr(c.portraitUrl)}" alt="">` : initials}</div>
@@ -8524,7 +7600,6 @@ function charRowHTML(c) {
         <div class="char-row-n">${escapeHtml(c.name)}</div>
         <div class="char-row-m">${escapeHtml(c.race)} · ${escapeHtml(c.class)}</div>
       </div>
-      ${inviteBtn}
       <span class="char-row-tag ${c.type}">${c.type.toUpperCase()}</span>
     </div>
   `;
@@ -8534,100 +7609,6 @@ function openChar(id) {
   state.currentCharId = id; saveState();
   if (state.currentView !== 'chars') switchView('chars');
   else { renderCharList(); renderCharEditor(); }
-}
-
-// ═══════════ CHARAKTER-EINLADUNG · MAGIC-LINK ═══════════
-async function inviteCharacterPlayer(charId) {
-  const s = syncSettings();
-  if (!s.email) { toast('Bitte erst einloggen', true); return; }
-  const c = state.characters.find(x => x.id === charId);
-  const camp = (typeof campaign === 'function') ? campaign() : null;
-  if (!c || !camp) { toast('Charakter oder Kampagne nicht gefunden', true); return; }
-  const meta = [c.race, c.class, c.level ? 'Lvl ' + c.level : ''].filter(Boolean).join(' · ');
-
-  toast('Erstelle Einladung...');
-  try {
-    const resp = await fetch(`${API_BASE}/api/invites/create`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        campaignId: camp.id,
-        dmEmail: s.email,
-        characterId: c.id,
-        characterName: c.name,
-        characterMeta: meta,
-        role: 'player',
-        invitedBy: s.email,
-        expiresInDays: 30
-      })
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.error || 'Einladung fehlgeschlagen');
-    showInviteShareModal(data.invite, c, camp);
-  } catch (e) { toast('Fehler: ' + e.message, true); }
-}
-
-function showInviteShareModal(invite, char, camp) {
-  const url = window.location.origin + '/player/?invite=' + encodeURIComponent(invite.token);
-  const text = `Du bist eingeladen zu „${camp.name}" als ${char.name} (${char.race} ${char.class})!\nÖffne den Link um beizutreten:\n${url}`;
-  document.getElementById('inviteShareModal')?.remove();
-  const modal = document.createElement('div');
-  modal.id = 'inviteShareModal';
-  modal.className = 'srd-modal';
-  modal.innerHTML = `
-    <div class="srd-modal-backdrop" onclick="closeInviteShareModal()"></div>
-    <div class="srd-modal-inner" style="max-width:520px;">
-      <div class="srd-modal-head">
-        <h3 style="font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--ink);">🔗 Einladung für ${escapeHtml(char.name)}</h3>
-        <button onclick="closeInviteShareModal()">✕</button>
-      </div>
-      <div class="srd-modal-body" style="padding:18px 22px 22px;">
-        <p style="font-size:13.5px;color:var(--text);line-height:1.55;margin-bottom:14px;">Teile diesen Link mit deinem Spieler. Sobald sie ihn öffnen, sind sie als <strong>${escapeHtml(char.name)}</strong> in <strong>${escapeHtml(camp.name)}</strong> eingeloggt — kein Code-Eintippen nötig.</p>
-
-        <div style="display:flex;gap:6px;margin-bottom:14px;">
-          <input id="inviteUrlField" type="text" value="${escapeAttr(url)}" readonly style="flex:1;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);outline:none;" onclick="this.select();" />
-          <button class="btn-top primary" onclick="copyInviteLink()">📋 Kopieren</button>
-        </div>
-
-        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
-          <div style="font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:1.5px;color:var(--text-dim);font-weight:700;margin-bottom:6px;">VORSCHAU-NACHRICHT</div>
-          <div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;">${escapeHtml(text)}</div>
-        </div>
-
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-top primary" onclick="shareInviteNative('${escapeAttr(url)}','${escapeAttr(char.name)}','${escapeAttr(camp.name)}')">📤 Teilen via WhatsApp/Mail</button>
-          <button class="btn-top" onclick="closeInviteShareModal()">Schließen</button>
-        </div>
-
-        <p style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;margin-top:12px;">Link gültig für 30 Tage. Der Spieler ist nach Klick automatisch in der Live-Würfel-Session.</p>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  setTimeout(() => document.getElementById('inviteUrlField')?.select(), 80);
-}
-
-function closeInviteShareModal() {
-  document.getElementById('inviteShareModal')?.remove();
-}
-
-function copyInviteLink() {
-  const field = document.getElementById('inviteUrlField');
-  if (!field) return;
-  const url = field.value;
-  navigator.clipboard?.writeText(url).then(() => toast('Link kopiert')).catch(() => {
-    field.select();
-    document.execCommand('copy');
-    toast('Link kopiert');
-  });
-}
-
-async function shareInviteNative(url, charName, campName) {
-  const text = `Du bist eingeladen zu „${campName}" als ${charName}!\n${url}`;
-  if (navigator.share) {
-    try { await navigator.share({ title: 'EndoCraft · Einladung', text, url }); return; } catch(e) {}
-  }
-  // Fallback: Mailto
-  window.location.href = 'mailto:?subject=' + encodeURIComponent('EndoCraft · Einladung zu ' + campName) + '&body=' + encodeURIComponent(text);
 }
 
 // ═══════════ CHARACTER WIZARD (Guided Build) ═══════════
@@ -9197,8 +8178,7 @@ function renderCharEditor() {
           <div class="char-portrait-actions">
             ${c.type === 'pc'
               ? `<button class="char-portrait-btn" onclick="triggerPortraitUpload()">📸 Foto hochladen</button>
-                 ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}
-                 <button class="char-portrait-btn" style="background:var(--accent);color:#fff;border-color:var(--accent);" onclick="inviteCharacterPlayer('${c.id}')" title="Magic-Link für diesen Spieler erstellen">🔗 Spieler einladen</button>`
+                 ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}`
               : `<button class="char-portrait-btn" onclick="generateCharPortrait()">⚡ Portrait generieren</button>
                  <button class="char-portrait-btn" onclick="triggerPortraitUpload()">Foto hochladen</button>
                  ${c.portraitUrl ? '<button class="char-portrait-btn" onclick="removePortrait()">Entfernen</button>' : ''}`}
@@ -13297,861 +12277,6 @@ initAuthState();  // Supabase Google OAuth — no-op if config missing
 
 // Update relative sync status every 30s (keeps "Synced 2min" badge live)
 setInterval(renderSyncStatus, 30000);
-
-// ═══════════════════════════════════════════════════════════════════════════
-// DRAMA-STAGE DICE OVERLAY
-// Triggered by live roll inserts. Crit/Fumble = fullscreen cinematic takeover.
-// Normal rolls = mini corner overlay.
-// ═══════════════════════════════════════════════════════════════════════════
-var _dsTimer = null;
-var _d20FaceNormals = null;
-
-function loadDiceLibraries() {
-  return new Promise((resolve, reject) => {
-    if (window.THREE) { resolve(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
-    s.onload = resolve; s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
-
-var _diceAudioCtx = null;
-function _getACtx() {
-  if (!_diceAudioCtx || _diceAudioCtx.state === 'closed') {
-    _diceAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (_diceAudioCtx.state === 'suspended') _diceAudioCtx.resume();
-  return _diceAudioCtx;
-}
-function playDiceSound(type, volume) {
-  try {
-    const ctx = _getACtx();
-    const vol = volume || 1.0;
-    const t = ctx.currentTime;
-
-    if (type === 'bounce') {
-      // Hard resin clack — short filtered noise burst + body thump
-      const dur = 0.055;
-      const bufSize = Math.floor(ctx.sampleRate * dur);
-      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < bufSize; i++) d[i] = (Math.random()*2-1) * Math.exp(-i / (bufSize * 0.06));
-      const src = ctx.createBufferSource(); src.buffer = buf;
-      // High-click layer (the hard plastic snap)
-      const hpf = ctx.createBiquadFilter(); hpf.type = 'highpass'; hpf.frequency.value = 1800; hpf.Q.value = 1.2;
-      // Low body thump
-      const lpf = ctx.createBiquadFilter(); lpf.type = 'lowpass'; lpf.frequency.value = 280; lpf.Q.value = 2.5;
-      const gainH = ctx.createGain(); gainH.gain.setValueAtTime(0.55 * vol, t); gainH.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
-      const gainL = ctx.createGain(); gainL.gain.setValueAtTime(0.40 * vol, t); gainL.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-      src.connect(hpf); hpf.connect(gainH); gainH.connect(ctx.destination);
-      src.connect(lpf); lpf.connect(gainL); gainL.connect(ctx.destination);
-      src.start(t); src.stop(t + dur + 0.01);
-
-    } else if (type === 'settle') {
-      // Soft final thud — quieter, lower
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(110, t);
-      osc.frequency.exponentialRampToValueAtTime(42, t + 0.12);
-      gain.gain.setValueAtTime(0.30 * vol, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(t); osc.stop(t + 0.16);
-
-    } else if (type === 'crit') {
-      // Triumphant rising chord — sine waves, short attack, warm decay
-      [[261.6, 0], [329.6, 0.08], [392, 0.17], [523.2, 0.28], [659.2, 0.40]].forEach(([freq, delay]) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine'; osc.frequency.value = freq;
-        const st = t + delay;
-        gain.gain.setValueAtTime(0.0001, st);
-        gain.gain.linearRampToValueAtTime(0.28 * vol, st + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.70);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(st); osc.stop(st + 0.75);
-      });
-
-    } else if (type === 'fumble') {
-      // Descending minor chord — ominous
-      [[220, 0], [185, 0.06], [155, 0.14], [130, 0.24]].forEach(([freq, delay]) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle'; osc.frequency.value = freq;
-        const st = t + delay;
-        gain.gain.setValueAtTime(0.0001, st);
-        gain.gain.linearRampToValueAtTime(0.22 * vol, st + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, st + 0.65);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(st); osc.stop(st + 0.70);
-      });
-    }
-  } catch(e) {}
-}
-
-function _computeD20FaceNormals() {
-  if (!window.THREE || _d20FaceNormals) return;
-  // Use non-indexed so each face has its own 3 vertices (face i = positions i*3..i*3+2)
-  const geo = new THREE.IcosahedronGeometry(1, 0).toNonIndexed();
-  const pos = geo.attributes.position;
-  _d20FaceNormals = [];
-  for (let i = 0; i < 20; i++) {
-    const b = i * 3;
-    const v0 = new THREE.Vector3(pos.getX(b),   pos.getY(b),   pos.getZ(b));
-    const v1 = new THREE.Vector3(pos.getX(b+1), pos.getY(b+1), pos.getZ(b+1));
-    const v2 = new THREE.Vector3(pos.getX(b+2), pos.getY(b+2), pos.getZ(b+2));
-    _d20FaceNormals.push(v0.clone().add(v1).add(v2).divideScalar(3).normalize());
-  }
-  geo.dispose();
-}
-
-// Maps Three.js IcosahedronGeometry face index → D20 face number
-const _D20_FACE_NUMS = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
-
-function _getTopFace(qx, qy, qz, qw) {
-  if (!_d20FaceNormals || !window.THREE) return null;
-  const q = new window.THREE.Quaternion(qx, qy, qz, qw);
-  const up = new window.THREE.Vector3(0, 1, 0);
-  let best = -Infinity, result = 1;
-  for (let i = 0; i < _d20FaceNormals.length; i++) {
-    const dot = _d20FaceNormals[i].clone().applyQuaternion(q).dot(up);
-    if (dot > best) { best = dot; result = _D20_FACE_NUMS[i]; }
-  }
-  return result;
-}
-
-function _createDiceColorMap(isCrit, isFumble) {
-  const W = 2048, H = 1024, cols = 5, rows = 4;
-  const cw = W / cols, ch = H / rows;
-  const cv = document.createElement('canvas');
-  cv.width = W; cv.height = H;
-  const ctx = cv.getContext('2d');
-
-  const baseHex = isCrit ? '#2a1200' : isFumble ? '#200303' : '#111640';
-  ctx.fillStyle = baseHex; ctx.fillRect(0, 0, W, H);
-
-  for (let n = 1; n <= 20; n++) {
-    const col = (n - 1) % cols, row = Math.floor((n - 1) / cols);
-    const fx = col * cw, fy = row * ch;
-    const cx = fx + cw * 0.5, cy = fy + ch * 0.5;
-    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, cw * 0.55);
-    const mid = isCrit ? '100,55,5' : isFumble ? '90,10,10' : '28,38,115';
-    g.addColorStop(0, `rgba(${mid},0.55)`);
-    g.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = g; ctx.fillRect(fx, fy, cw, ch);
-  }
-
-  const numHex = isCrit ? '#ffca50' : isFumble ? '#ff8a60' : '#ccc4f0';
-
-  for (let n = 1; n <= 20; n++) {
-    const col = (n - 1) % cols, row = Math.floor((n - 1) / cols);
-    const cx = col * cw + cw * 0.5;
-    const cy = row * ch + ch * 0.60;
-    const fs = n >= 10 ? Math.round(ch * 0.50) : Math.round(ch * 0.60);
-    ctx.font = `900 ${fs}px "Cinzel","Georgia",serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
-    ctx.fillText(String(n), cx + 4, cy + 5);
-    ctx.fillStyle = 'rgba(0,0,0,0.50)';
-    ctx.fillText(String(n), cx + 2, cy + 2.5);
-
-    ctx.fillStyle = numHex;
-    ctx.fillText(String(n), cx, cy);
-
-    ctx.globalAlpha = 0.38;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(String(n), cx - 0.5, cy - 2);
-    ctx.globalAlpha = 1.0;
-  }
-
-  return new THREE.CanvasTexture(cv);
-}
-
-function _createDiceNormalMap() {
-  const W = 512, H = 256, cols = 5, rows = 4;
-  const cw = W/cols, ch = H/rows;
-  const hcv = document.createElement('canvas');
-  hcv.width = W; hcv.height = H;
-  const hctx = hcv.getContext('2d');
-  hctx.fillStyle = '#000'; hctx.fillRect(0, 0, W, H);
-  hctx.shadowBlur = 5; hctx.shadowColor = '#fff';
-  hctx.fillStyle = '#fff';
-  for (let n = 1; n <= 20; n++) {
-    const col = (n-1)%cols, row = Math.floor((n-1)/cols);
-    const cx = col*cw + cw*0.5, cy = row*ch + ch*0.60;
-    const fs = n >= 10 ? Math.round(ch*0.50) : Math.round(ch*0.60);
-    hctx.font = `900 ${fs}px "Cinzel","Georgia",serif`;
-    hctx.textAlign = 'center'; hctx.textBaseline = 'middle';
-    hctx.fillText(String(n), cx, cy);
-  }
-  const src = hctx.getImageData(0, 0, W, H).data;
-  const ncv = document.createElement('canvas');
-  ncv.width = W; ncv.height = H;
-  const nctx = ncv.getContext('2d');
-  const nImg = nctx.createImageData(W, H);
-  const dst = nImg.data;
-  const st = 5.0;
-  const g = (x, y) => src[(Math.max(0,Math.min(H-1,y))*W+Math.max(0,Math.min(W-1,x)))*4]/255;
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const dx = ((g(x+1,y-1)+2*g(x+1,y)+g(x+1,y+1))-(g(x-1,y-1)+2*g(x-1,y)+g(x-1,y+1)))*st;
-    const dy = ((g(x-1,y+1)+2*g(x,y+1)+g(x+1,y+1))-(g(x-1,y-1)+2*g(x,y-1)+g(x+1,y-1)))*st;
-    const dz = 1, len = Math.sqrt(dx*dx+dy*dy+dz*dz), i = (y*W+x)*4;
-    dst[i]=(dx/len*0.5+0.5)*255|0; dst[i+1]=(dy/len*0.5+0.5)*255|0; dst[i+2]=(dz/len*0.5+0.5)*255|0; dst[i+3]=255;
-  }
-  nctx.putImageData(nImg, 0, 0);
-  return new THREE.CanvasTexture(ncv);
-}
-
-function _createDiceRoughnessMap() {
-  const W = 1024, H = 512, cols = 5, rows = 4;
-  const cw = W/cols, ch = H/rows;
-  const cv = document.createElement('canvas');
-  cv.width = W; cv.height = H;
-  const ctx = cv.getContext('2d');
-  ctx.fillStyle = 'rgb(20,20,20)'; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = 'rgb(95,95,95)';
-  for (let n = 1; n <= 20; n++) {
-    const col = (n-1)%cols, row = Math.floor((n-1)/cols);
-    const cx = col*cw + cw*0.5, cy = row*ch + ch*0.60;
-    const fs = n >= 10 ? Math.round(ch*0.50) : Math.round(ch*0.60);
-    ctx.font = `900 ${fs}px "Cinzel","Georgia",serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(String(n), cx, cy);
-  }
-  return new THREE.CanvasTexture(cv);
-}
-
-async function showDiceAnimation(roll) {
-  if (!roll) return;
-  const isCrit   = !!roll.is_crit;
-  const isFumble = !!roll.is_fumble;
-  const rawNum   = roll.total ?? roll.d20 ?? 10;
-  const finalNum = Math.max(1, Math.min(20, Number(rawNum) || 10));
-  const who      = typeof escapeHtml === 'function'
-    ? escapeHtml(roll.character_name || roll.player_name || '')
-    : String(roll.character_name || roll.player_name || '');
-  const statLabel = roll.stat ? String(roll.stat).toUpperCase() : 'D20';
-  const tag       = isCrit ? '✦ NATURAL 20' : isFumble ? '◈ NATURAL 1' : '';
-
-  if (window._dsTimer) { clearTimeout(window._dsTimer); window._dsTimer = null; }
-  const stage = document.getElementById('diceStage');
-  if (!stage) return;
-  if (stage._animId)    { cancelAnimationFrame(stage._animId);   stage._animId   = null; }
-  if (stage._renderer)  { try{stage._renderer.dispose();}catch(e){} stage._renderer = null; }
-  if (stage._diceWorker){ try{stage._diceWorker.postMessage({t:'stop'}); stage._diceWorker.terminate();}catch(e){} stage._diceWorker = null; }
-
-  const mode = isCrit ? 'ds-crit' : isFumble ? 'ds-fumble' : 'ds-normal';
-  stage.className = '';
-  void stage.offsetWidth;
-  stage.classList.add('ds-active', mode);
-
-  const isFullscreen = isCrit || isFumble;
-  const cvW = isFullscreen ? Math.min(window.innerWidth * 0.92, 820) : 300;
-  const cvH = isFullscreen ? Math.min(window.innerHeight * 0.52, 460) : 190;
-
-  const numColor  = isCrit ? '#e8b86d' : isFumble ? '#ef4444' : '#e8c97a';
-
-  if (isFullscreen) {
-    stage.innerHTML = `
-      ${isCrit ? '<div class="ds-glow-crit"></div><div class="ds-holo"></div>' : '<div class="ds-glow-fumble"></div>'}
-      <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <canvas id="dsCanvas" width="${Math.round(cvW * (window.devicePixelRatio||1))}" height="${Math.round(cvH * (window.devicePixelRatio||1))}" style="width:${cvW}px;height:${cvH}px;border-radius:16px;display:block;box-shadow:0 0 40px ${isCrit?'rgba(232,184,109,0.25)':'rgba(239,68,68,0.25)'};"></canvas>
-        ${who ? `<div class="ds-who">${who} &middot; ${statLabel}</div>` : `<div class="ds-stat">${statLabel}</div>`}
-        <div id="dsNum" class="ds-number" style="opacity:0;transform:scale(.65);transition:opacity .55s ease,transform .55s cubic-bezier(.34,1.56,.64,1);color:${numColor};"></div>
-        <div id="dsTag" class="ds-tag" style="opacity:0;transform:translateY(10px);transition:opacity .45s ease .25s,transform .45s ease .25s;">${tag}</div>
-      </div>
-      <div class="ds-dismiss">Klicken zum Schließen</div>`;
-  } else {
-    stage.innerHTML = `
-      <div class="ds-mini-wrap" style="flex-direction:column;gap:6px;padding:10px 12px;min-width:${cvW+8}px;">
-        <canvas id="dsCanvas" width="${Math.round(cvW*(window.devicePixelRatio||1))}" height="${Math.round(cvH*(window.devicePixelRatio||1))}" style="width:${cvW}px;height:${cvH}px;border-radius:10px;display:block;"></canvas>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 4px;">
-          <div>${who?`<div class="ds-who">${who}</div>`:''}<div class="ds-stat">${statLabel}</div></div>
-          <div id="dsNum" style="opacity:0;transform:scale(.65);transition:opacity .4s,transform .4s cubic-bezier(.34,1.56,.64,1);font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;color:${numColor};"></div>
-        </div>
-      </div>`;
-  }
-
-  playDiceSound('roll');
-
-  let loaded = false;
-  try { await loadDiceLibraries(); loaded = !!window.THREE; } catch(e) {}
-
-  const canvas = document.getElementById('dsCanvas');
-  if (!loaded || !canvas) {
-    _diceFallback(stage, finalNum, isCrit, isFumble, isFullscreen ? 5000 : 3000);
-    return;
-  }
-
-  const THREE = window.THREE;
-  _computeD20FaceNormals();
-
-  // ── RENDERER ──
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
-  renderer.setSize(cvW, cvH, false);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 2.1;
-  const bgCol = isCrit ? 0x120900 : isFumble ? 0x0f0000 : 0x0c0306;
-  renderer.setClearColor(bgCol, 1);
-  stage._renderer = renderer;
-
-  // ── SCENE ──
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(bgCol);
-  scene.fog = new THREE.FogExp2(bgCol, 0.30);
-
-  const camera = new THREE.PerspectiveCamera(44, cvW / cvH, 0.1, 50);
-  const camDist = isFullscreen ? 1.10 : 1.0;
-  camera.position.set(0, 3.2 * camDist, 2.0 * camDist);
-  camera.lookAt(0, 0, 0);
-
-  // Hand-crafted warm-room IBL — gives clearcoat something real to reflect
-  (function() {
-    const ec = document.createElement('canvas');
-    ec.width = 1024; ec.height = 512;
-    const cx = ec.getContext('2d');
-    cx.fillStyle = '#060306'; cx.fillRect(0, 0, 1024, 512);
-    // Warm overhead lamp (top of equirectangular = directly above die)
-    const g1 = cx.createRadialGradient(512, 55, 0, 512, 90, 320);
-    g1.addColorStop(0, 'rgba(255,225,145,1.0)');
-    g1.addColorStop(0.2, 'rgba(220,175,85,0.75)');
-    g1.addColorStop(0.55, 'rgba(130,85,28,0.22)');
-    g1.addColorStop(1, 'rgba(0,0,0,0)');
-    cx.fillStyle = g1; cx.fillRect(0, 0, 1024, 512);
-    // Cool blue fill light (left side)
-    const g2 = cx.createRadialGradient(70, 240, 0, 70, 240, 280);
-    g2.addColorStop(0, 'rgba(65,92,195,0.42)');
-    g2.addColorStop(1, 'rgba(0,0,0,0)');
-    cx.fillStyle = g2; cx.fillRect(0, 0, 1024, 512);
-    // Warm amber rim (right-back)
-    const g3 = cx.createRadialGradient(910, 175, 0, 910, 175, 250);
-    g3.addColorStop(0, 'rgba(255,138,38,0.40)');
-    g3.addColorStop(1, 'rgba(0,0,0,0)');
-    cx.fillStyle = g3; cx.fillRect(0, 0, 1024, 512);
-    const envTex = new THREE.CanvasTexture(ec);
-    envTex.mapping = THREE.EquirectangularReflectionMapping;
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromEquirectangular(envTex).texture;
-    envTex.dispose(); pmrem.dispose();
-  })();
-
-  // ── LIGHTS — focused key light for clear die form ──
-  scene.add(new THREE.AmbientLight(0xfff8f0, 0.55));
-
-  // Strong key light — creates clear face highlights and crisp shadows
-  const lampLight = new THREE.DirectionalLight(0xfff5e0, 5.5);
-  lampLight.position.set(2, 8, 3);
-  lampLight.castShadow = true;
-  lampLight.shadow.mapSize.set(2048, 2048);
-  lampLight.shadow.camera.near = 1;
-  lampLight.shadow.camera.far = 20;
-  lampLight.shadow.camera.left = lampLight.shadow.camera.bottom = -4;
-  lampLight.shadow.camera.right = lampLight.shadow.camera.top = 4;
-  lampLight.shadow.bias = -0.002;
-  lampLight.shadow.radius = 4;
-  scene.add(lampLight);
-
-  // Cool fill from opposite side — moonlight/ambient
-  const fillLight = new THREE.DirectionalLight(0x8899bb, 0.45);
-  fillLight.position.set(-3, 4, -3);
-  scene.add(fillLight);
-
-  // Warm bounce off table surface — illuminates die from below and lights felt
-  const bounceLight = new THREE.PointLight(isCrit ? 0x8a5010 : isFumble ? 0x770808 : 0x5a1820, 2.8, 5);
-  bounceLight.position.set(0, 0.05, 0.3);
-  scene.add(bounceLight);
-
-  // Dramatic rim accent
-  const rimAccent = new THREE.PointLight(isCrit ? 0xff8800 : isFumble ? 0xff2000 : 0x2244aa, 2.5, 10);
-  rimAccent.position.set(-2.5, 2.5, -1.5);
-  scene.add(rimAccent);
-
-  // Hard back-rim — defines silhouette, separates die from dark background
-  const rimBack = new THREE.DirectionalLight(isCrit ? 0xff9933 : isFumble ? 0xff3311 : 0x5577ee, 3.2);
-  rimBack.position.set(1.5, 4, -6);
-  scene.add(rimBack);
-
-  // ── TABLE — casino-grade felt with fiber normal map ──
-  const feltSz = 2048;
-  const feltCv = document.createElement('canvas'); feltCv.width = feltSz; feltCv.height = feltSz;
-  const fctx = feltCv.getContext('2d');
-  const feltBase = isCrit ? '#3a2008' : isFumble ? '#2a0808' : '#4a0c14';
-  fctx.fillStyle = feltBase; fctx.fillRect(0, 0, feltSz, feltSz);
-  // Dense horizontal fibers — main grain
-  for (let i = 0; i < 22000; i++) {
-    const x = Math.random()*feltSz, y = Math.random()*feltSz;
-    const len = Math.random()*18+4, a = (Math.random()-0.5)*0.22;
-    fctx.beginPath(); fctx.moveTo(x, y);
-    fctx.lineTo(x+Math.cos(a)*len, y+Math.sin(a)*len);
-    const bright = Math.random() > 0.82;
-    const b = bright ? 140+Math.random()*90 : 35+Math.random()*45;
-    fctx.strokeStyle = `rgba(${b},${b},${b},${bright ? 0.09+Math.random()*0.13 : 0.03+Math.random()*0.05})`;
-    fctx.lineWidth = bright ? 0.45 : 0.85; fctx.stroke();
-  }
-  // Cross-grain weave
-  for (let i = 0; i < 10000; i++) {
-    const x = Math.random()*feltSz, y = Math.random()*feltSz;
-    const len = Math.random()*10+2, a = Math.PI/2+(Math.random()-0.5)*0.22;
-    fctx.beginPath(); fctx.moveTo(x, y);
-    fctx.lineTo(x+Math.cos(a)*len, y+Math.sin(a)*len);
-    const b = 28+Math.random()*38;
-    fctx.strokeStyle = `rgba(${b},${b},${b},${0.02+Math.random()*0.05})`;
-    fctx.lineWidth = 0.5; fctx.stroke();
-  }
-  // Fiber tips — tiny bright specular dots
-  for (let i = 0; i < 6000; i++) {
-    const x = Math.random()*feltSz, y = Math.random()*feltSz;
-    fctx.beginPath(); fctx.arc(x, y, 0.4+Math.random()*1.1, 0, Math.PI*2);
-    const b = 190+Math.random()*65;
-    fctx.fillStyle = `rgba(${b},${b},${b},${0.05+Math.random()*0.07})`; fctx.fill();
-  }
-  // Edge vignette
-  const vigG = fctx.createRadialGradient(feltSz/2,feltSz/2,feltSz*0.30, feltSz/2,feltSz/2,feltSz*0.72);
-  vigG.addColorStop(0,'rgba(0,0,0,0)'); vigG.addColorStop(1,'rgba(0,0,0,0.50)');
-  fctx.fillStyle = vigG; fctx.fillRect(0, 0, feltSz, feltSz);
-
-  // Normal map — each fiber tilts the surface normal slightly
-  const fnCv = document.createElement('canvas'); fnCv.width = 512; fnCv.height = 512;
-  const fnx = fnCv.getContext('2d');
-  fnx.fillStyle = 'rgb(128,128,255)'; fnx.fillRect(0, 0, 512, 512);
-  for (let i = 0; i < 14000; i++) {
-    const x = Math.random()*512, y = Math.random()*512;
-    const len = Math.random()*14+3, a = (Math.random()-0.5)*0.5;
-    const nx = Math.floor(128+Math.cos(a)*30), ny = Math.floor(128+Math.sin(a)*14);
-    fnx.beginPath(); fnx.moveTo(x, y);
-    fnx.lineTo(x+Math.cos(a)*len, y+Math.sin(a)*len);
-    fnx.strokeStyle = `rgb(${nx},${ny},215)`;
-    fnx.lineWidth = 1.1; fnx.stroke();
-  }
-  const feltTex = new THREE.CanvasTexture(feltCv);
-  feltTex.wrapS = feltTex.wrapT = THREE.RepeatWrapping; feltTex.repeat.set(4, 4);
-  const feltNormTex = new THREE.CanvasTexture(fnCv);
-  feltNormTex.wrapS = feltNormTex.wrapT = THREE.RepeatWrapping; feltNormTex.repeat.set(4, 4);
-  const feltColor = isCrit ? 0x7a4418 : isFumble ? 0x660a0a : 0x9a1828;
-  const tableMat = new THREE.MeshStandardMaterial({
-    map: feltTex, normalMap: feltNormTex, normalScale: new THREE.Vector2(1.4, 1.4),
-    color: feltColor, roughness: 1.0, metalness: 0.0, envMapIntensity: 0.04
-  });
-  const table = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 4.8), tableMat);
-  table.rotation.x = -Math.PI/2;
-  table.receiveShadow = true;
-  scene.add(table);
-
-  // Wooden dice tray frame
-  const woodCol = isCrit ? 0x1a0e04 : isFumble ? 0x140606 : 0x2a1208;
-  // Wood grain texture for the dice tray frame
-  const wdCv = document.createElement('canvas'); wdCv.width = 256; wdCv.height = 512;
-  const wdx = wdCv.getContext('2d');
-  wdx.fillStyle = isCrit ? '#4a2a0e' : isFumble ? '#321008' : '#5a3010'; wdx.fillRect(0,0,256,512);
-  for (let i = 0; i < 70; i++) {
-    const gx = Math.random()*280-12;
-    const op = 0.06+Math.random()*0.18;
-    const dark = Math.random() > 0.45;
-    wdx.beginPath(); wdx.moveTo(gx, 0);
-    wdx.bezierCurveTo(gx+(Math.random()-.5)*22,170, gx+(Math.random()-.5)*22,340, gx+(Math.random()-.5)*14,512);
-    wdx.strokeStyle = dark ? `rgba(0,0,0,${op})` : `rgba(220,158,80,${op})`;
-    wdx.lineWidth = 0.4+Math.random()*2.5; wdx.stroke();
-  }
-  const wdHighG = wdx.createLinearGradient(0,0,0,70);
-  wdHighG.addColorStop(0,'rgba(255,205,120,0.20)'); wdHighG.addColorStop(1,'rgba(0,0,0,0)');
-  wdx.fillStyle = wdHighG; wdx.fillRect(0,0,256,70);
-  const woodTex = new THREE.CanvasTexture(wdCv);
-  woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping;
-  const woodMat = new THREE.MeshStandardMaterial({ map: woodTex, color: woodCol, roughness: 0.62, metalness: 0.0, envMapIntensity: 0.25 });
-  const wallH = 0.45, wallT = 0.28, halfIn = 2.4, outerPos = halfIn + wallT / 2;
-  [[-outerPos, 0, wallT, halfIn * 2 + wallT * 2],
-   [ outerPos, 0, wallT, halfIn * 2 + wallT * 2],
-   [0, -outerPos, halfIn * 2 + wallT * 2, wallT],
-   [0,  outerPos, halfIn * 2 + wallT * 2, wallT]
-  ].forEach(([wx, wz, ww, wd]) => {
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(ww, wallH, wd), woodMat);
-    wall.position.set(wx, wallH / 2, wz);
-    wall.castShadow = true; wall.receiveShadow = true;
-    scene.add(wall);
-  });
-
-  // ── D20 MESH — polished dark resin ──
-  const FACE_NUMS = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
-  const diceRadius = 1.02;
-  const rawGeo  = new THREE.IcosahedronGeometry(diceRadius, 0);
-  const diceGeo = rawGeo.toNonIndexed();
-  diceGeo.computeVertexNormals();
-
-  // Remap UVs: each face → cell in the 5×4 atlas
-  const uvAttr = diceGeo.attributes.uv;
-  const ATLAS_C = 5, ATLAS_R = 4;
-  for (let f = 0; f < 20; f++) {
-    const n   = FACE_NUMS[f] - 1;
-    const col = n % ATLAS_C, row = Math.floor(n / ATLAS_C);
-    const pad = 0.07;
-    const u0  = (col + pad) / ATLAS_C, u1 = (col + 1 - pad) / ATLAS_C;
-    const v0  = 1 - (row + 1 - pad) / ATLAS_R, v1 = 1 - (row + pad) / ATLAS_R;
-    const uc  = (u0 + u1) / 2;
-    uvAttr.setXY(f*3,     uc, v1);
-    uvAttr.setXY(f*3 + 1, u0, v0);
-    uvAttr.setXY(f*3 + 2, u1, v0);
-  }
-  uvAttr.needsUpdate = true;
-
-  const diceColorTex  = _createDiceColorMap(isCrit, isFumble);
-  const diceNormalTex = _createDiceNormalMap();
-  const diceRoughTex  = _createDiceRoughnessMap();
-
-  const diceMat = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff,
-    map: diceColorTex,
-    normalMap: diceNormalTex,
-    normalScale: new THREE.Vector2(0.6, 0.6),
-    roughnessMap: diceRoughTex,
-    roughness: 1.0,
-    metalness: 0.0,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.05,
-    envMapIntensity: 1.8,
-    emissive: isCrit
-      ? new THREE.Color(0.18, 0.07, 0)
-      : isFumble
-      ? new THREE.Color(0.15, 0, 0)
-      : new THREE.Color(0, 0, 0),
-    emissiveIntensity: 1.0,
-  });
-
-  const diceMesh = new THREE.Mesh(diceGeo, diceMat);
-  diceMesh.castShadow = true;
-  scene.add(diceMesh);
-
-  // Subtle dark edges — sharp geometry lines like a real polished die
-  const edgeMat = new THREE.LineBasicMaterial({
-    color: isCrit ? 0xcc9933 : isFumble ? 0xcc2222 : 0x3344aa,
-    transparent: true, opacity: 0.55
-  });
-  diceMesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(rawGeo), edgeMat));
-
-  // ── PHYSICS WORKER ──
-  const spawnX = (Math.random() - 0.5) * 0.5;
-  const spawnZ = (Math.random() - 0.5) * 0.3;
-  let _diceState = { x: spawnX, y: 5.0, z: spawnZ, qx: 0, qy: 0, qz: 0, qw: 1 };
-
-  const diceWorker = new Worker('/dice-worker.js');
-  diceWorker.onmessage = function(e) {
-    const d = e.data;
-    if (d.t === 'f') {
-      _diceState = d;
-      if (d.bounce) {
-        playDiceSound('bounce');
-        if (isCrit && particles) { particles.visible = true; particlesActive = true; }
-        if (d.vel > 2.0) { _chromAb = Math.min(1.0, _chromAb + d.vel * 0.12); _compM.uniforms.uChrom.value = _chromAb; }
-      }
-    } else if (d.t === 'settled') {
-      _diceState = d;
-      physicsActive = false;
-      _camLookTarget.set(d.x, 0, d.z);
-      _fovTarget = 38;
-      let actualNum = finalNum;
-      if (_d20FaceNormals && window.THREE) {
-        const _faceNums = [1,6,12,8,15,4,20,11,3,16,9,13,5,18,2,17,7,14,10,19];
-        const _q = new THREE.Quaternion(d.qx, d.qy, d.qz, d.qw);
-        const _up = new THREE.Vector3(0, 1, 0);
-        let _best = -Infinity;
-        for (let _i = 0; _i < _d20FaceNormals.length; _i++) {
-          const _dot = _d20FaceNormals[_i].clone().applyQuaternion(_q).dot(_up);
-          if (_dot > _best) { _best = _dot; actualNum = _faceNums[_i]; }
-        }
-      }
-      const actualIsCrit = actualNum === 20;
-      const actualFumble = actualNum === 1;
-      const actualTag    = actualIsCrit ? '✦ NATURAL 20' : actualFumble ? '◈ NATURAL 1' : '';
-      playDiceSound('settle');
-      if (actualIsCrit)  playDiceSound('crit');
-      if (actualFumble)  playDiceSound('fumble');
-      const numEl = document.getElementById('dsNum');
-      if (numEl) { numEl.textContent = actualNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
-      const tagEl = document.getElementById('dsTag');
-      if (tagEl) { tagEl.textContent = actualTag; tagEl.style.opacity='1'; tagEl.style.transform='translateY(0)'; }
-      stage.classList.add('ds-revealed');
-      if (actualIsCrit) { diceMat.emissiveIntensity = 1.6; diceMat.needsUpdate = true; }
-    }
-  };
-  diceWorker.postMessage({
-    t: 'init', r: diceRadius, sy: 3.5,
-    sx: spawnX, sz: spawnZ,
-    vx: (Math.random()-0.5)*2.2, vy: -13, vz: (Math.random()-0.5)*1.4,
-    avx: (Math.random()-0.5)*52, avy: (Math.random()-0.5)*44, avz: (Math.random()-0.5)*38
-  });
-  stage._diceWorker = diceWorker;
-
-  // ── PARTICLES (crit only) ──
-  let particles = null;
-  let particleVelocities = null;
-  if (isCrit) {
-    const N = 60;
-    const pGeo = new THREE.BufferGeometry();
-    const pPos = new Float32Array(N * 3);
-    particleVelocities = [];
-    for (let i = 0; i < N; i++) {
-      pPos[i*3]   = spawnX;
-      pPos[i*3+1] = 0.05;
-      pPos[i*3+2] = spawnZ;
-      particleVelocities.push({
-        x: (Math.random()-0.5)*5,
-        y: Math.random()*7 + 2,
-        z: (Math.random()-0.5)*5,
-        life: 1.0
-      });
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    const pMat = new THREE.PointsMaterial({
-      color: 0xe8b86d, size: 0.065,
-      transparent: true, opacity: 0.9,
-      blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    particles = new THREE.Points(pGeo, pMat);
-    particles.visible = false;
-    scene.add(particles);
-  }
-
-  // ── BLOOM PIPELINE SETUP ──
-  const _PR = Math.min(window.devicePixelRatio || 1, 3);
-  const _rtW = Math.round(cvW * _PR), _rtH = Math.round(cvH * _PR);
-  const _bW = Math.max(1, _rtW >> 1), _bH = Math.max(1, _rtH >> 1);
-  const _mainRT = new THREE.WebGLRenderTarget(_rtW, _rtH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
-  const _bloomA = new THREE.WebGLRenderTarget(_bW, _bH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false });
-  const _bloomB = new THREE.WebGLRenderTarget(_bW, _bH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false });
-  const _bVert = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}';
-  const _threshM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, thr:{value:0.72} }, vertexShader:_bVert,
-    fragmentShader:'uniform sampler2D tDiffuse;uniform float thr;varying vec2 vUv;void main(){vec4 c=texture2D(tDiffuse,vUv);float b=max(c.r,max(c.g,c.b));gl_FragColor=c*smoothstep(thr,thr+0.20,b)*1.4;}' });
-  const _hBlurM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, px:{value:1.0/_bW} }, vertexShader:_bVert,
-    fragmentShader:'uniform sampler2D tDiffuse;uniform float px;varying vec2 vUv;void main(){vec4 c=vec4(0.);c+=texture2D(tDiffuse,vUv+vec2(-4.*px,0))*.0625;c+=texture2D(tDiffuse,vUv+vec2(-3.*px,0))*.0938;c+=texture2D(tDiffuse,vUv+vec2(-2.*px,0))*.125;c+=texture2D(tDiffuse,vUv+vec2(-1.*px,0))*.1875;c+=texture2D(tDiffuse,vUv)*.25;c+=texture2D(tDiffuse,vUv+vec2(1.*px,0))*.1875;c+=texture2D(tDiffuse,vUv+vec2(2.*px,0))*.125;c+=texture2D(tDiffuse,vUv+vec2(3.*px,0))*.0938;c+=texture2D(tDiffuse,vUv+vec2(4.*px,0))*.0625;gl_FragColor=c;}' });
-  const _vBlurM = new THREE.ShaderMaterial({ uniforms:{ tDiffuse:{value:null}, py:{value:1.0/_bH} }, vertexShader:_bVert,
-    fragmentShader:'uniform sampler2D tDiffuse;uniform float py;varying vec2 vUv;void main(){vec4 c=vec4(0.);c+=texture2D(tDiffuse,vUv+vec2(0,-4.*py))*.0625;c+=texture2D(tDiffuse,vUv+vec2(0,-3.*py))*.0938;c+=texture2D(tDiffuse,vUv+vec2(0,-2.*py))*.125;c+=texture2D(tDiffuse,vUv+vec2(0,-1.*py))*.1875;c+=texture2D(tDiffuse,vUv)*.25;c+=texture2D(tDiffuse,vUv+vec2(0,1.*py))*.1875;c+=texture2D(tDiffuse,vUv+vec2(0,2.*py))*.125;c+=texture2D(tDiffuse,vUv+vec2(0,3.*py))*.0938;c+=texture2D(tDiffuse,vUv+vec2(0,4.*py))*.0625;gl_FragColor=c;}' });
-  const _compM = new THREE.ShaderMaterial({
-    uniforms: { tBase:{value:null}, tBloom:{value:null}, str:{value:isCrit?0.30:isFumble?0.25:0.18}, uChrom:{value:0.0} },
-    vertexShader: _bVert,
-    fragmentShader: `uniform sampler2D tBase;uniform sampler2D tBloom;uniform float str;uniform float uChrom;varying vec2 vUv;
-      void main(){
-        vec2 d=vUv-0.5;
-        float ca=uChrom*0.014;
-        float r=texture2D(tBase,vUv+d*ca).r;
-        float g=texture2D(tBase,vUv).g;
-        float b=texture2D(tBase,vUv-d*ca).b;
-        vec4 bl=texture2D(tBloom,vUv);
-        vec3 col=vec3(r,g,b)+bl.rgb*str;
-        float vig=1.0-smoothstep(0.28,0.72,length(d*vec2(1.1,1.4)));
-        gl_FragColor=vec4(col*vig,1.0);
-      }`
-  });
-  const _orthoBC = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-  const _qMesh = new THREE.Mesh(new THREE.PlaneGeometry(2,2), _threshM);
-  const _orthoS = new THREE.Scene(); _orthoS.add(_qMesh);
-
-  // ── ANIMATION LOOP ──
-  let physicsActive = true;
-  let particlesActive = false;
-  const _camLookAt = new THREE.Vector3(0, 0, 0);
-  const _camLookTarget = new THREE.Vector3(0, 0, 0);
-  let lastTs = null;
-  let _chromAb = 0.0;
-  let _fovCur = 44, _fovTarget = 44;
-
-  function frame(ts) {
-    stage._animId = requestAnimationFrame(frame);
-    if (!lastTs) lastTs = ts;
-    const rawDt = Math.min((ts - lastTs)/1000, 0.05);
-    lastTs = ts;
-
-    if (_chromAb > 0.001) { _chromAb -= rawDt * 3.8; if (_chromAb < 0) _chromAb = 0; _compM.uniforms.uChrom.value = _chromAb; }
-    if (Math.abs(_fovCur - _fovTarget) > 0.05) { _fovCur += (_fovTarget - _fovCur) * Math.min(1, rawDt * 2.2); camera.fov = _fovCur; camera.updateProjectionMatrix(); }
-    _camLookAt.lerp(_camLookTarget, rawDt * 3.5);
-    camera.lookAt(_camLookAt);
-
-    if (physicsActive) {
-      diceMesh.position.set(_diceState.x, _diceState.y, _diceState.z);
-      diceMesh.quaternion.set(_diceState.qx, _diceState.qy, _diceState.qz, _diceState.qw);
-      rimAccent.position.set(_diceState.x - 2.5, _diceState.y + 2.5, _diceState.z - 1.5);
-      bounceLight.position.set(_diceState.x, 0.05, _diceState.z + 0.3);
-    }
-
-    // Particle update
-    if (particlesActive && particles) {
-      const pp = particles.geometry.attributes.position;
-      let anyAlive = false;
-      for (let i = 0; i < particleVelocities.length; i++) {
-        const pv = particleVelocities[i];
-        pv.life -= rawDt * 0.8;
-        pv.y -= 12 * rawDt;
-        if (pv.life > 0) {
-          anyAlive = true;
-          pp.array[i*3]   += pv.x * rawDt;
-          pp.array[i*3+1] += pv.y * rawDt;
-          pp.array[i*3+2] += pv.z * rawDt;
-        }
-      }
-      pp.needsUpdate = true;
-      particles.material.opacity = Math.max(0, particles.material.opacity - rawDt * 0.35);
-      if (!anyAlive) { particlesActive = false; particles.visible = false; }
-    }
-
-    renderer.setRenderTarget(_mainRT); renderer.render(scene, camera);
-    _qMesh.material=_threshM; _threshM.uniforms.tDiffuse.value=_mainRT.texture;
-    renderer.setRenderTarget(_bloomA); renderer.render(_orthoS,_orthoBC);
-    _qMesh.material=_hBlurM; _hBlurM.uniforms.tDiffuse.value=_bloomA.texture;
-    renderer.setRenderTarget(_bloomB); renderer.render(_orthoS,_orthoBC);
-    _qMesh.material=_vBlurM; _vBlurM.uniforms.tDiffuse.value=_bloomB.texture;
-    renderer.setRenderTarget(_bloomA); renderer.render(_orthoS,_orthoBC);
-    _qMesh.material=_compM; _compM.uniforms.tBase.value=_mainRT.texture; _compM.uniforms.tBloom.value=_bloomA.texture;
-    renderer.setRenderTarget(null); renderer.render(_orthoS,_orthoBC);
-  }
-
-  stage._animId = requestAnimationFrame(frame);
-  const displayDuration = isFullscreen ? 7000 : 4000;
-  window._dsTimer = setTimeout(hideDiceAnimation, displayDuration);
-  if (isCrit || isFumble) stage.addEventListener('click', hideDiceAnimation, { once: true });
-}
-
-function _diceFallback(stage, finalNum, isCrit, isFumble, duration) {
-  const numEl = document.getElementById('dsNum');
-  let count = 0;
-  const max = (isCrit || isFumble) ? 26 : 14;
-  const t = setInterval(() => {
-    if (count++ >= max) {
-      clearInterval(t);
-      if (numEl) { numEl.textContent=finalNum; numEl.style.opacity='1'; numEl.style.transform='scale(1)'; }
-      stage.classList.add('ds-revealed');
-      playDiceSound('settle');
-      if (isCrit) playDiceSound('crit');
-      return;
-    }
-    if (numEl) numEl.textContent = 1 + Math.floor(Math.random()*20);
-  }, (isCrit||isFumble) ? 55 : 75);
-  window._dsTimer = setTimeout(hideDiceAnimation, duration);
-  if (isCrit||isFumble) stage.addEventListener('click', hideDiceAnimation, {once:true});
-}
-
-function hideDiceAnimation() {
-  if (window._dsTimer) { clearTimeout(window._dsTimer); window._dsTimer = null; }
-  const stage = document.getElementById('diceStage');
-  if (!stage) return;
-  if (stage._animId) { cancelAnimationFrame(stage._animId); stage._animId = null; }
-  if (stage._renderer) { try{stage._renderer.dispose();}catch(e){} stage._renderer = null; }
-  if (stage._diceWorker) { try{stage._diceWorker.postMessage({t:'stop'}); stage._diceWorker.terminate();}catch(e){} stage._diceWorker = null; }
-  stage.style.opacity = '0';
-  setTimeout(() => { stage.className=''; stage.innerHTML=''; stage.style.opacity=''; }, 350);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// LORE CODEX — AI-generiertes Campaign-Wiki
-// ═══════════════════════════════════════════════════════════════════════════
-var _codexEntries = [];
-var _codexFilter  = 'all';
-
-var CODEX_TYPE_ICONS = {
-  character: '🧑', npc: '🎭', location: '🗺️',
-  faction: '⚔️', event: '⚡', item: '🗡️', mystery: '🌀'
-};
-
-function renderLoreCodex() {
-  if (!CODEX_TYPE_ICONS) return;
-  renderCodexSidebar();
-  renderCodexGrid();
-}
-
-function renderCodexSidebar() {
-  const el = document.getElementById('codexLpStats');
-  if (!el) return;
-  if (!_codexEntries.length) { el.innerHTML = ''; return; }
-  const counts = {};
-  _codexEntries.forEach(e => { counts[e.type] = (counts[e.type] || 0) + 1; });
-  el.innerHTML = Object.entries(counts).map(([t, n]) =>
-    `<div style="display:flex;justify-content:space-between;font-family:'EB Garamond',serif;font-size:12.5px;color:var(--text-dim);">
-      <span>${CODEX_TYPE_ICONS[t] || '📌'} ${t}</span><span style="color:var(--gold);font-weight:700;">${n}</span>
-    </div>`
-  ).join('');
-}
-
-function filterCodex(type) {
-  _codexFilter = type;
-  document.querySelectorAll('.codex-filter-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.type === type));
-  renderCodexGrid();
-}
-
-function renderCodexGrid() {
-  const host   = document.getElementById('codexMain');
-  if (!host) return;
-  const query  = (document.getElementById('codexSearch')?.value || '').toLowerCase();
-  const entries = _codexEntries.filter(e => {
-    const typeOk = _codexFilter === 'all' || e.type === _codexFilter;
-    const textOk = !query ||
-      (e.name   || '').toLowerCase().includes(query) ||
-      (e.summary|| '').toLowerCase().includes(query) ||
-      (e.tags   || []).some(t => t.toLowerCase().includes(query));
-    return typeOk && textOk;
-  });
-
-  if (!_codexEntries.length) {
-    host.innerHTML = `<div class="codex-empty"><span class="ico">📜</span>Noch kein Codex generiert.<br>Klick auf <strong>Generieren</strong> — Claude baut ein Wiki aus deinen Campaign-Daten.</div>`;
-    return;
-  }
-  if (!entries.length) {
-    host.innerHTML = `<div class="codex-empty"><span class="ico">🔍</span>Keine Einträge für diesen Filter.</div>`;
-    return;
-  }
-
-  host.innerHTML = `<div class="codex-grid">${entries.map(e => `
-    <div class="codex-card">
-      <div class="codex-card-type"><span class="codex-type-icon">${CODEX_TYPE_ICONS[e.type] || '📌'}</span>${(e.type || 'entry').toUpperCase()}</div>
-      <div class="codex-card-name">${escapeHtml(e.name || '—')}</div>
-      <div class="codex-card-summary">${escapeHtml(e.summary || '')}</div>
-      ${(e.tags || []).length ? `<div class="codex-card-tags">${e.tags.map(t => `<span class="codex-card-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      ${(e.connections || []).length ? `<div class="codex-card-connections">↔ ${e.connections.map(c => escapeHtml(c)).join(', ')}</div>` : ''}
-      ${e.secrets ? `<div class="codex-secret">🔒 ${escapeHtml(e.secrets)}</div>` : ''}
-    </div>`).join('')}</div>`;
-}
-
-async function generateLoreCodex() {
-  const btn = document.getElementById('codexGenBtn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generiere…'; }
-
-  try {
-    const c    = campaign();
-    const pcs  = state.characters.filter(ch => ch.type === 'pc');
-    const npcs = state.characters.filter(ch => ch.type === 'npc');
-    const sess = c.sessions || [];
-    // c.locations is a keyed object {id: {name, meta, dmNote, ...}}, flatten to array
-    const locs = c.locations
-      ? Object.entries(c.locations).map(([id, l]) => ({ name: l.name || id, description: (l.meta || l.dmNote || '').slice(0, 300) }))
-      : [];
-
-    const body = {
-      campaign:   { name: c.name, description: c.description || '' },
-      characters: pcs.map(ch => ({ name: ch.name, race: ch.race || '', class: ch.class || '', level: ch.level || 1, backstory: ch.backstory || '' })),
-      npcs:       npcs.map(n  => ({ name: n.name, description: n.notes || n.description || '' })),
-      locations:  locs.map(l  => ({ name: l.name, description: l.description || l.notes || '' })),
-      sessions:   sess.map(s  => ({ title: s.title || s.name || '', recap: s.recap || s.notes || '' }))
-    };
-
-    const res  = await fetch(`${API_BASE}/api/lore-codex`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Server-Fehler');
-    _codexEntries = data.entries || [];
-    renderLoreCodex();
-    toast(`✦ Codex generiert · ${_codexEntries.length} Einträge`);
-  } catch (e) {
-    toast(`Codex-Fehler: ${e.message}`);
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '📜 Generieren'; }
-  }
-}
 </script>
 </body>
 </html>
