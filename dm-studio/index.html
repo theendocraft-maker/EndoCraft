@@ -3632,12 +3632,101 @@ body.gate-open{overflow:hidden;}
 ::-webkit-scrollbar-thumb{background:rgba(91,61,24,0.2);border-radius:4px;}
 ::-webkit-scrollbar-thumb:hover{background:rgba(91,61,24,0.35);}
 
+/* ═══════════════════════════════════════════════════════════════
+   SYL-TOUR · Geführter Walkthrough für neue Ashford-DMs
+   ═══════════════════════════════════════════════════════════════ */
+.syl-tour-tip{
+  position:fixed;
+  width:380px;
+  max-width:calc(100vw - 40px);
+  background:var(--surface);
+  border:2px solid var(--gold);
+  border-radius:14px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.45);
+  padding:18px 20px 16px;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  z-index:9999;
+  animation:sylTipIn .22s cubic-bezier(.4,1.4,.6,1) both;
+  font-family:'EB Garamond', serif;
+}
+html[data-theme="twilight"] .syl-tour-tip{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  box-shadow:0 24px 64px rgba(0,0,0,0.7), 0 0 32px rgba(201,162,95,0.22);
+}
+@keyframes sylTipIn{
+  from{opacity:0;transform:translateY(8px) scale(.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.stt-syl{
+  flex-shrink:0;
+  width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+  background:var(--gold-dim);
+  border:1.5px solid var(--gold);
+  border-radius:12px;
+  animation:sylBreathe 2.4s ease-in-out infinite;
+  line-height:1;
+}
+.stt-body{flex:1;min-width:0;}
+.stt-tag{
+  font-family:'Cinzel', serif;
+  font-size:9.5px;
+  letter-spacing:2.2px;
+  color:var(--gold);
+  text-transform:uppercase;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.stt-title{
+  font-family:'Cinzel', serif;
+  font-size:15px;
+  font-weight:700;
+  color:var(--ink);
+  letter-spacing:.3px;
+  line-height:1.25;
+  margin-bottom:7px;
+}
+.stt-text{
+  font-size:13.5px;
+  line-height:1.55;
+  color:var(--ink-2, var(--ink));
+  opacity:.88;
+  margin-bottom:14px;
+}
+.stt-actions{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+.stt-actions .btn-top{
+  font-size:10px !important;
+  padding:7px 14px !important;
+}
+.syl-tour-spotlight{
+  position:fixed;
+  pointer-events:none;
+  border:2px solid var(--gold);
+  border-radius:8px;
+  box-shadow:0 0 0 4px rgba(201,162,95,0.18), 0 0 24px rgba(201,162,95,0.5);
+  animation:sylSpotPulse 1.8s ease-in-out infinite;
+  z-index:9998;
+}
+@keyframes sylSpotPulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(201,162,95,0.18), 0 0 24px rgba(201,162,95,0.4);}
+  50%{box-shadow:0 0 0 6px rgba(201,162,95,0.28), 0 0 36px rgba(201,162,95,0.7);}
+}
+
 /* Mobile */
 @media (max-width:900px){
   .tabnav .tab span:not(.ico){display:none;}
   .campaign-pill-meta{display:none;}
   .lpanel{width:180px;}
   .prep-right,.session-right{display:none;}
+  .syl-tour-tip{width:calc(100vw - 32px);left:16px !important;}
 }
 </style>
 </head>
@@ -5596,28 +5685,25 @@ function renderBriefing() {
             <div class="briefing-card-h-l"><span class="ico">🎯</span>Nächste Ziele</div>
           </div>
           <div class="briefing-card-b">
-            <ul class="briefing-objectives">
-              ${(state.briefingObjectives || [
-                'Rahadin-Encounter in W14 überleben',
-                'Entscheidung am W15 Teleportationskreis (Szenario A vs. B)',
-                'Yester Hill vorbereiten (wenn Szenario B)',
-                'Fey Green Gem zurückholen'
-              ]).map((obj, i) => `
-                <li class="briefing-obj">
-                  <span class="briefing-obj-num">${i+1}</span>
-                  <span class="briefing-obj-text">${escapeHtml(obj)}</span>
-                </li>`).join('')}
-            </ul>
-            <div class="briefing-mini-section">
-              <div class="briefing-mini-label">Session-Flow (aus Prep)</div>
-              <div style="font-size:12.5px;color:var(--text-dim);line-height:1.6;font-family:'JetBrains Mono',monospace;background:var(--surface-2);padding:10px 12px;border-radius:6px;">
-W14 Rahadin<br>
-  ↓<br>
-W15 Teleportationskreis · 30s-Entscheidung<br>
-  ├─ folgen → Szenario A: K63 → K10 Dinner<br>
-  └─ bleiben → Szenario B: W17 + W20 + Aftermath → Yester Hill
+            ${(c.briefingObjectives && c.briefingObjectives.length) || (state.briefingObjectives && state.briefingObjectives.length) ? `
+              <ul class="briefing-objectives">
+                ${(c.briefingObjectives || state.briefingObjectives).map((obj, i) => `
+                  <li class="briefing-obj">
+                    <span class="briefing-obj-num">${i+1}</span>
+                    <span class="briefing-obj-text">${escapeHtml(obj)}</span>
+                  </li>`).join('')}
+              </ul>
+            ` : `
+              <div style="padding:14px 0;color:var(--text-dim);font-size:13.5px;font-style:italic;line-height:1.55;">
+                Noch keine Ziele festgelegt. Trag deine nächsten Beats in <strong style="color:var(--ink);font-style:normal;">Vorbereitung → DM-Notiz</strong> ein, oder generiere via KI nach der nächsten Session.
               </div>
-            </div>
+            `}
+            ${c.sessionFlow ? `
+              <div class="briefing-mini-section">
+                <div class="briefing-mini-label">Session-Flow (aus Prep)</div>
+                <div style="font-size:12.5px;color:var(--text-dim);line-height:1.6;font-family:'JetBrains Mono',monospace;background:var(--surface-2);padding:10px 12px;border-radius:6px;white-space:pre-wrap;">${escapeHtml(c.sessionFlow)}</div>
+              </div>
+            ` : ''}
           </div>
         </div>
 
@@ -10096,6 +10182,13 @@ const ASHFORD_WYRMLING = {
     session: { number: 1, title: 'The Hatchling Found', level: '3' },
     sessions: [],
     party: [],
+    briefingObjectives: [
+      'In der Tavern den Hook bekommen (Hadric → Children Missing)',
+      'Old Elder Mira besuchen — Lore über den Hatchling',
+      'In den Hatchling\'s Cave: Stealth, Combat oder Parley',
+      'Climax am Forgotten Altar: moralische Wahl trifft Syl\'s Color → Rarity'
+    ],
+    sessionFlow: 'Tavern (Hadric Hook)\n  ↓\nElder Mira\'s Cottage (Lore-Reveal)\n  ↓\nHatchling\'s Cave · 3× Kobolds\n  ├─ Stealth → direkt zum Hatchling\n  ├─ Combat → easy fight\n  └─ Parley → DC 15 PER\n  ↓\nForgotten Altar · Climax\n  • KILL → Syl Weiß/Grau · Common\n  • PROTECT → Syl Gold · Rare\n  • RELEASE → Syl Variabel · Epic\n  • BOND → Syl spiegelt PC · Legendary',
     tree: [
       { id: 'ashford-village', label: 'Ashford', locations: [
         { id: 'aw-tavern', name: 'The Crooked Crow', status: 'pending' },
@@ -10205,30 +10298,149 @@ const ASHFORD_WYRMLING = {
 };
 
 function loadAshfordWyrmling() {
-  if (!confirm('🐉 Ashford Wyrmling laden?\n\nKomplettes Starter-Abenteuer wird in deine aktive Kampagne geladen.\nVorhandene Charaktere und Locations werden überschrieben.\n\nVorher 💾 Export für Sicherheit klicken!')) return;
-  // In aktive Kampagne laden — passt zum Multi-Campaign-Modell
+  if (!confirm('🐉 Ashford Wyrmling laden?\n\nKomplettes Starter-Abenteuer wird in eine neue Kampagne geladen.\nDeine vorhandenen Kampagnen bleiben unangetastet.')) return;
   const ashford = JSON.parse(JSON.stringify(ASHFORD_WYRMLING.campaign));
-  // Falls schon Kampagnen existieren, neue dazufügen statt zu überschreiben
   if (!state.campaigns) state.campaigns = [];
   const existing = state.campaigns.findIndex(c => c.id === 'ashford-wyrmling');
   if (existing >= 0) state.campaigns[existing] = ashford;
   else state.campaigns.unshift(ashford);
   state.currentCampaignId = 'ashford-wyrmling';
-  // Characters via Proxy in die aktive Kampagne (state.characters proxy → campaign().characters)
+  // Characters direkt in die Ashford-Kampagne (Proxy state.characters greift auf campaign().characters)
   ashford.characters = JSON.parse(JSON.stringify(ASHFORD_WYRMLING.characters));
   state.currentLocationId = 'aw-tavern';
   state.currentCharId = null;
   state.images = {};
   state.threads = {};
   state.initiative = [];
-  state.currentView = 'briefing';
+  // Direkt in Schauplatz-Vorbereitung — DM sieht sofort die Tavern mit Read-Aloud + DM-Note + Scenarios
+  state.currentView = 'prep';
   state.sessionMode = 'scene';
+  state.lastSceneMode = 'prep';
   saveState();
   renderCampaignMeta && renderCampaignMeta();
   if (typeof renderCampaignMenu === 'function') renderCampaignMenu();
-  switchView('briefing');
-  toast('🐉 Ashford Wyrmling geladen — willkommen, neuer DM. Syl wartet im Cave.');
+  switchView('prep');
+  toast('🐉 Willkommen — Syl wartet im Cave. Du startest in der Tavern.');
   if (typeof plausibleTrack === 'function') plausibleTrack('DMStudio · Ashford Loaded');
+  // Erste Tour starten falls noch nicht gesehen
+  setTimeout(() => {
+    if (!localStorage.getItem('ec_ashford_tour_seen')) startSylTour();
+  }, 600);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SYL-TOUR · Geführter Walkthrough beim ersten Ashford-Load
+// 5 Tooltip-Steps die den neuen DM durch DM Studio führen.
+// ═══════════════════════════════════════════════════════════════════════════
+const SYL_TOUR_STEPS = [
+  {
+    selector: '.prep-head-name',
+    title: 'Das hier ist dein erster Schauplatz',
+    body: 'Die Tavern „The Crooked Crow". Dein Read-Aloud-Text, eine DM-Notiz, mögliche Szenarien — alles schon vorbereitet. Schau es dir kurz an, dann gehts weiter.',
+    pos: 'bottom'
+  },
+  {
+    selector: '.lpanel',
+    title: 'Hier sind alle Standorte',
+    body: 'Vier Locations für dieses Abenteuer. Wechsel kannst du jederzeit anklicken — jeder Ort ist mit Text + NPCs + Szenarien gefüllt.',
+    pos: 'right'
+  },
+  {
+    selector: '[data-view="chars"]',
+    title: 'Deine NPCs sind bereit',
+    body: 'Im Charaktere-Tab findest du Mira, Hadric, Syl (das Hatchling) + 3 Kobolds — alle mit vollen Statblöcken. Zum Spieler-Charaktere anlegen kommen wir später.',
+    pos: 'bottom'
+  },
+  {
+    selector: '[data-view="session"]',
+    title: 'Wenn die Session startet',
+    body: 'Switch auf „🎲 Live" — Quick-Notes, Combat-Tracker, KI-Co-DM. Klick einfach auf jede Statblock-Action und deine Spieler kriegen automatisch eine Würfel-Anfrage.',
+    pos: 'bottom'
+  },
+  {
+    selector: '#campaignPill',
+    title: 'Du bist soweit',
+    body: 'Spiel das Abenteuer durch — am Ende beim „Forgotten Altar" entscheidet sich Syl\'s Farbe. Das wird deine erste Karte. Viel Spaß!',
+    pos: 'bottom'
+  }
+];
+
+let _sylTourIdx = 0;
+let _sylTourEl = null;
+let _sylTourSpot = null;
+
+function startSylTour() {
+  _sylTourIdx = 0;
+  showSylTourStep();
+}
+
+function endSylTour() {
+  if (_sylTourEl) { _sylTourEl.remove(); _sylTourEl = null; }
+  if (_sylTourSpot) { _sylTourSpot.remove(); _sylTourSpot = null; }
+  localStorage.setItem('ec_ashford_tour_seen', '1');
+}
+
+function showSylTourStep() {
+  if (_sylTourEl) _sylTourEl.remove();
+  if (_sylTourSpot) _sylTourSpot.remove();
+  if (_sylTourIdx >= SYL_TOUR_STEPS.length) { endSylTour(); return; }
+  const step = SYL_TOUR_STEPS[_sylTourIdx];
+  const target = document.querySelector(step.selector);
+  if (!target) {
+    // Skip wenn target nicht da
+    _sylTourIdx++;
+    setTimeout(showSylTourStep, 100);
+    return;
+  }
+  // Scroll target into view falls nicht sichtbar
+  try { target.scrollIntoView({behavior:'smooth', block:'center', inline:'nearest'}); } catch(e){}
+  const rect = target.getBoundingClientRect();
+  // Spotlight ZUERST auf body — sitzt unter dem Tip
+  const overlay = document.createElement('div');
+  overlay.className = 'syl-tour-spotlight';
+  overlay.style.top = (rect.top - 6) + 'px';
+  overlay.style.left = (rect.left - 6) + 'px';
+  overlay.style.width = (rect.width + 12) + 'px';
+  overlay.style.height = (rect.height + 12) + 'px';
+  document.body.appendChild(overlay);
+  _sylTourSpot = overlay;
+  // Tip
+  const tip = document.createElement('div');
+  tip.className = 'syl-tour-tip';
+  const isLast = _sylTourIdx === SYL_TOUR_STEPS.length - 1;
+  tip.innerHTML = `
+    <div class="stt-syl">🐉</div>
+    <div class="stt-body">
+      <div class="stt-tag">SYL · ${_sylTourIdx + 1} / ${SYL_TOUR_STEPS.length}</div>
+      <div class="stt-title">${escapeHtml(step.title)}</div>
+      <div class="stt-text">${escapeHtml(step.body)}</div>
+      <div class="stt-actions">
+        <button class="btn-top" onclick="endSylTour()">${isLast ? 'Schließen' : 'Tour überspringen'}</button>
+        ${isLast ? '' : `<button class="btn-top primary" onclick="_sylTourIdx++;showSylTourStep();">Weiter →</button>`}
+        ${isLast ? `<button class="btn-top primary" onclick="endSylTour()">Los geht's →</button>` : ''}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(tip);
+  _sylTourEl = tip;
+  // Position nahe target — bottom default, sonst right
+  const tipW = 380, tipH = tip.offsetHeight || 220;
+  let top = rect.bottom + 16;
+  let left = rect.left + rect.width / 2 - tipW / 2;
+  if (step.pos === 'right') {
+    top = rect.top + rect.height / 2 - tipH / 2;
+    left = rect.right + 16;
+    if (left + tipW > window.innerWidth - 20) {
+      // fallback to bottom
+      top = rect.bottom + 16;
+      left = rect.left + rect.width / 2 - tipW / 2;
+    }
+  }
+  // Viewport-clamp
+  left = Math.max(20, Math.min(window.innerWidth - tipW - 20, left));
+  top = Math.max(20, Math.min(window.innerHeight - tipH - 20, top));
+  tip.style.top = top + 'px';
+  tip.style.left = left + 'px';
 }
 
 function loadSession14Prep() {
