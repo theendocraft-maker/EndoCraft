@@ -133,15 +133,16 @@
       return `<a href="${href}" class="${cls.join(' ')}" data-section="${section || ''}">${label}</a>`;
     };
     const subHtml = sub ? `<span class="ec-header-sub">${sub}</span>` : '';
+    // Vereinfachte Nav: Scroll + My Cards sind keine eigenen Destinationen mehr,
+    // sondern integrierte Features im Cockpit. Header zeigt nur:
+    //   Brand · Hall of Fame (public Discovery) · → Cockpit (App)
     return `
       <a href="/" class="ec-header-brand" title="EndoCraft Home">
         <img src="/IMG_8431.PNG" alt="EndoCraft" onerror="this.style.display='none'">
         <span>EndoCraft${subHtml}</span>
       </a>
       <nav class="ec-header-nav">
-        ${link('/scroll/', 'scroll', '✦ Karte erstellen')}
         ${link('/hall-of-fame/', 'hall-of-fame', '🏆 Hall of Fame')}
-        ${link('/my-cards/', 'my-cards', '📚 My Collection')}
         ${link('/dm-studio/', null, '📖 Cockpit', 'cockpit')}
       </nav>
     `;
@@ -151,10 +152,10 @@
   // oder data-sub="" für gar kein Sub-Label.
   function defaultSubForActive(active) {
     if (active === 'hall-of-fame') return 'Hall of Fame';
-    if (active === 'scroll') return 'Session Scroll';
-    if (active === 'my-cards') return 'My Collection';
+    if (active === 'scroll') return 'Card Demo';
+    if (active === 'my-cards') return 'Collection';
     if (active === 'session') return 'Card View';
-    return '';  // Landing oder unbekannt → kein Sub
+    return '';
   }
 
   function injectStyles() {
