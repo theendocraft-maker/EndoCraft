@@ -1632,6 +1632,25 @@ html[data-theme="twilight"] .qn-input{
   background:var(--gold-dim);color:var(--gold);
 }
 
+/* Lang-Toggle — same chassis as theme-toggle, EN/DE pills */
+.lang-toggle{
+  display:flex;align-items:center;
+  background:transparent;border:1px solid var(--border-strong);
+  border-radius:99px;padding:2px;gap:0;
+  margin-right:6px;
+}
+.lang-toggle button{
+  min-width:28px;height:24px;padding:0 8px;border-radius:99px;border:none;
+  background:transparent;color:var(--text-dimmer);cursor:pointer;
+  font-family:'Cinzel',serif;font-size:10px;font-weight:700;letter-spacing:1px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s, color .15s;
+}
+.lang-toggle button:hover{ color:var(--text-dim); }
+.lang-toggle button.active{
+  background:var(--gold-dim);color:var(--gold);
+}
+
 html,body{height:100%;overflow:hidden;}
 body{
   background:var(--bg);
@@ -1688,7 +1707,7 @@ body{
 .campaign-pill-name{font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:1.8px;color:var(--gold);text-transform:uppercase;}
 .campaign-pill-meta{font-size:11px;color:var(--text-dim);font-style:italic;}
 
-/* Tab nav */
+/* Tab nav (legacy — sub-tabs inside views still use .tab) */
 .tabnav{display:flex;gap:4px;margin-left:8px;}
 .tab{
   padding:8px 16px;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:.1px;
@@ -1698,6 +1717,120 @@ body{
 .tab:hover{color:var(--text);background:rgba(91,61,24,0.06);}
 .tab.active{color:var(--ink);background:var(--accent-dim);box-shadow:inset 0 0 0 1px var(--gold-dim);}
 .tab .ico{font-size:15px;}
+
+/* MODE-NAV — 3 Top-Level-Buttons (Run/Cast/Memory) */
+.modenav{
+  display:flex;
+  gap:6px;
+  margin-left:14px;
+  padding:4px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:11px;
+}
+html[data-theme="twilight"] .modenav{
+  background:rgba(0,0,0,0.25);
+  border-color:rgba(201,162,95,0.18);
+}
+.mode{
+  padding:8px 18px;
+  font-family:'Cinzel',serif;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  cursor:pointer;
+  border-radius:8px;
+  user-select:none;
+  display:flex;align-items:center;gap:8px;
+  transition:all .15s;
+  border:1px solid transparent;
+}
+.mode:hover{color:var(--ink);background:rgba(91,61,24,0.06);}
+html[data-theme="twilight"] .mode:hover{background:rgba(201,162,95,0.06);}
+.mode.active{
+  color:var(--ink);
+  background:var(--surface);
+  border-color:var(--gold);
+  box-shadow:0 1px 3px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(201,162,95,0.12);
+}
+html[data-theme="twilight"] .mode.active{
+  color:var(--gold);
+  background:rgba(201,162,95,0.10);
+  border-color:var(--gold);
+  box-shadow:0 0 12px rgba(201,162,95,0.18);
+}
+.mode .ico{font-size:14px;letter-spacing:0;}
+.mode .lbl{}
+
+/* SUB-NAV — kontext-spezifische Sub-Tabs unterhalb des Topbars */
+.subnav{
+  display:flex;
+  align-items:center;
+  padding:9px 24px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  gap:14px;
+  min-height:46px;
+  flex-shrink:0;
+  z-index:15;
+}
+html[data-theme="twilight"] .subnav{
+  background:rgba(20,16,8,0.85);
+  border-bottom-color:rgba(201,162,95,0.10);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.subnav.empty{display:none;}
+.subnav-inner{display:flex;gap:4px;align-items:center;}
+.subnav-spacer{flex:1;}
+.subnav-help{
+  font-family:'EB Garamond',serif;
+  font-style:italic;
+  font-size:13px;
+  color:var(--text-dim);
+  max-width:520px;
+  text-align:right;
+}
+.subtab{
+  padding:7px 14px;
+  font-family:'Syne',sans-serif;
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:.1px;
+  color:var(--text-dim);
+  cursor:pointer;
+  border-radius:7px;
+  user-select:none;
+  display:flex;align-items:center;gap:6px;
+  transition:all .15s;
+}
+.subtab:hover{color:var(--text);background:rgba(91,61,24,0.06);}
+html[data-theme="twilight"] .subtab:hover{background:rgba(201,162,95,0.06);}
+.subtab.active{
+  color:var(--ink);
+  background:var(--accent-dim);
+}
+html[data-theme="twilight"] .subtab.active{color:var(--gold);}
+.subtab .ico{font-size:14px;}
+.subtab-go-live{
+  background:var(--gold) !important;
+  color:#1a1410 !important;
+  font-family:'Cinzel',serif !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  letter-spacing:1.4px !important;
+  text-transform:uppercase !important;
+  padding:7px 14px !important;
+  margin-left:8px;
+  box-shadow:0 0 10px rgba(201,162,95,0.3) !important;
+}
+.subtab-go-live:hover{
+  background:var(--gold-br) !important;
+  color:#1a1410 !important;
+  transform:translateY(-1px);
+}
 
 .topbar-right{margin-left:auto;display:flex;gap:6px;align-items:center;}
 .btn-top{
@@ -3723,6 +3856,15 @@ html[data-theme="twilight"] .syl-tour-tip{
 /* Mobile */
 @media (max-width:900px){
   .tabnav .tab span:not(.ico){display:none;}
+  .modenav{margin-left:6px;padding:3px;gap:3px;}
+  .mode{padding:7px 10px;font-size:10.5px;letter-spacing:1.2px;}
+  .mode .lbl{display:none;}
+  .mode.active .lbl{display:inline;}
+  .subnav{padding:8px 14px;min-height:42px;}
+  .subnav-help{display:none;}
+  .subtab{padding:6px 10px;font-size:11.5px;}
+  .subtab span:not(.ico){display:none;}
+  .subtab.active span:not(.ico){display:inline;}
   .campaign-pill-meta{display:none;}
   .lpanel{width:180px;}
   .prep-right,.session-right{display:none;}
@@ -3756,20 +3898,20 @@ html[data-theme="twilight"] .syl-tour-tip{
         <div class="landing-sub">DM Studio</div>
       </div>
     </div>
-    <h1 class="landing-h1">Der Arbeitsplatz für Dungeon Master<em>Mit <span>KI</span> an deiner Seite.</em></h1>
+    <h1 class="landing-h1" data-i18n="gate.h1">The workspace for Dungeon Masters<em>With <span>AI</span> at your side.</em></h1>
     <p class="landing-p">
-      <strong>Was dich erwartet —</strong>
-      Kampagnen-Memory, Session-Vorbereitung und Live-Combat-Tracker. Co-DM-KI für Plot-Twists in Echtzeit. Charakterbögen mit Rolls im D&D-Beyond-Stil. Einmal einloggen, alles synchronisiert.
+      <strong data-i18n="gate.expect">What awaits you —</strong>
+      <span data-i18n="gate.expect.body">Campaign memory, session prep and live combat tracker. Co-DM AI for plot twists in real time. D&D-Beyond-style character sheets with rolls. Sign in once, everything synced.</span>
     </p>
     <div class="landing-actions">
       <button class="landing-btn primary" onclick="gateSignIn()">
         <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right:10px;vertical-align:-3px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Mit Google einloggen
+        <span data-i18n="gate.signin">Sign in with Google</span>
       </button>
-      <button class="landing-btn secondary" onclick="gateContinueOffline()">Offline weiter · ohne Login</button>
+      <button class="landing-btn secondary" onclick="gateContinueOffline()" data-i18n="gate.offline">Continue offline · no login</button>
     </div>
     <div class="landing-foot">
-      <span>Deine Kampagne bleibt privat · wird nur im eigenen Account gespeichert.</span>
+      <span data-i18n="gate.privacy">Your campaign stays private — only stored in your account.</span>
     </div>
   </div>
 </div>
@@ -3781,7 +3923,7 @@ html[data-theme="twilight"] .syl-tour-tip{
     EndoCraft <span class="sub">DM Studio</span>
   </a>
   <div class="topbar-sep"></div>
-  <div class="campaign-pill" onclick="toggleCampaignMenu(event)" title="Kampagne wechseln" id="campaignPill">
+  <div class="campaign-pill" onclick="toggleCampaignMenu(event)" data-i18n-title="camp.switch.title" id="campaignPill">
     <div class="dot"></div>
     <div>
       <div class="campaign-pill-name" id="campName">—</div>
@@ -3790,18 +3932,25 @@ html[data-theme="twilight"] .syl-tour-tip{
     <span class="campaign-pill-chev">▾</span>
   </div>
   <div class="campaign-menu" id="campaignMenu" style="display:none;"></div>
-  <div class="tabnav">
-    <div class="tab" data-view="briefing" onclick="switchView('briefing')"><span class="ico">✦</span><span>Briefing</span></div>
-    <div class="tab active" data-view="prep" onclick="switchView('prep')"><span class="ico">📋</span><span>Vorbereitung</span></div>
-    <div class="tab" data-view="session" onclick="switchView('session')"><span class="ico">🎲</span><span>Session Live</span></div>
-    <div class="tab" data-view="chars" onclick="switchView('chars')"><span class="ico">👥</span><span>Charaktere</span></div>
-    <div class="tab" data-view="highlights" onclick="switchView('highlights')"><span class="ico">🌟</span><span>Highlights</span></div>
-    <div class="tab" data-view="album" onclick="switchView('album')"><span class="ico">📚</span><span>Party Album</span></div>
+  <div class="modenav">
+    <div class="mode active" data-mode="run" onclick="switchMode('run')" data-i18n-title="mode.run.title">
+      <span class="ico">⚡</span><span class="lbl" data-i18n="mode.run">Run</span>
+    </div>
+    <div class="mode" data-mode="cast" onclick="switchMode('cast')" data-i18n-title="mode.cast.title">
+      <span class="ico">👥</span><span class="lbl" data-i18n="mode.cast">Cast</span>
+    </div>
+    <div class="mode" data-mode="memory" onclick="switchMode('memory')" data-i18n-title="mode.memory.title">
+      <span class="ico">📚</span><span class="lbl" data-i18n="mode.memory">Memory</span>
+    </div>
   </div>
   <div class="topbar-right">
+    <div class="lang-toggle" role="group" aria-label="Language" data-i18n-title="lang.toggle.title">
+      <button type="button" data-lang-set="en" onclick="setLang('en')" aria-label="English">EN</button>
+      <button type="button" data-lang-set="de" onclick="setLang('de')" aria-label="Deutsch">DE</button>
+    </div>
     <div class="theme-toggle" role="group" aria-label="Theme">
-      <button type="button" data-theme-set="light" title="Daylight — Tageslicht-Theme" aria-label="Daylight">☼</button>
-      <button type="button" data-theme-set="twilight" title="Twilight — Dark Theme für Abend-Sessions" aria-label="Twilight">☾</button>
+      <button type="button" data-theme-set="light" data-i18n-title="theme.light.title" aria-label="Daylight">☼</button>
+      <button type="button" data-theme-set="twilight" data-i18n-title="theme.dark.title" aria-label="Twilight">☾</button>
     </div>
     <script>
       // wire up theme toggle (runs once when topbar parses)
@@ -3822,13 +3971,21 @@ html[data-theme="twilight"] .syl-tour-tip{
         apply(current);
       })();
     </script>
-    <button class="btn-top" onclick="window.open('/player/companion.html','_blank')" title="Player Companion · Spieler-Sicht auf Kampagne">🎭 Player View</button>
-    <button class="btn-top" onclick="openConditionsModal()" title="SRD 5.1 Regel-Referenz">📖 Regeln</button>
-    <button class="btn-top" onclick="openPostSessionRecap()" title="Post-Session Recap · KI-gestützt">📝 Recap</button>
-    <button class="btn-top" onclick="loadSession14Prep()" title="Session 14 Prep-Daten laden · Ctrl+Shift+D toggles this" id="demoLoadBtn" style="background:var(--crimson);color:#fff;border-color:var(--crimson);display:none;">🎲 Demo laden</button>
-    <button class="btn-top" id="syncStatusBtn" onclick="openSyncModal()" title="Cloud-Sync Status">☁️ <span id="syncStatusText">Sync</span></button>
-    <button class="btn-top" onclick="exportJSON()">💾 Export</button>
+    <a class="btn-top" href="/my-cards/" title="Deine Karten-Sammlung" style="text-decoration:none;">🃏 My Cards</a>
+    <button class="btn-top" onclick="window.open('/player/companion.html','_blank')" data-i18n="top.player" data-i18n-title="top.player.title">🎭 Player View</button>
+    <button class="btn-top" onclick="openConditionsModal()" data-i18n="top.rules" data-i18n-title="top.rules.title">📖 Rules</button>
+    <button class="btn-top" onclick="openPostSessionRecap()" data-i18n="top.recap" data-i18n-title="top.recap.title">📝 Recap</button>
+    <button class="btn-top" onclick="loadSession14Prep()" data-i18n="top.demo" data-i18n-title="top.demo.title" id="demoLoadBtn" style="background:var(--crimson);color:#fff;border-color:var(--crimson);display:none;">🎲 Load Demo</button>
+    <button class="btn-top" id="syncStatusBtn" onclick="openSyncModal()" data-i18n-title="top.sync.title">☁️ <span id="syncStatusText" data-i18n="top.sync">Sync</span></button>
+    <button class="btn-top" onclick="exportJSON()" data-i18n="top.export">💾 Export</button>
   </div>
+</div>
+
+<!-- SUB-NAV · contextual tabs depending on active mode -->
+<div class="subnav" id="subnav">
+  <div class="subnav-inner" id="subnavInner"></div>
+  <div class="subnav-spacer"></div>
+  <div class="subnav-help" id="subnavHelp"></div>
 </div>
 
 <!-- SHELL -->
@@ -5428,6 +5585,178 @@ if (!state.sessionMode) state.sessionMode = 'scene';
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; } }
 function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn(e); } }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// i18n — Lightweight translation system. English is default.
+// Toggle in topbar saves choice to localStorage. t(key) returns the string.
+// HTML elements with data-i18n="key" (or data-i18n-title="key") auto-update.
+// ═══════════════════════════════════════════════════════════════════════════
+const LANG = {
+  en: {
+    // Modes
+    'mode.run': 'Run',
+    'mode.cast': 'Cast',
+    'mode.memory': 'Memory',
+    'mode.run.title': 'Briefing · Prep · Live — everything during play',
+    'mode.cast.title': 'Player characters & NPCs · statblocks · invitations',
+    'mode.memory.title': 'Highlights & cards — what happened at your table',
+    // Sub-tabs
+    'sub.briefing': 'Briefing',
+    'sub.briefing.help': 'Pre-session overview — last recap, next objectives, music, checklist',
+    'sub.prep': 'Scene',
+    'sub.prep.help': 'Current location — read-aloud, DM note, scenarios, NPCs on stage',
+    'sub.session': 'Live',
+    'sub.session.help': 'Session in progress — initiative, quick notes, AI Co-DM, encounter builder',
+    'sub.cast': 'Cast',
+    'sub.cast.help': 'Player characters & NPCs · statblocks, portraits, invitations',
+    'sub.highlights': 'Highlights',
+    'sub.highlights.help': 'Captured moments from sessions · the source for cards',
+    'sub.album': 'Album',
+    'sub.album.help': 'Cards from the whole party · heirloom collection',
+    'sub.golive': 'Go Live',
+    'sub.golive.title': 'Start session',
+    // Top-bar buttons
+    'top.player': '🎭 Player View',
+    'top.player.title': 'Player Companion · player\'s view of the campaign',
+    'top.rules': '📖 Rules',
+    'top.rules.title': 'SRD 5.1 reference',
+    'top.recap': '📝 Recap',
+    'top.recap.title': 'Post-session recap · AI-assisted',
+    'top.demo': '🎲 Load Demo',
+    'top.demo.title': 'Load Session 14 prep data · Ctrl+Shift+D toggles this',
+    'top.sync': 'Sync',
+    'top.sync.title': 'Cloud sync status',
+    'top.export': '💾 Export',
+    // Theme toggle
+    'theme.light.title': 'Daylight — light theme',
+    'theme.dark.title': 'Twilight — dark theme for evening sessions',
+    // Campaign pill
+    'camp.switch.title': 'Switch campaign',
+    // Login gate
+    'gate.h1': 'The workspace for Dungeon Masters<em>With <span>AI</span> at your side.</em>',
+    'gate.expect': 'What awaits you —',
+    'gate.expect.body': 'Campaign memory, session prep and live combat tracker. Co-DM AI for plot twists in real time. D&D-Beyond-style character sheets with rolls. Sign in once, everything synced.',
+    'gate.signin': 'Sign in with Google',
+    'gate.offline': 'Continue offline · no login',
+    'gate.privacy': 'Your campaign stays private — only stored in your account.',
+    // Empty state
+    'empty.welcome': 'Welcome, <em>new DM</em>',
+    'empty.intro': 'Your private workspace is waiting — empty, because this is going to be your campaign. You have two paths: start with a ready-made adventure, or import your own notes.',
+    'empty.ashford.h': 'Recommended · Start with Ashford Wyrmling',
+    'empty.ashford.p': 'A complete 90-minute starter adventure with Syl, the dragon-mascot hatchling. 4 locations, 6 NPCs, a moral dilemma that decides the rarity of your first card. <strong>Teaches you EndoCraft while you actually play.</strong>',
+    'empty.import.h': 'Import your own notes',
+    'empty.import.p': 'Upload PDF, Markdown or text — AI extracts locations, NPCs, plot hooks. Works with homebrew, Roll20 exports, Google Docs.',
+    'empty.scratch.h': 'Start from scratch',
+    'empty.scratch.p': 'Create your own characters and locations manually. Full control. Character wizard walks you through Race / Class / Background / Stats.',
+    'empty.foot.tip': 'Tip:',
+    'empty.foot.body': 'No matter which path — you can always switch. Everything saved locally.',
+    'empty.foot.synced': 'Signed in as',
+    'empty.foot.cloud': '· cloud sync active.',
+    'empty.foot.login': 'Sign in for cloud sync across devices.',
+    // Lang toggle
+    'lang.toggle.title': 'Switch language · Sprache wechseln',
+    // Misc
+    'common.save': 'Save', 'common.cancel': 'Cancel', 'common.delete': 'Delete', 'common.close': 'Close', 'common.back': 'Back', 'common.next': 'Next', 'common.skip': 'Skip', 'common.continue': 'Continue', 'common.confirm': 'Confirm'
+  },
+  de: {
+    'mode.run': 'Run',
+    'mode.cast': 'Cast',
+    'mode.memory': 'Memory',
+    'mode.run.title': 'Briefing · Prep · Live · alles während des Spiels',
+    'mode.cast.title': 'Spielercharaktere & NPCs · Statblöcke · Einladungen',
+    'mode.memory.title': 'Highlights & Karten · was an eurem Tisch passiert ist',
+    'sub.briefing': 'Briefing',
+    'sub.briefing.help': 'Pre-Session-Überblick · letzte Recap, nächste Ziele, Musik, Checkliste',
+    'sub.prep': 'Schauplatz',
+    'sub.prep.help': 'Aktuelle Location · Read-Aloud, DM-Notiz, Szenarien, NPCs vor Ort',
+    'sub.session': 'Live',
+    'sub.session.help': 'Session läuft · Initiative, Quick-Notes, KI-Co-DM, Encounter-Builder',
+    'sub.cast': 'Cast',
+    'sub.cast.help': 'Spielercharaktere & NPCs · Statblöcke, Portraits, Einladungen',
+    'sub.highlights': 'Highlights',
+    'sub.highlights.help': 'Gesammelte Momente aus Sessions · Basis für Karten',
+    'sub.album': 'Album',
+    'sub.album.help': 'Karten der ganzen Party · Heirloom-Sammlung',
+    'sub.golive': 'Go Live',
+    'sub.golive.title': 'Session starten',
+    'top.player': '🎭 Player View',
+    'top.player.title': 'Player Companion · Spieler-Sicht auf Kampagne',
+    'top.rules': '📖 Regeln',
+    'top.rules.title': 'SRD 5.1 Regel-Referenz',
+    'top.recap': '📝 Recap',
+    'top.recap.title': 'Post-Session Recap · KI-gestützt',
+    'top.demo': '🎲 Demo laden',
+    'top.demo.title': 'Session 14 Prep-Daten laden · Ctrl+Shift+D toggles this',
+    'top.sync': 'Sync',
+    'top.sync.title': 'Cloud-Sync Status',
+    'top.export': '💾 Export',
+    'theme.light.title': 'Daylight — Tageslicht-Theme',
+    'theme.dark.title': 'Twilight — Dark Theme für Abend-Sessions',
+    'camp.switch.title': 'Kampagne wechseln',
+    'gate.h1': 'Der Arbeitsplatz für Dungeon Master<em>Mit <span>KI</span> an deiner Seite.</em>',
+    'gate.expect': 'Was dich erwartet —',
+    'gate.expect.body': 'Kampagnen-Memory, Session-Vorbereitung und Live-Combat-Tracker. Co-DM-KI für Plot-Twists in Echtzeit. Charakterbögen mit Rolls im D&D-Beyond-Stil. Einmal einloggen, alles synchronisiert.',
+    'gate.signin': 'Mit Google einloggen',
+    'gate.offline': 'Offline weiter · ohne Login',
+    'gate.privacy': 'Deine Kampagne bleibt privat · wird nur im eigenen Account gespeichert.',
+    'empty.welcome': 'Willkommen, <em>neuer DM</em>',
+    'empty.intro': 'Dein privater Arbeitsplatz wartet — leer, weil das deine Kampagne werden soll. Du hast zwei Wege: mit einem fertigen Starter loslegen, oder eigene Notizen importieren.',
+    'empty.ashford.h': 'Empfohlen · Start mit Ashford Wyrmling',
+    'empty.ashford.p': 'Komplettes 90-Min-Starter-Abenteuer mit Syl, der Drachen-Maskottchen-Hatchling. 4 Locations, 6 NPCs, ein moralisches Dilemma das die Rarity deiner ersten Karte bestimmt. <strong>Lehrt dir EndoCraft während du echt spielst.</strong>',
+    'empty.import.h': 'Eigene Notizen importieren',
+    'empty.import.p': 'PDF, Markdown oder Text-Datei hochladen — KI extrahiert Locations, NPCs, Plot-Hooks. Funktioniert mit homebrew, Roll20-Exports, Google-Docs.',
+    'empty.scratch.h': 'Bei Null anfangen',
+    'empty.scratch.p': 'Eigene Charaktere und Locations manuell anlegen. Vollständige Kontrolle. Charakter-Wizard führt durch Race / Class / Background / Stats.',
+    'empty.foot.tip': 'Tipp:',
+    'empty.foot.body': 'Egal welchen Weg — du kannst jederzeit wechseln. Alles lokal gespeichert.',
+    'empty.foot.synced': 'Eingeloggt als',
+    'empty.foot.cloud': '· Cloud-Sync aktiv.',
+    'empty.foot.login': 'Login für Cloud-Sync über mehrere Geräte.',
+    'lang.toggle.title': 'Sprache wechseln · Switch language',
+    'common.save': 'Speichern', 'common.cancel': 'Abbrechen', 'common.delete': 'Löschen', 'common.close': 'Schließen', 'common.back': 'Zurück', 'common.next': 'Weiter', 'common.skip': 'Überspringen', 'common.continue': 'Weiter', 'common.confirm': 'Bestätigen'
+  }
+};
+
+let _currentLang = 'en';
+try {
+  const saved = localStorage.getItem('endocraft-lang');
+  if (saved === 'de' || saved === 'en') _currentLang = saved;
+} catch(e){}
+
+function t(key) {
+  const dict = LANG[_currentLang] || LANG.en;
+  return dict[key] !== undefined ? dict[key] : (LANG.en[key] !== undefined ? LANG.en[key] : key);
+}
+
+function setLang(lang) {
+  if (lang !== 'de' && lang !== 'en') return;
+  _currentLang = lang;
+  try { localStorage.setItem('endocraft-lang', lang); } catch(e){}
+  applyI18n();
+  if (typeof renderSubnav === 'function') renderSubnav();
+  // Reflect in toggle UI
+  document.querySelectorAll('[data-lang-set]').forEach(b => {
+    b.classList.toggle('active', b.dataset.langSet === lang);
+  });
+  document.documentElement.setAttribute('lang', lang);
+  // Re-render any open dynamic views
+  if (typeof state !== 'undefined' && typeof switchView === 'function' && state.currentView) {
+    const v = state.currentView;
+    switchView(v);
+  }
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (!key) return;
+    el.innerHTML = t(key);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    if (key) el.setAttribute('title', t(key));
+  });
+}
+
 // campaign() liefert die aktive Kampagne
 function campaign() {
   const c = state.campaigns?.find(c => c.id === state.currentCampaignId);
@@ -5488,17 +5817,93 @@ function currentLoc() { return campaign().locations[state.currentLocationId]; }
 function currentChar() { return state.characters.find(c => c.id === state.currentCharId) || null; }
 
 // ═══════════ TOP BAR + VIEW SWITCH ═══════════
+// ═══════════════════════════════════════════════════════════════════════════
+// MODE & VIEW NAVIGATION
+//   Mode  = top-level (Run / Cast / Memory) — drives the 3 modenav buttons
+//   View  = legacy state.currentView (briefing/prep/session/chars/highlights/album)
+//   Each view belongs to exactly one mode.
+// ═══════════════════════════════════════════════════════════════════════════
+const VIEW_TO_MODE = {
+  briefing: 'run', prep: 'run', session: 'run',
+  chars: 'cast',
+  highlights: 'memory', album: 'memory'
+};
+const MODE_DEFAULT_VIEW = {
+  run: 'prep',     // most-used: location detail
+  cast: 'chars',
+  memory: 'highlights'
+};
+const MODE_SUBTABS = {
+  run: [
+    { view: 'briefing', icon: '✦',  labelKey: 'sub.briefing', helpKey: 'sub.briefing.help' },
+    { view: 'prep',     icon: '📋', labelKey: 'sub.prep',     helpKey: 'sub.prep.help' },
+    { view: 'session',  icon: '🎲', labelKey: 'sub.session',  helpKey: 'sub.session.help' }
+  ],
+  cast: [
+    { view: 'chars', icon: '👥', labelKey: 'sub.cast', helpKey: 'sub.cast.help' }
+  ],
+  memory: [
+    { view: 'highlights', icon: '🌟', labelKey: 'sub.highlights', helpKey: 'sub.highlights.help' },
+    { view: 'album',      icon: '📚', labelKey: 'sub.album',      helpKey: 'sub.album.help' }
+  ]
+};
+
+function getCurrentMode() {
+  return VIEW_TO_MODE[state.currentView] || 'run';
+}
+
+function switchMode(mode) {
+  if (!MODE_DEFAULT_VIEW[mode]) return;
+  // If user is already in this mode, do nothing
+  if (getCurrentMode() === mode) return;
+  switchView(MODE_DEFAULT_VIEW[mode]);
+}
+
+function renderSubnav() {
+  const mode = getCurrentMode();
+  const inner = document.getElementById('subnavInner');
+  const help = document.getElementById('subnavHelp');
+  const wrap = document.getElementById('subnav');
+  if (!inner || !wrap) return;
+  const tabs = MODE_SUBTABS[mode] || [];
+  // Hide subnav for single-tab modes (Cast)
+  if (tabs.length <= 1) {
+    wrap.classList.add('empty');
+    return;
+  }
+  wrap.classList.remove('empty');
+  inner.innerHTML = tabs.map(tab => `
+    <div class="subtab ${tab.view === state.currentView ? 'active' : ''}" onclick="switchView('${tab.view}')">
+      <span class="ico">${tab.icon}</span><span>${escapeHtml(t(tab.labelKey))}</span>
+    </div>
+  `).join('');
+  // For Run mode, add a "Go Live" CTA when not already in session
+  if (mode === 'run' && state.currentView !== 'session') {
+    inner.innerHTML += `<div class="subtab subtab-go-live" onclick="switchView('session')" title="${escapeHtml(t('sub.golive.title'))}">⚡ ${escapeHtml(t('sub.golive'))}</div>`;
+  }
+  // Help-text rechts
+  const active = tabs.find(tab => tab.view === state.currentView);
+  if (help) help.textContent = active ? t(active.helpKey) : '';
+}
+
 function switchView(view) {
   state.currentView = view; saveState();
+  // Top-level mode buttons
+  const mode = VIEW_TO_MODE[view] || 'run';
+  document.querySelectorAll('.mode').forEach(m => m.classList.toggle('active', m.dataset.mode === mode));
+  // Legacy .tab elements (sub-tabs inside views)
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  // The actual view content
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  // Sub-tab nav
+  renderSubnav();
   if (view === 'briefing') renderBriefing();
   if (view === 'prep') renderPrep();
   if (view === 'session') renderSession();
   if (view === 'chars') renderChars();
   if (view === 'highlights') renderHighlightsBoard();
   if (view === 'album') renderAlbum();
-  plausibleTrack('DMStudio · View', { view });
+  plausibleTrack('DMStudio · View', { view, mode });
 }
 
 // ═══════════ BRIEFING — Pre-Session Dashboard ═══════════
@@ -5514,47 +5919,45 @@ function renderBriefing() {
   // Empty-State: Neuer User mit leerer Kampagne → Welcome-Screen statt Live-Dashboard
   const isEmpty = !sessions.length && !pcs.length && !npcs.length && (!c.tree || !c.tree.length);
   if (isEmpty) {
+    const syncedFoot = state.syncSettings?.email
+      ? `${t('empty.foot.synced')} <em>${escapeHtml(state.syncSettings.email)}</em> ${t('empty.foot.cloud')}`
+      : t('empty.foot.login');
     host.innerHTML = `
       <div class="briefing-empty">
         <div class="briefing-empty-inner">
           <div class="briefing-empty-crest" style="font-size:64px;animation:sylBreathe 5s ease-in-out infinite;">🐉</div>
-          <h1 class="briefing-empty-title">Willkommen, <em>neuer DM</em></h1>
-          <p class="briefing-empty-sub">
-            Dein privater Arbeitsplatz wartet — leer, weil das deine Kampagne werden soll. Du hast zwei Wege:
-            mit einem fertigen Starter loslegen, oder eigene Notizen importieren.
-          </p>
+          <h1 class="briefing-empty-title">${t('empty.welcome')}</h1>
+          <p class="briefing-empty-sub">${t('empty.intro')}</p>
 
           <div class="briefing-empty-steps" style="grid-template-columns:1fr;gap:14px;max-width:680px;">
             <div class="bes-card" onclick="loadAshfordWyrmling()" style="background:linear-gradient(135deg,rgba(232,184,109,0.15),rgba(123,108,246,0.06));border:2px solid var(--gold);">
               <div class="bes-num" style="background:var(--gold);color:#1a1410;">🐉</div>
               <div>
-                <div class="bes-h" style="color:var(--gold);">Empfohlen · Start mit Ashford Wyrmling</div>
-                <div class="bes-p">Komplettes 90-Min-Starter-Abenteuer mit Syl, der Drachen-Maskottchen-Hatchling. 4 Locations, 6 NPCs, ein moralisches Dilemma das die Rarity deiner ersten Karte bestimmt. <strong>Lehrt dir EndoCraft während du echt spielst.</strong></div>
+                <div class="bes-h" style="color:var(--gold);">${t('empty.ashford.h')}</div>
+                <div class="bes-p">${t('empty.ashford.p')}</div>
               </div>
               <div class="bes-arrow">→</div>
             </div>
             <div class="bes-card" onclick="openContentImporter && openContentImporter()">
               <div class="bes-num">📥</div>
               <div>
-                <div class="bes-h">Eigene Notizen importieren</div>
-                <div class="bes-p">PDF, Markdown oder Text-Datei hochladen — KI extrahiert Locations, NPCs, Plot-Hooks. Funktioniert mit homebrew, Roll20-Exports, Google-Docs.</div>
+                <div class="bes-h">${t('empty.import.h')}</div>
+                <div class="bes-p">${t('empty.import.p')}</div>
               </div>
               <div class="bes-arrow">→</div>
             </div>
             <div class="bes-card" onclick="switchView('chars');setTimeout(()=>newCharacter && newCharacter(),100)">
               <div class="bes-num">✏️</div>
               <div>
-                <div class="bes-h">Bei Null anfangen</div>
-                <div class="bes-p">Eigene Charaktere und Locations manuell anlegen. Vollständige Kontrolle. Charakter-Wizard führt durch Race / Class / Background / Stats.</div>
+                <div class="bes-h">${t('empty.scratch.h')}</div>
+                <div class="bes-p">${t('empty.scratch.p')}</div>
               </div>
               <div class="bes-arrow">→</div>
             </div>
           </div>
 
           <div class="briefing-empty-foot" style="margin-top:32px;">
-            <strong>Tipp:</strong> Egal welchen Weg — du kannst jederzeit wechseln. Alles lokal gespeichert. ${state.syncSettings?.email
-              ? 'Eingeloggt als <em>' + escapeHtml(state.syncSettings.email) + '</em> · Cloud-Sync aktiv.'
-              : 'Login für Cloud-Sync über mehrere Geräte.'}
+            <strong>${t('empty.foot.tip')}</strong> ${t('empty.foot.body')} ${syncedFoot}
           </div>
         </div>
       </div>
@@ -6021,7 +6424,19 @@ function renderPrep() {
 
 function renderPrepTree() {
   const host = document.getElementById('prepTree');
-  host.innerHTML = campaign().tree.map(g => `
+  const tree = campaign().tree;
+  const totalLocs = tree.reduce((n, g) => n + (g.locations ? g.locations.length : 0), 0);
+  if (!totalLocs) {
+    host.innerHTML = `
+      <div style="padding:24px 16px;text-align:center;color:var(--text-dim);">
+        <div style="font-size:28px;margin-bottom:10px;opacity:.5;">🗺️</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--gold);">Kein Ort</div>
+        <div style="font-size:12px;line-height:1.6;">Klick auf <strong style="color:var(--ink);">+ Ort</strong> oben rechts, um deinen ersten Schauplatz anzulegen.</div>
+      </div>
+    `;
+    return;
+  }
+  host.innerHTML = tree.map(g => `
     <div class="tree-group" data-g="${g.id}">
       <div class="tree-group-label" onclick="toggleGroup('${g.id}')">
         <span class="arrow">▼</span>${escapeHtml(g.label)}
@@ -6044,7 +6459,17 @@ function renderPartyChips(hostId) {
 
 function renderPrepLocation() {
   const loc = currentLoc();
-  if (!loc) { document.getElementById('prepBody').innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text-dim);">Kein Standort ausgewählt.</div>'; return; }
+  if (!loc) {
+    document.getElementById('prepBody').innerHTML = `
+      <div style="max-width:480px;margin:80px auto;text-align:center;padding:40px 20px;">
+        <div style="font-size:40px;margin-bottom:12px;opacity:.45;">🗺️</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:20px;color:var(--ink);font-weight:800;margin-bottom:8px;">Kein Standort gewählt</h2>
+        <p style="font-size:13px;line-height:1.6;color:var(--text-dim);">
+          Wähl links einen Ort aus der Kampagnen-Struktur oder lege mit <strong style="color:var(--ink);">+ Ort</strong> einen neuen an.
+        </p>
+      </div>`;
+    return;
+  }
 
   document.getElementById('prepName').textContent = loc.name;
   document.getElementById('prepMeta').textContent = loc.meta || '';
@@ -10183,60 +10608,157 @@ const ASHFORD_WYRMLING = {
     sessions: [],
     party: [],
     briefingObjectives: [
-      'In der Tavern den Hook bekommen (Hadric → Children Missing)',
-      'Old Elder Mira besuchen — Lore über den Hatchling',
-      'In den Hatchling\'s Cave: Stealth, Combat oder Parley',
-      'Climax am Forgotten Altar: moralische Wahl trifft Syl\'s Color → Rarity'
+      'Get the hook in the tavern (Hadric → children missing near the Wilds)',
+      'Visit Elder Mira — learn the wyrmling color legend',
+      'Hatchling\'s Cave: stealth, combat, or parley with the kobolds',
+      'Climax at the Forgotten Altar: a moral choice sets Syl\'s color → card rarity'
     ],
-    sessionFlow: 'Tavern (Hadric Hook)\n  ↓\nElder Mira\'s Cottage (Lore-Reveal)\n  ↓\nHatchling\'s Cave · 3× Kobolds\n  ├─ Stealth → direkt zum Hatchling\n  ├─ Combat → easy fight\n  └─ Parley → DC 15 PER\n  ↓\nForgotten Altar · Climax\n  • KILL → Syl Weiß/Grau · Common\n  • PROTECT → Syl Gold · Rare\n  • RELEASE → Syl Variabel · Epic\n  • BOND → Syl spiegelt PC · Legendary',
+    sessionFlow: 'The Crooked Crow (Hadric Hook · Mira encounter)\n  ↓\nElder Mira\'s Cottage (the wyrmling legend · the test)\n  ↓\nHatchling\'s Cave · 3× Kobolds\n  ├─ Stealth → bypass guards\n  ├─ Combat → CR-balanced fight\n  ├─ Parley → DC 15 Persuasion\n  └─ Defection → kobold joins if shown kindness\n  ↓\nForgotten Altar of Bahamut · Climax\n  • KILL → Syl White/Grey · Common\n  • PROTECT → Syl Gold · Rare\n  • RELEASE → Syl varies · Epic\n  • BOND → Syl mirrors PC · Legendary',
     tree: [
-      { id: 'ashford-village', label: 'Ashford', locations: [
+      { id: 'ashford-village', label: 'Ashford Village', locations: [
         { id: 'aw-tavern', name: 'The Crooked Crow', status: 'pending' },
-        { id: 'aw-elder', name: 'Old Elder Mira\'s Cottage', status: 'pending' }
+        { id: 'aw-elder',  name: 'Elder Mira\'s Cottage', status: 'pending' }
       ]},
       { id: 'ashford-wilds', label: 'The Wilds', locations: [
-        { id: 'aw-cave', name: 'Hatchling\'s Cave', status: 'pending' },
+        { id: 'aw-cave',  name: 'Hatchling\'s Cave', status: 'pending' },
         { id: 'aw-altar', name: 'Forgotten Altar of Bahamut', status: 'pending' }
       ]}
     ],
     locations: {
       'aw-tavern': {
         name: 'The Crooked Crow',
-        meta: 'Tavern · Evening',
-        readAloud: 'The Crooked Crow leans like its name — its timbers warped from a hundred winters. Inside, smoke curls around oil lamps. A bard sings half-heartedly. The locals stop talking when you enter.',
-        dmNote: 'Where the adventure starts. Innkeeper Hadric tells of children disappearing near the Wilds. Old Elder Mira sits in the corner — knows more than she says. Hook: 50 gp for whoever finds the missing kids.',
+        meta: 'Tavern · Evening · The Hook',
+        imagePrompt: 'A crooked wooden tavern at dusk, its timbers warped, oil lamps glowing inside, light spilling onto a muddy village street. Cinematic fantasy photography, warm low-key lighting, photorealistic.',
+        readAloud: 'The Crooked Crow leans like its name — timbers warped from a hundred winters, the sign creaking even when there is no wind. Inside, smoke curls slow around oil lamps. A bard plucks a half-remembered ballad in the corner, glancing at you between verses. Conversations dim as you cross the threshold; one farmer makes a small sign against ill luck before quickly looking away.\n\nA balding man behind the bar — wide-faced, apron stained with cherry juice — straightens. "Travellers," he says, neither welcome nor warning. "Haven\'t had your sort in a fortnight."\n\nIn the deepest corner, an old woman sits at no table at all. A skein of grey wool rests on her knee. Her eyes never leave you.',
+        dmNote: 'OPENING SCENE — the hook arrives in three waves:\n\n1. HADRIC (innkeeper) approaches once they order food/drink. He mentions, almost casually, that two children — Anna (8) and Tobin (6) — wandered toward the Wilds three days ago and have not returned. The village has searched the obvious paths. Hadric will pay 50 gp from his own purse if the party finds them.\n\n2. ELDER MIRA (the woman in the corner) watches throughout. If the party is rude or violent: she leaves silently. If they show kindness: she invites them to her cottage at dawn, with a single line: "What you find out there is older than the cave. Be kind to what you cannot kill."\n\n3. THE PARENTS (Bram and Lila Vesh) appear if the party hasn\'t accepted the hook within ~10 in-game minutes. They are not noble. They beg, they have nothing to offer but tears and a small wooden bird Tobin carved.\n\nKEY DETAIL: Anyone with passive Perception 14+ notices the bard\'s ballad mentions "the wyrm whose colour is not yet writ" — first foreshadowing of Syl. If asked, the bard claims it\'s an old village song, taught to him by Mira herself.',
         scenarios: [
-          { title: 'Hadric reveals the rumor', probability: 'wahrscheinlich', body: 'After 1d4 minutes, the innkeeper offers ale on the house and asks if the party hunts beasts. Mentions the cave east of town.' },
-          { title: 'Elder Mira approaches', probability: 'möglich', body: 'If party seems honorable, Mira pulls them aside: "There\'s something old in those wilds. Older than dragons. Be kind to what you find."' }
+          { title: 'Hadric tells the rumour', probability: 'very likely', body: 'After 1d4 minutes, the innkeeper sets a free tankard down. "You hunt beasts? There\'s a cave east of the brook. Smoke that don\'t come from a fire. Two of our young\'uns went that way." He keeps his voice low — he doesn\'t want to alarm the room.' },
+          { title: 'Elder Mira approaches', probability: 'likely if PCs are kind', body: 'Mira does not stand. She waits. If a PC goes to her, she takes their hand briefly — an unhurried, deliberate touch. "The hatchling has been singing for three nights. It does not know what it is yet. Neither do you. Come at dawn." She gives directions, then will speak no more on the matter.' },
+          { title: 'The parents plead', probability: 'likely if hook stalls', body: 'Bram and Lila Vesh enter, looking exhausted. They ask the party — by name, if names were given — to find their children. Lila presses Tobin\'s carved wooden bird into a PC\'s palm. "He never let it leave his pocket. He must have dropped it on the way."' },
+          { title: 'A drunk speaks too much', probability: 'possible', body: 'Old Pell (drunk farmer) corners the loudest PC: "There\'s NO bear, alright? The growlin\'s wrong. Wrong-shape. I heard wings." Insight DC 10: he\'s telling the truth as he believes it. He\'ll trade what he saw for one more drink.' },
+          { title: 'The bard\'s ballad', probability: 'atmospheric', body: 'The bard (Cale) plays "The Wyrm Whose Colour Is Not Yet Writ." Anyone who tips him 1 sp gets a slow-sung verse: "...four cradles wait in the moss-wet stone / one for the slayer, one for the friend / one for the fool who lets it go / one for the heart it bonds within." This is your players\' first hint at the four endings.' }
+        ],
+        dialogs: [
+          { speaker: 'Hadric (innkeeper)', text: '"Anna had hair like wheat. Tobin was the small one. Three days, now. We\'ve walked the Old Brook path and the goat trails, but east — east of the brook, no one goes east. There\'s a smell."' },
+          { speaker: 'Elder Mira (whisper)', text: '"It is not lost. It is choosing. Whatever you do at the altar — do it slowly. The first thing it sees in you, it will become."' },
+          { speaker: 'Lila Vesh (mother)', text: '"He carved this for his sister. He was so proud. Please. If you find anything — even a shoe — bring it back. We need to know."' },
+          { speaker: 'Old Pell (drunk)', text: '"Ain\'t no bear, friend. Bears don\'t hum. This thing hums. Hums like my mam used to, by the fire."' },
+          { speaker: 'Cale (bard)', text: '"The song? Mira taught it to me when I was a boy. She said every Ashford child should know it. I never asked why."' }
+        ],
+        music: [
+          { title: 'Tavern bustle', url: '', notes: 'Warm fiddle, low chatter, clinking mugs. Stop the music when Mira speaks.' },
+          { title: 'The Wyrm Ballad', url: '', notes: 'Slow lute solo, melancholy. Cue when Cale sings the foreshadowing verse.' }
+        ],
+        history: 'Ashford is a hundred-house village built where the Old Brook meets the King\'s Road. Founded after the Dragon Wars by retired soldiers; the wall around the chapel is made from broken dragon-bone. The village does not speak of this. The chapel is dedicated to "the bright god of just scales" — Bahamut, though the priest does not say the name.',
+        foreshadow: [
+          'The bard\'s ballad mentions four endings — players will face exactly those',
+          'Mira\'s line "the first thing it sees in you, it will become" tells the rule of Syl\'s color',
+          'The chapel made of dragon-bone hints that Ashford has dealt with wyrmlings before'
+        ],
+        sideQuests: [
+          { title: 'Lost Goat — Misha\'s Nan', body: 'Misha (12) lost her grandmother\'s old goat near the brook. 5 gp + a hot pie if returned. The goat is at the Forest Trail (off-path).' },
+          { title: 'The Charm Crone', body: 'A widow named Yris will sell a cheap "luck-charm" (worthless, 2 sp). If asked, she knows about the cave: "It used to belong to dragons. Now it belongs to whatever\'s in it."' }
         ],
         log: ''
       },
       'aw-elder': {
-        name: 'Old Elder Mira\'s Cottage',
-        meta: 'Healer / Lorekeeper',
-        readAloud: 'The cottage smells of dried sage and lavender. Mira sits at her loom, weaving threads that catch the firelight strangely. "I knew you\'d come," she says without looking up. "The hatchling has been singing for three nights now."',
-        dmNote: 'Mira is a retired adventurer. Knows the cave holds a baby chromatic dragon — but its color hasn\'t set yet. The hatchling chooses based on first kindness or cruelty it experiences. CRITICAL CONTEXT for the moral choice at the end.',
-        scenarios: [],
+        name: 'Elder Mira\'s Cottage',
+        meta: 'Lore · Test of Character · Dawn',
+        imagePrompt: 'A small stone cottage at dawn, ivy-covered walls, woodsmoke from the chimney, an old woman silhouetted at a loom inside. Soft golden morning light, fantasy realism, cinematic photography.',
+        readAloud: 'Mira\'s cottage sits at the edge of the village where the cobbles surrender to grass. Sage and lavender hang in bunches from the rafters. A cat regards you, then forgets you. Mira does not look up from her loom — the threads she works catch the firelight in colours that do not quite belong: a rust-red that flickers like an emberhide, a gold that almost is the morning, a white as still as snow.\n\n"You came," she says, without surprise. "Sit. There is tea. There is also a story I have told no one in twenty years."',
+        dmNote: 'THIS IS THE LORE SCENE. Mira reveals:\n\n1. The cave was a Bahamut shrine before Ashford existed. Wyrmlings used to be brought there at hatching, and the priests would invoke the "Color Choosing" — a ritual where the wyrmling\'s scales would set based on the first major moral act it witnessed.\n\n2. The shrine is gone (forgotten altar still stands in the wilds beyond the cave).\n\n3. Mira was an adventurer in her youth. She killed a wyrmling once, before it had chosen its color. It had been raiding sheep. She still dreams about it. "It might have been kind. I will never know now."\n\n4. The legend says the four colors are: WHITE/GREY (witnessed murder, becomes a mourning dragon, weakest), GOLD (witnessed protection, loyal forever), VARIABLE (witnessed freedom — color reflects the wilderness around it), and the rarest: BONDED (a creature offers itself in friendship, the wyrmling mirrors that creature\'s soul).\n\n5. THE TEST: While Mira speaks, a small fox kit (injured, frightened) is hidden under a blanket in the corner. If a PC notices and offers help — splints the leg, gives water, speaks gently — Mira gifts them the TEAR OF BAHAMUT (resistance to poison damage for 24 hours, and one charge of cure wounds 1d8). If no PC notices or all are cruel, she gives nothing — but does not refuse them.\n\nMira will not accompany the party. She is too old, and "the wyrmling will not choose around me — it knows me too well already."',
+        scenarios: [
+          { title: 'Mira tells the legend', probability: 'very likely', body: 'Mira describes the Color Choosing in three slow paragraphs, weaving threads as she speaks. She does not dramatize. The fact alone is enough. By the end the players should understand: the hatchling\'s morality is not yet written.' },
+          { title: 'The Tapestry of Possibilities', probability: 'likely', body: 'Mira\'s loom holds a half-finished tapestry showing FOUR wyrmlings — white, gold, mottled, and one that is just the silhouette of a person. "I have been weaving this since you were children. I do not know which one I will finish."' },
+          { title: 'The Test of the Fox', probability: 'likely', body: 'A whimper from the corner — an injured fox kit. Insight DC 12 detects Mira watches the party\'s reaction more than she watches the fox. Reward: TEAR OF BAHAMUT amulet. Failure has no penalty (don\'t punish — let consequences come at the altar).' },
+          { title: 'A confession of guilt', probability: 'possible if asked', body: 'If a PC asks Mira whether she has met a wyrmling: she tells, simply, that she once killed one. "It was a child. I have prayed about it every dawn for forty years. I do not know if anyone listened."' }
+        ],
+        dialogs: [
+          { speaker: 'Mira (about the cave)', text: '"That cave was a temple before it was a den. The bone-walls of our chapel? Those came from older dragons, who chose their colours, and lived their lives, and died old. We are not their enemy. We have only forgotten what we were to them."' },
+          { speaker: 'Mira (about the legend)', text: '"The first true thing the wyrmling witnesses, it becomes. Cruelty makes a mourning dragon. Kindness makes a gold one. Setting it free makes it the colour of the wilderness it grows in. The fourth — the rarest — is a soul-bond. A creature offers itself, and the wyrmling mirrors that creature\'s heart."' },
+          { speaker: 'Mira (about the fox)', text: '(if helped) "You have a careful hand. Take this. It will not save your life, but it may save someone else\'s." (if not noticed) She says nothing. She watches with the same kindness as before, but a sadder one.' },
+          { speaker: 'Mira (parting)', text: '"The kobolds in the cave are not its enemies. They believe they protect it. Be patient with them. The children — Anna and Tobin — they are not in danger from the wyrmling. They are in danger from how the wyrmling does not yet know what to be."' }
+        ],
+        music: [
+          { title: 'Cottage hearth', url: '', notes: 'Soft strings, single hand-held drum, almost silent. Mira speaks over it. Stop entirely if she tells the confession.' }
+        ],
+        history: 'Mira was a member of the adventuring company called The Long Dawn. They disbanded thirty-eight years ago. The company\'s old shield hangs above her hearth, dented in three places. She does not speak of the others.',
+        foreshadow: [
+          'The TEAR OF BAHAMUT will save someone\'s life at the altar — possibly Syl\'s, possibly a PC\'s',
+          'Mira\'s tapestry foreshadows the four endings explicitly',
+          'The fact that she killed a wyrmling herself is the GM\'s emotional anchor for the climax'
+        ],
+        sideQuests: [
+          { title: 'Moonflower retrieval', body: 'Mira asks (politely, not as a quest-giver) for someone to bring back a Moonflower from the Wilds — it grows in a clearing near the cave. Reward: she will brew a healing draught (potion of healing). Pure flavor — gives players a reason to look at the wilderness en route.' },
+          { title: 'The shield', body: 'If a PC asks about the old shield: Mira says "Their names are still on the inside." Reading them is a quiet emotional beat — six names, two struck through with charcoal.' }
+        ],
         log: ''
       },
       'aw-cave': {
         name: 'Hatchling\'s Cave',
-        meta: 'Combat-möglich · Stealth-möglich',
-        readAloud: 'The cave entrance breathes warm air, scented with smoke and something like cinnamon. Inside, golden light flickers — not torchfire. Something is humming softly. A child\'s humming.',
-        dmNote: 'Two missing children are inside, fed by the hatchling who imprinted on them. Three Kobold Cultists outside guard "their" dragon. Combat is optional — clever parties can sneak past or parley. The hatchling itself is harmless. CR ½ Kobolds × 3.',
+        meta: 'Combat / Stealth / Parley · Mid-Adventure',
+        imagePrompt: 'Mouth of a stone cave half-overgrown with moss, faint golden light flickering inside (not torchlight), wisps of smoke smelling of cinnamon. Twilight, fantasy realism, cinematic.',
+        readAloud: 'The brook bends east into thicker woods, and the trail that no one in Ashford takes climbs toward an outcropping of moss-grown stone. The cave mouth breathes warm air at you, and it does not smell of bear or wolf. It smells of woodsmoke and cinnamon and something underneath — like the air after a lightning strike, faint and clean.\n\nThree small figures sit at the entrance. They wear hooded robes that drag on the ground because the figures are barely taller than children. One holds a sling, another a bone dagger, the third — taller, scarred — clutches a scimitar across its knees. Around their necks, on twine, each wears a single dragon-tooth.\n\nFrom inside the cave, soft and certain, you hear a child\'s humming.',
+        dmNote: 'THE CAVE — three rings of complication:\n\n1. KOBOLD GUARDS (Korr-Kal, leader; Vex; Sssa). They ARE NOT EVIL — they are confused devotees. They believe Syl is a divine wyrmling sent to guide their tribe back to greatness. They have NOT harmed the children — they think the children are "the wyrmling\'s chosen feeders." Korr-Kal speaks broken Common; Vex and Sssa speak only Draconic.\n\n2. THE CHILDREN (Anna, 8 and Tobin, 6) are unharmed and surprisingly calm. Anna in particular has bonded with Syl over three days. She does not want to leave. Her line: "He likes the song. If we go, who will sing to him?"\n\n3. SYL THE WYRMLING — golden-eyed, scaled but colorless (like wet pearl), watches everything. Reacts to tone, not language. Will purr if a PC sings or speaks gently. Will hiss and recoil if blood is shed in front of it.\n\nKEY MECHANIC: track who Syl looks at first. If combat starts, Syl watches the first creature to draw blood. That sets a DC 13 WIS save for the wyrmling — fail = it imprints on cruelty (color slides toward white/grey). The party doesn\'t know this rule, but you do.\n\nSCALING: 3 kobolds (CR ⅛ ×2 + CR ¼ leader) is a trivial fight for a level-3 party. To scale up: add 1d4 kobold reinforcements arriving on round 3 from a side-tunnel. To scale down: the leader Korr-Kal hesitates and tries to parley first.',
         scenarios: [
-          { title: 'Stealth past the Kobolds', probability: 'wahrscheinlich', body: 'DC 13 Stealth, group check. Success = direct dialog with hatchling.' },
-          { title: 'Combat with Kobolds', probability: 'möglich', body: '3× Kobolds, easy fight. Hatchling watches in the corner, wide-eyed.' },
-          { title: 'Parley', probability: 'möglich', body: 'Kobolds revere the dragon. DC 15 Persuasion to convince them they\'re harming it by keeping the children captive.' }
+          { title: 'Stealth past the kobolds', probability: 'likely', body: 'Group Stealth check, DC 13. Success → enter cave undetected, find children + Syl. Failure → kobolds challenge in Draconic ("Halt, milk-skinned ones!") and the encounter shifts to parley or combat. Partial success (half party fails): the failed PCs are spotted; the others can flank or call out a parley.' },
+          { title: 'Parley with Korr-Kal', probability: 'likely', body: 'DC 15 Persuasion (DC 12 if speaking Draconic). Korr-Kal will lower his scimitar if convinced the party is also "wyrmling-blessed." A PC who shows Mira\'s amulet (Tear of Bahamut) gets advantage on this check. Successful parley = kobolds lead party in, no fight needed.' },
+          { title: 'Combat with the kobolds', probability: 'possible', body: '3× kobolds. Round 3: roll 1d4 reinforcements arriving from the side-tunnel (DM-discretion based on party HP). After the leader falls, surviving kobolds flee or surrender. Critical: Syl WATCHES. Whoever draws first blood becomes a candidate for the wyrmling\'s color-anchor.' },
+          { title: 'A kobold defects', probability: 'possible', body: 'Sssa (the smallest kobold) was forced to join the cult — orphaned in a wild-fox attack. If shown a single act of unprompted kindness (e.g., a healing potion, a warm cloak, a name asked rather than demanded), Sssa offers help: shows a hidden side-passage, points out a buried offering chest with a +1 silver dagger.' },
+          { title: 'The children\'s plea', probability: 'climactic', body: 'When the party finally reaches Syl, Anna stands between them. "Don\'t hurt him. He sings. He\'s only a baby." Tobin grips her hand. This is the EMOTIONAL FULCRUM of the cave — players who fight through here arrive at the altar with Anna\'s words ringing.' }
+        ],
+        dialogs: [
+          { speaker: 'Korr-Kal (kobold leader)', text: '"You smell of cold-iron, milk-skins. Wyrmling chose us. We feed wyrmling. Wyrmling will grow great. You go. Now. Or wyrmling sees you bleed."' },
+          { speaker: 'Anna (8, child)', text: '"His scales are like the inside of a shell. We\'ve been singing to him. He likes the song about the moon. If you take us back, will you let us bring him?"' },
+          { speaker: 'Tobin (6, child)', text: '(very quiet) "Mama said don\'t go east. But it was crying. I heard it crying."' },
+          { speaker: 'Sssa (defector kobold, if befriended)', text: '"My mother told me kobolds were the eldest children of dragons. We forget. We just forget. You — you remembered for us. There is a tunnel. Behind the food-pile. I will show."' },
+          { speaker: 'Syl (no words, wyrmling)', text: '*Syl lifts his head, blinks once at the party, and hums — high and uncertain — exactly the same melody Anna was singing.*' }
+        ],
+        music: [
+          { title: 'Cave hum', url: '', notes: 'Drone, low strings, almost subharmonic. Anna\'s humming sits on top, faint but present.' },
+          { title: 'Kobold combat', url: '', notes: 'Quick percussion, no melody. Cuts off the second Syl recoils — leave room for Anna to scream "Stop!"' }
+        ],
+        history: 'The cave was a Bahamut shrine fifteen hundred years ago. The kobolds know this — vaguely, through corrupted legend. They believe they are restoring the old worship. They are technically not wrong.',
+        foreshadow: [
+          'Whoever draws first blood gets watched by Syl — sets up the Bond ending if they later show kindness',
+          'The +1 silver dagger (if Sssa befriended) becomes useful at the altar against any cultist that may show up',
+          'Anna\'s line "if we take him with us" is the seed of the Protect ending'
+        ],
+        sideQuests: [
+          { title: 'The buried offering', body: 'Behind the food-pile (revealed by Sssa, or DC 14 Investigation), an old wooden chest. Inside: 60 gp, a +1 silver dagger, a rolled vellum showing the Bahamut altar in fading ink — proves the cave\'s past, helps party find the altar without getting lost.' },
+          { title: 'Moonflower clearing', body: 'Just outside the cave, the clearing Mira mentioned. Three Moonflowers grow here, blooming only at twilight. Picking them advances time slightly and triggers a soft visual: the wyrmling, if the party returns, has a Moonflower petal stuck to its scale — Anna gave it the flower while they were gone.' }
         ],
         log: ''
       },
       'aw-altar': {
         name: 'Forgotten Altar of Bahamut',
-        meta: 'Climax · Moral Choice',
-        readAloud: 'Past the cave, a worn stone altar half-swallowed by moss. The hatchling has been laying its food here. Three skulls (small, recent). The children\'s shoes are at the base of the altar.',
-        dmNote: 'CLIMAX: The hatchling is hungry. The children are gone — followed deeper into the wilds. The party must decide:\n\n• KILL the hatchling (it killed three kobolds and ate the food). → Syl\'s color = WHITE/GREY (mourning). Card rarity = COMMON.\n• PROTECT it — return it to Mira to raise. → Syl\'s color = GOLD (loyalty). Card rarity = RARE.\n• RELEASE it into the wilds. → Syl\'s color = depends on alignment. Card rarity = EPIC.\n• A clever 4th option (forge bond between hatchling and one PC) → Syl\'s color = MIRRORS BONDED PC. Card rarity = LEGENDARY.\n\nThe choice determines Syl\'s evolution — Syl becomes the DM\'s permanent assistant in the next campaigns, with this color memory.',
-        scenarios: [],
+        meta: 'CLIMAX · Moral Choice · Syl Color Sets',
+        imagePrompt: 'An ancient stone altar half-swallowed by moss in a forest clearing, weathered carvings of dragons in flight, twilight blue and gold light, fallen children\'s shoes at its base. Cinematic fantasy realism, photorealistic.',
+        readAloud: 'Past the cave, the trees thin into a clearing the kobolds clearly avoid — there are no offerings here, no torch-marks. In the centre, a stone altar half-eaten by moss and time, its sides carved with worn dragons in flight. The carvings face all four directions: white, gold, mottled, and one figure that is no dragon at all — a person, kneeling.\n\nAt the altar\'s base: three shoes. Two children\'s and one too small for any human. The wyrmling (you finally see him fully now in the open light) is no larger than a hunting dog. His scales are still without colour — the white of a pearl held underwater. He looks at you. He looks at each of you, slowly, and in turn.\n\nAnna, behind you, says: "He\'s asking what you\'ll be."',
+        dmNote: 'THE FOUR ENDINGS — this is what the whole adventure has built toward.\n\nYour job: do NOT push players. Present the situation, allow questions, and when they decide, narrate the consequence with weight. The choice IS the story.\n\n• KILL — the party slays Syl (or the leader does, alone). Justifiable: the wyrmling has eaten kobold food, is potentially a future calamity. The clearing dims. Syl\'s scales bleach to bone-white as he dies. The kobolds (if alive) flee. Anna does not speak to the party again. → SYL\'S COLOR = WHITE/GREY (mourning). CARD RARITY = COMMON.\n\n• PROTECT — the party returns Syl to Mira. Mira will accept reluctantly: "I am too old. But I will try." Six months later (in epilogue): Syl\'s scales have set GOLD. He is calm, intelligent, loyal. → CARD RARITY = RARE.\n\n• RELEASE — the party lets Syl go into the wilderness. He looks at them once, then climbs onto the altar and takes flight. Two weeks later, a hunter brings news: there is a young dragon east, the colour of forest-shadow and rust. → CARD RARITY = EPIC.\n\n• BOND — one PC offers themselves: speaks Syl\'s name, kneels, places a hand on the altar. Syl walks to them, presses his head into their palm. His scales ripple — taking on the PC\'s SOUL: a paladin gets a gold-crested wyrmling, a rogue gets a shadow-grey one with copper highlights, a druid gets one whose scales shift with the seasons. Syl will appear in this DM\'s next campaigns. → CARD RARITY = LEGENDARY.\n\nIMPORTANT — the BOND ending is RARE BY DESIGN. Players have to think of it themselves. If they ask "is there another option," you can say "Mira said the rarest ending is a soul-bond. She did not explain how." Let them solve it.\n\nSESSION-END: After the choice, announce the RARITY of their first card. This is the Heirloom moment — they realize what they just made.',
+        scenarios: [
+          { title: 'The wyrmling looks at each PC', probability: 'always', body: 'Slow down. Describe Syl turning his head to each player\'s character in turn. Anyone with a passive Insight 14+ feels a gentle pressure on their thoughts — Syl is asking, in his clumsy young dragon way, what he should be. Players should feel the weight here.' },
+          { title: 'Anna pleads for Protect', probability: 'likely', body: 'If a PC swings to KILL, Anna physically steps in front of Syl. "He sings. He\'s a baby. PLEASE." This is a soft narrative speed-bump, not a mechanical block. If they push past her, she screams, and Tobin starts crying. The mood shifts permanently.' },
+          { title: 'Bahamut\'s witness', probability: 'optional', body: 'If anyone reads the altar carvings (DC 12 Religion or someone holding the Tear of Bahamut), the air briefly smells of incense, and a sourceless voice says — quietly, in Draconic, audible to that one PC: "Be slow. Be sure. Whichever you choose, it will be remembered."' },
+          { title: 'Korr-Kal kneels', probability: 'if kobolds alive + party showed mercy', body: 'Korr-Kal arrives at the clearing\'s edge, sees the wyrmling unhurt, and slowly kneels. He removes the dragon-tooth from his neck and lays it at the altar. Whatever the party chooses, the kobolds will witness it. They become the keepers of the legend.' },
+          { title: 'The children make their own choice', probability: 'optional', body: 'If players hesitate or seem stuck, Anna and Tobin step forward and ASK to be the ones who decide. This is a powerful out for indecisive parties — the kids will ALWAYS choose Protect. But it costs the players the moment.' }
+        ],
+        dialogs: [
+          { speaker: 'Anna (the moment of truth)', text: '"He\'s asking what you\'ll be. Not what HE\'ll be. What YOU\'LL be."' },
+          { speaker: 'Bahamut\'s voice (Religion DC 12)', text: '"Be slow. Be sure. Whichever you choose, it will be remembered for a thousand years, in a place that is not this one."' },
+          { speaker: 'Mira (in epilogue, Protect ending)', text: '"He sleeps by the hearth now. He has not yet spoken, but yesterday he hummed the moon-song. Anna comes to read to him on Sundays. His scales are taking the colour of late wheat."' },
+          { speaker: 'Syl (BOND ending)', text: '*Syl walks the slow walk of a wyrmling who has just understood a thing. He presses his head against your palm. His scales ripple, then settle. They are the colour of you.*' }
+        ],
+        music: [
+          { title: 'Altar awakening', url: '', notes: 'Solo cello, very slow. Cue when Syl looks at each PC. Stop the music when the choice is made.' },
+          { title: 'Aftermath', url: '', notes: 'Different track per ending — choose by mood. KILL = dissonant strings; PROTECT = warm hearth strings; RELEASE = wind + distant horn; BOND = a single sustained chord, very pure.' }
+        ],
+        history: 'The altar predates Ashford by at least a thousand years. The kneeling figure carved into one face is not a dragon-priest — it is a pact-bearer, a creature who once chose the BOND ending. Their name is unreadable.',
+        foreshadow: [
+          'Whatever ending the party picks WILL appear as the first card — that is the heirloom',
+          'In future sessions of this campaign or any other, Syl returns. His color is permanent.'
+        ],
+        sideQuests: [],
         log: ''
       }
     }
@@ -10298,7 +10820,10 @@ const ASHFORD_WYRMLING = {
 };
 
 function loadAshfordWyrmling() {
-  if (!confirm('🐉 Ashford Wyrmling laden?\n\nKomplettes Starter-Abenteuer wird in eine neue Kampagne geladen.\nDeine vorhandenen Kampagnen bleiben unangetastet.')) return;
+  const msg = _currentLang === 'de'
+    ? '🐉 Ashford Wyrmling laden?\n\nKomplettes Starter-Abenteuer wird in eine neue Kampagne geladen.\nDeine vorhandenen Kampagnen bleiben unangetastet.'
+    : '🐉 Load Ashford Wyrmling?\n\nThe complete starter adventure will be loaded into a new campaign.\nYour existing campaigns remain untouched.';
+  if (!confirm(msg)) return;
   const ashford = JSON.parse(JSON.stringify(ASHFORD_WYRMLING.campaign));
   if (!state.campaigns) state.campaigns = [];
   const existing = state.campaigns.findIndex(c => c.id === 'ashford-wyrmling');
@@ -10320,7 +10845,9 @@ function loadAshfordWyrmling() {
   renderCampaignMeta && renderCampaignMeta();
   if (typeof renderCampaignMenu === 'function') renderCampaignMenu();
   switchView('prep');
-  toast('🐉 Willkommen — Syl wartet im Cave. Du startest in der Tavern.');
+  toast(_currentLang === 'de'
+    ? '🐉 Willkommen — Syl wartet im Cave. Du startest in der Tavern.'
+    : '🐉 Welcome — Syl is waiting in the cave. You start in the tavern.');
   if (typeof plausibleTrack === 'function') plausibleTrack('DMStudio · Ashford Loaded');
   // Erste Tour starten falls noch nicht gesehen
   setTimeout(() => {
@@ -10332,38 +10859,78 @@ function loadAshfordWyrmling() {
 // SYL-TOUR · Geführter Walkthrough beim ersten Ashford-Load
 // 5 Tooltip-Steps die den neuen DM durch DM Studio führen.
 // ═══════════════════════════════════════════════════════════════════════════
-const SYL_TOUR_STEPS = [
+const SYL_TOUR_STEPS_EN = [
   {
     selector: '.prep-head-name',
-    title: 'Das hier ist dein erster Schauplatz',
-    body: 'Die Tavern „The Crooked Crow". Dein Read-Aloud-Text, eine DM-Notiz, mögliche Szenarien — alles schon vorbereitet. Schau es dir kurz an, dann gehts weiter.',
+    title: 'This is your first scene',
+    body: 'The tavern "The Crooked Crow." Your read-aloud, a DM note, scenarios, NPC dialogues — all prepared. Take a moment to read it, then we continue.',
     pos: 'bottom'
   },
   {
     selector: '.lpanel',
-    title: 'Hier sind alle Standorte',
-    body: 'Vier Locations für dieses Abenteuer. Wechsel kannst du jederzeit anklicken — jeder Ort ist mit Text + NPCs + Szenarien gefüllt.',
+    title: 'All your locations live here',
+    body: 'Four locations for this adventure, in two regions: Ashford Village and The Wilds. Click any one anytime — each is filled with text, NPCs, and scenarios.',
     pos: 'right'
   },
   {
-    selector: '[data-view="chars"]',
-    title: 'Deine NPCs sind bereit',
-    body: 'Im Charaktere-Tab findest du Mira, Hadric, Syl (das Hatchling) + 3 Kobolds — alle mit vollen Statblöcken. Zum Spieler-Charaktere anlegen kommen wir später.',
+    selector: '[data-mode="cast"]',
+    title: 'Your NPCs are ready',
+    body: 'Click "Cast" to see Mira, Hadric, the Vesh family, Korr-Kal\'s kobold band, the children Anna and Tobin, and Syl himself — all with full statblocks. You\'ll add player characters here too.',
     pos: 'bottom'
   },
   {
-    selector: '[data-view="session"]',
+    selector: '.subtab-go-live, [data-view="session"]',
+    title: 'When the session starts',
+    body: 'Click "⚡ Go Live" — switches to live mode with initiative tracker, quick notes, AI Co-DM, encounter builder. Click any statblock action and your players get a dice request automatically.',
+    pos: 'bottom'
+  },
+  {
+    selector: '#campaignPill',
+    title: 'You\'re ready',
+    body: 'Play the adventure — at the climax in the Forgotten Altar, your players decide Syl\'s color. That becomes your first card. Have fun.',
+    pos: 'bottom'
+  }
+];
+
+const SYL_TOUR_STEPS_DE = [
+  {
+    selector: '.prep-head-name',
+    title: 'Das hier ist dein erster Schauplatz',
+    body: 'Die Tavern „The Crooked Crow". Dein Read-Aloud, eine DM-Notiz, Szenarien, NPC-Dialoge — alles schon vorbereitet. Schau dir das kurz an, dann geht\'s weiter.',
+    pos: 'bottom'
+  },
+  {
+    selector: '.lpanel',
+    title: 'Hier sind alle Schauplätze',
+    body: 'Vier Locations für dieses Abenteuer in zwei Regionen: Ashford Village und The Wilds. Klick einen beliebigen an — jeder ist mit Text, NPCs und Szenarien gefüllt.',
+    pos: 'right'
+  },
+  {
+    selector: '[data-mode="cast"]',
+    title: 'Deine NPCs sind bereit',
+    body: 'Klick auf „Cast" um Mira, Hadric, die Vesh-Familie, Korr-Kals Kobold-Trupp, die Kinder Anna und Tobin und Syl selbst zu sehen — alle mit vollen Statblöcken. Spieler-Charaktere legst du dort auch an.',
+    pos: 'bottom'
+  },
+  {
+    selector: '.subtab-go-live, [data-view="session"]',
     title: 'Wenn die Session startet',
-    body: 'Switch auf „🎲 Live" — Quick-Notes, Combat-Tracker, KI-Co-DM. Klick einfach auf jede Statblock-Action und deine Spieler kriegen automatisch eine Würfel-Anfrage.',
+    body: 'Klick „⚡ Go Live" — schaltet zum Live-Modus mit Initiative, Quick-Notes, KI-Co-DM, Encounter-Builder. Klick auf eine Statblock-Action und deine Spieler kriegen automatisch eine Würfel-Anfrage.',
     pos: 'bottom'
   },
   {
     selector: '#campaignPill',
     title: 'Du bist soweit',
-    body: 'Spiel das Abenteuer durch — am Ende beim „Forgotten Altar" entscheidet sich Syl\'s Farbe. Das wird deine erste Karte. Viel Spaß!',
+    body: 'Spiel das Abenteuer durch — am Climax im Forgotten Altar entscheiden deine Spieler über Syl\'s Farbe. Das wird deine erste Karte. Viel Spaß.',
     pos: 'bottom'
   }
 ];
+
+function getSylTourSteps() {
+  return _currentLang === 'de' ? SYL_TOUR_STEPS_DE : SYL_TOUR_STEPS_EN;
+}
+
+// Backwards-compat for callers
+const SYL_TOUR_STEPS = SYL_TOUR_STEPS_EN;
 
 let _sylTourIdx = 0;
 let _sylTourEl = null;
@@ -10383,8 +10950,9 @@ function endSylTour() {
 function showSylTourStep() {
   if (_sylTourEl) _sylTourEl.remove();
   if (_sylTourSpot) _sylTourSpot.remove();
-  if (_sylTourIdx >= SYL_TOUR_STEPS.length) { endSylTour(); return; }
-  const step = SYL_TOUR_STEPS[_sylTourIdx];
+  const steps = getSylTourSteps();
+  if (_sylTourIdx >= steps.length) { endSylTour(); return; }
+  const step = steps[_sylTourIdx];
   const target = document.querySelector(step.selector);
   if (!target) {
     // Skip wenn target nicht da
@@ -10407,17 +10975,19 @@ function showSylTourStep() {
   // Tip
   const tip = document.createElement('div');
   tip.className = 'syl-tour-tip';
-  const isLast = _sylTourIdx === SYL_TOUR_STEPS.length - 1;
+  const isLast = _sylTourIdx === steps.length - 1;
+  const lblSkip = _currentLang === 'de' ? (isLast ? 'Schließen' : 'Tour überspringen') : (isLast ? 'Close' : 'Skip tour');
+  const lblNext = _currentLang === 'de' ? 'Weiter →' : 'Next →';
+  const lblGo   = _currentLang === 'de' ? 'Los geht\'s →' : 'Let\'s go →';
   tip.innerHTML = `
     <div class="stt-syl">🐉</div>
     <div class="stt-body">
-      <div class="stt-tag">SYL · ${_sylTourIdx + 1} / ${SYL_TOUR_STEPS.length}</div>
+      <div class="stt-tag">SYL · ${_sylTourIdx + 1} / ${steps.length}</div>
       <div class="stt-title">${escapeHtml(step.title)}</div>
       <div class="stt-text">${escapeHtml(step.body)}</div>
       <div class="stt-actions">
-        <button class="btn-top" onclick="endSylTour()">${isLast ? 'Schließen' : 'Tour überspringen'}</button>
-        ${isLast ? '' : `<button class="btn-top primary" onclick="_sylTourIdx++;showSylTourStep();">Weiter →</button>`}
-        ${isLast ? `<button class="btn-top primary" onclick="endSylTour()">Los geht's →</button>` : ''}
+        <button class="btn-top" onclick="endSylTour()">${lblSkip}</button>
+        ${isLast ? `<button class="btn-top primary" onclick="endSylTour()">${lblGo}</button>` : `<button class="btn-top primary" onclick="_sylTourIdx++;showSylTourStep();">${lblNext}</button>`}
       </div>
     </div>
   `;
@@ -11571,13 +12141,13 @@ async function renderAlbum() {
         <div style="font-size:48px;margin-bottom:14px;">📚</div>
         <h2 style="font-family:'Syne',sans-serif;font-size:22px;color:var(--ink);margin-bottom:10px;font-weight:800;">Dein Karten-Album ist leer</h2>
         <p style="font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:18px;">
-          Ab jetzt landet jede Karte die du auf <a href="https://endocraft.app/scroll/" target="_blank" style="color:var(--gold);font-weight:600;">endocraft.app/scroll</a> erstellst hier automatisch im Album.
+          Karten entstehen aus euren Session-Highlights. Markiere besondere Momente im Spiel — die KI schlägt automatisch Karten vor, die du hier im Album siehst.
         </p>
         <p style="font-size:12.5px;line-height:1.55;color:var(--text-dim);margin-bottom:20px;font-style:italic;">
-          Bestehende Karten aus früheren Sessions kannst du <strong style="color:var(--ink);">manuell hinzufügen</strong> — kopier den Share-Link oder die ID.
+          Bestehende Karten kannst du <strong style="color:var(--ink);">manuell hinzufügen</strong> oder in der <strong style="color:var(--ink);">Karten-Sammlung</strong> stöbern.
         </p>
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-          <button class="btn-top primary" onclick="window.open('https://endocraft.app/scroll/','_blank')" style="background:var(--gold);color:#fff;border-color:var(--gold);">→ Neue Karte erstellen</button>
+          <a class="btn-top primary" href="/my-cards/" target="_blank" style="background:var(--gold);color:#fff;border-color:var(--gold);text-decoration:none;">🃏 Karten-Sammlung</a>
           <button class="btn-top" onclick="addCardManually()">+ Karte manuell hinzufügen</button>
         </div>
       </div>
@@ -12611,6 +13181,13 @@ initAuthState = async function() {
 
 // Initial-Gate-Decision: Wenn weder email noch offline-ack → Gate zeigen
 if (!isGateUnlocked()) showLandingGate();
+
+// Apply i18n strings + reflect lang-toggle state
+applyI18n();
+document.querySelectorAll('[data-lang-set]').forEach(b => {
+  b.classList.toggle('active', b.dataset.langSet === _currentLang);
+});
+document.documentElement.setAttribute('lang', _currentLang);
 
 renderCampaignMeta();
 switchView(state.currentView || 'prep');

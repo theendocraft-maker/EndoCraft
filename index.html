@@ -3,54 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft — Your D&D Operating System</title>
+<title>EndoCraft — Make Your D&D Sessions Unforgettable</title>
 <meta name="description" content="Prep your campaign. Run your sessions with an AI Co-DM. Capture every legendary moment as a cinematic trading card. EndoCraft is the home for your table — DMs and players alike.">
 <link rel="icon" href="/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#0a0a0f;
-  --bg2:#111118;
-  --surface:#1a1a24;
+  --bg:#07070d;
+  --bg2:#0e0e18;
+  --surface:#141420;
+  --surface2:#1c1c2a;
   --text:#f0eff4;
   --text-dim:rgba(255,255,255,0.5);
   --text-dimmer:rgba(255,255,255,0.25);
-  --border:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.07);
+  --border-gold:rgba(232,184,109,0.18);
   --accent:#7B6CF6;
   --gold:#E8B86D;
+  --patreon:#FF424D;
 }
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;line-height:1.6;}
 img{display:block;max-width:100%;}
 
+/* Noise texture overlay */
+.noise-overlay{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:0.028;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:200px 200px;}
+
 /* Nav */
-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;position:sticky;top:0;z-index:100;background:rgba(7,7,13,0.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
 .nav-logo{display:flex;align-items:center;gap:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);text-decoration:none;}
 .nav-logo img{width:26px;height:26px;object-fit:contain;}
 .nav-right{display:flex;align-items:center;gap:22px;}
 .nav-link{color:var(--text-dim);text-decoration:none;font-size:13px;font-weight:500;transition:color 0.2s;}
 .nav-link:hover{color:var(--text);}
-.nav-cta{background:var(--accent);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:0.3px;transition:opacity .2s;}
-.nav-cta:hover{opacity:.92;}
+.nav-cta{background:var(--accent);color:white;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:0.3px;transition:opacity .2s,box-shadow .2s;}
+.nav-cta:hover{opacity:.92;box-shadow:0 0 20px rgba(123,108,246,0.4);}
 
 /* HERO — full-bleed cinematic */
 .hero{position:relative;min-height:calc(100vh - 66px);display:flex;align-items:center;padding:80px 48px;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;z-index:0;background-image:url('./hero-aftermath.png');background-size:cover;background-position:center 30%;}
-.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.75) 35%, rgba(10,10,15,0.35) 70%, transparent 100%), linear-gradient(180deg, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.3) 70%, var(--bg) 100%);}
-.hero-grid{position:relative;z-index:1;width:100%;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:center;}
+.hero-bg::before{content:'';position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse 80% 60% at 30% 40%, rgba(123,108,246,0.08) 0%, transparent 70%),
+             radial-gradient(ellipse 40% 40% at 75% 30%, rgba(232,184,109,0.06) 0%, transparent 60%);}
+.hero-bg::after{content:'';position:absolute;inset:0;z-index:2;
+  background:linear-gradient(90deg, rgba(7,7,13,0.97) 0%, rgba(7,7,13,0.82) 38%, rgba(7,7,13,0.45) 65%, rgba(7,7,13,0.15) 100%),
+             linear-gradient(180deg, rgba(7,7,13,0.05) 0%, rgba(7,7,13,0.2) 65%, var(--bg) 100%);}
 
+/* Candle glow particles */
+.hero-particles{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;animation:particleFloat linear infinite;opacity:0;}
+.p1{width:3px;height:3px;background:rgba(232,184,109,0.7);left:62%;top:35%;animation-duration:8s;animation-delay:0s;}
+.p2{width:2px;height:2px;background:rgba(255,200,100,0.5);left:65%;top:42%;animation-duration:11s;animation-delay:2s;}
+.p3{width:2px;height:2px;background:rgba(232,184,109,0.4);left:60%;top:50%;animation-duration:9s;animation-delay:4s;}
+.p4{width:3px;height:3px;background:rgba(255,180,80,0.6);left:68%;top:28%;animation-duration:7s;animation-delay:1s;}
+.p5{width:1px;height:1px;background:rgba(232,184,109,0.8);left:63%;top:38%;animation-duration:10s;animation-delay:3s;}
+@keyframes particleFloat{
+  0%{opacity:0;transform:translateY(0) scale(1);}
+  10%{opacity:1;}
+  80%{opacity:.3;}
+  100%{opacity:0;transform:translateY(-80px) scale(0.2);}
+}
+
+.hero-grid{position:relative;z-index:4;width:100%;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:center;}
 .hero-content{max-width:580px;}
 .hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(123,108,246,0.12);border:1px solid rgba(123,108,246,0.3);border-radius:20px;padding:6px 14px;font-size:10px;color:#a392f8;letter-spacing:3px;font-family:'Cinzel',serif;margin-bottom:24px;backdrop-filter:blur(8px);}
 .hero h1{font-family:'Syne',sans-serif;font-size:clamp(40px,5.5vw,72px);font-weight:800;line-height:1.02;margin-bottom:22px;letter-spacing:-0.03em;text-shadow:0 4px 40px rgba(0,0,0,0.7);}
 .hero h1 em{color:var(--gold);font-style:italic;}
-.hero-sub{font-size:clamp(16px,1.5vw,19px);color:rgba(255,255,255,0.8);line-height:1.55;margin-bottom:36px;max-width:520px;text-shadow:0 2px 20px rgba(0,0,0,0.6);}
+.hero-sub{font-size:clamp(16px,1.5vw,19px);color:rgba(255,255,255,0.78);line-height:1.55;margin-bottom:36px;max-width:520px;text-shadow:0 2px 20px rgba(0,0,0,0.6);}
 .hero-ctas{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:28px;}
-.btn-primary{background:var(--accent);color:white;border:none;border-radius:10px;padding:14px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:0.2px;transition:opacity .2s, transform .1s;}
-.btn-primary:hover{opacity:.92;}
+.btn-primary{background:var(--accent);color:white;border:none;border-radius:10px;padding:14px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;letter-spacing:0.2px;transition:opacity .2s,transform .1s,box-shadow .2s;box-shadow:0 0 0 rgba(123,108,246,0);}
+.btn-primary:hover{opacity:.92;box-shadow:0 0 28px rgba(123,108,246,0.5);}
 .btn-primary:active{transform:scale(.98);}
-.btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(10px);border-radius:10px;padding:14px 26px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s, border-color .2s;}
-.btn-ghost:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25);}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(10px);border-radius:10px;padding:14px 26px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s,border-color .2s,box-shadow .2s;}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);box-shadow:0 0 16px rgba(255,255,255,0.05);}
+
+/* Social proof bar */
+.social-proof-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:28px;}
+.proof-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:30px;padding:7px 14px;font-size:12px;color:rgba(255,255,255,0.7);font-family:'DM Sans',sans-serif;}
+.proof-pill .proof-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
 
 .hero-meta{display:flex;gap:20px;align-items:center;flex-wrap:wrap;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:rgba(232,184,109,0.65);}
 .hero-meta-item{display:flex;align-items:center;gap:8px;}
@@ -58,7 +92,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 3
 
 /* Hero card preview (right side) */
 .hero-card-wrap{position:relative;perspective:1500px;display:flex;justify-content:center;align-items:center;min-height:540px;}
-.hero-card{position:relative;width:min(360px,90%);aspect-ratio:3/4;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(232,184,109,0.5), 0 40px 100px rgba(0,0,0,0.95), 0 0 60px rgba(232,184,109,0.15);transform:rotate(4deg);transition:transform .4s cubic-bezier(.23,1.2,.32,1);animation:cardFloat 6s ease-in-out infinite;}
+.hero-card{position:relative;width:min(360px,90%);aspect-ratio:3/4;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(232,184,109,0.5),0 40px 100px rgba(0,0,0,0.95),0 0 60px rgba(232,184,109,0.15),0 0 120px rgba(232,184,109,0.05);transform:rotate(4deg);transition:transform .4s cubic-bezier(.23,1.2,.32,1);animation:cardFloat 6s ease-in-out infinite;}
 .hero-card:hover{transform:rotate(0deg) scale(1.02);}
 @keyframes cardFloat{0%,100%{transform:rotate(4deg) translateY(0);}50%{transform:rotate(4deg) translateY(-10px);}}
 .hero-card img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
@@ -75,9 +109,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 3
 .hero-card-serial{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(232,184,109,.5);}
 .hero-card-holo{position:absolute;inset:0;z-index:20;pointer-events:none;border-radius:20px;mix-blend-mode:color-dodge;background:linear-gradient(135deg,rgba(255,0,80,.04) 0%,rgba(255,160,0,.06) 25%,rgba(0,255,120,.06) 50%,rgba(0,200,255,.06) 75%,rgba(255,0,80,.04) 100%);background-size:200% 200%;animation:lholo 6s ease infinite;opacity:.6;}
 @keyframes lholo{0%{background-position:0% 0%;}50%{background-position:100% 100%;}100%{background-position:0% 0%;}}
-
 .scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:5;font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.35);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeFloat 2.5s ease-in-out infinite;}
 @keyframes fadeFloat{0%,100%{opacity:0.25;transform:translate(-50%,0);}50%{opacity:0.6;transform:translate(-50%,6px);}}
+
+/* Scroll animations */
+[data-animate]{opacity:0;transform:translateY(28px);transition:opacity 0.65s ease,transform 0.65s ease;}
+[data-animate].animate-in{opacity:1;transform:translateY(0);}
+[data-animate-delay="1"]{transition-delay:0.1s;}
+[data-animate-delay="2"]{transition-delay:0.2s;}
+[data-animate-delay="3"]{transition-delay:0.3s;}
+[data-animate-delay="4"]{transition-delay:0.4s;}
+[data-animate-delay="5"]{transition-delay:0.5s;}
 
 /* Section base */
 section{padding:110px 32px;}
@@ -87,30 +129,60 @@ section{padding:110px 32px;}
 .sec-head em{color:var(--gold);font-style:italic;}
 .sec-sub{font-size:16px;color:var(--text-dim);line-height:1.7;max-width:580px;margin-bottom:56px;}
 
+/* Divider line */
+.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,109,0.15),transparent);margin:0;}
+
 /* "Based on a true story" section */
-.moments-section{background:linear-gradient(180deg, var(--bg) 0%, #0d0a18 50%, var(--bg) 100%);}
+.moments-section{background:linear-gradient(180deg,var(--bg) 0%,#0c0a1a 50%,var(--bg) 100%);}
 .moments-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
-.moment-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .3s ease, border-color .3s ease;display:flex;flex-direction:column;}
-.moment-card:hover{transform:translateY(-4px);border-color:rgba(232,184,109,0.2);}
+.moment-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;display:flex;flex-direction:column;}
+.moment-card:hover{transform:translateY(-6px);border-color:rgba(232,184,109,0.25);box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 30px rgba(232,184,109,0.06);}
 .moment-card-img{aspect-ratio:1/1;overflow:hidden;position:relative;}
 .moment-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
-.moment-card:hover .moment-card-img img{transform:scale(1.04);}
-.moment-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(26,26,36,0.9) 100%);pointer-events:none;}
+.moment-card:hover .moment-card-img img{transform:scale(1.05);}
+.moment-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(20,20,32,0.9) 100%);pointer-events:none;}
 .moment-card-body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:10px;}
 .moment-card-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);}
 .moment-card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;line-height:1.25;}
 .moment-card-quote{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--text-dim);line-height:1.5;padding-left:12px;border-left:2px solid rgba(232,184,109,0.2);margin-top:6px;}
 
-/* How it works — 3 steps compact */
+/* Session Scroll Showcase */
+.scroll-showcase{background:linear-gradient(180deg,var(--bg) 0%,#0b0915 100%);}
+.scroll-preview{background:linear-gradient(135deg,rgba(123,108,246,0.07),rgba(232,184,109,0.04));border:1px solid rgba(123,108,246,0.2);border-radius:24px;overflow:hidden;max-width:900px;margin:0 auto;}
+.scroll-preview-header{background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.browser-dots{display:flex;gap:6px;}
+.browser-dot{width:10px;height:10px;border-radius:50%;}
+.bd-red{background:#ff5f57;}
+.bd-yellow{background:#febc2e;}
+.bd-green{background:#28c840;}
+.browser-url{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:5px 14px;font-size:11px;color:var(--text-dimmer);font-family:'DM Sans',sans-serif;text-align:center;max-width:280px;margin:0 auto;}
+.scroll-preview-body{display:grid;grid-template-columns:1fr 1px 1fr;min-height:320px;}
+.scroll-panel{padding:28px 30px;}
+.scroll-panel-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--text-dimmer);margin-bottom:14px;}
+.scroll-divider-vert{background:var(--border);}
+.scroll-input-area{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:16px;font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;min-height:140px;}
+.scroll-steps{display:flex;flex-direction:column;gap:12px;margin-top:16px;}
+.scroll-step{display:flex;align-items:flex-start;gap:10px;}
+.scroll-step-icon{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(123,108,246,0.15);border:1px solid rgba(123,108,246,0.3);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.scroll-step-text{font-size:12.5px;color:var(--text-dim);line-height:1.5;padding-top:3px;}
+.scroll-card-preview{background:linear-gradient(135deg,rgba(232,184,109,0.08),rgba(123,108,246,0.05));border:1px solid var(--border-gold);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;}
+.scroll-card-rarity{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);}
+.scroll-card-title{font-family:'Cinzel Decorative',serif;font-size:18px;color:var(--text);line-height:1.2;}
+.scroll-card-desc{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--text-dim);line-height:1.5;}
+.scroll-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+.scroll-card-serial{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:rgba(232,184,109,0.5);}
+.scroll-card-badge{background:rgba(232,184,109,0.15);border:1px solid rgba(232,184,109,0.3);border-radius:20px;padding:3px 10px;font-family:'Cinzel',serif;font-size:8px;color:var(--gold);letter-spacing:2px;}
+
+/* How it works */
 .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px;}
-.how-step{padding:28px 26px;background:var(--surface);border:1px solid var(--border);border-radius:16px;position:relative;transition:border-color .3s;}
-.how-step:hover{border-color:rgba(123,108,246,0.3);}
+.how-step{padding:28px 26px;background:var(--surface);border:1px solid var(--border);border-radius:16px;position:relative;transition:border-color .3s,transform .3s,box-shadow .3s;}
+.how-step:hover{border-color:rgba(123,108,246,0.3);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
 .how-step-num{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:3px;margin-bottom:14px;display:block;}
 .how-step h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px;letter-spacing:-0.01em;}
 .how-step p{font-size:14px;color:var(--text-dim);line-height:1.65;}
 
-/* Rarity strip — single row, simplified */
-.rarity-strip{background:linear-gradient(135deg,rgba(123,108,246,0.05),rgba(232,184,109,0.03));border:1px solid var(--border);border-radius:18px;padding:32px 36px;}
+/* Rarity strip */
+.rarity-strip{background:linear-gradient(135deg,rgba(123,108,246,0.06),rgba(232,184,109,0.03));border:1px solid var(--border);border-radius:18px;padding:32px 36px;}
 .rarity-strip-head{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--text-dimmer);margin-bottom:18px;}
 .rarity-strip-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
 .rar-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;}
@@ -126,10 +198,10 @@ section{padding:110px 32px;}
 .rarity-strip-notes strong{color:var(--text);font-weight:600;}
 .rarity-strip-notes em{color:var(--gold);font-style:normal;}
 
-/* Features grid — tight */
+/* Features grid */
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
-.feat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 22px 24px;position:relative;transition:border-color .3s, transform .3s;}
-.feat:hover{border-color:rgba(232,184,109,0.2);transform:translateY(-2px);}
+.feat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 22px 24px;position:relative;transition:border-color .3s,transform .3s,box-shadow .3s;}
+.feat:hover{border-color:rgba(232,184,109,0.2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
 .feat-link:hover{border-color:rgba(232,184,109,0.45) !important;}
 .feat-icon{font-size:22px;margin-bottom:12px;display:block;}
 .feat h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;}
@@ -137,6 +209,57 @@ section{padding:110px 32px;}
 .feat-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 10px;border-radius:6px;font-family:'Cinzel',serif;}
 .badge-free{background:rgba(123,108,246,0.15);color:var(--accent);}
 .badge-soon{background:rgba(232,184,109,0.12);color:var(--gold);}
+
+/* Pricing */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:960px;margin:0 auto;}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 22px 26px;transition:transform .3s,box-shadow .3s;}
+.price-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.5);}
+.price-card.popular{border-color:rgba(123,108,246,0.35);background:linear-gradient(135deg,rgba(123,108,246,0.06),rgba(20,20,32,1));}
+.price-card.legend{border-color:rgba(232,184,109,0.3);background:linear-gradient(135deg,rgba(232,184,109,0.08),rgba(20,20,32,1));}
+.price-tier{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;font-weight:700;margin-bottom:6px;}
+.price-tier.purple{color:var(--accent);}
+.price-tier.gold{color:var(--gold);}
+.price-tier.dim{color:var(--text-dim);}
+.price-amount{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.price-amount span{font-size:14px;font-weight:500;color:var(--text-dim);}
+.price-desc{font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:10px;}
+.price-note{font-size:11.5px;color:var(--text-dimmer);font-style:italic;}
+
+/* PATREON SECTION */
+.patreon-section{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--bg) 0%,#0f0a12 50%,var(--bg) 100%);}
+.patreon-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,66,77,0.3),transparent);}
+.patreon-section::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,66,77,0.3),transparent);}
+.patreon-inner{background:linear-gradient(135deg,rgba(255,66,77,0.08) 0%,rgba(232,184,109,0.06) 100%);border:1px solid rgba(255,66,77,0.2);border-radius:28px;padding:56px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:center;position:relative;overflow:hidden;}
+.patreon-inner::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,66,77,0.08) 0%,transparent 70%);pointer-events:none;}
+.patreon-logo{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.patreon-icon{width:36px;height:36px;border-radius:50%;background:#FF424D;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 0 20px rgba(255,66,77,0.4);}
+.patreon-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);}
+.patreon-brand span{color:#FF424D;}
+.patreon-inner h2{font-family:'Syne',sans-serif;font-size:clamp(26px,3vw,38px);font-weight:800;line-height:1.15;letter-spacing:-0.02em;margin-bottom:16px;}
+.patreon-inner h2 em{color:#FF424D;font-style:italic;}
+.patreon-inner p{font-size:15px;color:var(--text-dim);line-height:1.7;margin-bottom:28px;}
+.btn-patreon{display:inline-flex;align-items:center;gap:10px;background:#FF424D;color:white;border:none;border-radius:12px;padding:15px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:opacity .2s,transform .1s,box-shadow .2s;box-shadow:0 0 0 rgba(255,66,77,0);}
+.btn-patreon:hover{opacity:.92;box-shadow:0 0 32px rgba(255,66,77,0.5);transform:translateY(-1px);}
+.patreon-perks{display:flex;flex-direction:column;gap:16px;}
+.patreon-perk{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;background:rgba(255,66,77,0.06);border:1px solid rgba(255,66,77,0.12);border-radius:14px;}
+.patreon-perk-icon{flex-shrink:0;font-size:20px;}
+.patreon-perk-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:3px;}
+.patreon-perk-desc{font-size:12.5px;color:var(--text-dim);line-height:1.5;}
+
+/* FAQ SECTION */
+.faq-section{background:linear-gradient(180deg,var(--bg) 0%,#0c0c16 60%,var(--bg) 100%);}
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .3s;}
+.faq-item.open{border-color:rgba(123,108,246,0.25);}
+.faq-question{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;cursor:pointer;user-select:none;gap:16px;}
+.faq-q-text{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;line-height:1.3;}
+.faq-chevron{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;transition:transform .3s,background .3s;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);background:rgba(123,108,246,0.15);border-color:rgba(123,108,246,0.3);}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;}
+.faq-item.open .faq-answer{max-height:300px;}
+.faq-answer-inner{padding:0 24px 22px;font-size:14.5px;color:var(--text-dim);line-height:1.7;}
+.faq-answer-inner a{color:var(--accent);text-decoration:none;}
+.faq-answer-inner a:hover{text-decoration:underline;}
 
 /* Final CTA */
 .cta-final{padding:100px 32px 90px;text-align:center;position:relative;overflow:hidden;}
@@ -147,10 +270,10 @@ section{padding:110px 32px;}
 .cta-final h2 em{color:var(--gold);font-style:italic;}
 .cta-final-sub{font-size:16px;color:var(--text-dim);line-height:1.6;margin-bottom:34px;}
 .cta-form{display:flex;gap:8px;max-width:440px;margin:0 auto;}
-.cta-form input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:14px 18px;font-size:14px;color:white;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s, background .2s;}
+.cta-form input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:14px 18px;font-size:14px;color:white;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s,background .2s;}
 .cta-form input:focus{border-color:var(--accent);background:rgba(255,255,255,0.08);}
 .cta-form input::placeholder{color:rgba(255,255,255,0.4);}
-.cta-form button{background:var(--accent);color:white;border:none;border-radius:10px;padding:14px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:opacity .2s, transform .1s;}
+.cta-form button{background:var(--accent);color:white;border:none;border-radius:10px;padding:14px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:opacity .2s,transform .1s;}
 .cta-form button:hover{opacity:.92;}
 .cta-form button:active{transform:scale(.98);}
 .cta-note{font-size:12px;color:var(--text-dimmer);margin-top:14px;}
@@ -165,26 +288,25 @@ footer a:hover{color:var(--text);}
 .foot-copy{color:var(--text-dimmer);font-size:12px;}
 
 /* Mobile */
-@media (max-width: 860px){
+@media (max-width:860px){
   nav{padding:14px 20px;}
   .nav-right{gap:14px;}
   .nav-link{display:none;}
   .nav-cta{padding:8px 14px;font-size:12px;}
-
   .hero{min-height:auto;padding:60px 24px 40px;}
   .hero-grid{grid-template-columns:1fr;gap:40px;}
   .hero-content{max-width:100%;text-align:center;margin:0 auto;}
   .hero-tag{font-size:9px;padding:5px 12px;margin-bottom:20px;letter-spacing:2.5px;}
   .hero h1{font-size:34px;}
   .hero-sub{font-size:15px;margin-bottom:26px;margin-left:auto;margin-right:auto;}
-  .hero-ctas{justify-content:center;margin-bottom:22px;}
+  .hero-ctas{justify-content:center;margin-bottom:16px;}
+  .social-proof-bar{justify-content:center;}
   .hero-meta{justify-content:center;gap:14px;font-size:9px;}
   .hero-card-wrap{min-height:auto;padding:20px 0 0;}
   .hero-card{width:min(280px,80%);}
   .hero-card-name{font-size:26px;}
-  .hero-bg::after{background:linear-gradient(180deg, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.7) 60%, var(--bg) 100%);}
+  .hero-bg::after{background:linear-gradient(180deg,rgba(7,7,13,0.3) 0%,rgba(7,7,13,0.7) 60%,var(--bg) 100%);}
   .scroll-hint{display:none;}
-
   section{padding:70px 20px;}
   .sec-head{font-size:26px;}
   .sec-sub{font-size:14px;margin-bottom:40px;}
@@ -192,11 +314,18 @@ footer a:hover{color:var(--text);}
   .rarity-strip-grid{grid-template-columns:repeat(5,1fr);gap:10px;}
   .rar-name{font-size:8px;letter-spacing:1.5px;}
   .rar-symbol{font-size:18px;}
+  .scroll-preview-body{grid-template-columns:1fr;min-height:auto;}
+  .scroll-divider-vert{width:100%;height:1px;}
+  .patreon-inner{grid-template-columns:1fr;gap:32px;padding:36px 24px;}
   .cta-final{padding:70px 20px 60px;}
   .cta-inner{padding:48px 28px;}
   .cta-form{flex-direction:column;gap:10px;}
   .cta-form button{padding:13px;}
+  .faq-q-text{font-size:14px;}
+  [data-animate]{opacity:1;transform:none;}
 }
+@keyframes sylBreathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.04) translateY(-6px);}}
+@keyframes diceFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(3deg);}}
 </style>
 
 <!-- Privacy-friendly analytics by Plausible -->
@@ -208,41 +337,58 @@ footer a:hover{color:var(--text);}
 </head>
 <body>
 
+<!-- Noise texture overlay -->
+<div class="noise-overlay" aria-hidden="true"></div>
+
 <!-- NAV (shared card-layer header) -->
 <div id="ec-header"></div>
 <div id="ec-header-extras">
   <a href="./roadmap.html" class="nav-link">Roadmap</a>
-  <a href="./scroll/" class="nav-cta">Try for free →</a>
+  <a href="./dm-studio/" class="nav-cta">Open Cockpit →</a>
 </div>
 <script src="/_shared/card-layer-header.js"></script>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
+  <div class="hero-particles" aria-hidden="true">
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
+  </div>
   <div class="hero-grid">
 
     <div class="hero-content">
-      <div class="hero-tag">✦ Your D&D Operating System</div>
+      <div class="hero-tag">✦ Your D&amp;D Operating System</div>
       <h1>Every roll. Every crit. <em>Every goodbye.</em></h1>
       <p class="hero-sub">Your campaign ends. Your players move on. The moments fade. <strong style="color:#fffbf0;font-weight:500;">EndoCraft makes sure they don't.</strong></p>
       <div class="hero-ctas">
         <a href="./dm-studio/" class="btn-primary">📖 Open the Cockpit</a>
-        <a href="./scroll/" class="btn-ghost">✦ Try a card free →</a>
+        <a href="./my-cards/" class="btn-ghost">🃏 My card collection →</a>
+      </div>
+      <div class="social-proof-bar">
+        <div class="proof-pill">
+          <span class="proof-dot"></span>
+          <span id="heroProof">Early access open</span>
+        </div>
+        <div class="proof-pill">✦ Free for DMs · No install</div>
       </div>
       <div class="hero-meta">
         <span class="hero-meta-item">Free for DMs</span>
-        <span class="hero-meta-item">3 free cards · No signup</span>
-        <span class="hero-meta-item" id="heroProof"></span>
+        <span class="hero-meta-item">No install needed</span>
+        <span class="hero-meta-item">Browser-based</span>
       </div>
     </div>
 
     <div class="hero-card-wrap">
       <div class="hero-card">
-        <img src="./caspian1.jpg" alt="Caspian Nightbreeze — a Legendary card">
+        <img src="./caspian1.jpg" alt="Caspian Nightbreeze — a Legendary card" loading="lazy">
         <div class="hero-card-ov"></div>
         <div class="hero-card-top">
           <div class="hero-card-brand">
-            <img src="./IMG_8431.PNG">
+            <img src="./IMG_8431.PNG" alt="EndoCraft" loading="lazy">
             <span>EndoCraft · Session 14</span>
           </div>
           <div class="hero-card-pill">✦ Legendary</div>
@@ -263,7 +409,7 @@ footer a:hover{color:var(--text);}
 
 <!-- THE HOOK — Emotional pitch -->
 <section style="padding:90px 32px 40px;">
-  <div class="sec-inner" style="max-width:840px;text-align:center;">
+  <div class="sec-inner" style="max-width:840px;text-align:center;" data-animate>
     <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:clamp(20px,2.4vw,28px);line-height:1.5;color:rgba(255,255,255,0.85);margin:0 auto;max-width:680px;">
       You roll a Nat 20 against the dragon. Your party erupts. Three weeks later, all you have left is a memory — and even that's getting blurry.
     </p>
@@ -276,49 +422,51 @@ footer a:hover{color:var(--text);}
 <!-- TWO PATHS — DM or Player, one app -->
 <section id="zones" style="padding-top:60px;padding-bottom:60px;">
   <div class="sec-inner">
-    <span class="sec-tag">✦ Two paths, one app</span>
-    <h2 class="sec-head">Built for the <em>whole table</em> — DM or player.</h2>
-    <p class="sec-sub">One app, two ways in. DMs get the full Cockpit for prep, sessions, and AI co-DMing. Players get the Companion for char sheets, live updates, and a shared album. Cards happen automatically along the way.</p>
+    <span class="sec-tag" data-animate>✦ Two paths, one app</span>
+    <h2 class="sec-head" data-animate data-animate-delay="1">Built for the <em>whole table</em> — DM or player.</h2>
+    <p class="sec-sub" data-animate data-animate-delay="2">One app, two ways in. DMs get the full Cockpit for prep, sessions, and AI co-DMing. Players get the Companion for character sheets, live updates, and a shared album. Cards happen automatically along the way.</p>
 
     <div class="moments-grid">
-      <a href="./dm-studio/" class="moment-card" style="text-decoration:none;color:inherit;">
+      <a href="./dm-studio/" class="moment-card" style="text-decoration:none;color:inherit;" data-animate data-animate-delay="3">
         <div class="moment-card-body" style="padding:32px 28px 28px;">
           <div class="moment-card-tag">📖 FOR DMs</div>
           <div class="moment-card-title" style="font-size:20px;margin-bottom:14px;">The Cockpit</div>
           <div class="moment-card-quote" style="font-style:normal;border-left:none;padding-left:0;font-size:14.5px;color:var(--text-dim);line-height:1.65;">
-            Campaign tree, location prep with read-aloud + AI scene generation, live combat tracker, character sheets in D&D-Beyond style, AI Co-DM that knows your party. Capture highlights → cinematic trading cards in one click.
+            Campaign tree, location prep with read-aloud + AI scene generation, live combat tracker, character sheets, AI Co-DM that knows your party. Capture highlights → cinematic trading cards in one click.
           </div>
           <div style="margin-top:18px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--accent);font-weight:700;">→ Open Cockpit</div>
         </div>
       </a>
-      <a href="./player/companion.html" class="moment-card" style="text-decoration:none;color:inherit;">
+      <a href="./player/companion.html" class="moment-card" style="text-decoration:none;color:inherit;" data-animate data-animate-delay="4">
         <div class="moment-card-body" style="padding:32px 28px 28px;">
           <div class="moment-card-tag" style="color:var(--gold);">🎭 FOR PLAYERS</div>
           <div class="moment-card-title" style="font-size:20px;margin-bottom:14px;">The Companion</div>
           <div class="moment-card-quote" style="font-style:normal;border-left:none;padding-left:0;font-size:14.5px;color:var(--text-dim);line-height:1.65;">
-            Your character sheet with D20 rolls, live updates from the DM during the session, recap from your character's perspective after, the shared Party Album with cards from everyone. One magic link from your DM and you're in.
+            Your character sheet with D20 rolls, live updates from the DM during the session, recap from your character's perspective after, the shared Party Album with cards from everyone.
           </div>
           <div style="margin-top:18px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--gold);font-weight:700;">→ Player Companion</div>
         </div>
       </a>
     </div>
-    <p style="text-align:center;margin-top:36px;font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--text-dimmer);max-width:580px;margin-left:auto;margin-right:auto;">
+    <p style="text-align:center;margin-top:36px;font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--text-dimmer);max-width:580px;margin-left:auto;margin-right:auto;" data-animate>
       Cards aren't a separate product — they're how moments become heirlooms. Captured in the Cockpit, sealed in the Album, displayed in the <a href="./hall-of-fame/" style="color:var(--gold);text-decoration:underline;">Hall of Fame</a>.
     </p>
   </div>
 </section>
 
+<div class="divider"></div>
+
 <!-- BASED ON A TRUE STORY — 3 real moments -->
 <section class="moments-section" id="moments">
   <div class="sec-inner">
-    <span class="sec-tag">✦ Based on a true story</span>
-    <h2 class="sec-head">Every card starts <em>at a real table</em>.</h2>
-    <p class="sec-sub">A line in the recap. A scene that wouldn't leave the group chat. EndoCraft turns it into something you can hold — sealed forever, one of one.</p>
+    <span class="sec-tag" data-animate>✦ Based on a true story</span>
+    <h2 class="sec-head" data-animate data-animate-delay="1">Every card starts <em>at a real table</em>.</h2>
+    <p class="sec-sub" data-animate data-animate-delay="2">A line in the recap. A scene that wouldn't leave the group chat. EndoCraft turns it into something you can hold — sealed forever, one of one.</p>
 
     <div class="moments-grid">
-      <div class="moment-card">
+      <div class="moment-card" data-animate data-animate-delay="2">
         <div class="moment-card-img">
-          <img src="./caspian2.jpg" alt="Caspian's unwanted kiss">
+          <img src="./caspian2.jpg" alt="Caspian's unwanted kiss" loading="lazy">
         </div>
         <div class="moment-card-body">
           <div class="moment-card-tag">✦ LEGENDARY</div>
@@ -326,9 +474,9 @@ footer a:hover{color:var(--text);}
           <div class="moment-card-quote">"Grimhilda mistook him for her long-lost love. His ears flattened. His lute hung forgotten. The party never let it go."</div>
         </div>
       </div>
-      <div class="moment-card">
+      <div class="moment-card" data-animate data-animate-delay="3">
         <div class="moment-card-img">
-          <img src="./hero-aftermath.png" alt="A paladin kneels after an impossible battle">
+          <img src="./hero-aftermath.png" alt="A paladin kneels after an impossible battle" loading="lazy">
         </div>
         <div class="moment-card-body">
           <div class="moment-card-tag">★ EPIC</div>
@@ -336,9 +484,9 @@ footer a:hover{color:var(--text);}
           <div class="moment-card-quote">"We shouldn't have survived that. But there we were — standing in the smoke."</div>
         </div>
       </div>
-      <div class="moment-card">
+      <div class="moment-card" data-animate data-animate-delay="4">
         <div class="moment-card-img">
-          <img src="./group-view-campfire.png" alt="A fantasy party around a campfire">
+          <img src="./group-view-campfire.png" alt="A fantasy party around a campfire" loading="lazy">
         </div>
         <div class="moment-card-body">
           <div class="moment-card-tag">◆ RARE</div>
@@ -350,18 +498,68 @@ footer a:hover{color:var(--text);}
   </div>
 </section>
 
+<div class="divider"></div>
+
+<!-- CARD COLLECTION SHOWCASE -->
+<section style="padding:90px 32px;background:linear-gradient(180deg,var(--bg) 0%,#0b0915 100%);">
+  <div class="sec-inner">
+    <div style="text-align:center;margin-bottom:52px;" data-animate>
+      <span class="sec-tag">✦ Your Collection</span>
+      <h2 class="sec-head" style="margin:0 auto 18px;">Moments sealed. <em>Forever.</em></h2>
+      <p class="sec-sub" style="margin:0 auto;">Every session generates a card — rolled rarity, cinematic AI art, sealed and numbered. Your whole campaign in one place. Share with your party. Display in the Hall of Fame.</p>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(232,184,109,.07),rgba(123,108,246,.04));border:1px solid rgba(232,184,109,.18);border-radius:24px;padding:40px 36px;max-width:820px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:end;" data-animate data-animate-delay="2">
+      <!-- Sample cards -->
+      <div style="aspect-ratio:3/4;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 0 0 1.5px rgba(232,184,109,.5),0 24px 60px rgba(0,0,0,.9);transform:rotate(-4deg) translateY(8px);">
+        <img src="./caspian1.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.5) 0%,transparent 30%,rgba(4,2,0,.95) 80%)"></div>
+        <div style="position:absolute;top:10px;right:10px;background:rgba(10,5,0,.85);border:1px solid rgba(232,184,109,.45);border-radius:20px;padding:3px 9px;font-family:'Cinzel',serif;font-size:7px;font-weight:700;letter-spacing:1.5px;color:#E8B86D;">✦ Legendary</div>
+        <div style="position:absolute;bottom:12px;left:12px;right:12px;">
+          <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(232,184,109,.75);">Harengon Bard</div>
+          <div style="font-family:'Cinzel Decorative',serif;font-size:18px;color:#fffbf0;text-shadow:0 2px 16px #000;line-height:1;">Caspian</div>
+          <div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:1.5px;color:rgba(232,184,109,.35);margin-top:5px;border-top:1px solid rgba(232,184,109,.1);padding-top:4px;">#0001 / 9999</div>
+        </div>
+      </div>
+      <div style="aspect-ratio:3/4;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 0 0 1.5px rgba(167,139,250,.5),0 24px 70px rgba(0,0,0,.95);z-index:2;">
+        <img src="./hero-aftermath.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.5) 0%,transparent 30%,rgba(4,2,0,.95) 80%)"></div>
+        <div style="position:absolute;top:10px;right:10px;background:rgba(5,0,20,.85);border:1px solid rgba(167,139,250,.45);border-radius:20px;padding:3px 9px;font-family:'Cinzel',serif;font-size:7px;font-weight:700;letter-spacing:1.5px;color:#A78BFA;">★ Epic</div>
+        <div style="position:absolute;bottom:12px;left:12px;right:12px;">
+          <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(167,139,250,.75);">Paladin</div>
+          <div style="font-family:'Cinzel Decorative',serif;font-size:18px;color:#fffbf0;text-shadow:0 2px 16px #000;line-height:1;">The Aftermath</div>
+          <div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:1.5px;color:rgba(167,139,250,.35);margin-top:5px;border-top:1px solid rgba(167,139,250,.1);padding-top:4px;">#0047 / 9999</div>
+        </div>
+      </div>
+      <div style="aspect-ratio:3/4;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 0 0 1.5px rgba(96,165,250,.4),0 24px 60px rgba(0,0,0,.9);transform:rotate(4deg) translateY(8px);">
+        <img src="./group-view-campfire.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,3,0,.5) 0%,transparent 30%,rgba(4,2,0,.95) 80%)"></div>
+        <div style="position:absolute;top:10px;right:10px;background:rgba(0,5,20,.85);border:1px solid rgba(96,165,250,.45);border-radius:20px;padding:3px 9px;font-family:'Cinzel',serif;font-size:7px;font-weight:700;letter-spacing:1.5px;color:#60A5FA;">◆ Rare</div>
+        <div style="position:absolute;bottom:12px;left:12px;right:12px;">
+          <div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(96,165,250,.75);">Party Moment</div>
+          <div style="font-family:'Cinzel Decorative',serif;font-size:16px;color:#fffbf0;text-shadow:0 2px 16px #000;line-height:1;">The Bond</div>
+          <div style="font-family:'Cinzel',serif;font-size:6px;letter-spacing:1.5px;color:rgba(96,165,250,.35);margin-top:5px;border-top:1px solid rgba(96,165,250,.1);padding-top:4px;">#0112 / 9999</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:36px;" data-animate data-animate-delay="3">
+      <a href="./my-cards/" class="btn-primary" style="display:inline-block;">🃏 View your collection →</a>
+      <p style="font-size:12.5px;color:var(--text-dimmer);margin-top:12px;font-style:italic;font-family:'EB Garamond',serif;">Cards are captured automatically in the Cockpit during sessions.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ONBOARDING — First time? Start here -->
 <section style="padding:90px 32px 60px;background:linear-gradient(180deg,var(--bg) 0%,#0d0a18 50%,var(--bg) 100%);">
   <div class="sec-inner" style="max-width:1080px;">
-    <div style="text-align:center;">
+    <div style="text-align:center;" data-animate>
       <span class="sec-tag">✦ First time at the table?</span>
       <h2 class="sec-head" style="margin:0 auto 22px;">Start with <em>Ashford Wyrmling</em>.<br>Syl will guide you.</h2>
       <p class="sec-sub" style="margin:0 auto 50px;">A complete 90-minute starter adventure, pre-loaded into your Cockpit. One moral choice with three endings — and your first card generated automatically. Built specifically to teach you EndoCraft while you actually play.</p>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:36px;align-items:center;background:linear-gradient(135deg,rgba(232,184,109,0.06),rgba(123,108,246,0.04));border:1px solid rgba(232,184,109,0.18);border-radius:18px;padding:40px 38px;">
-
-      <!-- Syl mascot side -->
+    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:36px;align-items:center;background:linear-gradient(135deg,rgba(232,184,109,0.06),rgba(123,108,246,0.04));border:1px solid rgba(232,184,109,0.18);border-radius:18px;padding:40px 38px;" data-animate data-animate-delay="2">
       <div style="text-align:center;">
         <div style="font-size:140px;line-height:1;filter:drop-shadow(0 16px 40px rgba(232,184,109,0.4));animation:sylBreathe 5s ease-in-out infinite;">🐉</div>
         <div style="font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--gold);margin-top:18px;font-weight:700;letter-spacing:.02em;">Syl</div>
@@ -370,73 +568,63 @@ footer a:hover{color:var(--text);}
           "Every story starts somewhere.<br>This is yours."
         </div>
       </div>
-
-      <!-- Walkthrough side -->
       <div>
         <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2.5px;color:var(--accent);font-weight:700;margin-bottom:18px;">YOUR FIRST 5 MINUTES</div>
-
         <div style="display:flex;flex-direction:column;gap:18px;">
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.4);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);">1</div>
             <div>
               <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;">Click „Load Ashford"</div>
-              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">A complete campaign loads — 4 locations, 6 NPCs, 3 statblocks. Syl appears as a dragon hatchling that guides you through the next steps with little tooltips.</div>
+              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">A complete campaign loads — 4 locations, 6 NPCs, 3 statblocks. Syl guides you through with tooltips.</div>
             </div>
           </div>
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.4);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);">2</div>
             <div>
               <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;">Invite your players</div>
-              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">One magic-link per character. They open it on their phone — they're in. No code-typing, no signup hurdles. The Companion is ready.</div>
+              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">One magic-link per character. They open it on their phone — no code-typing, no signup hurdles.</div>
             </div>
           </div>
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <div style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(232,184,109,0.12);border:1px solid rgba(232,184,109,0.4);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);">3</div>
             <div>
               <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;">Run the session — make the choice</div>
-              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">Adventure ends with a moral decision. Whichever you pick determines Syl's color reveal — and the rarity of your first session card. Saved forever in your Album.</div>
+              <div style="font-size:13.5px;color:var(--text-dim);line-height:1.55;">Adventure ends with a moral decision that determines Syl's color — and the rarity of your first session card.</div>
             </div>
           </div>
         </div>
-
         <a href="./dm-studio/" class="btn-primary" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--gold);border-color:var(--gold);color:#1a1410;">
           <span>🐉</span> <span>Start with Ashford</span> <span style="opacity:.65;">→</span>
         </a>
         <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:12.5px;color:var(--text-dimmer);margin-top:12px;">Free for DMs. No credit card. ~5 min setup.</p>
       </div>
-
     </div>
   </div>
 </section>
-<style>
-  @keyframes sylBreathe{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.04) translateY(-6px);}}
-  @media(max-width:780px){section .sec-inner > div[style*="grid-template-columns:1fr 1.3fr"]{grid-template-columns:1fr !important;gap:28px !important;padding:28px 22px !important;}}
-</style>
 
 <!-- HOW IT WORKS -->
 <section id="how">
   <div class="sec-inner">
-    <span class="sec-tag">✦ The loop</span>
-    <h2 class="sec-head">Prep. Play. <em>Capture.</em> Forever.</h2>
-    <p class="sec-sub">Four steps. Every session. Your campaign becomes a story you can hold.</p>
-
+    <span class="sec-tag" data-animate>✦ The loop</span>
+    <h2 class="sec-head" data-animate data-animate-delay="1">Prep. Play. <em>Capture.</em> Forever.</h2>
+    <p class="sec-sub" data-animate data-animate-delay="2">Four steps. Every session. Your campaign becomes a story you can hold.</p>
     <div class="how-grid">
-      <div class="how-step">
+      <div class="how-step" data-animate data-animate-delay="2">
         <span class="how-step-num">01 · PREP</span>
         <h3>Build your world</h3>
         <p>Drop a PDF or write fresh. AI organizes locations, NPCs, scenarios — generates read-aloud text and statblocks for you.</p>
       </div>
-      <div class="how-step">
+      <div class="how-step" data-animate data-animate-delay="3">
         <span class="how-step-num">02 · PLAY</span>
         <h3>Run the session</h3>
         <p>Live combat tracker. AI Co-DM in your ear. Players see live updates and roll on shared 3D dice.</p>
       </div>
-      <div class="how-step">
+      <div class="how-step" data-animate data-animate-delay="4">
         <span class="how-step-num">03 · CAPTURE</span>
         <h3>Moments → Cards</h3>
         <p>AI pulls out the legendary moments from your recap. One click, sealed forever — rolled rarity, cinematic art.</p>
       </div>
-      <div class="how-step">
+      <div class="how-step" data-animate data-animate-delay="5">
         <span class="how-step-num">04 · COLLECT</span>
         <h3>Album grows</h3>
         <p>Shared Party Album. 10 sessions = unlock an exclusive heirloom card. The legendary ones trend on the Hall of Fame.</p>
@@ -445,10 +633,10 @@ footer a:hover{color:var(--text);}
   </div>
 </section>
 
-<!-- DICE DRAMA — Live multiplayer dice -->
+<!-- DICE DRAMA -->
 <section style="padding:40px 32px 20px;">
   <div class="sec-inner">
-    <div style="background:linear-gradient(135deg,rgba(232,184,109,0.08),rgba(123,108,246,0.06));border:1px solid rgba(232,184,109,0.18);border-radius:18px;padding:38px 36px;display:grid;grid-template-columns:1fr 1.2fr;gap:36px;align-items:center;">
+    <div style="background:linear-gradient(135deg,rgba(232,184,109,0.08),rgba(123,108,246,0.06));border:1px solid rgba(232,184,109,0.18);border-radius:18px;padding:38px 36px;display:grid;grid-template-columns:1fr 1.2fr;gap:36px;align-items:center;" data-animate>
       <div style="text-align:center;">
         <div style="font-size:120px;line-height:1;filter:drop-shadow(0 12px 30px rgba(232,184,109,0.35));animation:diceFloat 4s ease-in-out infinite;">🎲</div>
         <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:rgba(232,184,109,0.7);margin-top:14px;font-weight:700;">REAL PHYSICS · LIVE SYNC</div>
@@ -466,42 +654,18 @@ footer a:hover{color:var(--text);}
     </div>
   </div>
 </section>
-<style>
-  @keyframes diceFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(3deg);}}
-  @media(max-width:780px){section .sec-inner > div[style*="grid-template-columns:1fr 1.2fr"]{grid-template-columns:1fr !important;gap:24px !important;padding:28px 22px !important;}}
-</style>
 
-<!-- RARITY — single strip -->
+<!-- RARITY -->
 <section style="padding-top:40px;">
-  <div class="sec-inner">
+  <div class="sec-inner" data-animate>
     <div class="rarity-strip">
       <div class="rarity-strip-head">✦ RARITY — ROLLED BY A D20, NEVER BOUGHT</div>
       <div class="rarity-strip-grid">
-        <div class="rar-item rar-misp">
-          <div class="rar-symbol">◈</div>
-          <div class="rar-name">Misprint</div>
-          <div class="rar-meta">NAT 1 · 3%</div>
-        </div>
-        <div class="rar-item rar-common">
-          <div class="rar-symbol">◇</div>
-          <div class="rar-name">Common</div>
-          <div class="rar-meta">2–6 · 17%</div>
-        </div>
-        <div class="rar-item rar-rare">
-          <div class="rar-symbol">◆</div>
-          <div class="rar-name">Rare</div>
-          <div class="rar-meta">7–13 · 35%</div>
-        </div>
-        <div class="rar-item rar-epic">
-          <div class="rar-symbol">★</div>
-          <div class="rar-name">Epic</div>
-          <div class="rar-meta">14–19 · 37%</div>
-        </div>
-        <div class="rar-item rar-legend">
-          <div class="rar-symbol">✦</div>
-          <div class="rar-name">Legendary</div>
-          <div class="rar-meta">NAT 20 · 8%</div>
-        </div>
+        <div class="rar-item rar-misp"><div class="rar-symbol">◈</div><div class="rar-name">Misprint</div><div class="rar-meta">NAT 1 · 3%</div></div>
+        <div class="rar-item rar-common"><div class="rar-symbol">◇</div><div class="rar-name">Common</div><div class="rar-meta">2–6 · 17%</div></div>
+        <div class="rar-item rar-rare"><div class="rar-symbol">◆</div><div class="rar-name">Rare</div><div class="rar-meta">7–13 · 35%</div></div>
+        <div class="rar-item rar-epic"><div class="rar-symbol">★</div><div class="rar-name">Epic</div><div class="rar-meta">14–19 · 37%</div></div>
+        <div class="rar-item rar-legend"><div class="rar-symbol">✦</div><div class="rar-name">Legendary</div><div class="rar-meta">NAT 20 · 8%</div></div>
       </div>
       <div class="rarity-strip-notes">
         <p><strong>Legendary</strong> can't be bought — every rarity gets rolled server-side the moment you submit. No retries, no tricks.</p>
@@ -511,30 +675,29 @@ footer a:hover{color:var(--text);}
   </div>
 </section>
 
-<!-- FEATURES — focused on 4 differentiators -->
+<!-- FEATURES -->
 <section>
   <div class="sec-inner">
-    <span class="sec-tag">✦ What makes EndoCraft different</span>
-    <h2 class="sec-head">Not another <em>character builder.</em></h2>
-    <p class="sec-sub">There are dozens of D&D tools. EndoCraft is the only one that turns the moments at your table into something permanent.</p>
-
+    <span class="sec-tag" data-animate>✦ What makes EndoCraft different</span>
+    <h2 class="sec-head" data-animate data-animate-delay="1">Not another <em>character builder.</em></h2>
+    <p class="sec-sub" data-animate data-animate-delay="2">There are dozens of D&amp;D tools. EndoCraft is the only one that turns the moments at your table into something permanent.</p>
     <div class="feat-grid">
-      <div class="feat">
+      <div class="feat" data-animate data-animate-delay="2">
         <span class="feat-icon">🤖</span>
         <h3>AI Co-DM that knows your campaign</h3>
         <p>Reads your locations, NPCs, recaps. Suggests rules, lore, and improv moves in real-time. Never overrides — always there.</p>
       </div>
-      <div class="feat">
+      <div class="feat" data-animate data-animate-delay="3">
         <span class="feat-icon">⚔️</span>
         <h3>Combat that runs itself</h3>
         <p>Initiative, HP-bars, conditions, multi-attack rolls. AI Encounter Builder generates balanced fights with full statblocks. Click an ability, players roll.</p>
       </div>
-      <div class="feat">
+      <div class="feat" data-animate data-animate-delay="4">
         <span class="feat-icon">🃏</span>
         <h3>Moments → Cards, automatically</h3>
-        <p>The AI watches your sessions. Pulls out the legendary moments. Rolls rarity server-side. Generates cinematic art. Sealed forever — one of one.</p>
+        <p>The AI watches your sessions. Pulls out the legendary moments. Rolls rarity server-side. Generates cinematic art. Sealed forever.</p>
       </div>
-      <a href="./roadmap.html" class="feat feat-link" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;border-color:rgba(232,184,109,0.15);background:linear-gradient(135deg,rgba(232,184,109,.05),rgba(123,108,246,.04));">
+      <a href="./roadmap.html" class="feat feat-link" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;border-color:rgba(232,184,109,0.15);background:linear-gradient(135deg,rgba(232,184,109,.05),rgba(123,108,246,.04));" data-animate data-animate-delay="5">
         <span class="feat-icon">✦</span>
         <h3 style="color:var(--gold);">More dropping soon</h3>
         <p>Living Cards (animated) · Lore Codex · Foreshadowing Tracker · Campaign Marketplace.</p>
@@ -544,52 +707,152 @@ footer a:hover{color:var(--text);}
   </div>
 </section>
 
-<!-- PRICING — quick snapshot -->
+<!-- PRICING -->
 <section style="padding:60px 32px 40px;">
   <div class="sec-inner">
-    <span class="sec-tag">✦ Pricing</span>
-    <h2 class="sec-head">Start free. <em>Scale</em> when your party grows.</h2>
-    <p class="sec-sub">Free for DMs forever. Pay only for the cards. The Cockpit, the Companion, the AI Co-DM — all included.</p>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:960px;margin:0 auto;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 22px 24px;">
-        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--text-dim);font-weight:700;margin-bottom:6px;">FREE</div>
-        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:6px;">€0</div>
-        <div style="font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:12px;">3 cards · No signup · Try anytime</div>
-        <div style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;">Cockpit + Companion always free.</div>
+    <span class="sec-tag" data-animate>✦ Pricing</span>
+    <h2 class="sec-head" data-animate data-animate-delay="1">Start free. <em>Scale</em> when your party grows.</h2>
+    <p class="sec-sub" data-animate data-animate-delay="2">Free for DMs forever. Pay only for the cards. The Cockpit, the Companion, the AI Co-DM — all included.</p>
+    <div class="price-grid" data-animate data-animate-delay="3">
+      <div class="price-card">
+        <div class="price-tier dim">FREE</div>
+        <div class="price-amount">€0</div>
+        <div class="price-desc">3 cards · No signup · Try anytime</div>
+        <div class="price-note">Cockpit + Companion always free.</div>
       </div>
-      <div style="background:var(--surface);border:1px solid rgba(123,108,246,0.3);border-radius:14px;padding:22px 22px 24px;position:relative;">
-        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--accent);font-weight:700;margin-bottom:6px;">ADVENTURER</div>
-        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:6px;">€5<span style="font-size:14px;font-weight:500;color:var(--text-dim);">/mo</span></div>
-        <div style="font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:12px;">Unlimited cards · Full HD art · Re-roll for €0.5</div>
-        <div style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;">For active campaigns.</div>
+      <div class="price-card popular">
+        <div class="price-tier purple">ADVENTURER</div>
+        <div class="price-amount">€5<span>/mo</span></div>
+        <div class="price-desc">Unlimited cards · Full HD art · Re-roll for €0.5</div>
+        <div class="price-note">For active campaigns.</div>
       </div>
-      <div style="background:linear-gradient(135deg,rgba(232,184,109,0.08),rgba(232,184,109,0.02));border:1px solid rgba(232,184,109,0.3);border-radius:14px;padding:22px 22px 24px;">
-        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--gold);font-weight:700;margin-bottom:6px;">LEGEND</div>
-        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:6px;">€12<span style="font-size:14px;font-weight:500;color:var(--text-dim);">/mo</span></div>
-        <div style="font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:12px;">Adventurer + Living Cards (animated) · Priority AI</div>
-        <div style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;">Cinematic premium.</div>
+      <div class="price-card legend">
+        <div class="price-tier gold">LEGEND</div>
+        <div class="price-amount">€12<span>/mo</span></div>
+        <div class="price-desc">Adventurer + Living Cards (animated) · Priority AI</div>
+        <div class="price-note">Cinematic premium.</div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 22px 24px;">
-        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2.5px;color:var(--text-dim);font-weight:700;margin-bottom:6px;">PARTY</div>
-        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--text);margin-bottom:6px;">€15<span style="font-size:14px;font-weight:500;color:var(--text-dim);">/mo</span></div>
-        <div style="font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:12px;">For the whole table · Up to 6 players · Shared Album</div>
-        <div style="font-size:11.5px;color:var(--text-dimmer);font-style:italic;">DM pays, party plays.</div>
+      <div class="price-card">
+        <div class="price-tier dim">PARTY</div>
+        <div class="price-amount">€15<span>/mo</span></div>
+        <div class="price-desc">For the whole table · Up to 6 players · Shared Album</div>
+        <div class="price-note">DM pays, party plays.</div>
       </div>
     </div>
-    <p style="text-align:center;margin-top:28px;font-size:13px;color:var(--text-dimmer);font-style:italic;">1 credit = 1 card · 0.5 credits = re-roll same moment with different art</p>
+    <p style="text-align:center;margin-top:24px;font-size:13px;color:var(--text-dimmer);font-style:italic;" data-animate>1 credit = 1 card · 0.5 credits = re-roll same moment with different art</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PATREON CTA -->
+<section class="patreon-section" style="padding:90px 32px;">
+  <div class="sec-inner" style="max-width:1000px;">
+    <div class="patreon-inner" data-animate>
+      <div>
+        <div class="patreon-logo">
+          <div class="patreon-icon">🎗️</div>
+          <div class="patreon-brand">Support on <span>Patreon</span></div>
+        </div>
+        <h2>Help us build the future of <em>D&amp;D storytelling.</em></h2>
+        <p>EndoCraft is built by people who love the game. Your Patreon support directly funds new features — early access to beta tools, exclusive cards, and a direct line to shape what we build next.</p>
+        <a href="https://patreon.com/endocraft" target="_blank" rel="noopener noreferrer" class="btn-patreon">
+          <span>🎗️</span>
+          <span>Join on Patreon</span>
+        </a>
+        <p style="margin-top:14px;font-size:12px;color:rgba(255,255,255,0.35);font-family:'EB Garamond',serif;font-style:italic;">patreon.com/endocraft</p>
+      </div>
+      <div class="patreon-perks">
+        <div class="patreon-perk">
+          <div class="patreon-perk-icon">🃏</div>
+          <div>
+            <div class="patreon-perk-title">Exclusive Patron Cards</div>
+            <div class="patreon-perk-desc">Monthly exclusive card drops — Patron-only art, frames, and effects. Not available anywhere else.</div>
+          </div>
+        </div>
+        <div class="patreon-perk">
+          <div class="patreon-perk-icon">⚡</div>
+          <div>
+            <div class="patreon-perk-title">Beta Access — First in Line</div>
+            <div class="patreon-perk-desc">Living Cards, Campaign Feed, Discord integration — you get it weeks before everyone else.</div>
+          </div>
+        </div>
+        <div class="patreon-perk">
+          <div class="patreon-perk-icon">🗳️</div>
+          <div>
+            <div class="patreon-perk-title">Vote on What We Build</div>
+            <div class="patreon-perk-desc">Monthly polls, direct Discord access to the team. Your table shapes the roadmap.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAQ SECTION -->
+<section class="faq-section" style="padding:90px 32px;">
+  <div class="sec-inner" style="max-width:860px;">
+    <div style="text-align:center;margin-bottom:52px;" data-animate>
+      <span class="sec-tag">✦ FAQ</span>
+      <h2 class="sec-head" style="margin:0 auto;">Still have <em>questions?</em></h2>
+    </div>
+    <div class="faq-list" data-animate data-animate-delay="2">
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <div class="faq-q-text">What exactly is EndoCraft — and who is it for?</div>
+          <div class="faq-chevron">▾</div>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">EndoCraft is a D&D session platform for the whole table. DMs get a full campaign cockpit: prep tools, an AI Co-DM, live combat tracker, and automated session cards. Players get a companion app with their character sheet, live updates, and a shared party album. It works entirely in the browser — no install needed. Designed for 5e but adaptable to any TTRPG.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <div class="faq-q-text">Do I need to install anything? Does my group need to sign up?</div>
+          <div class="faq-chevron">▾</div>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Nothing to install — EndoCraft runs entirely in your browser. The Session Scroll tool doesn't require any account at all: paste your recap, get your card. For the full Cockpit, DMs create a free account. Players join via a magic link the DM sends — no signup, no password. One tap and they're in during the session.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <div class="faq-q-text">How does rarity work — can I buy a Legendary card?</div>
+          <div class="faq-chevron">▾</div>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">No. Rarity is determined by a D20 roll on our server the moment you submit — Common (2–6), Rare (7–13), Epic (14–19), Legendary (Nat 20, 8%), and Misprint (Nat 1, 3%). You can re-roll a moment for €0.50 with a different art style, but the rarity is always re-rolled. No amount of money guarantees you a Legendary. That's the point.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <div class="faq-q-text">When are Living Cards and Campaign Memory coming?</div>
+          <div class="faq-chevron">▾</div>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Both are in active development. Living Cards (animated, glowing card art) and Campaign Memory (recurring NPCs, plot threads across sessions) are the next major features. Check the <a href="./roadmap.html">Roadmap</a> for current status, or join the waitlist below to be notified the moment they drop. Patreon supporters get beta access first.</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
 <!-- FINAL CTA -->
 <section class="cta-final">
-  <div class="cta-inner">
+  <div class="cta-inner" data-animate>
     <div class="cta-tag">✦ Early Access</div>
     <h2>Pick your <em>path</em>.</h2>
     <p class="cta-final-sub">Whatever side of the screen you're on — there's a way in.</p>
 
     <div style="display:flex;flex-direction:column;gap:10px;max-width:380px;margin:0 auto 24px;">
-      <a href="./dm-studio/" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color .2s, background .2s;text-align:left;" onmouseover="this.style.borderColor='var(--accent)';this.style.background='rgba(123,108,246,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='rgba(255,255,255,0.05)';">
+      <a href="./dm-studio/" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color .2s,background .2s;text-align:left;" onmouseover="this.style.borderColor='var(--accent)';this.style.background='rgba(123,108,246,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='rgba(255,255,255,0.05)';">
         <span style="font-size:24px;flex-shrink:0;">📖</span>
         <div style="flex:1;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;">I'm a DM</div>
@@ -597,7 +860,7 @@ footer a:hover{color:var(--text);}
         </div>
         <span style="color:var(--accent);font-family:'Cinzel',serif;letter-spacing:2px;font-size:11px;font-weight:700;">→</span>
       </a>
-      <a href="./player/companion.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color .2s, background .2s;text-align:left;" onmouseover="this.style.borderColor='var(--accent)';this.style.background='rgba(123,108,246,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='rgba(255,255,255,0.05)';">
+      <a href="./player/companion.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color .2s,background .2s;text-align:left;" onmouseover="this.style.borderColor='var(--accent)';this.style.background='rgba(123,108,246,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.background='rgba(255,255,255,0.05)';">
         <span style="font-size:24px;flex-shrink:0;">🎭</span>
         <div style="flex:1;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;">I'm a Player</div>
@@ -605,11 +868,11 @@ footer a:hover{color:var(--text);}
         </div>
         <span style="color:var(--accent);font-family:'Cinzel',serif;letter-spacing:2px;font-size:11px;font-weight:700;">→</span>
       </a>
-      <a href="./scroll/" style="display:flex;align-items:center;gap:14px;background:rgba(232,184,109,0.08);border:1px solid rgba(232,184,109,0.3);border-radius:12px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color .2s, background .2s;text-align:left;" onmouseover="this.style.borderColor='var(--gold)';this.style.background='rgba(232,184,109,0.14)';" onmouseout="this.style.borderColor='rgba(232,184,109,0.3)';this.style.background='rgba(232,184,109,0.08)';">
+      <a href="./my-cards/" style="display:flex;align-items:center;gap:14px;background:rgba(232,184,109,0.08);border:1px solid rgba(232,184,109,0.3);border-radius:12px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color .2s,background .2s;text-align:left;" onmouseover="this.style.borderColor='var(--gold)';this.style.background='rgba(232,184,109,0.14)';" onmouseout="this.style.borderColor='rgba(232,184,109,0.3)';this.style.background='rgba(232,184,109,0.08)';">
         <span style="font-size:24px;flex-shrink:0;">🃏</span>
         <div style="flex:1;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;">Just curious — try a card</div>
-          <div style="font-size:12.5px;color:var(--text-dim);margin-top:2px;">3 free cards · No signup · See what a session looks like sealed</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14.5px;">Just curious — browse cards</div>
+          <div style="font-size:12.5px;color:var(--text-dim);margin-top:2px;">No signup · See what sealed sessions look like</div>
         </div>
         <span style="color:var(--gold);font-family:'Cinzel',serif;letter-spacing:2px;font-size:11px;font-weight:700;">→</span>
       </a>
@@ -632,46 +895,75 @@ footer a:hover{color:var(--text);}
   <div class="fnav">
     <a href="./dm-studio/">DM Studio</a>
     <a href="./player/">Player View</a>
-    <a href="./scroll/">Make a card</a>
+    <a href="./my-cards/">My Cards</a>
     <a href="./hall-of-fame/">Hall of Fame</a>
     <a href="./roadmap.html">Roadmap</a>
     <a href="#how">How it works</a>
+    <a href="https://patreon.com/endocraft" target="_blank" rel="noopener">Patreon</a>
   </div>
   <p class="foot-copy">© 2026 EndoCraft · Your D&D Operating System.</p>
 </footer>
 
 <script>
-async function subscribe(e) {
-  if (e) e.preventDefault();
-  const email = document.getElementById('subEmail').value;
-  if (!email || !email.includes('@')) return;
-  try {
-    await fetch('https://endocraft-production.up.railway.app/api/subscribe', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ email, source: 'landing' })
+// Scroll animations via Intersection Observer
+(function(){
+  const els = document.querySelectorAll('[data-animate]');
+  if(!els.length || window.matchMedia('(max-width:860px)').matches) return;
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('animate-in');
+        obs.unobserve(e.target);
+      }
     });
-  } catch(err) {}
-  document.getElementById('subForm').style.display = 'none';
-  document.getElementById('subSuccess').style.display = 'block';
+  },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>obs.observe(el));
+})();
+
+// FAQ accordion
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
 }
 
-// Load subscriber count via backend (backend proxies Supabase; keeps subscribers table private)
-(async function loadSocialProof(){
+// Subscribe
+async function subscribe(e) {
+  if(e) e.preventDefault();
+  const email = document.getElementById('subEmail').value;
+  if(!email || !email.includes('@')) return;
   try {
+    await fetch('https://endocraft-production.up.railway.app/api/subscribe',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,source:'landing'})
+    });
+  } catch(err){}
+  document.getElementById('subForm').style.display='none';
+  document.getElementById('subSuccess').style.display='block';
+}
+
+// Social proof
+(async function loadSocialProof(){
+  try{
     const res = await fetch('https://endocraft-production.up.railway.app/api/subscriber-count');
     const data = await res.json();
-    const total = typeof data.count === 'number' ? data.count : 0;
-
-    const heroLabel = total < 10 ? 'Early access open' : `${total.toLocaleString()}+ on the list`;
-    const ctaLabel = total < 10 ? '✦ Be among the first adventurers' : `✦ Join ${total.toLocaleString()} adventurers already on the list`;
-
+    const total = typeof data.count==='number'?data.count:0;
+    const heroLabel = total<10?'Early access open':`${total.toLocaleString()}+ DMs on board`;
+    const ctaLabel = total<10?'✦ Be among the first adventurers':`✦ Join ${total.toLocaleString()} adventurers already on the list`;
     const hp = document.getElementById('heroProof');
-    if (hp) hp.textContent = heroLabel;
+    if(hp) hp.textContent = heroLabel;
     const cp = document.getElementById('ctaProof');
-    if (cp) { cp.textContent = ctaLabel; cp.style.display = 'block'; }
-  } catch(e) {}
+    if(cp){cp.textContent=ctaLabel;cp.style.display='block';}
+  }catch(e){}
 })();
 </script>
 
+<style>
+  @media(max-width:780px){
+    section .sec-inner > div[style*="grid-template-columns:1fr 1.3fr"]{grid-template-columns:1fr !important;gap:28px !important;padding:28px 22px !important;}
+    section .sec-inner > div[style*="grid-template-columns:1fr 1.2fr"]{grid-template-columns:1fr !important;gap:24px !important;padding:28px 22px !important;}
+  }
+</style>
 </body>
 </html>

@@ -272,6 +272,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <span class="brand-name">EndoCraft.<span class="brand-sub">Admin</span></span>
     </a>
     <div class="topbar-right">
+      <a class="btn-ghost" href="/dm-studio/" style="text-decoration:none;">⚡ DM Studio</a>
+      <a class="btn-ghost" href="/my-cards/" style="text-decoration:none;">🃏 My Cards</a>
       <button class="btn-ghost" onclick="loadData()">↻ Refresh</button>
       <button class="btn-ghost" onclick="logout()">Log out</button>
     </div>
@@ -665,7 +667,7 @@ function renderCards(){
   );
   const el = document.getElementById('cardsList');
   if (!list.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🃏</div><div class="empty-state-text">No cards yet — users need to hit "Seal it" on their Session Scroll card to save it permanently.</div></div>';
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🃏</div><div class="empty-state-text">No cards yet — users need to hit "Seal it" on their card to save it permanently.</div></div>';
     return;
   }
   el.innerHTML = `<div class="cards-grid">${list.map((c, idx) => {
