@@ -9668,6 +9668,25 @@ async function syncNow() {
   if (!active) return;
   setSyncStatus('syncing', 'Sync…');
   try {
+    // CONFLICT GUARD: peek at cloud first — abort push if cloud is newer
+    // (verhindert dass auto-sync neuere Patcher-Aenderungen blind ueberschreibt)
+    try {
+      const peek = await fetch(`${API_BASE}/api/dm-studio/load?email=${encodeURIComponent(s.email)}&campaignId=${encodeURIComponent(active.id)}&t=${Date.now()}`);
+      if (peek.ok) {
+        const peekData = await peek.json();
+        const cloudUpdatedAt = peekData?.state?.campaign?.updatedAt || 0;
+        const localUpdatedAt = active.updatedAt || 0;
+        // 5s margin to avoid timing wobble
+        if (cloudUpdatedAt - localUpdatedAt > 5000) {
+          setSyncStatus('error', 'Cloud neuer · Push gestoppt');
+          s.lastError = 'cloud-newer-than-local'; saveState();
+          toast('⚠ Cloud ist neuer als dein lokaler Stand. Push abgebrochen — bitte erst "Aus Cloud laden" klicken.', true);
+          return;
+        }
+      }
+    } catch (peekErr) {
+      console.warn('[Sync] Peek failed, proceeding anyway:', peekErr.message);
+    }
     // Nur die aktive Kampagne wird gepusht — nicht der ganze state (spart Bandbreite)
     // Live-Session-Snapshot mitschicken — Player View braucht das während laufender Session.
     const liveSnapshot = {
