@@ -3977,6 +3977,7 @@ html[data-theme="twilight"] .syl-tour-tip{
     <button class="btn-top" onclick="openPostSessionRecap()" data-i18n="top.recap" data-i18n-title="top.recap.title">📝 Recap</button>
     <button class="btn-top" onclick="loadSession14Prep()" data-i18n="top.demo" data-i18n-title="top.demo.title" id="demoLoadBtn" style="background:var(--crimson);color:#fff;border-color:var(--crimson);display:none;">🎲 Load Demo</button>
     <button class="btn-top" id="syncStatusBtn" onclick="openSyncModal()" data-i18n-title="top.sync.title">☁️ <span id="syncStatusText" data-i18n="top.sync">Sync</span></button>
+    <button class="btn-top" onclick="exportSpielleiterHTML()" title="Aktuelle Kampagne als druckfertige Spielleiter-Seite (HTML) exportieren — alles was du heute am Tisch brauchst">📜 Spielleiter</button>
     <button class="btn-top" onclick="exportJSON()" data-i18n="top.export">💾 Export</button>
   </div>
 </div>
@@ -13055,6 +13056,90 @@ function commitImport() {
   toast(`✓ ${locsToImport.length} Location${locsToImport.length === 1 ? '' : 's'} + ${npcsToImport.length} NPC${npcsToImport.length === 1 ? '' : 's'} importiert`);
   plausibleTrack && plausibleTrack('DMStudio · Content Imported', { locs: locsToImport.length, npcs: npcsToImport.length });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SPIELLEITER HTML EXPORT — Single-File standalone Session-Prep-Page
+// Anspruch: Output = manuell für Session 15 gebauter session-15-spielleiter.html
+// ═══════════════════════════════════════════════════════════════════════════
+function exportSpielleiterHTML() {
+  const c = campaign();
+  if (!c) { toast('Keine Kampagne aktiv'); return; }
+  const sessionNo = (c.session && c.session.number) || (c.meta && c.meta.session) || '—';
+  const sessionTitle = (c.session && c.session.title) || c.name || 'Session';
+  const partyLevel = (c.session && c.session.level) || c.partyLevel || '?';
+
+  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const nl2br = s => esc(s).replace(/\n/g,'<br>');
+
+  const tree = Array.isArray(c.tree) ? c.tree : [];
+  const orderedLocs = [];
+  tree.forEach(g => {
+    (g.locations || []).forEach(entry => {
+      const loc = (c.locations || []).find(l => l.id === entry.id) || entry;
+      if (loc && loc.name) orderedLocs.push({ ...loc, _group: g.label || '' });
+    });
+  });
+
+  const allChars = c.characters || [];
+  const pcs  = allChars.filter(x => (x.role||'').toLowerCase() === 'pc' || x.isPlayer);
+  const npcs = allChars.filter(x => !((x.role||'').toLowerCase() === 'pc' || x.isPlayer));
+
+  const sb5 = ch => {
+    const abil = ['str','dex','con','int','wis','cha'].map(k => {
+      const v = (ch.abilities && ch.abilities[k]) || ch[k] || 10;
+      const m = Math.floor((v-10)/2);
+      return '<div class="ab"><div class="ab-k">'+k.toUpperCase()+'</div><div class="ab-v">'+v+'</div><div class="ab-m">'+(m>=0?'+':'')+m+'</div></div>';
+    }).join('');
+    const lines = [];
+    if (ch.savingThrows) lines.push('<div><b>Saving Throws</b> '+esc(ch.savingThrows)+'</div>');
+    if (ch.skills)       lines.push('<div><b>Skills</b> '+esc(ch.skills)+'</div>');
+    if (ch.damageResistances) lines.push('<div><b>Resistances</b> '+esc(ch.damageResistances)+'</div>');
+    if (ch.damageImmunities)  lines.push('<div><b>Immunities</b> '+esc(ch.damageImmunities)+'</div>');
+    if (ch.conditionImmunities) lines.push('<div><b>Condition Immunities</b> '+esc(ch.conditionImmunities)+'</div>');
+    if (ch.senses)       lines.push('<div><b>Senses</b> '+esc(ch.senses)+'</div>');
+    if (ch.languages)    lines.push('<div><b>Languages</b> '+esc(ch.languages)+'</div>');
+    if (ch.cr)           lines.push('<div><b>Challenge</b> '+esc(ch.cr)+(ch.xp?' ('+esc(ch.xp)+' XP)':'')+'</div>');
+    const traitsHtml = (ch.traits||[]).map(t => '<div class="sb-trait"><i>'+esc(t.name||'')+'.</i> '+esc(t.text||'')+'</div>').join('');
+    const actsHtml   = (ch.actions||[]).map(a => '<div class="sb-trait"><i>'+esc(a.name||'')+'.</i> '+esc(a.text||'')+'</div>').join('');
+    const typeLine = [ch.size, ch.creatureType, ch.alignment].filter(Boolean).join(' · ') || [ch.race, ch.class].filter(Boolean).join(' · ');
+    return '<div class="sb5"><div class="sb-name">'+esc(ch.name||'Unnamed')+'</div><div class="sb-type">'+esc(typeLine)+'</div><hr><div class="sb-mini">'+(ch.ac?'<div><b>Armor Class</b> '+esc(ch.ac)+'</div>':'')+(ch.hp?'<div><b>Hit Points</b> '+esc(ch.hp)+'</div>':'')+(ch.speed?'<div><b>Speed</b> '+esc(ch.speed)+'</div>':'')+'</div><hr><div class="sb-abil">'+abil+'</div><hr>'+(lines.length?'<div class="sb-lines">'+lines.join('')+'</div><hr>':'')+(traitsHtml?'<div class="sb-block">'+traitsHtml+'</div>':'')+(actsHtml?'<div class="sb-block"><div class="sb-h">Actions</div>'+actsHtml+'</div>':'')+'</div>';
+  };
+
+  const sections = orderedLocs.map((loc, i) => {
+    const scenarios = (loc.scenarios||[]).map(s => '<div class="scenario"><div class="sc-head"><b>'+esc(s.title||'')+'</b><span class="sc-prob">'+esc(s.probability||'')+'</span></div><div>'+nl2br(s.body||'')+'</div></div>').join('');
+    const dialogs = (loc.dialogs||[]).map(d => '<div class="dialog"><div class="dl-speaker">'+esc(d.speaker||'')+'</div><div class="dl-text">'+nl2br(d.text||'')+'</div></div>').join('');
+    return '<section class="section" id="sec-'+esc(loc.id||i)+'"><div class="sec-bar"><div class="sec-num">SECTION '+i+'</div><div class="sec-title">'+esc(loc.name||'')+'</div>'+(loc.meta?'<div class="sec-meta">'+esc(loc.meta)+'</div>':'')+'</div>'+(loc.image?'<img class="sec-img" src="'+esc(loc.image)+'" alt="">':'')+(loc.readAloud?'<div class="read-aloud"><div class="ra-label">📖 Read-Aloud</div>'+nl2br(loc.readAloud)+'</div>':'')+(loc.dmNote?'<div class="dm-note"><div class="dn-label">🎭 DM-Notiz</div>'+nl2br(loc.dmNote)+'</div>':'')+(dialogs?'<div class="block"><h3>Dialoge / NPC-Stimmen</h3>'+dialogs+'</div>':'')+(scenarios?'<div class="block"><h3>"Was wenn..." · Szenarien</h3>'+scenarios+'</div>':'')+'</section>';
+  }).join('');
+
+  const pcCards = pcs.map(p => '<div class="pc-card"><div class="pc-name">'+esc(p.name||'')+'</div><div class="pc-sub">'+esc([p.race,p.class].filter(Boolean).join(' · '))+(p.level?' · Lv '+esc(p.level):'')+'</div><div class="pc-stats"><div><b>AC</b> '+esc(p.ac||'—')+'</div><div><b>HP</b> '+esc(p.hp||'—')+'</div><div><b>Saves</b> '+esc(p.savingThrows||'—')+'</div></div>'+((p.keyAbility||p.sessionHook)?'<div class="pc-key"><b>⚡ KEY HEUTE:</b> '+esc(p.keyAbility||p.sessionHook||'')+'</div>':'')+'</div>').join('');
+
+  const npcVoices = npcs.filter(n => n.voiceTone || n.sessionHook).map(n => '<tr><td><b>'+esc(n.name||'')+'</b></td><td>'+esc(n.voiceTone||'')+'</td><td>'+esc(n.sessionHook||n.tagline||'')+'</td></tr>').join('');
+
+  const statblocks = npcs.map(n => sb5(n)).join('\n');
+
+  const owlbearRows = orderedLocs.map((loc, i) => '<tr><td>'+i+'</td><td><b>'+esc(loc.name||'')+'</b></td><td>'+esc(loc.owlbearScene||loc.meta||'')+'</td><td>'+esc(loc.musicCue||'')+'</td></tr>').join('');
+
+  const toc = orderedLocs.map((loc,i) => '<a href="#sec-'+esc(loc.id||i)+'">'+i+'. '+esc(loc.name||'')+'</a>').join('');
+
+  const watchlist = (c.highlightWatchlist||[]).map(h => '<li>'+esc(typeof h === 'string' ? h : h.text || h.title || '')+'</li>').join('');
+
+  const objectivesHtml = (c.briefingObjectives && c.briefingObjectives.length) ? '<h2>🎯 Vorab-Checks · Ziele</h2><ul>'+c.briefingObjectives.map(o => '<li>'+esc(typeof o === 'string' ? o : o.text || o.title || '')+'</li>').join('')+'</ul>' : '';
+
+  const styleCss = `:root{--bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;--gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;--green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.6}h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0 0 8px}h1{font-family:'Cinzel Decorative',serif;font-size:34px;color:var(--gold)}h2{font-size:22px;color:var(--gold);border-bottom:1px solid var(--line);padding-bottom:6px;margin:32px 0 14px}h3{font-size:17px;color:var(--gold-dim);margin:18px 0 8px}.wrap{max-width:1080px;margin:0 auto;padding:24px}.hero{background:linear-gradient(180deg,#181c28,#10131c);border:1px solid var(--gold-dim);border-radius:12px;padding:28px 30px;margin-bottom:24px;text-align:center}.hero .tag{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}.hero .meta{color:var(--muted);font-style:italic;margin-top:6px;font-size:15px}.toc{position:sticky;top:0;background:rgba(16,19,28,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 24px;display:flex;gap:14px;flex-wrap:wrap;z-index:10}.toc a{color:var(--gold);text-decoration:none;font-size:12.5px;font-family:'Cinzel',serif}.toc a:hover{text-decoration:underline}.block,.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:14px 0}.read-aloud{background:#1a1f2c;border-left:4px solid var(--gold);padding:18px 22px;margin:18px 0;font-family:'EB Garamond',serif;font-size:19px;line-height:1.65;font-style:italic;border-radius:0 8px 8px 0}.ra-label{font-family:'Cinzel',serif;font-style:normal;font-size:12px;letter-spacing:2px;color:var(--gold);margin-bottom:8px}.dm-note{background:#1d1813;border-left:4px solid var(--gold-dim);padding:14px 20px;margin:12px 0;border-radius:0 8px 8px 0;font-family:'JetBrains Mono',monospace;font-size:13.5px;white-space:pre-wrap;line-height:1.7}.dn-label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:var(--gold);margin-bottom:6px}.section{margin:40px 0;border:1px solid var(--line);border-radius:14px;padding:0;overflow:hidden;background:var(--panel)}.sec-bar{padding:16px 22px;background:linear-gradient(90deg,#1f2433,#181c28);border-bottom:1px solid var(--line)}.sec-num{font-size:11px;letter-spacing:3px;color:var(--gold);font-family:'Cinzel',serif}.sec-title{font-family:'Cinzel Decorative',serif;font-size:24px;color:var(--ink);margin-top:4px}.sec-meta{font-size:13px;color:var(--muted);font-style:italic;margin-top:3px}.sec-img{width:100%;max-height:340px;object-fit:cover;border-bottom:1px solid var(--line);display:block}.section > .read-aloud, .section > .dm-note, .section > .block{margin:14px 22px}.section > .block:last-child{margin-bottom:22px}.dialog{background:var(--panel2);border-left:3px solid var(--blue);padding:10px 14px;margin:8px 0;border-radius:0 6px 6px 0}.dl-speaker{font-family:'Cinzel',serif;color:var(--gold);font-size:13px;margin-bottom:3px}.dl-text{font-family:'EB Garamond',serif;font-size:15px;font-style:italic}.scenario{background:var(--panel2);border-left:3px solid var(--green);padding:10px 14px;margin:8px 0;border-radius:0 6px 6px 0}.sc-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px}.sc-prob{font-size:11px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase}.pc-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:8px}.pc-name{font-family:'Cinzel',serif;color:var(--gold);font-size:16px}.pc-sub{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:8px}.pc-stats{display:flex;gap:14px;font-size:13px;color:var(--ink)}.pc-stats b{color:var(--gold)}.pc-key{margin-top:8px;background:rgba(216,180,106,.08);border-left:3px solid var(--gold);padding:6px 10px;font-size:13px;border-radius:0 4px 4px 0}.pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0;margin:0 -8px}table{width:100%;border-collapse:collapse;margin:8px 0}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13.5px}th{color:var(--gold);font-family:'Cinzel',serif;font-weight:500;font-size:12px;letter-spacing:1px;text-transform:uppercase}.sb5{background:#f5edd6;color:#251c10;border:1px solid #8a6b2f;border-radius:6px;padding:14px 16px;margin:14px 0;font-family:'EB Garamond',serif;font-size:14.5px;line-height:1.45;box-shadow:0 2px 6px rgba(0,0,0,.4)}.sb5 hr{border:0;border-top:1px solid #b08a47;margin:8px 0}.sb5 .sb-name{font-family:'Cinzel Decorative',serif;font-size:20px;color:#5b1c1c;letter-spacing:.5px}.sb5 .sb-type{font-style:italic;color:#5a4218;font-size:13px;margin-top:2px}.sb5 .sb-mini{display:flex;flex-direction:column;gap:2px;color:#3a2c0e}.sb5 .sb-mini b{color:#5b1c1c}.sb5 .sb-abil{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;text-align:center;margin:4px 0}.sb5 .ab{padding:4px 2px}.sb5 .ab-k{font-family:'Cinzel',serif;font-size:11px;color:#5b1c1c;letter-spacing:.5px}.sb5 .ab-v{font-size:15px;font-weight:700;color:#251c10}.sb5 .ab-m{font-size:12px;color:#5a4218}.sb5 .sb-lines b, .sb5 .sb-block b{color:#5b1c1c}.sb5 .sb-trait{margin:6px 0}.sb5 .sb-h{font-family:'Cinzel',serif;color:#5b1c1c;font-size:15px;border-bottom:1px solid #b08a47;padding-bottom:2px;margin:6px 0 4px}.flow{font-family:'JetBrains Mono',monospace;font-size:13.5px;white-space:pre-wrap;background:var(--panel2);border-radius:6px;padding:14px 18px}.mood{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;background:linear-gradient(135deg,rgba(216,180,106,.08),rgba(216,180,106,.02));border-left:4px solid var(--gold);padding:14px 18px;border-radius:0 8px 8px 0}.watch li{margin:4px 0;font-size:14.5px}.footnote{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-family:'EB Garamond',serif;font-size:13px;text-align:center}@media print{body{background:#fff;color:#15100a;font-size:13px}.toc{display:none}.section{break-inside:avoid;page-break-inside:avoid}.sb5{break-inside:avoid}}`;
+
+  const html = '<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Session '+esc(sessionNo)+' · '+esc(sessionTitle)+' — Spielleiter</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><style>'+styleCss+'</style></head><body>'+(orderedLocs.length?'<div class="toc">'+toc+'</div>':'')+'<div class="wrap"><div class="hero"><div class="tag">DM Studio · Spielleiter-Ansicht</div><h1>Session '+esc(sessionNo)+' · '+esc(sessionTitle)+'</h1><div class="meta">'+esc(c.name||'')+' · Party Level '+esc(partyLevel)+' · generiert '+new Date().toLocaleString('de-DE')+'</div></div>'+(c.sessionMood?'<h2>🎭 Stimmung heute</h2><div class="mood">'+nl2br(c.sessionMood)+'</div>':'')+objectivesHtml+(c.sessionFlow?'<h2>🌊 Flow</h2><div class="flow">'+esc(c.sessionFlow)+'</div>':'')+(owlbearRows?'<h2>🎭 Owlbear-Setup</h2><table><thead><tr><th>#</th><th>Scene / Location</th><th>Map / Setup</th><th>Musik-Cue</th></tr></thead><tbody>'+owlbearRows+'</tbody></table>':'')+(pcCards?'<h2>🛡 PCs · Quick-Reference</h2><div class="pc-grid">'+pcCards+'</div>':'')+(npcVoices?'<h2>🎙 NPC-Stimmen Cheat-Sheet</h2><table><thead><tr><th>NPC</th><th>Tonfall</th><th>Schlüssel / Hook</th></tr></thead><tbody>'+npcVoices+'</tbody></table>':'')+(sections?'<h2>📜 Sections · Location-für-Location</h2>'+sections:'<p style="color:var(--muted);font-style:italic">Keine Locations im Tree.</p>')+(statblocks?'<h2>⚔ Statblock-Bibliothek</h2>'+statblocks:'')+(watchlist?'<h2>👁 Watchlist · Card-Material-Momente</h2><ul class="watch">'+watchlist+'</ul>':'')+'<div class="footnote">Generiert von <b style="color:var(--gold)">DM Studio</b> — '+esc(c.name||'')+' · '+new Date().toLocaleDateString('de-DE')+'</div></div></body></html>';
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const slug = (sessionTitle||'session').replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-|-$/g,'') || 'session';
+  a.download = 'spielleiter-'+slug+'-'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('📜 Spielleiter HTML exportiert');
+  try { plausibleTrack && plausibleTrack('DMStudio · Spielleiter Export', { sections: orderedLocs.length, npcs: npcs.length }); } catch(e){}
+}
+
 
 function exportJSON() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });

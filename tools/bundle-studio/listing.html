@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Listing Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.wrap{max-width:1180px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .gold{color:var(--gold)}
+.form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form .full{grid-column:1 / -1}
+.form label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:5px;display:block}
+.form input, .form select, .form textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:13.5px;font-family:inherit}
+.form input:focus, .form textarea:focus, .form select:focus{outline:none;border-color:var(--gold-dim)}
+.form textarea{min-height:64px;font-family:'JetBrains Mono',monospace;font-size:12.5px;resize:vertical}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{padding:11px 22px;border:1px solid var(--line);border-bottom:none;background:var(--panel2);color:var(--muted);font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;cursor:pointer;border-radius:8px 8px 0 0;margin-right:4px}
+.tab.active{background:var(--gold);color:#1a1408;border-color:var(--gold);font-weight:700}
+.tab:hover:not(.active){background:#262b3c;color:var(--ink)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden}
+.panel-head{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.panel-head h2{flex:1;font-size:16px;color:var(--gold)}
+.panel-body{padding:20px 22px}
+.copy-block{position:relative;margin-bottom:18px}
+.copy-block label{display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:6px}
+.copy-block label .right{display:flex;align-items:center;gap:8px}
+.copy-block label .count{color:var(--muted);font-size:10px;letter-spacing:.5px;text-transform:none;font-family:'JetBrains Mono',monospace}
+.copy-block .out{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:11px 14px;font-size:13.5px;line-height:1.55;font-family:'EB Garamond',serif;white-space:pre-wrap;min-height:46px;max-height:340px;overflow-y:auto}
+.copy-block .out.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.tag-list{display:flex;gap:6px;flex-wrap:wrap}
+.tag-chip{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:5px 11px;font-size:12px;color:var(--ink);font-family:'JetBrains Mono',monospace}
+.title-pill{background:rgba(216,180,106,.08);border-left:3px solid var(--gold);padding:10px 14px;margin:6px 0;border-radius:0 8px 8px 0;font-family:'EB Garamond',serif;font-size:14.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.title-pill:hover{background:rgba(216,180,106,.13)}
+.title-pill .ttl-text{flex:1}
+.title-pill .ttl-len{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.pin-pill{background:var(--panel2);border-left:3px solid var(--blue);padding:9px 14px;margin:5px 0;border-radius:0 6px 6px 0;font-family:'EB Garamond',serif;font-size:13.5px;display:flex;justify-content:space-between;gap:10px}
+.pricing{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.price-cell{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:11px;text-align:center}
+.price-cell .pmkt{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif}
+.price-cell .pval{font-size:22px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-top:3px}
+.copybtn{background:var(--panel2);border:1px solid var(--gold-dim);color:var(--gold);border-radius:6px;padding:4px 11px;font-size:11px;font-family:'Cinzel',serif;letter-spacing:.5px;cursor:pointer;transition:.15s}
+.copybtn:hover{background:var(--gold);color:#1a1408}
+.loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:50px;color:var(--muted)}
+.spin{width:36px;height:36px;border:4px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:16px}
+.empty .e-emoji{font-size:42px;display:block;margin-bottom:14px}
+.err{background:rgba(217,138,138,.1);border:1px solid var(--red);border-radius:8px;padding:14px;color:var(--red);margin-bottom:14px;font-size:13.5px}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.reasoning{background:var(--panel2);border-left:3px solid var(--orange);padding:10px 14px;border-radius:0 6px 6px 0;color:var(--muted);font-style:italic;font-size:13px;margin-top:8px}
+.api-state{font-size:12px;color:var(--muted)} .api-state b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Listing Generator</div>
+  <span class="tag">SEO + Marketplace-Texte</span>
+  <div class="controls">
+    <span class="api-state" id="apiState">API: <b>—</b></span>
+    <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./backlog.html">← Backlog</a>
+    <a class="btn ghost" href="./index.html">Bundle Studio</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Aus <b>Bundle-Theme + Asset-Liste</b> generiert <b class="gold">Claude</b> dir komplette Marketplace-Listings:
+    3 Title-Varianten, 13 SEO-Tags, Description pro Marketplace (Etsy / DMs Guild / Gumroad / itch.io),
+    Pinterest-Pin-Texte, Pricing-Vorschläge. Copy-Paste-fertig.
+  </div>
+
+  <div class="form" id="form">
+    <div class="full">
+      <label>Bundle-Name</label>
+      <input type="text" id="bundleName" placeholder="z.B. Curse of Strahd · Barovia Master Pack">
+    </div>
+    <div class="full">
+      <label>Tagline / Kurzbeschreibung</label>
+      <input type="text" id="tagline" placeholder="z.B. 30 NPCs + 15 Locations + 10 Maps für Curse of Strahd">
+    </div>
+    <div>
+      <label>Tier</label>
+      <select id="tier">
+        <option value="flagship">Flagship (20-30€)</option>
+        <option value="evergreen" selected>Evergreen (10-18€)</option>
+        <option value="trope">Trope (6-12€)</option>
+      </select>
+    </div>
+    <div>
+      <label>Asset-Anzahl</label>
+      <input type="number" id="assetCount" value="20" min="1">
+    </div>
+    <div class="full">
+      <label>Asset-Titles (optional, eine pro Zeile — präziser → bessere Texte)</label>
+      <textarea id="assetTitles" placeholder="Caspian Nightbreeze · Bard Portrait&#10;Davian Martikov · Wereraven&#10;Wizard of Wines · Exterior&#10;..."></textarea>
+    </div>
+    <div class="full" style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+      <button class="btn ghost" onclick="resetForm()">Reset</button>
+      <button class="btn primary" id="genBtn" onclick="generate()">⚡ Listing generieren</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+let lastListing = null;
+
+// ─── URL params (für autofill aus Backlog) ───
+(function loadFromUrl() {
+  const p = new URLSearchParams(location.search);
+  const b = p.get('bundle');
+  if (b) {
+    try {
+      const data = JSON.parse(b);
+      if (data.name) document.getElementById('bundleName').value = data.name;
+      if (data.tag) document.getElementById('tagline').value = data.tag;
+      if (data.tier) document.getElementById('tier').value = data.tier;
+    } catch(e){}
+  }
+})();
+
+// ─── API-Ping ───
+(async function ping() {
+  try {
+    const r = await fetch(API_BASE + '/health');
+    document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--green)">online</b>';
+  } catch(e) {
+    document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--red)">offline</b>';
+  }
+})();
+
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000);
+}
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function copy(text, label) {
+  navigator.clipboard.writeText(text).then(() => toast('📋 ' + (label || 'kopiert')));
+}
+
+async function generate() {
+  const name = document.getElementById('bundleName').value.trim();
+  if (!name) { toast('Bundle-Name fehlt'); return; }
+  const tagline = document.getElementById('tagline').value.trim();
+  const tier = document.getElementById('tier').value;
+  const assetCount = parseInt(document.getElementById('assetCount').value) || undefined;
+  const assetTitles = document.getElementById('assetTitles').value
+    .split('\n').map(s => s.trim()).filter(Boolean);
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.textContent = '⏳ generiere...';
+  document.getElementById('output').innerHTML = '<div class="loading"><div class="spin"></div><div>Claude schreibt deine Listings — dauert ~20s</div></div>';
+
+  try {
+    const r = await fetch(API_BASE + '/api/listing-generator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundleName: name, tagline, tier, assetCount, assetTitles })
+    });
+    const data = await r.json();
+    if (!r.ok || !data.ok) throw new Error(data.error || 'Generation failed');
+    lastListing = data.listing;
+    renderOutput(data.listing);
+    toast('✓ Listing fertig');
+  } catch(e) {
+    document.getElementById('output').innerHTML = '<div class="err">Fehler: ' + escHtml(e.message) + '<br><br>Backend deployed? <code>deploy.bat</code> in endocraft-api-deploy/.</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = '⚡ Listing generieren';
+  }
+}
+
+function renderOutput(L) {
+  const titles = (L.titles||[]).map(t => `
+    <div class="title-pill" onclick="copy(${JSON.stringify(t).replace(/"/g,'&quot;')},'Title kopiert')">
+      <div class="ttl-text">${escHtml(t)}</div>
+      <div class="ttl-len">${t.length}/140</div>
+    </div>`).join('');
+
+  const tagChips = (L.etsy_tags||[]).map(t => `<span class="tag-chip">${escHtml(t)}</span>`).join('');
+
+  const pinPills = (L.pinterest_pins||[]).map(p => `
+    <div class="pin-pill">
+      <div>${escHtml(p)}</div>
+      <button class="copybtn" onclick="copy(${JSON.stringify(p).replace(/"/g,'&quot;')},'Pin kopiert')">Copy</button>
+    </div>`).join('');
+
+  const allTagsString = (L.etsy_tags||[]).join(', ');
+
+  const pricing = L.pricing || {};
+  const html = `
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h2>📋 Title-Varianten</h2><button class="copybtn" onclick="copy(${JSON.stringify((L.titles||[]).join('\n')).replace(/"/g,'&quot;')},'Alle Titles kopiert')">Alle kopieren</button></div>
+      <div class="panel-body">${titles || '<div style="color:var(--muted);font-style:italic">keine Titles</div>'}</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h2>🏷 Etsy-Tags (13)</h2><button class="copybtn" onclick="copy(${JSON.stringify(allTagsString).replace(/"/g,'&quot;')},'Tags kopiert (komma-getrennt)')">Alle als Liste</button></div>
+      <div class="panel-body"><div class="tag-list">${tagChips}</div></div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h2>💰 Pricing-Vorschläge</h2></div>
+      <div class="panel-body">
+        <div class="pricing">
+          <div class="price-cell"><div class="pmkt">Etsy</div><div class="pval">${pricing.etsy ? '$'+pricing.etsy : '—'}</div></div>
+          <div class="price-cell"><div class="pmkt">DMs Guild</div><div class="pval">${pricing.dmsguild ? '$'+pricing.dmsguild : '—'}</div></div>
+          <div class="price-cell"><div class="pmkt">Gumroad</div><div class="pval">${pricing.gumroad ? '$'+pricing.gumroad : '—'}</div></div>
+          <div class="price-cell"><div class="pmkt">itch.io</div><div class="pval">${pricing.itch ? '$'+pricing.itch : '—'}</div></div>
+        </div>
+        ${pricing.reasoning ? `<div class="reasoning">${escHtml(pricing.reasoning)}</div>` : ''}
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-mkt="etsy" onclick="switchMkt('etsy')">Etsy</div>
+      <div class="tab" data-mkt="dmsguild" onclick="switchMkt('dmsguild')">DMs Guild</div>
+      <div class="tab" data-mkt="gumroad" onclick="switchMkt('gumroad')">Gumroad</div>
+      <div class="tab" data-mkt="itch" onclick="switchMkt('itch')">itch.io</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h2 id="descHead">📝 Etsy-Description</h2><button class="copybtn" onclick="copyDesc()">Copy</button></div>
+      <div class="panel-body"><div class="out" id="descBox">${escHtml(L.etsy_description||'')}</div></div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h2>📌 Pinterest-Pin-Texte (5×)</h2></div>
+      <div class="panel-body">${pinPills}</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head"><h2>🖼 Cover-Empfehlung</h2></div>
+      <div class="panel-body" style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);font-style:italic">${escHtml(L.cover_suggestion||'—')}</div>
+    </div>
+
+    ${L.seo_short ? `<div class="panel"><div class="panel-head"><h2>🔍 SEO Short (Meta)</h2><button class="copybtn" onclick="copy(${JSON.stringify(L.seo_short).replace(/"/g,'&quot;')},'Meta kopiert')">Copy</button></div><div class="panel-body" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink)">${escHtml(L.seo_short)} <span style="color:var(--muted);font-size:11px">(${L.seo_short.length}/65)</span></div></div>` : ''}
+  `;
+  document.getElementById('output').innerHTML = html;
+}
+
+function switchMkt(mkt) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mkt === mkt));
+  const head = document.getElementById('descHead');
+  const box = document.getElementById('descBox');
+  const map = {
+    etsy: { title: '📝 Etsy-Description', body: lastListing?.etsy_description },
+    dmsguild: { title: '📝 DMs-Guild-Description', body: lastListing?.dmsguild_description },
+    gumroad: { title: '📝 Gumroad-Description', body: lastListing?.gumroad_description },
+    itch: { title: '📝 itch.io-Description', body: lastListing?.itch_description }
+  };
+  head.textContent = map[mkt].title;
+  box.textContent = map[mkt].body || '— nicht generiert —';
+}
+function copyDesc() {
+  const text = document.getElementById('descBox').textContent;
+  copy(text, 'Description kopiert');
+}
+
+function resetForm() {
+  ['bundleName','tagline','assetTitles'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('assetCount').value = 20;
+  document.getElementById('output').innerHTML = '';
+}
+
+// ─── Initial empty state ───
+if (!document.getElementById('output').innerHTML.trim()) {
+  document.getElementById('output').innerHTML = `<div class="empty"><span class="e-emoji">📋</span>Füll das Formular aus und klicke <b>⚡ Listing generieren</b>.<br>Pro Bundle ~20 Sekunden + ~5 Cent.</div>`;
+}
+</script>
+</body>
+</html>

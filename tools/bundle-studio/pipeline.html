@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Master Pipeline · Auto-Production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;--pinterest:#e60023;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:19px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.btn.red{background:rgba(217,138,138,.15);border-color:rgba(217,138,138,.45);color:var(--red)}
+.wrap{max-width:1480px;margin:0 auto;padding:22px}
+.intro{background:linear-gradient(135deg,rgba(216,180,106,.07),rgba(216,180,106,.02));border:1px solid var(--gold-dim);border-radius:14px;padding:20px 24px;margin-bottom:24px;font-family:'EB Garamond',serif;font-size:16px;color:var(--muted);line-height:1.65}
+.intro h2{color:var(--gold);font-size:20px;margin-bottom:10px;font-family:'Cinzel Decorative',serif}
+.intro b{color:var(--ink)}
+.intro .warn{color:var(--orange)}
+.intro .gold{color:var(--gold)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:24px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.panel-head{padding:14px 20px;background:var(--panel2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.panel-head h2{flex:1;font-size:15px;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase}
+.panel-body{padding:18px 20px}
+.bundle-list{max-height:520px;overflow-y:auto}
+.bundle-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:.1s}
+.bundle-row:last-child{border-bottom:none}
+.bundle-row:hover{background:rgba(216,180,106,.04)}
+.bundle-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+.bundle-row .bn-name{flex:1;min-width:0}
+.bundle-row .bn-title{font-family:'Cinzel',serif;font-size:13.5px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bundle-row .bn-tag{font-size:11px;color:var(--muted);font-style:italic;font-family:'EB Garamond',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tier-pill{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Cinzel',serif;white-space:nowrap}
+.tier-flagship{background:rgba(216,180,106,.18);color:var(--gold);border:1px solid var(--gold-dim)}
+.tier-evergreen{background:rgba(127,169,216,.1);color:var(--blue);border:1px solid rgba(127,169,216,.25)}
+.tier-trope{background:rgba(154,160,179,.1);color:var(--muted);border:1px solid rgba(154,160,179,.25)}
+.bn-status{font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:5px;font-family:'Cinzel',serif;flex-shrink:0}
+.bn-status.listed{background:rgba(224,167,103,.15);color:var(--orange)}
+.bn-status.production{background:rgba(127,169,216,.15);color:var(--blue)}
+.bn-status.backlog{background:rgba(154,160,179,.12);color:var(--muted)}
+.bn-status.sold{background:rgba(123,189,143,.15);color:var(--green)}
+.batch-actions{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--panel2)}
+.batch-actions button{font-size:12px;padding:7px 12px}
+.selection-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(216,180,106,.06);border-bottom:1px solid var(--gold-dim)}
+.selection-bar .count{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gold);font-weight:500}
+.selection-bar .stats{font-size:12px;color:var(--muted);font-style:italic}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field-full{grid-column:1 / -1}
+.field label{font-size:11px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;font-family:'Cinzel',serif}
+.field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 12px;font-size:13px;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold-dim)}
+.field textarea{font-family:'JetBrains Mono',monospace;font-size:12px;min-height:80px;resize:vertical}
+.tier-template{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.tier-template h3{font-size:13px;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.tier-template .ct{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+.asset-line{display:flex;justify-content:space-between;padding:4px 0;font-size:12.5px;color:var(--ink);font-family:'EB Garamond',serif}
+.asset-line .pl{color:var(--muted);font-style:italic;font-size:11.5px}
+.asset-line b{color:var(--ink);font-family:'DM Sans';font-size:11px;background:var(--panel);padding:1px 7px;border-radius:5px}
+.action-bar{display:flex;align-items:center;gap:14px;padding:18px 22px;background:linear-gradient(135deg,rgba(216,180,106,.1),transparent);border:1px solid var(--gold-dim);border-radius:14px;margin-bottom:24px;flex-wrap:wrap}
+.action-bar .est{flex:1;min-width:240px;font-family:'EB Garamond',serif;color:var(--muted);font-size:14px}
+.action-bar .est b{color:var(--ink);font-family:'JetBrains Mono',monospace}
+.action-bar .start-btn{padding:14px 26px;font-size:15px}
+.run-log{background:#08090e;border:1px solid var(--line);border-radius:10px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);max-height:540px;overflow-y:auto;line-height:1.65}
+.log-line{padding:2px 0}
+.log-line.head{color:var(--gold);font-weight:700;border-top:1px solid var(--line);padding-top:8px;margin-top:6px}
+.log-line.head:first-child{border-top:none;padding-top:0;margin-top:0}
+.log-line.ok{color:var(--green)}
+.log-line.fail{color:var(--red)}
+.log-line.info{color:var(--muted)}
+.log-line.warn{color:var(--orange)}
+.bundle-progress{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:center}
+.bundle-progress .bp-name{flex:1;font-family:'Cinzel',serif;color:var(--ink);font-size:13.5px}
+.bundle-progress .bp-bar{flex:0 0 200px;height:8px;background:var(--panel2);border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.bundle-progress .bp-bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-dim),var(--gold));transition:width .3s}
+.bundle-progress .bp-state{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);min-width:88px;text-align:right}
+.bundle-progress.done .bp-state{color:var(--green)}
+.bundle-progress.failed .bp-state{color:var(--red)}
+.bundle-progress.running{border-color:var(--gold-dim);box-shadow:0 0 12px rgba(216,180,106,.15)}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.kpi-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif}
+.kpi-value{font-size:24px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace;margin-top:3px}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:18px}
+.result-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.result-card .rc-name{font-family:'Cinzel',serif;color:var(--ink);font-size:13.5px;margin-bottom:8px}
+.result-card .rc-stats{font-size:11.5px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.result-card .rc-actions{display:flex;gap:6px;flex-wrap:wrap}
+.result-card .rc-actions .btn{flex:1;padding:6px 8px;font-size:11px;min-width:80px}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.api-state{font-size:12px;color:var(--muted)} .api-state b{color:var(--ink)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:15px;font-style:italic}
+.danger{background:rgba(217,138,138,.08);border:1px solid var(--red);border-radius:8px;padding:11px 15px;color:var(--red);font-size:13px;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Master Pipeline</div>
+  <span class="tag">Auto-Production</span>
+  <div class="controls">
+    <span class="api-state" id="apiState">API: <b>—</b></span>
+    <a class="btn ghost" href="./backlog.html">📋 Backlog</a>
+    <a class="btn ghost" href="./index.html">🎨 Bundle Studio</a>
+    <a class="btn ghost" href="./listing.html">✍ Listings</a>
+    <a class="btn ghost" href="./pinterest.html">📌 Pinterest</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    <h2>⚡ Master Auto-Production Pipeline</h2>
+    Wähle Bundles aus deinem <b>Backlog</b> → klicke <b class="gold">⚡ Run All</b> → die Pipeline produziert über Stunden vollautomatisch:
+    <b>Assets (Seedream)</b>, <b>PDF + ZIP</b>, <b>Listing-Texte für 4 Marketplaces</b>, <b>5 Pinterest-Pins</b> pro Bundle.
+    Du kommst morgens zurück und lädst die Master-ZIPs herunter — Quality-Review + Marketplace-Upload bleiben bei dir.
+    <span class="warn">⚠ Lass den Browser-Tab offen + Bildschirm nicht in Sleep schicken.</span>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT: Bundle-Selection -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>1 · Bundles aus Backlog wählen</h2>
+        <span class="api-state" id="bundleCount"><b>0</b> ausgewählt</span>
+      </div>
+      <div class="selection-bar">
+        <span class="count" id="selCount">0 Bundles</span>
+        <span class="stats" id="selStats">— Assets, ~— Min, ~— $</span>
+      </div>
+      <div class="bundle-list" id="bundleList"><div class="empty">Backlog wird geladen…</div></div>
+      <div class="batch-actions">
+        <button class="btn" onclick="selectAll(true)">Alle</button>
+        <button class="btn" onclick="selectAll(false)">Keine</button>
+        <button class="btn" onclick="selectStatus('backlog')">Nur Backlog</button>
+        <button class="btn" onclick="selectStatus('listed')">Nur Listed (Refresh)</button>
+        <button class="btn" onclick="selectTier('flagship')">Nur Flagship</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Templates + Config -->
+    <div class="panel">
+      <div class="panel-head"><h2>2 · Asset-Templates (pro Tier)</h2></div>
+      <div class="panel-body">
+        <div class="tier-template" id="tpl-flagship">
+          <h3><span><span class="tier-pill tier-flagship">flagship</span> Premium Mega-Pack</span><span class="ct" id="tpl-flagship-ct">27 Assets · ~6 Min</span></h3>
+          <div id="tpl-flagship-list"></div>
+        </div>
+        <div class="tier-template" id="tpl-evergreen">
+          <h3><span><span class="tier-pill tier-evergreen">evergreen</span> Themed Standard-Pack</span><span class="ct" id="tpl-evergreen-ct">17 Assets · ~4 Min</span></h3>
+          <div id="tpl-evergreen-list"></div>
+        </div>
+        <div class="tier-template" id="tpl-trope">
+          <h3><span><span class="tier-pill tier-trope">trope</span> Quick Mini-Pack</span><span class="ct" id="tpl-trope-ct">9 Assets · ~2 Min</span></h3>
+          <div id="tpl-trope-list"></div>
+        </div>
+
+        <div class="config-grid">
+          <div class="field">
+            <label>Concurrency (parallel Seedream)</label>
+            <select id="concurrency"><option value="1">1 (langsam, safer)</option><option value="2" selected>2 (empfohlen)</option><option value="3">3 (riskanter)</option></select>
+          </div>
+          <div class="field">
+            <label>Pinterest-Pins pro Bundle</label>
+            <select id="pinCount"><option value="3">3 (sparsam)</option><option value="5" selected>5 (Standard)</option><option value="0">0 (skippen)</option></select>
+          </div>
+          <div class="field field-full">
+            <label>Auto-fail-tolerance (max failures pro Bundle bevor skip)</label>
+            <input type="number" id="failTol" value="3" min="0" max="10">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <div class="est">
+      <b id="estBundles">0</b> Bundles · <b id="estAssets">0</b> Assets · ETA <b id="estTime">—</b> · Kosten <b id="estCost">—</b>
+    </div>
+    <button class="btn red" onclick="stopRun()" id="stopBtn" style="display:none">■ Stop</button>
+    <button class="btn primary start-btn" onclick="startRun()" id="startBtn">⚡ Run All Selected</button>
+  </div>
+
+  <!-- LIVE PROGRESS -->
+  <div id="liveSection" style="display:none">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Total Progress</div><div class="kpi-value" id="kpiTotal">0%</div><div class="kpi-sub" id="kpiTotalSub">— / —</div></div>
+      <div class="kpi"><div class="kpi-label">Bundles Done</div><div class="kpi-value" id="kpiBundles">0</div><div class="kpi-sub" id="kpiBundlesSub">0 failed</div></div>
+      <div class="kpi"><div class="kpi-label">Assets Generated</div><div class="kpi-value" id="kpiAssets">0</div><div class="kpi-sub" id="kpiAssetsSub">0 failed</div></div>
+      <div class="kpi"><div class="kpi-label">Elapsed</div><div class="kpi-value" id="kpiTime">—</div><div class="kpi-sub" id="kpiEta">ETA —</div></div>
+      <div class="kpi"><div class="kpi-label">Geschätzte Kosten</div><div class="kpi-value" id="kpiCost">—</div><div class="kpi-sub">~$0.02/Asset</div></div>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="panel-head"><h2>Per-Bundle Fortschritt</h2></div>
+        <div class="panel-body" id="bundleProgressList" style="max-height:540px;overflow-y:auto"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Live Log</h2></div>
+        <div class="panel-body" id="logPanel"><div class="empty">Run noch nicht gestartet</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsSection" style="display:none">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>3 · Output · Master-ZIPs zum Download</h2>
+        <button class="btn primary" onclick="downloadAllMaster()" id="dlAllBtn">⬇ Alle Bundles als Master-Mega-ZIP</button>
+      </div>
+      <div class="panel-body">
+        <div id="results" class="results"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const BACKLOG_KEY = 'ec_bundle_backlog_v1';
+const STYLE_SUFFIX = 'cinematic fantasy, photorealistic, dramatic cinematic lighting, highly detailed, 8k, no text, no watermark, no signature';
+
+// ─── ASSET TEMPLATES pro Tier ───
+const TEMPLATES = {
+  flagship: [
+    { type:'cover',    name:'Cover · Hero Establishing',     prompt:'cinematic establishing shot, dramatic hero composition showcasing {{THEME}}, atmospheric depth, marketing-poster aesthetic', count:1, w:2880, h:1620 },
+    { type:'npc',      name:'NPC Portrait',                  prompt:'cinematic fantasy character portrait, unique distinctive {{THEME}}-themed character, dramatic lighting, professional fantasy art style', count:12, w:1440, h:1800 },
+    { type:'location', name:'Location Establishing Shot',    prompt:'cinematic fantasy establishing wide shot of an atmospheric location within {{THEME}}, evocative environment, dramatic perspective', count:8, w:2560, h:1440 },
+    { type:'map',      name:'Battle Map · Top-Down',         prompt:'top-down tabletop battle map of {{THEME}} scene, bird eye view, gridded fantasy cartography, photorealistic textures, atmospheric', count:4, w:2240, h:1680 },
+    { type:'item',     name:'Magic Item / Trinket Card',     prompt:'illustrated magic item card on parchment background, ornate fantasy detail, {{THEME}}-flavored artifact, museum-quality illustration', count:2, w:1440, h:1800 }
+  ],
+  evergreen: [
+    { type:'cover',    name:'Cover · Hero',                  prompt:'cinematic establishing shot showcasing {{THEME}}, atmospheric, marketing-poster style', count:1, w:2880, h:1620 },
+    { type:'npc',      name:'NPC Portrait',                  prompt:'cinematic character portrait, {{THEME}}-themed, dramatic lighting, fantasy art style', count:8, w:1440, h:1800 },
+    { type:'location', name:'Location Shot',                 prompt:'cinematic establishing wide shot of {{THEME}} location, atmospheric depth', count:5, w:2560, h:1440 },
+    { type:'map',      name:'Battle Map',                    prompt:'top-down tabletop battle map of {{THEME}}, bird eye view, gridded fantasy cartography', count:3, w:2240, h:1680 }
+  ],
+  trope: [
+    { type:'cover',    name:'Cover',                         prompt:'cinematic establishing shot of {{THEME}}, atmospheric', count:1, w:2880, h:1620 },
+    { type:'npc',      name:'NPC Portrait',                  prompt:'character portrait, {{THEME}} themed, fantasy art', count:5, w:1440, h:1800 },
+    { type:'location', name:'Location',                      prompt:'establishing shot of {{THEME}} location', count:3, w:2560, h:1440 }
+  ]
+};
+
+let backlog = [];
+let selected = new Set();
+let runState = { running:false, startTime:null, results:{}, stopRequested:false };
+
+// ─── INIT ───
+function init() {
+  loadBacklog();
+  renderTemplates();
+  ping();
+  renderBundleList();
+  attachListeners();
+}
+
+(async function ping() {
+  try { await fetch(API_BASE + '/health'); document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--green)">online</b>'; }
+  catch(e) { document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--red)">offline</b>'; }
+})();
+
+function loadBacklog() {
+  try { backlog = JSON.parse(localStorage.getItem(BACKLOG_KEY)||'[]'); }
+  catch(e){ backlog = []; }
+  if (!backlog.length) {
+    document.getElementById('bundleList').innerHTML = '<div class="empty">Backlog leer.<br>Öffne erst <a href="./backlog.html" style="color:var(--gold)">📋 Backlog</a> um Bundles anzulegen.</div>';
+  }
+}
+
+function renderTemplates() {
+  Object.entries(TEMPLATES).forEach(([tier, items]) => {
+    const total = items.reduce((s,i) => s + i.count, 0);
+    const eta = Math.ceil(total * 13 / 60); // ~13s/asset bei concurrency 2
+    document.getElementById('tpl-'+tier+'-ct').textContent = `${total} Assets · ~${eta} Min`;
+    document.getElementById('tpl-'+tier+'-list').innerHTML = items.map(i => `
+      <div class="asset-line"><span>${i.name}</span><b>×${i.count}</b></div>
+    `).join('');
+  });
+}
+
+function renderBundleList() {
+  if (!backlog.length) return;
+  document.getElementById('bundleList').innerHTML = backlog.map(b => `
+    <label class="bundle-row">
+      <input type="checkbox" data-id="${b.id}" ${selected.has(b.id)?'checked':''} onchange="toggleSelect('${b.id}', this.checked)">
+      <span class="tier-pill tier-${b.tier}">${b.tier}</span>
+      <div class="bn-name">
+        <div class="bn-title">${escapeHtml(b.name)}</div>
+        ${b.tag?`<div class="bn-tag">${escapeHtml(b.tag)}</div>`:''}
+      </div>
+      <span class="bn-status ${b.status}">${b.status}</span>
+    </label>
+  `).join('');
+  updateStats();
+}
+
+function toggleSelect(id, checked) { checked ? selected.add(id) : selected.delete(id); updateStats(); }
+function selectAll(on) { if (on) backlog.forEach(b => selected.add(b.id)); else selected.clear(); renderBundleList(); }
+function selectStatus(s) { selected.clear(); backlog.filter(b => b.status === s).forEach(b => selected.add(b.id)); renderBundleList(); }
+function selectTier(t) { selected.clear(); backlog.filter(b => b.tier === t).forEach(b => selected.add(b.id)); renderBundleList(); }
+
+function updateStats() {
+  const chosen = backlog.filter(b => selected.has(b.id));
+  let totalAssets = 0;
+  chosen.forEach(b => {
+    const tpl = TEMPLATES[b.tier] || TEMPLATES.evergreen;
+    totalAssets += tpl.reduce((s,i) => s + i.count, 0);
+    if ((parseInt(document.getElementById('pinCount').value)||5) > 0) totalAssets += parseInt(document.getElementById('pinCount').value);
+  });
+  const conc = parseInt(document.getElementById('concurrency').value)||2;
+  const etaSec = Math.ceil(totalAssets * 13 / conc);
+  const etaMin = Math.ceil(etaSec / 60);
+  const cost = (totalAssets * 0.02).toFixed(2);
+  document.getElementById('selCount').textContent = `${chosen.length} Bundles`;
+  document.getElementById('selStats').textContent = `${totalAssets} Assets · ~${etaMin} Min · ~$${cost}`;
+  document.getElementById('bundleCount').innerHTML = `<b>${chosen.length}</b> ausgewählt`;
+  document.getElementById('estBundles').textContent = chosen.length;
+  document.getElementById('estAssets').textContent = totalAssets;
+  document.getElementById('estTime').textContent = etaMin + ' Min';
+  document.getElementById('estCost').textContent = '~$' + cost;
+}
+
+function attachListeners() {
+  ['concurrency','pinCount','failTol'].forEach(id => document.getElementById(id).addEventListener('change', updateStats));
+}
+
+// ─── MAIN RUN ───
+async function startRun() {
+  const chosen = backlog.filter(b => selected.has(b.id));
+  if (!chosen.length) return toast('Wähle erst Bundles aus');
+  if (!confirm(`${chosen.length} Bundles vollautomatisch produzieren?\nDas läuft etwa ${document.getElementById('estTime').textContent} und kostet ${document.getElementById('estCost').textContent}.\n\nLasse den Tab offen!`)) return;
+
+  runState = { running:true, startTime:Date.now(), results:{}, stopRequested:false };
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('stopBtn').style.display = '';
+  document.getElementById('liveSection').style.display = '';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('bundleProgressList').innerHTML = '';
+  document.getElementById('logPanel').innerHTML = '<div id="logInner"></div>';
+  document.getElementById('results').innerHTML = '';
+
+  // Init per-bundle progress + results
+  chosen.forEach(b => {
+    runState.results[b.id] = { bundle:b, assets:[], pins:[], listing:null, status:'pending', failures:0 };
+    const wrap = document.createElement('div');
+    wrap.className = 'bundle-progress';
+    wrap.id = 'bp-' + b.id;
+    wrap.innerHTML = `<div class="bp-name">${escapeHtml(b.name)}</div><div class="bp-bar"><i></i></div><div class="bp-state">pending</div>`;
+    document.getElementById('bundleProgressList').appendChild(wrap);
+  });
+
+  log('head', `Pipeline gestartet: ${chosen.length} Bundles, ${document.getElementById('estTime').textContent} ETA`);
+  updateKpis();
+
+  // Timer
+  const tick = setInterval(() => {
+    if (!runState.running) return clearInterval(tick);
+    document.getElementById('kpiTime').textContent = fmtDur(Date.now() - runState.startTime);
+    updateKpis();
+  }, 1000);
+
+  // Run sequentially per bundle
+  for (let i = 0; i < chosen.length && !runState.stopRequested; i++) {
+    await runBundle(chosen[i], i, chosen.length);
+  }
+
+  runState.running = false;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').style.display = 'none';
+  log('head', `✓ Pipeline fertig in ${fmtDur(Date.now() - runState.startTime)}`);
+  showResults();
+  try { if (Notification.permission === 'granted') new Notification('EndoCraft Pipeline · Fertig!', { body: `${chosen.length} Bundles produziert.` }); } catch(e){}
+  toast('🎉 Pipeline complete!');
+}
+
+function stopRun() {
+  if (confirm('Pipeline stoppen? Laufende Generierungen werden abgebrochen.')) {
+    runState.stopRequested = true;
+    log('warn', '■ Stop angefordert — warte auf aktuelles Bundle...');
+  }
+}
+
+async function runBundle(b, idx, total) {
+  const R = runState.results[b.id];
+  R.status = 'running';
+  const bp = document.getElementById('bp-' + b.id);
+  bp.classList.add('running');
+  bp.querySelector('.bp-state').textContent = 'starting…';
+  log('head', `[${idx+1}/${total}] ${b.name} (${b.tier})`);
+
+  const tpl = TEMPLATES[b.tier] || TEMPLATES.evergreen;
+  const allAssets = [];
+  let assetSeq = 1;
+  tpl.forEach(t => {
+    for (let k = 0; k < t.count; k++) {
+      allAssets.push({ id:`${b.id}_a${assetSeq++}`, type:t.type, name:t.name + (t.count>1?` ${k+1}`:''), prompt:t.prompt, w:t.w, h:t.h });
+    }
+  });
+
+  bp.querySelector('.bp-state').textContent = `0/${allAssets.length} assets`;
+  const conc = parseInt(document.getElementById('concurrency').value)||2;
+  const failTol = parseInt(document.getElementById('failTol').value)||3;
+  let idxA = 0; let okCount = 0; let failCount = 0;
+
+  async function worker() {
+    while (idxA < allAssets.length && !runState.stopRequested && failCount < failTol) {
+      const a = allAssets[idxA++];
+      try {
+        const fullPrompt = a.prompt.replace(/\{\{THEME\}\}/g, b.name + (b.tag ? ', ' + b.tag : '')) + ', ' + STYLE_SUFFIX;
+        const r = await fetch(API_BASE + '/api/image', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ prompt: fullPrompt, model:'bytedance/seedream-4-5', width:a.w, height:a.h })
+        });
+        const data = await r.json();
+        if (!data.url) throw new Error(data.error || 'no url');
+        a.url = data.url;
+        R.assets.push(a);
+        okCount++;
+        log('ok', `  ✓ ${a.name}`);
+      } catch(e) {
+        failCount++;
+        log('fail', `  ✗ ${a.name}: ${e.message}`);
+      }
+      const done = okCount + failCount;
+      bp.querySelector('.bp-state').textContent = `${done}/${allAssets.length}`;
+      bp.querySelector('.bp-bar > i').style.width = (done / allAssets.length * 100) + '%';
+      updateKpis();
+    }
+  }
+  await Promise.all(Array.from({length:conc}, worker));
+  R.assetCount = okCount; R.failures = failCount;
+
+  if (runState.stopRequested) { R.status = 'aborted'; bp.classList.add('failed'); bp.querySelector('.bp-state').textContent = 'aborted'; bp.classList.remove('running'); return; }
+  if (failCount >= failTol) { R.status = 'failed'; bp.classList.add('failed'); bp.querySelector('.bp-state').textContent = 'too many fails'; bp.classList.remove('running'); log('fail', `  → SKIPPED (${failCount} failures)`); return; }
+
+  // ─── Listing-Texte ───
+  bp.querySelector('.bp-state').textContent = 'listings…';
+  try {
+    const lr = await fetch(API_BASE + '/api/listing-generator', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ bundleName:b.name, tagline:b.tag||'', tier:b.tier, assetCount:R.assets.length, assetTitles:R.assets.map(a => a.name) })
+    });
+    const ld = await lr.json();
+    if (ld.ok && ld.listing) { R.listing = ld.listing; log('ok', '  ✓ Listing-Texte generiert'); }
+    else log('warn', '  ⚠ Listing-Gen fehlgeschlagen: ' + (ld.error||'unknown'));
+  } catch(e) { log('warn', '  ⚠ Listing-Endpoint nicht erreichbar: ' + e.message); }
+
+  // ─── Pinterest-Pins ───
+  const pinCount = parseInt(document.getElementById('pinCount').value)||5;
+  if (pinCount > 0 && !runState.stopRequested) {
+    bp.querySelector('.bp-state').textContent = 'pinterest…';
+    try {
+      const pr = await fetch(API_BASE + '/api/pinterest-pin-texts', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ bundleName:b.name, tagline:b.tag||'', tier:b.tier, count:pinCount })
+      });
+      const pd = await pr.json();
+      if (pd.ok && pd.pins) {
+        // Gen images for pins
+        for (let pi = 0; pi < pd.pins.length && !runState.stopRequested; pi++) {
+          const p = pd.pins[pi];
+          try {
+            const imgPrompt = `${b.name}, ${p.visual_style||'cinematic'}, vertical pinterest pin format, atmospheric depth, room for text overlay top and bottom, dark moody fantasy aesthetic, photorealistic, 8k, no text, no watermark`;
+            const ir = await fetch(API_BASE + '/api/image', {
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({ prompt: imgPrompt, model:'bytedance/seedream-4-5', width:1440, height:2160 })
+            });
+            const id = await ir.json();
+            if (id.url) p.imgUrl = id.url;
+          } catch(e){}
+        }
+        R.pins = pd.pins;
+        log('ok', `  ✓ ${pd.pins.length} Pinterest-Pins generiert`);
+      }
+    } catch(e) { log('warn', '  ⚠ Pinterest-Gen fehlgeschlagen: ' + e.message); }
+  }
+
+  R.status = 'done';
+  bp.classList.remove('running');
+  bp.classList.add('done');
+  bp.querySelector('.bp-state').textContent = `✓ done`;
+  log('ok', `  → Bundle fertig (${R.assets.length} assets + ${R.pins.length} pins + ${R.listing?'listing':'no listing'})`);
+}
+
+// ─── KPIs / Log ───
+function updateKpis() {
+  let totAssets = 0, doneAssets = 0, failAssets = 0;
+  let totBundles = 0, doneBundles = 0, failBundles = 0;
+  Object.values(runState.results).forEach(R => {
+    totBundles++;
+    doneAssets += R.assets.length;
+    failAssets += R.failures || 0;
+    const tpl = TEMPLATES[R.bundle.tier] || TEMPLATES.evergreen;
+    totAssets += tpl.reduce((s,i) => s+i.count, 0);
+    if (R.status === 'done') doneBundles++;
+    else if (R.status === 'failed' || R.status === 'aborted') failBundles++;
+  });
+  const pct = totAssets ? Math.floor(doneAssets/totAssets*100) : 0;
+  document.getElementById('kpiTotal').textContent = pct + '%';
+  document.getElementById('kpiTotalSub').textContent = `${doneAssets} / ${totAssets} Assets`;
+  document.getElementById('kpiBundles').textContent = doneBundles;
+  document.getElementById('kpiBundlesSub').textContent = failBundles ? failBundles+' failed' : 'on track';
+  document.getElementById('kpiAssets').textContent = doneAssets;
+  document.getElementById('kpiAssetsSub').textContent = failAssets+' failed';
+  document.getElementById('kpiCost').textContent = '$' + (doneAssets * 0.02).toFixed(2);
+  if (runState.startTime && doneAssets > 0 && totAssets > doneAssets) {
+    const elapsed = Date.now() - runState.startTime;
+    const eta = Math.round(elapsed * (totAssets - doneAssets) / doneAssets / 1000);
+    document.getElementById('kpiEta').textContent = 'ETA ' + fmtDur(eta * 1000);
+  }
+}
+
+function log(cls, msg) {
+  const inner = document.getElementById('logInner');
+  if (!inner) return;
+  const d = document.createElement('div');
+  d.className = 'log-line ' + cls;
+  d.textContent = msg;
+  inner.appendChild(d);
+  inner.parentElement.scrollTop = inner.parentElement.scrollHeight;
+}
+function fmtDur(ms) {
+  const s = Math.floor(ms/1000); const m = Math.floor(s/60); const h = Math.floor(m/60);
+  return h ? `${h}h ${m%60}m` : m ? `${m}m ${s%60}s` : `${s}s`;
+}
+
+// ─── RESULTS DISPLAY ───
+function showResults() {
+  const list = Object.values(runState.results);
+  document.getElementById('resultsSection').style.display = '';
+  document.getElementById('results').innerHTML = list.map(R => `
+    <div class="result-card">
+      <div class="rc-name">${escapeHtml(R.bundle.name)}</div>
+      <div class="rc-stats">
+        ${R.assets.length} Assets · ${R.pins.length} Pins<br>
+        ${R.listing ? '✓ Listing-Texte' : '— keine Listings'}<br>
+        Status: <b style="color:${R.status==='done'?'var(--green)':R.status==='failed'?'var(--red)':'var(--muted)'}">${R.status}</b>
+      </div>
+      <div class="rc-actions">
+        <button class="btn" onclick="downloadBundle('${R.bundle.id}')">⬇ ZIP</button>
+        <button class="btn" onclick="downloadBundlePDF('${R.bundle.id}')">📄 PDF</button>
+        ${R.listing?`<button class="btn" onclick="copyListing('${R.bundle.id}')">📋 Listing</button>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function proxied(url) { return API_BASE + '/api/image/proxy?url=' + encodeURIComponent(url); }
+async function fetchBlob(url) {
+  const r = await fetch(proxied(url)); if (!r.ok) throw new Error('HTTP '+r.status);
+  return await r.blob();
+}
+
+async function downloadBundle(bid) {
+  const R = runState.results[bid]; if (!R) return;
+  toast('ZIP wird gebaut…');
+  const zip = new JSZip();
+  const root = zip.folder(slugify(R.bundle.name));
+  // Assets nach Typ gruppieren
+  const byType = {};
+  R.assets.forEach(a => { (byType[a.type] = byType[a.type] || []).push(a); });
+  for (const [type, arr] of Object.entries(byType)) {
+    const f = root.folder('assets/' + type);
+    for (let i=0; i<arr.length; i++) {
+      try { const blob = await fetchBlob(arr[i].url); f.file(`${String(i+1).padStart(2,'0')}_${slugify(arr[i].name)}.png`, blob); } catch(e){}
+    }
+  }
+  // Pinterest-Pins
+  if (R.pins.length) {
+    const pf = root.folder('pinterest');
+    for (let i=0; i<R.pins.length; i++) {
+      if (R.pins[i].imgUrl) {
+        try { const blob = await fetchBlob(R.pins[i].imgUrl); pf.file(`pin_${i+1}_bg.png`, blob); } catch(e){}
+      }
+    }
+    pf.file('pins.json', JSON.stringify(R.pins, null, 2));
+  }
+  // Listing-Texte
+  if (R.listing) {
+    const lf = root.folder('listings');
+    lf.file('listing.json', JSON.stringify(R.listing, null, 2));
+    lf.file('etsy.txt', `TITLE OPTIONS:\n${(R.listing.titles||[]).map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\nTAGS:\n${(R.listing.etsy_tags||[]).join(', ')}\n\nDESCRIPTION:\n${R.listing.etsy_description||''}`);
+    if (R.listing.dmsguild_description) lf.file('dmsguild.txt', R.listing.dmsguild_description);
+    if (R.listing.gumroad_description) lf.file('gumroad.txt', R.listing.gumroad_description);
+    if (R.listing.itch_description) lf.file('itch.txt', R.listing.itch_description);
+    if (R.listing.pinterest_pins) lf.file('pinterest-hooks.txt', R.listing.pinterest_pins.join('\n\n'));
+  }
+  // Manifest
+  root.file('manifest.json', JSON.stringify({
+    bundle: R.bundle, generated_at: new Date().toISOString(),
+    asset_count: R.assets.length, pin_count: R.pins.length, status: R.status
+  }, null, 2));
+  const blob = await zip.generateAsync({type:'blob'});
+  triggerDl(blob, slugify(R.bundle.name) + '-bundle.zip');
+  toast('⬇ ZIP fertig');
+}
+
+async function downloadBundlePDF(bid) {
+  const R = runState.results[bid]; if (!R) return;
+  if (!R.assets.length) return toast('Keine Assets');
+  toast('PDF wird gebaut…');
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' });
+  const pW = doc.internal.pageSize.getWidth(), pH = doc.internal.pageSize.getHeight();
+  doc.setFillColor(20,24,38); doc.rect(0,0,pW,pH,'F');
+  doc.setTextColor(216,180,106); doc.setFont('helvetica','bold'); doc.setFontSize(32);
+  doc.text(R.bundle.name, pW/2, pH/2-30, { align:'center', maxWidth:pW-80 });
+  doc.setFontSize(14); doc.setTextColor(154,160,179);
+  doc.text(`${R.assets.length} Assets · EndoCraft`, pW/2, pH/2+15, { align:'center' });
+  for (let i=0; i<R.assets.length; i++) {
+    try {
+      const blob = await fetchBlob(R.assets[i].url);
+      const du = await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(blob); });
+      const img = await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=du; });
+      doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0,0,pW,pH,'F');
+      doc.setFillColor(20,24,38); doc.rect(0,0,pW,40,'F');
+      doc.setTextColor(216,180,106); doc.setFont('helvetica','bold'); doc.setFontSize(12);
+      doc.text(R.assets[i].name, 20, 26, { maxWidth: pW-180 });
+      const mW=pW-80, mH=pH-80; let iW=img.width, iH=img.height;
+      const r = Math.min(mW/iW, mH/iH); iW*=r; iH*=r;
+      doc.addImage(du, blob.type.includes('jpeg')?'JPEG':'PNG', (pW-iW)/2, (pH-iH)/2+12, iW, iH);
+    } catch(e){}
+  }
+  const blob = doc.output('blob');
+  triggerDl(blob, slugify(R.bundle.name)+'.pdf');
+  toast('📄 PDF fertig');
+}
+
+function copyListing(bid) {
+  const R = runState.results[bid]; if (!R || !R.listing) return;
+  const txt = `TITLES:\n${(R.listing.titles||[]).map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\nTAGS:\n${(R.listing.etsy_tags||[]).join(', ')}\n\nETSY DESCRIPTION:\n${R.listing.etsy_description||''}`;
+  navigator.clipboard.writeText(txt).then(()=>toast('📋 Listing kopiert'));
+}
+
+async function downloadAllMaster() {
+  const list = Object.values(runState.results).filter(R => R.status === 'done');
+  if (!list.length) return toast('Keine fertigen Bundles');
+  toast('Master-Mega-ZIP wird gebaut…');
+  document.getElementById('dlAllBtn').disabled = true;
+  document.getElementById('dlAllBtn').textContent = 'Building…';
+  const zip = new JSZip();
+  for (let bi=0; bi<list.length; bi++) {
+    const R = list[bi];
+    document.getElementById('dlAllBtn').textContent = `Bundle ${bi+1}/${list.length}…`;
+    const root = zip.folder(slugify(R.bundle.name));
+    const byType = {};
+    R.assets.forEach(a => { (byType[a.type] = byType[a.type] || []).push(a); });
+    for (const [type, arr] of Object.entries(byType)) {
+      const f = root.folder('assets/' + type);
+      for (let i=0; i<arr.length; i++) {
+        try { const blob = await fetchBlob(arr[i].url); f.file(`${String(i+1).padStart(2,'0')}_${slugify(arr[i].name)}.png`, blob); } catch(e){}
+      }
+    }
+    if (R.pins.length) {
+      const pf = root.folder('pinterest');
+      for (let i=0; i<R.pins.length; i++) {
+        if (R.pins[i].imgUrl) { try { const b = await fetchBlob(R.pins[i].imgUrl); pf.file(`pin_${i+1}_bg.png`, b); } catch(e){} }
+      }
+      pf.file('pins.json', JSON.stringify(R.pins, null, 2));
+    }
+    if (R.listing) {
+      const lf = root.folder('listings');
+      lf.file('listing.json', JSON.stringify(R.listing, null, 2));
+      lf.file('etsy.txt', `TITLES:\n${(R.listing.titles||[]).map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\nTAGS:\n${(R.listing.etsy_tags||[]).join(', ')}\n\nDESCRIPTION:\n${R.listing.etsy_description||''}`);
+    }
+    root.file('manifest.json', JSON.stringify({ bundle: R.bundle, generated_at: new Date().toISOString(), asset_count: R.assets.length, pin_count: R.pins.length }, null, 2));
+  }
+  // Top-level Master-Manifest
+  zip.file('MASTER-MANIFEST.json', JSON.stringify({
+    generated_at: new Date().toISOString(),
+    total_bundles: list.length,
+    bundles: list.map(R => ({ name:R.bundle.name, tier:R.bundle.tier, assets:R.assets.length, pins:R.pins.length, status:R.status }))
+  }, null, 2));
+  document.getElementById('dlAllBtn').textContent = 'Generating ZIP…';
+  const blob = await zip.generateAsync({type:'blob'});
+  triggerDl(blob, `endocraft-master-bundle-${new Date().toISOString().slice(0,10)}.zip`);
+  document.getElementById('dlAllBtn').disabled = false;
+  document.getElementById('dlAllBtn').textContent = '⬇ Alle Bundles als Master-Mega-ZIP';
+  toast('🎉 Master-ZIP fertig');
+}
+
+function triggerDl(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle'; }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200); }
+
+if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission().catch(()=>{});
+
+init();
+</script>
+</body>
+</html>

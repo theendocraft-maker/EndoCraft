@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Pinterest Pin Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+  --pinterest:#e60023;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--pinterest);box-shadow:0 0 12px var(--pinterest)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.btn.pinterest{background:var(--pinterest);color:#fff;border-color:var(--pinterest);font-weight:700}
+.wrap{max-width:1400px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .gold{color:var(--gold)} .intro .pin{color:var(--pinterest)}
+.form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form .full{grid-column:1 / -1}
+.form label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:5px;display:block}
+.form input,.form select,.form textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:13.5px;font-family:inherit}
+.form input:focus,.form textarea:focus,.form select:focus{outline:none;border-color:var(--gold-dim)}
+.form textarea{min-height:60px;resize:vertical}
+.hero-input{display:flex;gap:10px;align-items:center}
+.hero-input input{flex:1}
+.hero-preview{width:60px;height:90px;border-radius:6px;background:var(--panel2) center/cover no-repeat;border:1px solid var(--line);flex-shrink:0}
+.api-state{font-size:12px;color:var(--muted)} .api-state b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.pin-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.pin-canvas-wrap{aspect-ratio:2/3;background:#0c0e16;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.pin-canvas-wrap canvas{width:100%;height:100%;object-fit:cover;display:block}
+.pin-canvas-wrap .stub{color:#41485e;font-size:28px}
+.pin-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.pin-hook{font-family:'Playfair Display',serif;font-weight:700;font-size:14px;line-height:1.3;color:var(--ink)}
+.pin-sub{font-size:12px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic}
+.pin-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.pin-meta span{font-size:10px;letter-spacing:.5px;padding:3px 8px;border-radius:10px;background:var(--panel2);color:var(--muted);font-family:'Cinzel',serif;text-transform:uppercase}
+.pin-actions{display:flex;gap:6px}
+.pin-actions .btn{flex:1;padding:6px;font-size:11px}
+.bar{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.progress{flex:1;min-width:200px;height:9px;background:var(--panel2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pinterest),var(--gold));transition:width .3s}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:16px}
+.empty .e-emoji{font-size:42px;display:block;margin-bottom:14px}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.spin{width:36px;height:36px;border:4px solid var(--line);border-top-color:var(--pinterest);border-radius:50%;animation:s 1s linear infinite;margin:0 auto 14px}
+@keyframes s{to{transform:rotate(360deg)}}
+dialog.viewer{border:none;background:transparent;max-width:92vw;max-height:92vh;padding:0}
+dialog.viewer canvas,dialog.viewer img{max-width:92vw;max-height:92vh;border-radius:10px;border:1px solid var(--gold-dim)}
+dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
+.err{background:rgba(217,138,138,.1);border:1px solid var(--red);border-radius:8px;padding:14px;color:var(--red);margin-bottom:14px;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Pinterest Pin Factory</div>
+  <span class="tag">Discovery Engine</span>
+  <div class="controls">
+    <span class="api-state" id="apiState">API: <b>—</b></span>
+    <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./backlog.html">← Backlog</a>
+    <a class="btn ghost" href="./index.html">Bundle Studio</a>
+    <a class="btn ghost" href="./listing.html">Listings</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Generiert <b class="gold">5 fertige Pinterest-Pins</b> pro Bundle (1000×1500px, vertical):
+    <b class="pin">virale Hook-Texte</b> via Claude + AI-Hintergrundbilder via Seedream + Text-Overlay via Canvas.
+    Pinterest schickt <b>monatelang Traffic</b> nach 1× Posten — pro Bundle ~$0.30 Gen-Kosten.
+  </div>
+
+  <div class="form" id="form">
+    <div class="full">
+      <label>Bundle-Name</label>
+      <input type="text" id="bundleName" placeholder="z.B. Curse of Strahd · Barovia Master Pack">
+    </div>
+    <div class="full">
+      <label>Tagline (was bekommt der Käufer)</label>
+      <input type="text" id="tagline" placeholder="z.B. 30 NPCs + 15 Locations + 10 Battle Maps für deine Curse-of-Strahd-Kampagne">
+    </div>
+    <div>
+      <label>Tier</label>
+      <select id="tier">
+        <option value="flagship">Flagship</option>
+        <option value="evergreen" selected>Evergreen</option>
+        <option value="trope">Trope</option>
+      </select>
+    </div>
+    <div>
+      <label>Anzahl Pins</label>
+      <input type="number" id="pinCount" value="5" min="3" max="10">
+    </div>
+    <div class="full">
+      <label>Bundle-Theme (für AI-Bild-Hintergrund)</label>
+      <input type="text" id="visualTheme" placeholder="z.B. dark gothic vampire castle, candle-lit, Barovian atmosphere">
+    </div>
+    <div class="full">
+      <label>Marketplace-URL für CTA (optional, kommt unten in den Pin)</label>
+      <input type="text" id="ctaUrl" placeholder="z.B. EndoCraft on Etsy">
+    </div>
+    <div class="full" style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn ghost" onclick="resetForm()">Reset</button>
+      <button class="btn primary" id="genBtn" onclick="generate()">⚡ Pins generieren</button>
+    </div>
+  </div>
+
+  <div id="status" style="display:none">
+    <div class="bar">
+      <div class="progress"><i id="progFill"></i></div>
+      <span class="count" id="progCount">0 / 0</span>
+    </div>
+  </div>
+
+  <div id="actions" style="display:none;margin-bottom:18px">
+    <button class="btn pinterest" onclick="downloadAll()">⬇ Alle Pins als ZIP herunterladen</button>
+  </div>
+
+  <div id="output"><div class="empty"><span class="e-emoji">📌</span>Füll das Formular aus und klicke <b>⚡ Pins generieren</b>.<br>5 Pinterest-Pins, ~60-90 Sekunden, ca. 30 Cent.</div></div>
+</div>
+
+<dialog class="viewer" id="viewer"></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const PIN_W = 1000, PIN_H = 1500;
+let pinsData = null;
+let pinCanvases = [];
+
+(async function ping() {
+  try { await fetch(API_BASE + '/health'); document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--green)">online</b>'; }
+  catch(e) { document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--red)">offline</b>'; }
+})();
+
+(function loadFromUrl() {
+  const p = new URLSearchParams(location.search);
+  const b = p.get('bundle');
+  if (b) {
+    try {
+      const data = JSON.parse(b);
+      if (data.name) document.getElementById('bundleName').value = data.name;
+      if (data.tag) document.getElementById('tagline').value = data.tag;
+      if (data.tier) document.getElementById('tier').value = data.tier;
+    } catch(e){}
+  }
+})();
+
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function proxied(url){ return API_BASE + '/api/image/proxy?url=' + encodeURIComponent(url); }
+
+async function generate() {
+  const name = document.getElementById('bundleName').value.trim();
+  if (!name) { toast('Name fehlt'); return; }
+  const tagline = document.getElementById('tagline').value.trim();
+  const tier = document.getElementById('tier').value;
+  const count = parseInt(document.getElementById('pinCount').value) || 5;
+  const visualTheme = document.getElementById('visualTheme').value.trim() || 'dark fantasy, cinematic, atmospheric';
+  const ctaUrl = document.getElementById('ctaUrl').value.trim() || 'EndoCraft on Etsy';
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.textContent = '⏳ Texte holen...';
+  document.getElementById('status').style.display = 'block';
+  document.getElementById('actions').style.display = 'none';
+  document.getElementById('output').innerHTML = '<div class="empty"><div class="spin"></div>Claude schreibt Pin-Hooks...</div>';
+  setProgress(0, count);
+
+  try {
+    // Step 1: Pin-Texte holen
+    const txtRes = await fetch(API_BASE + '/api/pinterest-pin-texts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundleName: name, tagline, tier, count })
+    });
+    const txtData = await txtRes.json();
+    if (!txtRes.ok || !txtData.ok) throw new Error(txtData.error || 'Texte holen fehlgeschlagen');
+    pinsData = txtData.pins.slice(0, count);
+    if (!pinsData.length) throw new Error('Keine Pins generiert');
+
+    // Step 2: Pin-Cards rendern (mit Loading-Stubs)
+    pinCanvases = [];
+    document.getElementById('output').innerHTML = '<div class="grid" id="grid">' +
+      pinsData.map((p, i) => `
+        <div class="pin-card" data-i="${i}">
+          <div class="pin-canvas-wrap" onclick="openViewer(${i})"><canvas id="pc${i}" width="${PIN_W}" height="${PIN_H}"></canvas></div>
+          <div class="pin-body">
+            <div class="pin-hook">${esc(p.hook)}</div>
+            <div class="pin-sub">${esc(p.subtitle)}</div>
+            <div class="pin-meta">
+              <span>${esc(p.hook_style||'hook')}</span>
+              <span style="color:var(--pinterest);background:rgba(230,0,35,.08)">${esc(p.cta||'')}</span>
+            </div>
+            <div class="pin-actions">
+              <button class="btn" onclick="downloadOne(${i})">⬇ PNG</button>
+              <button class="btn" onclick="regenOne(${i})">🔄 Bild neu</button>
+            </div>
+          </div>
+        </div>
+      `).join('') + '</div>';
+
+    // Step 3: Per Pin → Bild generieren + Canvas compose
+    btn.textContent = '🎨 Bilder gen...';
+    for (let i = 0; i < pinsData.length; i++) {
+      const p = pinsData[i];
+      const imgPrompt = buildImagePrompt(name, visualTheme, p.visual_style);
+      try {
+        const imgRes = await fetch(API_BASE + '/api/image', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: imgPrompt, model: 'bytedance/seedream-4-5', width: 1440, height: 2160 })
+        });
+        const imgData = await imgRes.json();
+        if (!imgData.url) throw new Error('Image-API: ' + (imgData.error || 'no url'));
+        p._imgUrl = imgData.url;
+        await composePin(i, imgData.url, p, ctaUrl);
+      } catch(e) {
+        console.warn('pin', i, 'failed', e.message);
+        composeFallback(i, p, ctaUrl);
+      }
+      setProgress(i+1, pinsData.length);
+    }
+    document.getElementById('actions').style.display = 'block';
+    toast(`✓ ${pinsData.length} Pins fertig`);
+  } catch(e) {
+    document.getElementById('output').innerHTML = '<div class="err">Fehler: ' + esc(e.message) + '<br><br>Backend deployed? Endpoint /api/pinterest-pin-texts muss live sein (run deploy.bat).</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = '⚡ Pins generieren';
+    document.getElementById('status').style.display = 'none';
+  }
+}
+
+function buildImagePrompt(name, visualTheme, pinStyle) {
+  return `${visualTheme}, ${pinStyle || 'cinematic'}, vertical pinterest pin format, atmospheric depth, room for text overlay at top and bottom, dark moody fantasy aesthetic, professional photography style, photorealistic, 8k, no text, no watermark, no logo, no signature`;
+}
+
+function setProgress(done, total) {
+  document.getElementById('progFill').style.width = (total ? (done/total*100) : 0) + '%';
+  document.getElementById('progCount').textContent = `${done} / ${total} Pins`;
+}
+
+async function composePin(i, imgUrl, pin, ctaText) {
+  const canvas = document.getElementById('pc' + i);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0c0e16'; ctx.fillRect(0, 0, PIN_W, PIN_H);
+
+  // Hintergrundbild
+  try {
+    const img = await new Promise((res, rej) => {
+      const im = new Image(); im.crossOrigin = 'anonymous';
+      im.onload = () => res(im); im.onerror = rej;
+      im.src = proxied(imgUrl);
+    });
+    // Cover-fit
+    const sourceRatio = img.width / img.height;
+    const targetRatio = PIN_W / PIN_H;
+    let sx=0, sy=0, sw=img.width, sh=img.height;
+    if (sourceRatio > targetRatio) { sw = img.height * targetRatio; sx = (img.width - sw) / 2; }
+    else { sh = img.width / targetRatio; sy = (img.height - sh) / 2; }
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, PIN_W, PIN_H);
+  } catch(e) {
+    composeFallback(i, pin, ctaText);
+    return;
+  }
+
+  // Dark gradient overlay (oben + unten für Text-Lesbarkeit)
+  const topGrad = ctx.createLinearGradient(0, 0, 0, PIN_H * 0.4);
+  topGrad.addColorStop(0, 'rgba(0,0,0,0.85)'); topGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = topGrad; ctx.fillRect(0, 0, PIN_W, PIN_H * 0.45);
+  const botGrad = ctx.createLinearGradient(0, PIN_H * 0.6, 0, PIN_H);
+  botGrad.addColorStop(0, 'rgba(0,0,0,0)'); botGrad.addColorStop(1, 'rgba(0,0,0,0.92)');
+  ctx.fillStyle = botGrad; ctx.fillRect(0, PIN_H * 0.55, PIN_W, PIN_H * 0.45);
+
+  // Hook-Text oben
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 76px "Playfair Display", serif';
+  ctx.textAlign = 'center';
+  wrapText(ctx, pin.hook, PIN_W/2, 140, PIN_W - 90, 80);
+
+  // Gold-Underline
+  ctx.fillStyle = '#d8b46a';
+  ctx.fillRect(PIN_W/2 - 60, PIN_H * 0.42, 120, 4);
+
+  // Subtitle unten
+  ctx.font = 'italic 36px "EB Garamond", serif';
+  ctx.fillStyle = '#e9e4d6';
+  wrapText(ctx, pin.subtitle, PIN_W/2, PIN_H - 270, PIN_W - 100, 46);
+
+  // CTA-Bar
+  const ctaH = 110, ctaY = PIN_H - 140;
+  ctx.fillStyle = '#e60023';
+  ctx.fillRect(PIN_W/2 - 320, ctaY, 640, ctaH);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 38px "Cinzel", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText((pin.cta || 'Get the pack').toUpperCase(), PIN_W/2, ctaY + ctaH/2 - 14);
+  ctx.font = '24px "DM Sans", sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillText(ctaText, PIN_W/2, ctaY + ctaH/2 + 24);
+  ctx.textBaseline = 'alphabetic';
+}
+
+function composeFallback(i, pin, ctaText) {
+  const canvas = document.getElementById('pc' + i);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,PIN_H);
+  grad.addColorStop(0,'#1a1f2c'); grad.addColorStop(1,'#0c0e16');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,PIN_W,PIN_H);
+  ctx.fillStyle = '#d8b46a';
+  ctx.font = 'bold 76px "Playfair Display", serif';
+  ctx.textAlign = 'center';
+  wrapText(ctx, pin.hook, PIN_W/2, PIN_H/3, PIN_W-90, 80);
+  ctx.fillStyle = '#9aa0b3';
+  ctx.font = 'italic 36px "EB Garamond", serif';
+  wrapText(ctx, pin.subtitle, PIN_W/2, PIN_H/2 + 60, PIN_W-100, 46);
+}
+
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  const words = String(text||'').split(' ');
+  let line = '';
+  let lines = [];
+  for (let n=0; n<words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > maxW && n > 0) {
+      lines.push(line.trim()); line = words[n] + ' ';
+    } else line = test;
+  }
+  lines.push(line.trim());
+  lines.forEach((l, i) => ctx.fillText(l, x, y + i*lineH));
+}
+
+async function regenOne(i) {
+  const p = pinsData[i]; if (!p) return;
+  const visualTheme = document.getElementById('visualTheme').value.trim() || 'dark fantasy';
+  const ctaUrl = document.getElementById('ctaUrl').value.trim() || 'EndoCraft on Etsy';
+  toast('🔄 Bild neu...');
+  try {
+    const imgRes = await fetch(API_BASE + '/api/image', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: buildImagePrompt(document.getElementById('bundleName').value, visualTheme, p.visual_style), model: 'bytedance/seedream-4-5', width: 1440, height: 2160 })
+    });
+    const imgData = await imgRes.json();
+    if (!imgData.url) throw new Error(imgData.error || 'no url');
+    p._imgUrl = imgData.url;
+    await composePin(i, imgData.url, p, ctaUrl);
+    toast('✓ neu');
+  } catch(e) { toast('Fehler: '+e.message); }
+}
+
+function openViewer(i) {
+  const dlg = document.getElementById('viewer');
+  const src = document.getElementById('pc'+i);
+  dlg.innerHTML = '<canvas width="'+PIN_W+'" height="'+PIN_H+'"></canvas>';
+  const c = dlg.querySelector('canvas');
+  c.getContext('2d').drawImage(src, 0, 0);
+  dlg.showModal();
+  dlg.onclick = () => dlg.close();
+}
+
+function downloadOne(i) {
+  const c = document.getElementById('pc'+i); if (!c) return;
+  const slug = document.getElementById('bundleName').value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'pin';
+  c.toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${slug}-pin-${i+1}.png`;
+    a.click(); URL.revokeObjectURL(a.href);
+  }, 'image/png');
+}
+
+async function downloadAll() {
+  if (!pinsData) return;
+  const zip = new JSZip();
+  const slug = document.getElementById('bundleName').value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle';
+  const folder = zip.folder(slug + '-pinterest-pins');
+  for (let i=0; i<pinsData.length; i++) {
+    const c = document.getElementById('pc'+i); if (!c) continue;
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    folder.file(`pin-${i+1}.png`, blob);
+  }
+  // Manifest mit Hook + Subtitle für Pinterest-Upload-Workflow
+  const manifest = pinsData.map((p,i) => ({
+    file: `pin-${i+1}.png`,
+    hook: p.hook, subtitle: p.subtitle, cta: p.cta,
+    suggested_pinterest_description: `${p.hook} — ${p.subtitle} #DnD #DungeonsAndDragons #DMTools #TTRPG #DungeonMaster`
+  }));
+  folder.file('pins-manifest.json', JSON.stringify(manifest, null, 2));
+  const zipBlob = await zip.generateAsync({ type:'blob' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(zipBlob);
+  a.download = `${slug}-pinterest-pins.zip`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('⬇ ZIP downloaded');
+}
+
+function resetForm() {
+  ['bundleName','tagline','visualTheme','ctaUrl'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pinCount').value = 5;
+  document.getElementById('output').innerHTML = '<div class="empty"><span class="e-emoji">📌</span>Füll das Formular aus und klicke <b>⚡ Pins generieren</b>.</div>';
+  document.getElementById('actions').style.display = 'none';
+  pinsData = null;
+}
+</script>
+</body>
+</html>

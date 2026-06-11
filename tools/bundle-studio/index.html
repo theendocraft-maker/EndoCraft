@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Bundle Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#10131c; --panel:#181c28; --panel2:#1f2433; --line:#2c3247;
+  --gold:#d8b46a; --gold-dim:#9c8244; --ink:#e9e4d6; --muted:#9aa0b3;
+  --green:#7bbd8f; --red:#d98a8a; --blue:#7fa9d8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.5}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+a{color:var(--gold)}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+select,input,textarea,button{font-family:inherit;color:inherit}
+select,input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 12px;font-size:13px}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--gold-dim)}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.wrap{max-width:1280px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:18px;font-family:'EB Garamond',serif;font-size:16px;color:var(--muted)}
+.intro b{color:var(--ink)}
+.intro .warn{color:var(--gold)}
+.bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.progress{flex:1;min-width:200px;height:10px;background:var(--panel2);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-dim),var(--gold));transition:width .3s}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stylefield{display:flex;flex-direction:column;gap:4px;margin:14px 0 22px}
+.stylefield label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
+.stylefield input{width:100%}
+.pack{margin-bottom:34px}
+.pack-head{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+.pack-head h2{font-size:17px;color:var(--gold)}
+.pack-head .meta{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:4/3;background:#0c0e16 center/cover no-repeat;border-bottom:1px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.thumb.portrait{aspect-ratio:4/5}
+.thumb .ph{color:#41485e;font-size:34px}
+.thumb .status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:rgba(12,14,22,.72);font-size:12px;color:var(--muted)}
+.spin{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.card-body{padding:12px 13px;display:flex;flex-direction:column;gap:9px;flex:1}
+.card-title{font-family:'Cinzel',serif;font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.typebadge{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px;white-space:nowrap}
+textarea.prompt{width:100%;min-height:74px;resize:vertical;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px;font-size:12.5px;font-family:'EB Garamond',serif;color:var(--ink);line-height:1.45}
+.card-actions{display:flex;gap:8px;margin-top:auto}
+.card-actions .btn{flex:1;padding:7px;font-size:12px}
+.err{color:var(--red);font-size:12px}
+.ok-dot{color:var(--green)}
+.footnote{color:var(--muted);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px;font-family:'EB Garamond',serif}
+.api-state{font-size:12px;color:var(--muted)}
+.api-state b{color:var(--ink)}
+dialog.viewer{border:none;background:transparent;max-width:92vw;max-height:92vh;padding:0}
+dialog.viewer img{max-width:92vw;max-height:92vh;border-radius:10px;border:1px solid var(--gold-dim)}
+dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Bundle Studio</div>
+  <span class="tag">Etsy Asset Factory</span>
+  <div class="controls">
+    <span class="api-state" id="apiState">API: <b>—</b></span>
+    <button class="btn ghost" id="pingBtn" title="Check Railway backend">Ping</button>
+    <select id="bundleSel"></select>
+    <button class="btn" id="genAllBtn">⚡ Generate all pending</button>
+    <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./backlog.html" title="Production-Backlog mit allen Bundle-Themen">📋 Backlog</a>
+    <a class="btn ghost" href="./listing.html" title="Listing-Texte für Etsy/DMs Guild/Gumroad/itch.io generieren">✍ Listing</a>
+    <a class="btn ghost" href="./pinterest.html" title="5 Pinterest-Pin-Bilder für gratis Discovery-Traffic">📌 Pinterest</a>
+    <button class="btn" id="bulkBtn" title="Bulk-Mode: mehrere Bundles hintereinander generieren">⚡⚡ Bulk</button>
+    <button class="btn" id="pdfBtn" title="Alle generierten Assets als PDF — für DMs Guild / Gumroad-Format">📄 PDF</button>
+    <button class="btn primary" id="zipBtn">⬇ ZIP</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Pick a bundle, tweak any prompt, and generate every asset through your own Seedream API.
+    Each image is reviewable and re-rollable. When you're happy, <b>Download bundle (ZIP)</b> packs
+    everything into folders ready for an Etsy upload.
+    <span class="warn">⚠ ZIP download needs the <code>/api/image/proxy</code> endpoint deployed (run your <code>deploy.bat</code> once).</span>
+    Generating costs AIML credits per image — reroll deliberately.
+  </div>
+
+  <div class="bar">
+    <div class="progress"><i id="progFill"></i></div>
+    <span class="count" id="progCount">0 / 0 generated</span>
+  </div>
+
+  <div class="stylefield">
+    <label for="styleInp">Global style suffix (appended to every prompt)</label>
+    <input type="text" id="styleInp">
+  </div>
+
+  <div id="packs"></div>
+
+  <div class="footnote">
+    Files land in the ZIP as <code>bundle/pack/01_name.png</code>. Seedream model: <code>bytedance/seedream-4-5</code>.
+    Edited prompts &amp; generated images are remembered in this browser (localStorage) until you clear them.
+    <button class="btn ghost" id="clearBtn" style="margin-left:10px">Clear this bundle's saved data</button>
+  </div>
+</div>
+
+
+<dialog id="bulkDlg" style="border:none;background:var(--panel);color:var(--ink);border:1px solid var(--gold-dim);border-radius:12px;padding:0;max-width:560px;width:90vw">
+  <div style="padding:18px 22px 12px;border-bottom:1px solid var(--line);font-family:'Cinzel',serif;color:var(--gold);font-size:17px">⚡⚡ Bulk-Generate Mode</div>
+  <div style="padding:18px 22px;display:flex;flex-direction:column;gap:14px;font-family:'EB Garamond',serif;color:var(--muted);font-size:14.5px">
+    <div>Wählt mehrere Bundles aus dem Dropdown, die hintereinander voll-generiert werden. Läuft im Hintergrund mit Concurrency 2. Du kannst die Page offen lassen oder im Hintergrund laufen — Notification bei Fertig.</div>
+    <div>
+      <label style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;display:block;margin-bottom:6px">Bundles auswählen</label>
+      <div id="bulkBundleList" style="max-height:280px;overflow-y:auto;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px"></div>
+    </div>
+    <div id="bulkProgress" style="display:none">
+      <div style="font-size:13px;color:var(--gold);font-family:'Cinzel',serif;margin-bottom:6px">Status:</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);background:var(--panel2);border-radius:6px;padding:10px;max-height:200px;overflow-y:auto" id="bulkLog"></div>
+    </div>
+  </div>
+  <div style="padding:14px 22px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px">
+    <button class="btn ghost" onclick="closeBulkDlg()">Schließen</button>
+    <button class="btn primary" id="bulkStartBtn" onclick="runBulkQueue()">⚡⚡ Queue starten</button>
+  </div>
+</dialog>
+
+<dialog class="viewer" id="viewer"><img id="viewerImg" alt=""></dialog>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const MODEL = 'bytedance/seedream-4-5';
+const DEFAULT_STYLE = 'cinematic fantasy, photorealistic, dramatic cinematic lighting, highly detailed, 8k, no text, no watermark, no signature';
+// Seedream requires total area >= 3,686,400 px (1920x1920). All presets exceed it.
+const DIMS = { portrait:{w:1728,h:2160}, map:{w:2240,h:1680}, scene:{w:2880,h:1620} };
+const STORE_KEY = 'ecbs_v1';
+const STYLE_KEY = 'ecbs_style';
+
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+
+/* ---- helper to build a pack ---- */
+function pack(name, type, names){
+  return { name, slug:slug(name), type,
+    assets: names.map(([n,p]) => ({ id:slug(name)+'__'+slug(n), name:n, type, prompt:p })) };
+}
+
+const BUNDLES = [
+{ id:'session-15-maps', name:'★ Session 15 · Battle Maps (Aufstieg + Henge)', slug:'session-15-maps', packs:[
+  pack('Top-Down Battle Maps','map',[
+    ['Cairns-Aufstieg · Race to the Top','top-down tabletop battle map view, steep winding hillside path ascending from bottom-left to top-right, lined with 10-12 ancient moss-covered stone cairns each with a skull on top, gnarled dead trees and dark thorny bushes between the cairns, one shallow open pit halfway up the path, slick muddy wet ground from storm rain, atmospheric Barovian dark fantasy battle map style, bird eye view, gridded fantasy cartography, photorealistic stone and earth textures, no text, no labels'],
+    ['Druid Circle · Stone Henge oben','top-down tabletop battle map view, ancient stone circle henge on hilltop, 12 towering monolith stones arranged in a circle around a central clearing with a huge 40-foot wicker man golem of bundled straw and twisted branches at the center, narrow ritual pass between 20-foot cliffs cutting through the circle, scattered burial mounds and small altar shrines in the northern area, southern path leading off-map toward a twisted ancient tree, dramatic storm-lashed atmospheric Barovian dark fantasy battle map style, bird eye view, gridded fantasy cartography, photorealistic stone and earth textures, no text, no labels'],
+    ['Gulthias Tree · Dig-Location (Session 16)','top-down tabletop battle map view, a single massive misshapen twisted ancient tree at the center, branches like crooked claws of a sleeping giant, bulging exposed roots breaking through the dark earth around it, surrounded by undergrowth of shrubs and saplings and scattered bones and small crude druidic totems, dark blood-stained ground near the trunk, fresh dig site in front of the tree showing exposed earth and a partial pit, dimly lit twilight Barovian dark fantasy battle map style, bird eye view, gridded fantasy cartography, photorealistic root and earth textures, no text, no labels'],
+    ['Heart Chamber · ENDBOSS (Session 16)','top-down tabletop battle map view of a vast damp underground cavern chamber, walls laced with a living lattice of twisted root tendrils, a massive pulsing vampire heart suspended in a cage of roots at the very center of the chamber, the floor underneath the heart saturated with dark ichor, a small altar with candles slightly to one side where an undead priest stands, narrow tunnel entrance from above, scattered bones and decayed druidic relics around the edges, oppressive dark fantasy horror battle map style, bird eye view, gridded fantasy cartography, photorealistic damp cavern textures, no text, no labels'],
+  ]),
+]},
+
+{ id:'session-15-locations', name:'★ Session 15 · Locations & Atmosphäre (heute Abend!)', slug:'session-15-locations', packs:[
+  pack('Establishing Shots','scene',[
+    ['1 · Druid Forest Approach','dense misty pine forest in twilight Barovia, ghostly mist swirling between trees, flickering candle shrines in the distance under gnarled branches, dimly lit cave mouth ahead exhaling pale fog, hanging twig effigies swaying, melancholy and ominous wide establishing shot, dark fantasy cinematic'],
+    ['2 · Seer Cave Interior','dim mystical cave interior, scattered candles flickering in dusty half-light, robed scarred figure with hollow eye sockets standing at the back, hypnotic atmosphere with drifting incense smoke, ancient druidic symbols carved into stone walls, dark fantasy horror cinematic wide shot'],
+    ['3 · Yester Hill Approach (Tempel-Sicht)','ominous misty hill rising from the Barovian plains at dusk, ringed by ancient stone cairns climbing the hillside, henge of monolithic stones at the summit silhouetted by lightning, dark stormy clouds above, a small temple at the base with a robed figure waiting, dramatic establishing shot, dark fantasy cinematic'],
+    ['4 · Druid Cairns Ascent · Storm','steep dark hillside path lined with ancient moss-covered stone cairns under a violent storm sky, lightning flashing across roiling clouds, undead druid figures rising semi-translucent from the cairns, atmospheric race-to-the-top imagery, dark fantasy cinematic action wide shot'],
+    ['5 · Druid Circle · Wicker Man Reveal','dramatic ancient stone circle henge atop a stormy hill, towering wicker man golem 40 feet tall in the center woven from straw and twisted branches, surrounded by chanting druids in pale robes, two druids at his feet performing the ritual, lightning splitting the sky, ominous dark fantasy cinematic wide reveal shot'],
+    ['6 · Sturm + Druidischer Chant','swirling storm clouds over moonlit stone circle with green ritual energy rising from chanting druid figures, lightning intercut with green fey magic glow, atmospheric mood piece, dramatic dark fantasy cinematic'],
+  ]),
+  pack('Handouts & Moments','scene',[
+    ['7 · Strahds Brief (Schwarzwachs)','elegant aged parchment letter sealed with black wax seal stamped with vampire crest, faintly visible handwritten gothic script in dark ink, candlelit shadow, atmospheric handout-style still life, dark fantasy photorealistic'],
+    ['8 · Davian Transformation','dramatic close shot of a large black raven mid-shape-shifting into an older bearded man with sharp eyes, feathers becoming a dark cloak, candlelit wine cellar interior with broken barrels, mystical wereraven moment, dark fantasy cinematic'],
+    ['9 · Kavan Manifestation · Blood Spear','ethereal translucent ancient warrior spirit manifesting in front of a stone temple, glowing red blood spear materializing in the air, dramatic blue-white ghostly light, chanting druid figures kneeling around him in the rain, epic dark fantasy cinematic reveal'],
+    ['10 · Cliffhanger · Dämmerung am Druid Circle','dawn breaking over a misty stone circle with the wicker man silhouetted against pink and grey sky, decision-moment imagery, a single bloody footprint in wet grass, ominous quiet aftermath, cinematic dark fantasy still'],
+  ]),
+]},
+
+{ id:'session-15-tokens', name:'★ Session 15 · Yester Hill Tokens (heute Abend!)', slug:'session-15-tokens', packs:[
+  pack('Owlbear NPC Tokens','portrait',[
+    ['Davian Martikov','older male wereraven in dark traveling cloak with grey-streaked beard, sharp watchful eyes, a black raven perched on his shoulder transforming, atmospheric Barovian forest background with mist'],
+    ['Seer · Blinde Wahrsagerin','scarred robed figure with empty hollowed-out eye sockets, candle-lit cave background with mist, raspy hooded face etched with old ritual scars, hypnotic mysterious atmosphere'],
+    ['Chulainn · Druid Elder','older male druid elder with weathered tan skin and long white braided beard, kind sorrowful eyes, simple brown druidic robes with leaf clasps, holding a gnarled wooden staff with a small green crystal at the top, dark stormy hill in background'],
+    ['Kavan · Geist-Krieger','ethereal warrior spirit ghost, ancient barovian war-chief, translucent blue-white form, holding a glowing red blood spear, weathered noble face, fierce determination, swirling mist below, dark stormy sky background'],
+    ['Undead Druid Possessor','ghostly translucent undead druid figure floating slightly above the ground, semi-incorporeal form with mist swirling around, withered hands extending toward viewer, glowing green-tinged eye sockets, ancient cairn stones and tombstones in background under stormy sky'],
+    ['Undead Druid Wight','ancient undead druid wight in studded leather armor over rotting brown robes, withered grey face with sunken glowing eyes, gripping a vicious curved-blade glaive at the ready, dark stormy hillside with cairn stones in background'],
+    ['Druid Naturalist','slender druid in pale grey-green robes with bark-like skin patches, hands raised in chanting gesture, eyes closed in trance, surrounded by floating leaves and faint green energy, ancient stone circle background'],
+    ['Druid Guardian','stocky druid warrior in barkskin armor wielding a heavy quarterstaff wrapped in glowing shillelagh runes, fierce protective expression, beard with woven leaves, monolithic stones behind, dark stormy atmospheric fantasy'],
+    ['Wicker Man (Huge)','towering wicker man golem of bundled straw and twisted branches three stories tall, glowing green from within where a fey gem is embedded in its chest, empty hollow eyes glowing with the same green light, standing motionless in a stone circle with terrified druids around it, dark stormy hilltop'],
+    ['Malachiel · Druidenfuehrer','tall druid leader wearing a birch bark mask covering most of the face, one glowing amber eye visible through the mask, dark hooded robes adorned with bones and twigs and small bird skulls, hands extended holding a pulsating green fey gem, ominous storm clouds and distant standing stones behind, sinister atmospheric dark fantasy'],
+  ]),
+]},
+
+{ id:'phandelver', name:'Lost Mine of Phandelver', slug:'phandelver', packs:[
+  pack('Character Art','portrait',[
+    ['Spider Villain','a sinister dark elf sorcerer, obsidian skin, long white hair, ornate black and purple robes adorned with spider motifs, glowing violet eyes, holding a twisted wand, menacing expression, dark cavern background'],
+    ['Bald Wizard','a bald human wizard in fine deep-red robes, gaunt smug face, holding a glass staff with a glowing crystal tip, candle-lit study background'],
+    ['Veteran Knight','a weary middle-aged human soldier, grey-streaked beard, dented chainmail, kind tired eyes, a longsword at his side'],
+    ['Dwarf Prospector','a stout cheerful dwarf with a thick braided red beard, leather traveling clothes, holding a rolled treasure map, warm lantern light'],
+    ['Elf Priestess','a graceful young elf priestess, silver hair, simple green and white robes, holding a holy symbol, serene determined expression, shrine background'],
+    ['Scheming Merchant','an elegant human woman, dark hair in a tight bun, fine merchant dress, calculating smile, holding a ledger, dim office background'],
+    ['Nervous Innkeeper','a balding middle-aged human innkeeper in an apron, anxious friendly face, wiping a tankard, warm tavern background'],
+    ['Goblin Servant','a small scrawny goblin with oversized ears, tattered rags, wide nervous eyes, clutching a broom, timid comic expression'],
+    ['Young Green Dragon','a young green dragon perched among ruined tower stones, sleek emerald scales, intelligent yellow eyes, wings half-folded, wisps of poison smoke'],
+    ['Bugbear Chief','a hulking bugbear bandit chief, matted brown fur, crude leather armor, wielding a heavy morningstar, snarling, torch-lit cave background'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Goblin Hideout','top-down tabletop battle map, a goblin cave hideout with an underground stream crossing, narrow tunnels, a wooden bridge, scattered crates, bird eye view, fantasy cartography, photorealistic stone and water textures'],
+    ['Ruined Castle','top-down tabletop battle map, a ruined forest castle interior, crumbling stone halls, multiple chambers, collapsed roof sections, moss-covered floors, bird eye view, fantasy cartography'],
+    ['Manor Cellar Dungeon','top-down tabletop battle map, an underground manor cellar dungeon, crypt alcoves, a chasm crossed by a rope bridge, prison cells, torch sconces, bird eye view, fantasy cartography'],
+    ['Lost Mine Cavern','top-down tabletop battle map, a vast ancient mine cavern with magical forge ruins, underground pools, rubble, glowing mineral veins, bird eye view, fantasy cartography'],
+    ['Frontier Town','top-down tabletop battle map, a small frontier town, dirt roads, scattered wooden buildings, a central square, surrounding farmland and tree line, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Cozy Tavern Interior','a cozy rustic tavern interior, warm hearth fire, wooden beams, patrons tables, hanging lanterns, wide establishing shot'],
+    ['Manor Ruins','crumbling overgrown manor ruins on a hillside at dusk, broken walls, ivy, a dark cellar entrance, wide establishing shot'],
+    ['Old Owl Well','a ruined ancient well and broken tower in a desolate moor at twilight, eerie blue mist, wide establishing shot'],
+    ['Moonlit Grove','a moonlit forest clearing with ancient gnarled trees and faint ghostly light, mystical atmosphere, wide establishing shot'],
+    ['Mine Entrance','a dark mountainside mine entrance with timber supports and an old mine cart, scattered rubble, overcast sky, wide establishing shot'],
+    ['Forest Road','a forested road through pine woods with an overturned cart and scattered crates, dappled light, wide establishing shot'],
+    ['Misty Pine Forest','a dense misty pine forest with a winding trail, shafts of light, fallen logs, wide establishing shot'],
+    ['Town Square','a frontier town square at golden hour, wooden buildings, a central well, distant mountains, wide establishing shot'],
+    ['Magical Forge Chamber','an ancient subterranean magical forge chamber, glowing runes, a great stone anvil, eerie green light, wide establishing shot'],
+    ['Ruined Watchtower','a lone ruined stone watchtower on a rocky hill at sunset, crumbling battlements, long shadows, wide establishing shot'],
+  ]),
+]},
+
+{ id:'avernus', name:'Descent into Avernus (Hell & Devils)', slug:'avernus', packs:[
+  pack('Character Art','portrait',[
+    ['Fallen Archduke','a majestic fallen angel warlord, scorched golden armor, tattered fiery wings, a burning sword, a fierce sorrowful face, hellfire background'],
+    ['Pit Fiend General','a towering pit fiend devil, crimson scaled skin, vast bat wings, curved horns, wreathed in flame, menacing'],
+    ['Hollyphant Guide','a small luminous winged elephant-like celestial creature, glowing white-gold fur, gentle eyes, soft radiant aura'],
+    ['Cambion Mercenary','a half-fiend warrior with red skin, small horns, leather and iron armor, smoldering eyes, holding a jagged blade'],
+    ['Imp Messenger','a tiny mischievous imp devil with leathery wings and a barbed tail, sly grin, perched on a skull'],
+    ['Soul Broker','an elegant sinister devil in fine infernal merchant attire, holding glowing soul coins, a calculating smile'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Infernal Battlefield','top-down tabletop battle map, a scorched hellish battlefield with rivers of lava, ruined war machines, bone debris, bird eye view, fantasy cartography'],
+    ['Devil Fortress','top-down tabletop battle map, an iron devil fortress interior, spiked halls and chambers, lava channels, bird eye view, fantasy cartography'],
+    ['Styx Crossing','top-down tabletop battle map, a dark river crossing with a ruined stone bridge and ash banks, bird eye view, fantasy cartography'],
+    ['Blood Pits','top-down tabletop battle map, a grotesque infernal blood-pit chamber with raised platforms and channels, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Hellscape Vista','a vast hellscape vista of scorched red wastes, distant fire tornados, a blackened sky, wide establishing shot'],
+    ['Ruined Hell City','a ruined city dragged into hell, a broken cathedral, chains hanging in the sky, drifting embers, wide establishing shot'],
+    ['Brimstone Wastes','a desolate plain of cracked black earth and sulphur vents glowing orange, wide establishing shot'],
+    ['Infernal War Machine','a massive spiked infernal war machine vehicle on a hellish road, smoke and fire, wide establishing shot'],
+    ['Devil Throne Hall','a vast obsidian throne hall lit by hellfire braziers, towering pillars, ominous, wide establishing shot'],
+  ]),
+]},
+
+{ id:'barovia', name:'Barovia Expansion (Gothic Horror)', slug:'barovia', packs:[
+  pack('Character Art','portrait',[
+    ['Vampire Lord','a pale aristocratic vampire lord in elegant black and crimson finery, slicked dark hair, piercing eyes, a gothic castle background'],
+    ['Mourning Noblewoman','a beautiful pale young noblewoman with auburn hair, a black mourning dress, a haunted expression, candlelight'],
+    ['Mad Seer','a wild-eyed old fortune teller woman draped in tattered shawls, holding worn fortune cards, eerie candlelight'],
+    ['Werewolf Leader','a fierce half-transformed werewolf man, muscular, fur and fangs emerging, a moonlit forest behind'],
+    ['Corrupted Abbot','a serene unsettling robed figure with faint broken-angel features and a pale glow, an abbey background'],
+    ['Vistani Wanderer','a colorful nomadic fortune-teller man with gold jewelry, a painted wagon behind him, firelight'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Castle Great Hall','top-down tabletop battle map, a gothic castle great hall with a long banquet table, fireplaces and balconies, bird eye view, fantasy cartography'],
+    ['Fog Village Square','top-down tabletop battle map, a fog-shrouded gloomy village square with a gallows and shuttered houses, bird eye view, fantasy cartography'],
+    ['Crypt Catacombs','top-down tabletop battle map, winding stone crypt catacombs with tombs and a central chamber, bird eye view, fantasy cartography'],
+    ['Misty Graveyard','top-down tabletop battle map, an overgrown foggy graveyard with crooked headstones and a mausoleum, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Castle on the Cliff','a towering gothic vampire castle on a fog-wrapped crag at night, lightning in the sky, wide establishing shot'],
+    ['Cursed Village','a gloomy fog-bound village of crooked houses under a blood-red moon, wide establishing shot'],
+    ['Dead Forest','a twisted dead forest shrouded in mist with gnarled black trees, eerie, wide establishing shot'],
+    ['Abbey Ruins','a crumbling mountaintop abbey in fog at dusk, broken statues, wide establishing shot'],
+    ['Misty Lake','a still black lake under heavy fog with a ruined dock and a distant castle silhouette, wide establishing shot'],
+  ]),
+]},
+
+{ id:'vampire-castle', name:'Gothic Vampire Castle', slug:'gothic-vampire-castle', packs:[
+  pack('Character Art','portrait',[
+    ['The Vampire Lord','a pale aristocratic vampire lord in elegant black and crimson finery, slicked dark hair, piercing pale eyes, gothic castle interior background'],
+    ['Vampire Bride in Crimson','a beautiful pale vampire bride in a flowing crimson silk gown, dark hair, alluring deadly smile, candlelit chamber background'],
+    ['Vampire Bride in Violet','a beautiful pale vampire bride in a violet velvet gown, raven hair, melancholy seductive expression, moonlit chamber background'],
+    ['Vampire Bride in Black','a beautiful pale vampire bride in a black lace mourning gown, ash-blonde hair, cold predatory eyes, candlelit chamber background'],
+    ['Sinister Butler','a tall gaunt sinister butler with grey hair and a stern face, formal black livery, deep gothic hallway background'],
+    ['Cloaked Spy','a slender mysterious figure in a dark hooded traveling cloak, sharp watching eyes, a single raven on his shoulder, twilight castle courtyard background'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Castle Entry Hall','top-down tabletop battle map, a vast gothic castle entry hall with a checker tile floor, twin staircases, towering doors, candelabras, bird eye view, fantasy cartography'],
+    ['Throne Room','top-down tabletop battle map, a gothic vampire throne room with a raised dais and crimson throne, banners, tall arched windows, bird eye view, fantasy cartography'],
+    ['Castle Library','top-down tabletop battle map, an ornate gothic castle library with tall bookshelves, reading tables, a hidden alcove, bird eye view, fantasy cartography'],
+    ['Chapel of Bones','top-down tabletop battle map, a gothic castle chapel with stone pews, a sacrilegious altar, scattered bones, candle-lit, bird eye view, fantasy cartography'],
+    ['Catacombs','top-down tabletop battle map, gothic stone catacombs winding past coffin niches and a central crypt chamber, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Castle on the Crag','a towering gothic vampire castle on a fog-wrapped crag at night, lightning splitting the sky, wide establishing shot'],
+    ['Drawbridge over Chasm','a stone drawbridge spanning a vast misty chasm beneath a gothic gatehouse at night, wide establishing shot'],
+    ['Throne Room Interior','a vast gothic throne hall lit by hundreds of candles, towering pillars, a crimson throne on a dais, wide establishing shot'],
+    ['Library Interior','a candle-lit gothic library with towering bookshelves and a single high reading chair, wide establishing shot'],
+    ['Tomb Hall','an underground gothic tomb hall lined with stone sarcophagi and flickering torchlight, wide establishing shot'],
+  ]),
+]},
+
+{ id:'haunted-manor', name:'Haunted Manor Prologue', slug:'haunted-manor-prologue', packs:[
+  pack('Character Art','portrait',[
+    ['Ghost Boy','the apparition of a small pale boy in 19th-century mourning clothes, sad sunken eyes, faint translucent glow, dim hallway background'],
+    ['Ghost Girl with Doll','the apparition of a pale young girl in a tattered white dress clutching a porcelain doll, sad expression, dusty bedroom background'],
+    ['Undead Manor Lord','a desiccated undead nobleman in a dusty velvet coat, hollow eye sockets, withered hands, ruined drawing room background'],
+    ['Possessed Nanny','a stern grey-haired nurse in old-fashioned uniform, blackened veins under her skin, an unsettling smile, candlelit nursery background'],
+    ['Cult Acolyte','a hooded robed cultist with a bone amulet, a gaunt fanatic face, candle-lit ritual chamber background'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Manor Ground Floor','top-down tabletop battle map, the ground floor of a tall narrow gothic manor with parlor, dining hall, kitchen and cobwebbed corridors, bird eye view, fantasy cartography'],
+    ['Manor Upper Floor','top-down tabletop battle map, the upper floor of a gothic manor with bedrooms, a nursery, dust-covered furniture, bird eye view, fantasy cartography'],
+    ['Manor Attic','top-down tabletop battle map, the cluttered attic of a gothic manor with crates, an old crib, broken windows, bird eye view, fantasy cartography'],
+    ['Hidden Basement','top-down tabletop battle map, a hidden stone basement beneath a manor with a ritual chamber and altar, blood channels, bird eye view, fantasy cartography'],
+    ['Crawlspace Dungeon','top-down tabletop battle map, a cramped underground crawlspace dungeon with low tunnels, cells and a sacrificial pit, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Haunted Manor Exterior','a tall narrow haunted gothic manor on an empty street under a blood-red sky at dusk, wide establishing shot'],
+    ['Dusty Grand Foyer','a dust-covered grand foyer with a sweeping staircase, a tarnished chandelier, fading portraits, wide establishing shot'],
+    ['Childrens Bedroom','a dim childrens bedroom with two small beds, broken toys scattered on the floor, an old music box, wide establishing shot'],
+    ['Spiral Staircase','a tight spiral staircase descending into deep darkness lit by a single guttering candle, wide establishing shot'],
+    ['Ritual Chamber','a stone basement ritual chamber with a bloody altar, dripping candles, scratched runes on the floor, wide establishing shot'],
+  ]),
+]},
+
+{ id:'festival-town', name:'Cursed Festival Town', slug:'cursed-festival-town', packs:[
+  pack('Character Art','portrait',[
+    ['Paranoid Mayor','a thin paranoid mayor in a fine but slightly worn coat and powdered wig, a fixed manic smile, ornate study background'],
+    ['Frail Noblewoman','a frail pale noblewoman in a faded dress clutching a doll, a haunted absent expression, dim parlor background'],
+    ['Festival Barker','a jovial heavyset man in colorful festival attire with a wide grin that does not reach his eyes, hanging lanterns background'],
+    ['Grim Henchman','a hulking grim henchman in a long coat carrying a heavy axe, scarred face, foggy street background'],
+    ['Devoted Priest','a kindly white-haired priest in simple robes holding a holy symbol, a weary determined expression, church interior background'],
+    ['Town Dancer','a graceful dark-haired woman in colorful traveling folk attire, a defiant proud expression, lantern light'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Town Square with Stage','top-down tabletop battle map, a foggy walled town square with a wooden festival stage, market stalls, hanging lanterns, bird eye view, fantasy cartography'],
+    ['Noble Manor','top-down tabletop battle map, a small noble manor interior with a study, parlor, dining room and bedroom, bird eye view, fantasy cartography'],
+    ['Village Church','top-down tabletop battle map, a small village church interior with pews, an altar and a crypt entrance, bird eye view, fantasy cartography'],
+    ['Crowded Tavern','top-down tabletop battle map, a cozy crowded village tavern interior with bar, tables and a back room, bird eye view, fantasy cartography'],
+    ['Palisade Town Gate','top-down tabletop battle map, a wooden palisade town gate with watchtowers and approach road, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Festival Night','a fog-wrapped walled town square at night lit by hundreds of paper lanterns, a wooden stage, anxious revelers, wide establishing shot'],
+    ['Walled Town Overview','a small walled medieval town surrounded by dead fields under a heavy grey sky at dusk, wide establishing shot'],
+    ['Cobbled Street','a fog-bound cobbled town street between crooked timber houses, hanging lanterns, wide establishing shot'],
+    ['Broken Church','an old stone village church with a half-collapsed steeple under heavy fog, wide establishing shot'],
+    ['Stilt-House Alley','a cramped alley of timber stilt-houses leaning over a fog-bound canal, wide establishing shot'],
+  ]),
+]},
+
+{ id:'tomb', name:'Tomb of Annihilation (Jungle & Undead)', slug:'tomb-of-annihilation', packs:[
+  pack('Character Art','portrait',[
+    ['Lich Villain','a skeletal undead archmage lich in tattered golden robes, glowing eye sockets, an ornate crown, a jungle tomb background'],
+    ['Mummified Sorcerer','a desiccated mummified sorcerer wrapped in ancient bandages and gold, faint glowing runes'],
+    ['Raptor Rider','a fierce tribal hunter riding a feathered raptor, war paint, a spear, a dense jungle background'],
+    ['Serpent Folk','a menacing serpent-folk creature, a human torso with a snake lower body and hooded cobra features, scaled skin'],
+    ['Jungle Shaman','a wise tribal shaman with bone and feather adornments, a painted face, holding a carved staff'],
+    ['Ghoul Stalker','a feral emaciated undead ghoul with grey skin and long claws, crouched in shadow'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Jungle Clearing','top-down tabletop battle map, a dense jungle clearing with ancient ruins, a stream and vines, bird eye view, fantasy cartography'],
+    ['Temple Entrance','top-down tabletop battle map, an ancient stone temple entrance with trap tiles and statues, bird eye view, fantasy cartography'],
+    ['Ziggurat Summit','top-down tabletop battle map, the flat top of a stepped jungle pyramid with a sacrificial altar, bird eye view, fantasy cartography'],
+    ['Trap Corridor','top-down tabletop battle map, a narrow ancient stone corridor lined with spike traps and pressure plates, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Lost City Ruins','an overgrown lost jungle city of stone ruins reclaimed by vines, golden light, wide establishing shot'],
+    ['Jungle Path','a dense misty jungle trail with towering trees and shafts of sunlight, wide establishing shot'],
+    ['Dinosaur Arena','an ancient open-air stone arena in the jungle with carved seating, wide establishing shot'],
+    ['Idol Chamber','a torchlit underground chamber dominated by a great golden idol, wide establishing shot'],
+    ['Fetid Swamp','a steaming jungle swamp with twisted mangroves and ruins half-sunk in murky water, wide establishing shot'],
+  ]),
+]},
+
+{ id:'frostmaiden', name:'Rime of the Frostmaiden (Arctic Horror)', slug:'rime-of-the-frostmaiden', packs:[
+  pack('Character Art','portrait',[
+    ['Frost Witch','a pale ice sorceress with frost-white hair and glowing blue eyes, a gown of ice crystals, a cold aura, a blizzard background'],
+    ['Duergar Overseer','a grim grey-skinned dwarf with a bald head and dark beard, iron armor, glowering'],
+    ['Yeti','a massive white-furred yeti with icy claws and black eyes, snarling in a snowstorm'],
+    ['Frostbitten Villager','a weary bundled-up northern villager with frost on their fur hood, haunted tired eyes, lantern light'],
+    ['Corrupted Figure','a person with creeping black crystalline corruption spreading over their skin, an eerie glow'],
+    ['Tundra Hunter','a rugged fur-clad tundra hunter with a spear and bone ornaments, a windburned face'],
+  ]),
+  pack('Battle Maps','map',[
+    ['Snowbound Village','top-down tabletop battle map, a small snow-buried northern village with timber houses and drifts, bird eye view, fantasy cartography'],
+    ['Frozen Cave','top-down tabletop battle map, a glittering ice cavern with frozen pools and stalactites, bird eye view, fantasy cartography'],
+    ['Dig Site','top-down tabletop battle map, an underground mining dig site with carts, scaffolding and tunnels, bird eye view, fantasy cartography'],
+    ['Frozen Ship Deck','top-down tabletop battle map, the deck of a ship frozen into the ice with rigging and crates, bird eye view, fantasy cartography'],
+  ]),
+  pack('Location Art','scene',[
+    ['Frozen Tundra','an endless windswept arctic tundra under a dim sky with blowing snow, wide establishing shot'],
+    ['Aurora Night','a frozen northern landscape beneath shimmering green aurora and stars, wide establishing shot'],
+    ['Sunless Town','a gloomy northern town in permanent darkness lit by lanterns and braziers, snow falling, wide establishing shot'],
+    ['Glacier Chasm','a vast blue glacier with deep crevasses and towering ice walls, wide establishing shot'],
+    ['Ancient Ice Spire','a towering ancient spire of black stone and ice rising from the snow, ominous, wide establishing shot'],
+  ]),
+]},
+];
+
+/* ---------- state ---------- */
+let store = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+let style = localStorage.getItem(STYLE_KEY) || DEFAULT_STYLE;
+let current = BUNDLES[0];
+let busy = false;
+
+function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+function bs(){ return store[current.id] || (store[current.id]={}); }
+function assetState(a){ const o=bs(); return o[a.id] || (o[a.id]={prompt:a.prompt,url:''}); }
+
+/* ---------- DOM refs ---------- */
+const el = id => document.getElementById(id);
+const sel = el('bundleSel'), packsEl = el('packs'), styleInp = el('styleInp');
+
+/* ---------- render ---------- */
+function buildBundleSelect(){
+  sel.innerHTML = BUNDLES.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+  sel.value = current.id;
+}
+function render(){
+  packsEl.innerHTML = '';
+  current.packs.forEach(p => {
+    const sec = document.createElement('div'); sec.className='pack';
+    sec.innerHTML = `<div class="pack-head"><h2>${p.name}</h2><span class="meta">${p.assets.length} assets · ${p.type}</span></div>`;
+    const grid = document.createElement('div'); grid.className='grid';
+    p.assets.forEach((a,i) => grid.appendChild(card(a,i)));
+    sec.appendChild(grid); packsEl.appendChild(sec);
+  });
+  updateProgress();
+}
+function card(a,i){
+  const st = assetState(a);
+  const d = document.createElement('div'); d.className='card'; d.dataset.id=a.id;
+  const portrait = a.type==='portrait';
+  d.innerHTML = `
+    <div class="thumb ${portrait?'portrait':''}" data-role="thumb">
+      ${st.url ? `<img src="${st.url}" style="width:100%;height:100%;object-fit:cover" alt="">` : `<span class="ph">⬚</span>`}
+      <div class="status" data-role="status" style="display:none"></div>
+    </div>
+    <div class="card-body">
+      <div class="card-title"><span>${String(i+1).padStart(2,'0')} · ${a.name}</span><span class="typebadge">${a.type}</span></div>
+      <textarea class="prompt" data-role="prompt">${st.prompt}</textarea>
+      <div class="card-actions">
+        <button class="btn" data-role="gen">${st.url?'↻ Reroll':'✨ Generate'}</button>
+        <button class="btn" data-role="dl" ${st.url?'':'disabled'}>⬇ PNG</button>
+      </div>
+      <div class="err" data-role="err"></div>
+    </div>`;
+  const ta = d.querySelector('[data-role=prompt]');
+  ta.addEventListener('change', () => { assetState(a).prompt = ta.value; saveStore(); });
+  d.querySelector('[data-role=gen]').addEventListener('click', () => generate(a,d));
+  d.querySelector('[data-role=dl]').addEventListener('click', () => downloadOne(a));
+  d.querySelector('[data-role=thumb]').addEventListener('click', () => { const u=assetState(a).url; if(u) openViewer(u); });
+  return d;
+}
+
+/* ---------- generation ---------- */
+function finalPrompt(a){ return assetState(a).prompt.trim().replace(/,\s*$/,'') + ', ' + style.trim(); }
+
+async function generate(a, dEl){
+  const stEl = dEl.querySelector('[data-role=status]');
+  const errEl = dEl.querySelector('[data-role=err]');
+  const genBtn = dEl.querySelector('[data-role=gen]');
+  errEl.textContent=''; stEl.style.display='flex';
+  stEl.innerHTML = `<div class="spin"></div><span>Seedream rendering…</span>`;
+  genBtn.disabled = true;
+  const dim = DIMS[a.type] || DIMS.scene;
+  const ctrl = new AbortController(); const to = setTimeout(()=>ctrl.abort(), 150000);
+  try{
+    const r = await fetch(API_BASE+'/api/image', {
+      method:'POST', headers:{'Content-Type':'application/json'}, signal:ctrl.signal,
+      body: JSON.stringify({ prompt: finalPrompt(a), model: MODEL, width: dim.w, height: dim.h })
+    });
+    clearTimeout(to);
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok || !data.url){ throw new Error(data.error ? JSON.stringify(data.error) : ('HTTP '+r.status)); }
+    assetState(a).url = data.url; saveStore();
+    const thumb = dEl.querySelector('[data-role=thumb]');
+    thumb.querySelector('.ph')?.remove();
+    let img = thumb.querySelector('img');
+    if(!img){ img=document.createElement('img'); img.style.cssText='width:100%;height:100%;object-fit:cover'; thumb.prepend(img); }
+    img.src = data.url + (data.url.includes('?')?'&':'?') + 't=' + Date.now();
+    stEl.style.display='none';
+    genBtn.textContent='↻ Reroll';
+    dEl.querySelector('[data-role=dl]').disabled = false;
+  }catch(e){
+    clearTimeout(to);
+    stEl.style.display='none';
+    errEl.textContent = (e.name==='AbortError') ? 'Timed out (try again)' : ('Failed: '+e.message);
+  }finally{
+    genBtn.disabled=false; updateProgress();
+  }
+}
+
+
+// ─── BULK-MODE: mehrere Bundles hintereinander generieren ───
+function openBulkDlg() {
+  const list = el('bulkBundleList');
+  list.innerHTML = BUNDLES.map(b => {
+    const total = b.packs.reduce((s,p) => s + p.assets.length, 0);
+    const done = b.packs.reduce((s,p) => s + p.assets.filter(a => assetState(a, b.id).url).length, 0);
+    const remaining = total - done;
+    return `<label style="display:flex;align-items:center;gap:10px;padding:7px 4px;cursor:pointer;border-radius:6px" onmouseover="this.style.background='var(--line)'" onmouseout="this.style.background=''">
+      <input type="checkbox" class="bulkChk" value="${b.id}" ${remaining > 0 ? '' : 'disabled'} style="cursor:pointer">
+      <div style="flex:1">
+        <div style="font-family:'Cinzel',serif;color:var(--ink);font-size:13px">${b.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${remaining > 0 ? `${remaining} of ${total} assets noch zu gen` : `${total} assets · alle fertig`}</div>
+      </div>
+    </label>`;
+  }).join('');
+  el('bulkDlg').showModal();
+}
+function closeBulkDlg() { el('bulkDlg').close(); }
+
+// Patched assetState für cross-bundle access
+function assetStateForBundle(asset, bundleId) {
+  const bs = (store[bundleId] = store[bundleId] || { prompts:{}, assets:{} });
+  return bs.assets[asset.id] = bs.assets[asset.id] || {};
+}
+
+async function runBulkQueue() {
+  const chosen = Array.from(document.querySelectorAll('.bulkChk:checked')).map(c => c.value);
+  if (!chosen.length) { alert('Keine Bundles ausgewählt'); return; }
+  if (!confirm(`${chosen.length} Bundles bulk-generieren? Kann ~5-15 Min dauern pro Bundle.`)) return;
+
+  el('bulkStartBtn').disabled = true;
+  el('bulkProgress').style.display = 'block';
+  const log = el('bulkLog');
+  const logLine = msg => { log.innerHTML += msg + '<br>'; log.scrollTop = log.scrollHeight; };
+
+  const startTime = Date.now();
+  let totalGenerated = 0, totalFailed = 0;
+
+  for (let bi = 0; bi < chosen.length; bi++) {
+    const bundleId = chosen[bi];
+    const bundle = BUNDLES.find(b => b.id === bundleId);
+    logLine(`<span style="color:var(--gold)">[${bi+1}/${chosen.length}] ${bundle.name}</span>`);
+    const switchTo = bundle.id !== current.id;
+    if (switchTo) { current = bundle; el('bundleSel').value = bundle.id; render(); }
+    const all = [];
+    current.packs.forEach(p => p.assets.forEach(a => { if (!assetState(a).url) all.push(a); }));
+    logLine(`  → ${all.length} pending assets`);
+    if (!all.length) continue;
+    const cards = {}; document.querySelectorAll('.card').forEach(c => cards[c.dataset.id] = c);
+    let idx = 0; const CONC = 2; let okCount = 0, failCount = 0;
+    async function worker() {
+      while (idx < all.length) {
+        const a = all[idx++];
+        try { await generate(a, cards[a.id]); if (assetState(a).url) { okCount++; totalGenerated++; } else { failCount++; totalFailed++; } }
+        catch(e) { failCount++; totalFailed++; }
+      }
+    }
+    await Promise.all(Array.from({length:CONC}, worker));
+    logLine(`  ✓ ${okCount} generated, ${failCount} failed`);
+  }
+  const dur = Math.round((Date.now() - startTime) / 1000);
+  logLine(`<br><span style="color:var(--gold)">━━━ FERTIG ━━━</span><br>${totalGenerated} Assets generiert, ${totalFailed} failed, ${dur}s.`);
+  el('bulkStartBtn').disabled = false;
+  try { if (Notification.permission === 'granted') new Notification('Bundle Studio · Bulk fertig', { body: `${totalGenerated} assets generiert in ${dur}s` }); } catch(e){}
+}
+
+if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+  Notification.requestPermission().catch(()=>{});
+}
+
+async function generateAll(){
+  if(busy) return; busy=true;
+  const all=[];
+  current.packs.forEach(p=>p.assets.forEach(a=>{ if(!assetState(a).url) all.push(a); }));
+  const cards = {}; document.querySelectorAll('.card').forEach(c=>cards[c.dataset.id]=c);
+  let idx=0; const CONC=2;
+  el('genAllBtn').disabled=true;
+  async function worker(){ while(idx<all.length){ const a=all[idx++]; await generate(a, cards[a.id]); } }
+  await Promise.all(Array.from({length:CONC}, worker));
+  el('genAllBtn').disabled=false; busy=false; updateProgress();
+}
+
+function updateProgress(){
+  let total=0, done=0;
+  current.packs.forEach(p=>p.assets.forEach(a=>{ total++; if(assetState(a).url) done++; }));
+  el('progCount').textContent = `${done} / ${total} generated`;
+  el('progFill').style.width = total? (done/total*100)+'%' : '0%';
+}
+
+/* ---------- downloads ---------- */
+function proxied(url){ return API_BASE + '/api/image/proxy?url=' + encodeURIComponent(url); }
+
+function extFromType(t){ if(!t) return 'png'; if(t.includes('webp'))return'webp'; if(t.includes('jpeg')||t.includes('jpg'))return'jpg'; if(t.includes('png'))return'png'; return 'png'; }
+
+async function downloadOne(a){
+  const url = assetState(a).url; if(!url) return;
+  try{
+    const r = await fetch(proxied(url));
+    if(!r.ok) throw new Error('proxy HTTP '+r.status);
+    const blob = await r.blob();
+    triggerDownload(blob, `${slug(a.name)}.${extFromType(blob.type)}`);
+  }catch(e){ alert('Download failed: '+e.message+'\n\nIs the /api/image/proxy endpoint deployed?'); }
+}
+
+async function downloadZip(){
+  if(busy) return;
+  const items=[];
+  current.packs.forEach((p,pi)=>p.assets.forEach((a,ai)=>{ const u=assetState(a).url; if(u) items.push({p,a,ai,url:u}); }));
+  if(!items.length){ alert('Nothing generated yet.'); return; }
+  const zb=el('zipBtn'); const orig=zb.textContent; zb.disabled=true; busy=true;
+  const zip = new JSZip(); const root = zip.folder(current.slug);
+  let ok=0, fail=0;
+  for(let i=0;i<items.length;i++){
+    const {p,a,ai,url}=items[i];
+    zb.textContent = `Zipping ${i+1}/${items.length}…`;
+    try{
+      const r = await fetch(proxied(url));
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const blob = await r.blob();
+      const name = `${String(ai+1).padStart(2,'0')}_${slug(a.name)}.${extFromType(blob.type)}`;
+      root.folder(p.slug).file(name, blob); ok++;
+    }catch(e){ fail++; console.warn('zip fail', a.name, e.message); }
+  }
+  if(ok){
+    zb.textContent='Building ZIP…';
+    const blob = await zip.generateAsync({type:'blob'});
+    triggerDownload(blob, current.slug+'-bundle.zip');
+  }
+  zb.disabled=false; zb.textContent=orig; busy=false;
+  if(fail) alert(`ZIP done: ${ok} added, ${fail} failed.\nFailures usually mean the /api/image/proxy endpoint isn\'t deployed yet (run deploy.bat).`);
+}
+
+
+async function downloadPDF(){
+  if(busy) return;
+  if(typeof window.jspdf === 'undefined'){ alert('jsPDF nicht geladen. Browser-Cache leeren?'); return; }
+  const items=[];
+  current.packs.forEach((p,pi)=>p.assets.forEach((a,ai)=>{ const u=assetState(a).url; if(u) items.push({p,a,ai,url:u}); }));
+  if(!items.length){ alert('Noch nichts generiert.'); return; }
+  const pb=el('pdfBtn'); const orig=pb.textContent; pb.disabled=true; busy=true;
+  pb.textContent='PDF lädt Bilder…';
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'landscape', unit:'pt', format:'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    // Cover page
+    doc.setFillColor(20,24,38); doc.rect(0,0,pageW,pageH,'F');
+    doc.setTextColor(216,180,106);
+    doc.setFont('helvetica','bold'); doc.setFontSize(36);
+    doc.text(current.name, pageW/2, pageH/2-40, { align:'center', maxWidth: pageW-80 });
+    doc.setFontSize(14); doc.setTextColor(154,160,179);
+    doc.text(`${items.length} Assets · EndoCraft Bundle Studio`, pageW/2, pageH/2+10, { align:'center' });
+    doc.setFontSize(10);
+    doc.text(new Date().toLocaleDateString('de-DE'), pageW/2, pageH-40, { align:'center' });
+
+    for(let i=0;i<items.length;i++){
+      const {p,a,url}=items[i];
+      pb.textContent=`PDF Bild ${i+1}/${items.length}…`;
+      try {
+        const r = await fetch(proxied(url));
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const blob = await r.blob();
+        const dataUrl = await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(blob); });
+        const img = await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=dataUrl; });
+        doc.addPage();
+        // Fill background
+        doc.setFillColor(255,255,255); doc.rect(0,0,pageW,pageH,'F');
+        // Title-bar
+        doc.setFillColor(20,24,38); doc.rect(0,0,pageW,40,'F');
+        doc.setTextColor(216,180,106); doc.setFont('helvetica','bold'); doc.setFontSize(13);
+        doc.text(a.name, 20, 26, { maxWidth: pageW-180 });
+        doc.setTextColor(154,160,179); doc.setFontSize(9);
+        doc.text(`${p.name} · ${i+1}/${items.length}`, pageW-20, 26, { align:'right' });
+        // Image fits
+        const maxW = pageW - 80, maxH = pageH - 80;
+        let imgW = img.width, imgH = img.height;
+        const ratio = Math.min(maxW/imgW, maxH/imgH);
+        imgW *= ratio; imgH *= ratio;
+        const x = (pageW-imgW)/2, y = (pageH-imgH)/2 + 12;
+        const fmt = blob.type.includes('jpeg') ? 'JPEG' : 'PNG';
+        doc.addImage(dataUrl, fmt, x, y, imgW, imgH);
+      } catch(e){ console.warn('PDF page failed:', a.name, e.message); }
+    }
+    pb.textContent='PDF wird gespeichert…';
+    const blob = doc.output('blob');
+    triggerDownload(blob, current.slug+'-bundle.pdf');
+  } catch(e){ alert('PDF-Fehler: '+e.message); }
+  pb.disabled=false; pb.textContent=orig; busy=false;
+}
+
+function triggerDownload(blob, filename){
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=u; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); }, 1500);
+}
+
+function openViewer(url){ el('viewerImg').src=url; el('viewer').showModal(); }
+el('viewer').addEventListener('click', ()=>el('viewer').close());
+
+async function ping(){
+  el('apiState').innerHTML='API: <b>…</b>';
+  try{ const r=await fetch(API_BASE+'/health'); const j=await r.json();
+    el('apiState').innerHTML = r.ok ? 'API: <b style="color:var(--green)">online</b>' : 'API: <b style="color:var(--red)">error</b>';
+  }catch(e){ el('apiState').innerHTML='API: <b style="color:var(--red)">unreachable</b>'; }
+}
+
+buildBundleSelect();
+styleInp.value = style;
+styleInp.addEventListener('change', ()=>{ style=styleInp.value||DEFAULT_STYLE; localStorage.setItem(STYLE_KEY, style); });
+sel.addEventListener('change', ()=>{ current=BUNDLES.find(b=>b.id===sel.value); render(); });
+el('genAllBtn').addEventListener('click', generateAll);
+el('bulkBtn').addEventListener('click', openBulkDlg);
+el('zipBtn').addEventListener('click', downloadZip);
+el('pdfBtn').addEventListener('click', downloadPDF);
+el('pingBtn').addEventListener('click', ping);
+el('clearBtn').addEventListener('click', ()=>{ if(confirm('Clear saved prompts & images for "'+current.name+'"?')){ delete store[current.id]; saveStore(); render(); }});
+render();
+ping();
+</script>
+</body>
+</html>

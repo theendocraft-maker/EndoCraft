@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Bundle Backlog Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.5}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.ghost{background:transparent}
+.wrap{max-width:1400px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:22px;font-family:'EB Garamond',serif;font-size:16px;color:var(--muted)}
+.intro b{color:var(--ink)}
+.intro .gold{color:var(--gold)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif}
+.kpi-value{font-size:26px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:4px}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.kpi.accent .kpi-value{color:var(--gold)}
+.kpi.success .kpi-value{color:var(--green)}
+.filterbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.pillgroup{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:6px 13px;border:1px solid var(--line);border-radius:18px;font-size:12px;cursor:pointer;background:var(--panel);color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.5px}
+.pill:hover{border-color:var(--gold-dim);color:var(--ink)}
+.pill.active{background:var(--gold);color:#1a1408;border-color:var(--gold);font-weight:700}
+input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px 12px;font-size:13px;font-family:inherit;min-width:240px}
+input[type=text]:focus,input[type=number]:focus{outline:none;border-color:var(--gold-dim)}
+input[type=number]{background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--ink);padding:5px 8px;font-size:13px;font-family:inherit;width:64px;text-align:center}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th{background:var(--panel2);text-align:left;padding:12px 14px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;color:var(--gold);font-weight:500;border-bottom:1px solid var(--line);text-transform:uppercase;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(216,180,106,.04)}
+.theme-name{font-family:'Cinzel',serif;font-size:14.5px;color:var(--ink);font-weight:500}
+.theme-tag{font-size:11px;color:var(--muted);font-style:italic;margin-top:2px}
+.statuspill{display:inline-block;padding:4px 11px;border-radius:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-family:'Cinzel',serif;font-weight:500;cursor:pointer;border:1px solid;white-space:nowrap}
+.statuspill.backlog{background:rgba(154,160,179,.12);color:var(--muted);border-color:rgba(154,160,179,.3)}
+.statuspill.production{background:rgba(127,169,216,.15);color:var(--blue);border-color:rgba(127,169,216,.35)}
+.statuspill.listed{background:rgba(224,167,103,.15);color:var(--orange);border-color:rgba(224,167,103,.35)}
+.statuspill.sold{background:rgba(123,189,143,.15);color:var(--green);border-color:rgba(123,189,143,.35)}
+.tier{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Cinzel',serif}
+.tier-flagship{background:rgba(216,180,106,.18);color:var(--gold);border:1px solid var(--gold-dim)}
+.tier-evergreen{background:rgba(127,169,216,.1);color:var(--blue);border:1px solid rgba(127,169,216,.25)}
+.tier-trope{background:rgba(154,160,179,.1);color:var(--muted);border:1px solid rgba(154,160,179,.25)}
+.sales-cell{font-variant-numeric:tabular-nums;text-align:center}
+.sales-cell b{color:var(--green);font-size:15px}
+.revenue{font-variant-numeric:tabular-nums;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:13px}
+.actions-cell{display:flex;gap:6px;justify-content:flex-end}
+.iconbtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:5px 9px;cursor:pointer;font-size:13px;transition:.15s}
+.iconbtn:hover{border-color:var(--gold-dim);color:var(--gold)}
+.add-row{display:flex;gap:10px;background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:14px;margin-top:18px;align-items:center;flex-wrap:wrap}
+.add-row input{flex:1;min-width:180px}
+dialog{background:var(--panel);border:1px solid var(--gold-dim);border-radius:12px;color:var(--ink);padding:0;max-width:520px;width:90vw}
+dialog::backdrop{background:rgba(8,9,14,.85)}
+dialog .dlg-head{padding:18px 22px 12px;border-bottom:1px solid var(--line);font-family:'Cinzel',serif;color:var(--gold);font-size:17px}
+dialog .dlg-body{padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+dialog .dlg-body label{font-size:12px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-family:'Cinzel',serif;margin-bottom:4px;display:block}
+dialog .dlg-actions{padding:14px 22px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+.footnote{color:var(--muted);font-size:12px;margin-top:34px;border-top:1px solid var(--line);padding-top:14px;font-family:'EB Garamond',serif}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Bundle Backlog</div>
+  <span class="tag">Production Roadmap</span>
+  <div class="controls">
+    <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./index.html">🎨 Studio</a>
+    <a class="btn ghost" href="./listing.html">✍ Listings</a>
+    <a class="btn ghost" href="./pinterest.html">📌 Pinterest</a>
+    <button class="btn ghost" onclick="exportJSON()">⬇ Export JSON</button>
+    <button class="btn ghost" onclick="document.getElementById('importFile').click()">⬆ Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="btn primary" onclick="openAddDialog()">+ Bundle hinzufügen</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Deine <b class="gold">Bundle-Production-Pipeline</b> — alle Themen, die du systematisch abarbeitest.
+    Status pro Bundle, Sales-Tracker, Revenue. Strukturierter Backlog statt „was bauen wir als nächstes?".
+    Daten leben in <b>localStorage</b> — Export/Import für Backup.
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-label">Backlog</div><div class="kpi-value" id="kpiBacklog">0</div><div class="kpi-sub">noch nicht produziert</div></div>
+    <div class="kpi"><div class="kpi-label">In Production</div><div class="kpi-value" id="kpiProduction">0</div><div class="kpi-sub">Assets generiert</div></div>
+    <div class="kpi accent"><div class="kpi-label">Listed</div><div class="kpi-value" id="kpiListed">0</div><div class="kpi-sub">live im Marketplace</div></div>
+    <div class="kpi success"><div class="kpi-label">Total Sales</div><div class="kpi-value" id="kpiSales">0</div><div class="kpi-sub" id="kpiRevenue">0 €</div></div>
+  </div>
+
+  <div class="filterbar">
+    <div class="pillgroup" id="statusFilter">
+      <div class="pill active" data-status="all">Alle</div>
+      <div class="pill" data-status="backlog">Backlog</div>
+      <div class="pill" data-status="production">In Production</div>
+      <div class="pill" data-status="listed">Listed</div>
+      <div class="pill" data-status="sold">Has Sales</div>
+    </div>
+    <div class="pillgroup" id="tierFilter">
+      <div class="pill active" data-tier="all">Alle Tiers</div>
+      <div class="pill" data-tier="flagship">Flagship</div>
+      <div class="pill" data-tier="evergreen">Evergreen</div>
+      <div class="pill" data-tier="trope">Trope</div>
+    </div>
+    <input type="text" id="searchInput" placeholder="🔎 Bundle suchen..." oninput="renderTable()">
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:30%">Bundle-Thema</th>
+        <th>Tier</th>
+        <th>Status</th>
+        <th>Sales</th>
+        <th>€/Stk</th>
+        <th>Revenue</th>
+        <th>Marketplaces</th>
+        <th style="text-align:right">Aktionen</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div class="footnote">
+    Tiers: <b style="color:var(--gold)">Flagship</b> = Premium-Mega-Bundles (25€+) · <b style="color:var(--blue)">Evergreen</b> = etablierte WotC/Pyram King Module · <b style="color:var(--muted)">Trope</b> = generische Themen die immer ziehen (Tavern, Forest, etc.). Status-Pill klicken zum Wechseln.
+  </div>
+</div>
+
+<dialog id="addDlg">
+  <div class="dlg-head">+ Neues Bundle ins Backlog</div>
+  <div class="dlg-body">
+    <div><label>Bundle-Thema</label><input type="text" id="addName" placeholder="z.B. Storm King's Thunder Establishing Pack" style="width:100%"></div>
+    <div><label>Tagline / Notiz</label><input type="text" id="addTag" placeholder="z.B. 10 Giants + 10 Mountains, premium" style="width:100%"></div>
+    <div style="display:flex;gap:12px"><div style="flex:1"><label>Tier</label><select id="addTier" style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--ink);padding:6px;font-family:inherit"><option value="flagship">Flagship</option><option value="evergreen" selected>Evergreen</option><option value="trope">Trope</option></select></div><div style="flex:1"><label>Preis (€)</label><input type="number" id="addPrice" value="8" step="0.5"></div></div>
+  </div>
+  <div class="dlg-actions">
+    <button class="btn ghost" onclick="closeAddDialog()">Abbrechen</button>
+    <button class="btn primary" onclick="confirmAdd()">Hinzufügen</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'ec_bundle_backlog_v1';
+const STATUSES = ['backlog','production','listed','sold'];
+
+// ═══ Default-Seed (30+ Themen) ═══
+const SEED = [
+  // ─── Flagship: Premium WotC Modules ───
+  { name:'Curse of Strahd · Barovia Master Pack', tag:'aktuell live · 2 sales', tier:'flagship', price:18, status:'listed', sales:2, marketplaces:['etsy'] },
+  { name:'Storm King\'s Thunder · Giants & Mountains', tag:'10 giants + 10 mountain establishing + tokens', tier:'flagship', price:22 },
+  { name:'Tomb of Annihilation · Jungle Mega Pack', tag:'30+ assets · Chult + Aboleths + Dinosaurs', tier:'flagship', price:25 },
+  { name:'Out of the Abyss · Underdark Complete', tag:'demon lords + drow + underdark biomes', tier:'flagship', price:24 },
+  { name:'Rime of the Frostmaiden · Icewind Dale Set', tag:'frozen landscapes + winter monsters', tier:'flagship', price:20 },
+  { name:'Descent into Avernus · Hell Pack', tag:'devils + war machines + infernal vistas', tier:'flagship', price:22 },
+  { name:'Wild Beyond the Witchlight · Feywild Set', tag:'whimsical fey + carnival + dream realms', tier:'flagship', price:20 },
+  { name:'Waterdeep Dragon Heist · City Pack', tag:'urban encounters + NPC portraits + maps', tier:'flagship', price:18 },
+  { name:'Dungeon of the Mad Mage', tag:'multi-level dungeon delve', tier:'flagship', price:22 },
+
+  // ─── Evergreen: kleinere themed packs ───
+  { name:'Lost Mine of Phandelver · Starter Pack', tag:'beginner adventure essentials', tier:'evergreen', price:10 },
+  { name:'Princes of the Apocalypse · Elemental Cults', tag:'4 element cults + temples', tier:'evergreen', price:14 },
+  { name:'Pyram King Yester Hill · Druid Pack', tag:'aktuell durch CoS-Session-15 prep generiert', tier:'evergreen', price:12 },
+  { name:'Kobold Press · Tome of Beasts NPCs', tag:'portraits of unique CR-balanced creatures', tier:'evergreen', price:14 },
+
+  // ─── Trope: generic but always-selling categories ───
+  { name:'Tavern Encounter Pack', tag:'NPCs, brawls, mysterious strangers', tier:'trope', price:8 },
+  { name:'Forest Encounter Pack', tag:'beasts, druids, ambushes', tier:'trope', price:8 },
+  { name:'Dungeon Crawl Essentials', tag:'traps, doors, rooms, undead', tier:'trope', price:9 },
+  { name:'Pirate Adventure Pack', tag:'ships, sea monsters, port NPCs', tier:'trope', price:9 },
+  { name:'Gothic Horror Set', tag:'vampires, ghosts, haunted mansions', tier:'trope', price:9 },
+  { name:'Desert Travel Pack', tag:'dunes, oases, mummies, sand worms', tier:'trope', price:8 },
+  { name:'Arctic Survival Pack', tag:'glaciers, frost giants, ice trolls', tier:'trope', price:8 },
+  { name:'Swamp Encounter Pack', tag:'witches, lizardfolk, marshes', tier:'trope', price:8 },
+  { name:'Mountain Pass Set', tag:'cliffs, giants, climbing encounters', tier:'trope', price:8 },
+  { name:'Festival & Market Pack', tag:'NPCs, stalls, performers', tier:'trope', price:9 },
+  { name:'Noble Court Encounter Pack', tag:'royal portraits, ballrooms, intrigue', tier:'trope', price:10 },
+  { name:'Underdark Mini Pack', tag:'drow, mind flayers, fungi', tier:'trope', price:9 },
+  { name:'Cyberpunk Fantasy Crossover', tag:'tech-arcane, dystopian magic-cities', tier:'trope', price:11 },
+  { name:'Wild West Fantasy Pack', tag:'frontier towns, magical revolvers', tier:'trope', price:10 },
+  { name:'Eastern Fantasy Pack', tag:'samurai, oni, cherry blossoms', tier:'trope', price:11 },
+  { name:'Pirate Cove Battle Maps', tag:'5 top-down maps, grid-ready', tier:'trope', price:9 },
+  { name:'Holiday Adventure: Winter Solstice', tag:'seasonal one-shot pack', tier:'trope', price:8 },
+  { name:'Holiday Adventure: Spring Festival', tag:'seasonal one-shot pack', tier:'trope', price:8 },
+  { name:'Holiday Adventure: Halloween/Samhain', tag:'horror seasonal pack', tier:'trope', price:9 },
+
+  // ─── Asset-spezifische Mini-Packs (immer easy sells) ───
+  { name:'100 NPC Portraits · Mixed Races', tag:'volume pack — character portraits only', tier:'trope', price:12 },
+  { name:'50 Battle Maps · Top-Down', tag:'volume pack — grid-ready maps only', tier:'trope', price:15 },
+  { name:'30 Trinkets & Magic Items', tag:'illustrated item cards', tier:'trope', price:7 },
+  { name:'D&D Trading Card Templates', tag:'PSD/PNG templates for own cards', tier:'trope', price:6 }
+];
+
+let backlog = loadBacklog();
+let filterStatus = 'all';
+let filterTier = 'all';
+
+function loadBacklog() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return SEED.map((b,i) => ({ id:'b_'+Date.now()+'_'+i, status:'backlog', sales:0, marketplaces:[], ...b }));
+}
+function saveBacklog() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(backlog)); } catch(e){} }
+
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function renderTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const tbody = document.getElementById('rows');
+  const filtered = backlog.filter(b => {
+    if (filterStatus !== 'all') {
+      if (filterStatus === 'sold' && b.sales <= 0) return false;
+      if (filterStatus !== 'sold' && b.status !== filterStatus) return false;
+    }
+    if (filterTier !== 'all' && b.tier !== filterTier) return false;
+    if (search && !((b.name+' '+(b.tag||'')).toLowerCase().includes(search))) return false;
+    return true;
+  });
+  tbody.innerHTML = filtered.map(b => `
+    <tr data-id="${b.id}">
+      <td>
+        <div class="theme-name">${escapeHtml(b.name)}</div>
+        ${b.tag ? `<div class="theme-tag">${escapeHtml(b.tag)}</div>` : ''}
+      </td>
+      <td><span class="tier tier-${b.tier}">${b.tier}</span></td>
+      <td><span class="statuspill ${b.status}" onclick="cycleStatus('${b.id}')">${b.status}</span></td>
+      <td class="sales-cell">${b.sales > 0 ? `<b>${b.sales}</b>` : '<span style="color:var(--muted)">0</span>'} <button class="iconbtn" onclick="bumpSales('${b.id}',1)" title="+1 Sale">+</button></td>
+      <td><input type="number" value="${b.price||0}" step="0.5" min="0" onchange="updateField('${b.id}','price',parseFloat(this.value)||0)"></td>
+      <td class="revenue">${((b.sales||0) * (b.price||0)).toFixed(2)} €</td>
+      <td>${(b.marketplaces||[]).join(', ') || '<span style="color:var(--muted);font-size:12px">—</span>'}</td>
+      <td class="actions-cell">
+        <button class="iconbtn" onclick="openBundleStudio('${b.id}')" title="In Bundle Studio öffnen">🎨</button>
+        <button class="iconbtn" onclick="generateListing('${b.id}')" title="Listing-Texte generieren">📋</button>
+        <button class="iconbtn" onclick="editTag('${b.id}')" title="Tagline editieren">✎</button>
+        <button class="iconbtn" onclick="deleteBundle('${b.id}')" title="Löschen">×</button>
+      </td>
+    </tr>
+  `).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">Keine Bundles in dieser Ansicht.</td></tr>`;
+  renderKpis();
+}
+
+function renderKpis() {
+  const counts = { backlog:0, production:0, listed:0 };
+  let totalSales = 0, totalRevenue = 0;
+  backlog.forEach(b => {
+    counts[b.status] = (counts[b.status]||0) + 1;
+    totalSales += b.sales||0;
+    totalRevenue += (b.sales||0) * (b.price||0);
+  });
+  document.getElementById('kpiBacklog').textContent = counts.backlog;
+  document.getElementById('kpiProduction').textContent = counts.production;
+  document.getElementById('kpiListed').textContent = counts.listed;
+  document.getElementById('kpiSales').textContent = totalSales;
+  document.getElementById('kpiRevenue').textContent = totalRevenue.toFixed(2) + ' €';
+}
+
+function cycleStatus(id) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  const i = STATUSES.indexOf(b.status);
+  b.status = STATUSES[(i+1) % STATUSES.length];
+  saveBacklog(); renderTable();
+}
+function bumpSales(id, delta) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  b.sales = Math.max(0, (b.sales||0) + delta);
+  if (b.sales > 0 && b.status === 'listed') b.status = 'sold';
+  saveBacklog(); renderTable();
+  if (delta > 0) toast('💰 +1 Sale für ' + b.name.slice(0,30));
+}
+function updateField(id, field, value) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  b[field] = value; saveBacklog(); renderTable();
+}
+function editTag(id) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  const v = prompt('Tagline:', b.tag||'');
+  if (v !== null) { b.tag = v; saveBacklog(); renderTable(); }
+}
+function deleteBundle(id) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  if (!confirm(`"${b.name}" wirklich löschen?`)) return;
+  backlog = backlog.filter(x => x.id !== id);
+  saveBacklog(); renderTable();
+}
+function openBundleStudio(id) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  const slug = b.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  window.open('./index.html?theme='+encodeURIComponent(b.name), '_blank');
+}
+function generateListing(id) {
+  const b = backlog.find(x => x.id === id); if (!b) return;
+  window.open('./listing.html?bundle='+encodeURIComponent(JSON.stringify({ name:b.name, tag:b.tag, tier:b.tier, price:b.price })), '_blank');
+}
+
+// ─── Filter ───
+document.querySelectorAll('#statusFilter .pill').forEach(p => p.addEventListener('click', () => {
+  document.querySelectorAll('#statusFilter .pill').forEach(x => x.classList.remove('active'));
+  p.classList.add('active'); filterStatus = p.dataset.status; renderTable();
+}));
+document.querySelectorAll('#tierFilter .pill').forEach(p => p.addEventListener('click', () => {
+  document.querySelectorAll('#tierFilter .pill').forEach(x => x.classList.remove('active'));
+  p.classList.add('active'); filterTier = p.dataset.tier; renderTable();
+}));
+
+// ─── Add Dialog ───
+function openAddDialog(){ document.getElementById('addDlg').showModal(); }
+function closeAddDialog(){ document.getElementById('addDlg').close(); }
+function confirmAdd() {
+  const name = document.getElementById('addName').value.trim();
+  if (!name) return toast('Name fehlt');
+  backlog.unshift({
+    id:'b_'+Date.now(), name,
+    tag: document.getElementById('addTag').value.trim(),
+    tier: document.getElementById('addTier').value,
+    price: parseFloat(document.getElementById('addPrice').value)||8,
+    status:'backlog', sales:0, marketplaces:[]
+  });
+  saveBacklog(); renderTable(); closeAddDialog();
+  ['addName','addTag'].forEach(id => document.getElementById(id).value = '');
+  toast('+ Bundle hinzugefügt');
+}
+
+// ─── Import/Export ───
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(backlog,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'bundle-backlog-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(a.href); toast('⬇ Exportiert');
+}
+function importJSON(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const arr = JSON.parse(r.result);
+      if (!Array.isArray(arr)) throw new Error('not array');
+      if (confirm(`${arr.length} Einträge importieren? (überschreib
