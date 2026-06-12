@@ -521,4 +521,12 @@ async function downloadFinal() {
     }
     await new Promise(r => setTimeout(r, 400));
   }
-  document.getElementById('dlBtn').disabled = fa
+  document.getElementById('dlBtn').disabled = false;
+  document.getElementById('dlBtn').textContent = '⬇ Download cleaned ZIPs';
+  toast('🎉 Cleaned ZIPs heruntergeladen');
+}
+
+loadRun();
+</script>
+</body>
+</html>
