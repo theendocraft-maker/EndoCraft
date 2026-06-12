@@ -532,21 +532,30 @@ async function runBundle(b, idx, total) {
       });
       const pd = await pr.json();
       if (pd.ok && pd.pins) {
-        // Gen images for pins
+        // Gen images for pins WITH 30s timeout per pin (verhindert Hänger)
+        let pinOk = 0, pinFail = 0;
         for (let pi = 0; pi < pd.pins.length && !runState.stopRequested; pi++) {
           const p = pd.pins[pi];
+          bp.querySelector('.bp-state').textContent = `pinterest ${pi+1}/${pd.pins.length}`;
           try {
             const imgPrompt = `${b.name}, ${p.visual_style||'cinematic'}, vertical pinterest pin format, atmospheric depth, room for text overlay top and bottom, dark moody fantasy aesthetic, photorealistic, 8k, no text, no watermark`;
-            const ir = await fetch(API_BASE + '/api/image', {
+            const fetchPromise = fetch(API_BASE + '/api/image', {
               method:'POST', headers:{'Content-Type':'application/json'},
               body: JSON.stringify({ prompt: imgPrompt, model:'bytedance/seedream-4-5', width:1600, height:2400 })
             });
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('pin-timeout-30s')), 30000));
+            const ir = await Promise.race([fetchPromise, timeoutPromise]);
             const id = await ir.json();
-            if (id.url) p.imgUrl = id.url;
-          } catch(e){}
+            if (id.url) { p.imgUrl = id.url; pinOk++; }
+            else { pinFail++; log('warn', `  ⚠ Pin ${pi+1}: no url`); }
+          } catch(e){
+            pinFail++;
+            if (e.message === 'pin-timeout-30s') log('warn', `  ⚠ Pin ${pi+1}: timeout (30s) — skip`);
+            else log('warn', `  ⚠ Pin ${pi+1}: ${e.message.slice(0,80)}`);
+          }
         }
         R.pins = pd.pins;
-        log('ok', `  ✓ ${pd.pins.length} Pinterest-Pins generiert`);
+        log('ok', `  ✓ Pinterest: ${pinOk}/${pd.pins.length} pins (${pinFail} failed/skipped)`);
       }
     } catch(e) { log('warn', '  ⚠ Pinterest-Gen fehlgeschlagen: ' + e.message); }
   }
@@ -764,10 +773,9 @@ function triggerDl(blob, name) {
 
 function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle'; }
-function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200); }
+function toast(msg) { const t = document.getElementById('toast'); if(t){t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);} }
 
 if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission().catch(()=>{});
-
 init();
 </script>
 </body>
