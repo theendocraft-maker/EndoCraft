@@ -100,6 +100,9 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.92);backdrop-filter:blur(4px)}
   <div class="controls">
     <span class="api-state" id="apiState">API: <b>—</b></span>
     <a class="btn ghost" href="./pipeline.html">⚡ Pipeline</a>
+    <a class="btn ghost" href="./splitter.html" title="1 Bundle → 3 Etsy-Listings" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./thumbnail.html" title="Etsy Thumbnails komponieren" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./dashboard.html" title="Etsy Performance Dashboard" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./backlog.html">📋 Backlog</a>
     <a class="btn ghost" href="./index.html">🎨 Studio</a>
   </div>
@@ -130,7 +133,19 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.92);backdrop-filter:blur(4px)}
 const API_BASE = 'https://endocraft-production.up.railway.app';
 const STORAGE_KEY = 'ec_pipeline_last_run';
 const REVIEW_KEY = 'ec_quality_review_v1';
+const LESSONS_KEY = 'ec_bundle_lessons_v1';  // per-bundle global style notes for next runs
 const STYLE_SUFFIX = 'cinematic fantasy, photorealistic, dramatic cinematic lighting, highly detailed, 8k, no text, no watermark';
+
+// Common Feedback-Snippets als Quick-Picks
+const FEEDBACK_TEMPLATES = [
+  { label:'Hände fixen', text:'anatomically correct hands, exactly 5 fingers, no deformities' },
+  { label:'Klassischer machen', text:'classic medieval fantasy aesthetic, no modern hairstyles or styles, iconic D&D look' },
+  { label:'On-Theme', text:'more iconic and recognizable to the bundle theme, less generic' },
+  { label:'Better Composition', text:'better composition, centered subject, eye-level perspective, head not cropped' },
+  { label:'Mehr Charakter', text:'more distinctive character expression, memorable face, clear personality' },
+  { label:'Weniger düster', text:'better lighting, less dark and muddy, more readable visual contrast' },
+  { label:'Realistic Anatomy', text:'realistic anatomy, no extra limbs, proper proportions, photorealistic face' }
+];
 
 let runData = null;
 let review = {};
@@ -164,7 +179,29 @@ function loadRun() {
   render();
 }
 
-function getReviewState(assetId) { return review[assetId] || { score:null, issues:[], reasoning:'', decision:null, rerolling:false }; }
+function getReviewState(assetId) { return review[assetId] || { score:null, issues:[], reasoning:'', decision:null, rerolling:false, feedback:'' }; }
+function getLessons(bundleId) {
+  try { const all = JSON.parse(localStorage.getItem(LESSONS_KEY)||'{}'); return all[bundleId] || ''; } catch(e){ return ''; }
+}
+function saveLesson(bundleId, text) {
+  try { const all = JSON.parse(localStorage.getItem(LESSONS_KEY)||'{}'); all[bundleId] = text; localStorage.setItem(LESSONS_KEY, JSON.stringify(all)); } catch(e){}
+}
+function setFeedback(assetId, text) {
+  const rs = getReviewState(assetId);
+  rs.feedback = text;
+  review[assetId] = rs;
+  saveReview();
+}
+function applyTemplate(assetId, templateText) {
+  const rs = getReviewState(assetId);
+  const cur = (rs.feedback || '').trim();
+  rs.feedback = cur ? cur + '. ' + templateText : templateText;
+  review[assetId] = rs;
+  saveReview();
+  // Update textarea in place
+  const ta = document.querySelector(`textarea[data-feedback-for="${assetId}"]`);
+  if (ta) ta.value = rs.feedback;
+}
 
 function render() {
   const bundles = Object.values(runData.results);
@@ -213,12 +250,21 @@ function render() {
     const assets = (R.assets||[]).filter(a => filterMatches(a));
     if (!assets.length && currentFilter !== 'all') return '';
     const cards = (R.assets||[]).map(a => filterMatches(a) ? renderCard(a, R.bundle.name) : '').join('');
+    const bundleKey = R.bundle.id || R.bundle.name;
+    const lessons = getLessons(bundleKey);
     return `
       <div class="bundle-section">
         <div class="bundle-head">
           <span class="tier-pill tier-${R.bundle.tier}">${R.bundle.tier}</span>
           <h2>${esc(R.bundle.name)}</h2>
           <div class="meta">${R.assets.length} Assets</div>
+        </div>
+        <div style="padding:12px 18px;background:rgba(216,180,106,0.04);border-left:3px solid var(--gold);border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;white-space:nowrap">📝 Lessons für dieses Bundle</span>
+          <textarea
+            placeholder="Globale Style-Notes für ALLE Rerolls dieses Bundles (z.B. 'klassisch, keine modernen Frisuren, mehr canonical Strahd-Vibe')"
+            onchange="saveLesson('${esc(bundleKey)}', this.value)"
+            style="flex:1;min-height:34px;background:var(--panel);border:1px solid var(--line);border-radius:6px;color:var(--ink);padding:6px 10px;font-size:12px;font-family:'EB Garamond',serif;resize:vertical;line-height:1.4">${esc(lessons)}</textarea>
         </div>
         <div class="grid">${cards || '<div class="center" style="grid-column:1/-1;padding:30px"><div style="font-size:13px">In dieser Ansicht keine Assets</div></div>'}</div>
       </div>`;
@@ -255,11 +301,21 @@ function renderCard(a, bundleName) {
         <div class="reasoning">${rs.rerolling ? '<span style="color:var(--orange)">🔄 wird neu generiert...</span>' : (rs.reasoning || (rs.score===null ? 'Noch nicht bewertet' : ''))}</div>
         ${issuesHtml ? `<div class="issues">${issuesHtml}</div>` : ''}
       </div>
+      <div style="padding:8px 12px;background:rgba(216,180,106,0.04);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px">
+        <textarea
+          data-feedback-for="${a.id}"
+          placeholder="Feedback für Reroll: was stört? was soll besser werden?"
+          onchange="setFeedback('${a.id}',this.value)"
+          style="width:100%;min-height:42px;background:var(--panel);border:1px solid var(--line);border-radius:6px;color:var(--ink);padding:6px 8px;font-size:11.5px;font-family:'EB Garamond',serif;resize:vertical;line-height:1.4">${esc(rs.feedback||'')}</textarea>
+        <div style="display:flex;flex-wrap:wrap;gap:3px">
+          ${FEEDBACK_TEMPLATES.map(t => `<button onclick="applyTemplate('${a.id}','${esc(t.text)}')" title="${esc(t.text)}" style="background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:9.5px;padding:2px 6px;border-radius:5px;font-family:'Cinzel',serif;letter-spacing:.3px;cursor:pointer">${t.label}</button>`).join('')}
+        </div>
+      </div>
       <div class="actions">
         <button class="keep ${rs.decision==='keep'?'active':''}" onclick="setDecision('${a.id}','keep')">✓ Keep</button>
         <button class="reroll ${rs.decision==='reroll'?'active':''}" onclick="setDecision('${a.id}','reroll')">✗ Reroll</button>
-        <button onclick="rerollAsset('${a.id}','${esc(bundleName)}')" ${rs.rerolling?'disabled':''}>↻ Now</button>
-        <button onclick="rateAsset('${a.id}','${esc(bundleName)}')">🤖</button>
+        <button onclick="rerollAsset('${a.id}','${esc(bundleName)}')" ${rs.rerolling?'disabled':''} title="${rs.feedback ? 'Reroll mit Feedback':'Reroll mit Original-Prompt'}">↻ ${rs.feedback ? 'Smart' : 'Now'}</button>
+        <button onclick="rateAsset('${a.id}','${esc(bundleName)}')" title="AI bewerten">🤖</button>
       </div>
     </div>`;
 }
@@ -347,17 +403,22 @@ async function rerollAsset(assetId, bundleName) {
   const rs = getReviewState(assetId);
   rs.rerolling = true; review[assetId] = rs; saveReview(); render();
   try {
-    const prompt = asset.prompt.replace(/\{\{THEME\}\}/g, bundleResult.bundle.name + (bundleResult.bundle.tag ? ', ' + bundleResult.bundle.tag : '')) + ', ' + STYLE_SUFFIX;
+    // Smart-Reroll: Feedback prepended + Lessons-Learned vom Bundle global
+    const lessons = getLessons(bundleResult.bundle.id || bundleName);
+    const userFeedback = (rs.feedback || '').trim();
+    const feedbackPrefix = [userFeedback, lessons].filter(Boolean).join('. ');
+    const basePrompt = asset.prompt.replace(/\{\{THEME\}\}/g, bundleResult.bundle.name + (bundleResult.bundle.tag ? ', ' + bundleResult.bundle.tag : ''));
+    const prompt = (feedbackPrefix ? feedbackPrefix + ', ' : '') + basePrompt + ', ' + STYLE_SUFFIX;
+    console.log('[reroll]', asset.name, '→ prompt:', prompt.slice(0, 200));
     const r = await fetch(API_BASE + '/api/image', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ prompt, model:'bytedance/seedream-4-5', width: asset.w||1800, height: asset.h||2400 })
+      body: JSON.stringify({ prompt, modeel:'bytedance/seedream-4-5', width: asset.w||1800, height: asset.h||2400 })
     });
     const data = await r.json();
     if (data.url) {
-      asset.url = data.url;  // replace URL in runData
+      asset.url = data.url;
       rs.rerolling = false; rs.score = null; rs.issues = []; rs.reasoning = '↻ Just rerolled'; rs.decision = null;
       review[assetId] = rs;
-      // Save back to runData
       localStorage.setItem(STORAGE_KEY, JSON.stringify(runData));
       saveReview();
       render();
@@ -419,7 +480,7 @@ async function downloadFinal() {
     const byType = {};
     R.assets.forEach(a => {
       const rs = getReviewState(a.id);
-      if (rs.decision === 'reroll') return;  // skip rejected
+      if (rs.decision === 'reroll') return;
       (byType[a.type] = byType[a.type] || []).push(a);
     });
     for (const [type, arr] of Object.entries(byType)) {
@@ -443,21 +504,5 @@ async function downloadFinal() {
       generated_at: new Date().toISOString(),
       qc_passes: R.assets.filter(a => getReviewState(a.id).decision !== 'reroll').length,
       qc_rejected: R.assets.filter(a => getReviewState(a.id).decision === 'reroll').length,
-      reviews: R.assets.map(a => ({ name: a.name, type: a.type, ...getReviewState(a.id) }))
-    }, null, 2));
-    const blob = await zip.generateAsync({type:'blob'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = slugify(R.bundle.name) + '-CLEANED.zip';
-    a.click(); URL.revokeObjectURL(a.href);
-    await new Promise(r => setTimeout(r, 1500));
-  }
-  document.getElementById('dlBtn').disabled = false;
-  document.getElementById('dlBtn').textContent = '⬇ Download cleaned ZIPs';
-  toast('🎉 ' + bundles.length + ' cleaned ZIPs downloaded');
-}
-
-loadRun();
-</script>
-</body>
-</html>
+      lessons_learned: getLessons(R.bundle.id || R.bundle.name),
+      reviews: R.assets.map(a => ({ name: a.name, type: a.type, ...getReviewState

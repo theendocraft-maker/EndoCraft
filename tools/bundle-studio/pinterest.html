@@ -77,6 +77,9 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
     <span class="api-state" id="apiState">API: <b>—</b></span>
     <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
     <a class="btn ghost" href="./quality.html" title="Quality Control für letzten Pipeline-Run" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
+    <a class="btn ghost" href="./splitter.html" title="1 Bundle → 3 Etsy-Listings" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./thumbnail.html" title="Etsy Thumbnails komponieren" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./dashboard.html" title="Etsy Performance Dashboard" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./backlog.html">← Backlog</a>
     <a class="btn ghost" href="./index.html">Bundle Studio</a>
     <a class="btn ghost" href="./listing.html">Listings</a>
@@ -412,18 +415,4 @@ async function downloadAll() {
   const zipBlob = await zip.generateAsync({ type:'blob' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(zipBlob);
-  a.download = `${slug}-pinterest-pins.zip`;
-  a.click(); URL.revokeObjectURL(a.href);
-  toast('⬇ ZIP downloaded');
-}
-
-function resetForm() {
-  ['bundleName','tagline','visualTheme','ctaUrl'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pinCount').value = 5;
-  document.getElementById('output').innerHTML = '<div class="empty"><span class="e-emoji">📌</span>Füll das Formular aus und klicke <b>⚡ Pins generieren</b>.</div>';
-  document.getElementById('actions').style.display = 'none';
-  pinsData = null;
-}
-</script>
-</body>
-</html>
+  a.download = `${

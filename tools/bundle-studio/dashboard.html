@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Etsy Performance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 12px var(--orange)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.danger{background:var(--red);color:#1a1408;border-color:var(--red);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+
+.wrap{max-width:1400px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .gold{color:var(--gold)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.kpi.green{border-color:var(--green)} .kpi.orange{border-color:var(--orange)} .kpi.red{border-color:var(--red)}
+.kpi .label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif}
+.kpi .value{font-size:26px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace;line-height:1.1}
+.kpi.green .value{color:var(--green)} .kpi.orange .value{color:var(--orange)} .kpi.red .value{color:var(--red)}
+.kpi .sub{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+.tab-row{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{padding:10px 22px;border:1px solid var(--line);border-bottom:none;background:var(--panel2);color:var(--muted);font-family:'Cinzel',serif;font-size:13px;letter-spacing:1px;cursor:pointer;border-radius:8px 8px 0 0;margin-right:4px}
+.tab.active{background:var(--gold);color:#1a1408;border-color:var(--gold);font-weight:700}
+.tab:hover:not(.active){background:#262b3c;color:var(--ink)}
+
+.panel-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:18px}
+.panel-box h2{font-size:16px;color:var(--gold);margin-bottom:14px}
+
+.section{display:none}
+.section.active{display:block}
+
+.table-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
+table.listings{width:100%;border-collapse:collapse;font-size:13px}
+table.listings th{background:var(--panel2);color:var(--gold);font-family:'Cinzel',serif;font-weight:500;letter-spacing:.5px;text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;cursor:pointer;user-select:none;white-space:nowrap}
+table.listings th:hover{background:#262b3c;color:var(--ink)}
+table.listings th.sorted::after{content:' ↓';color:var(--gold)}
+table.listings th.sorted-asc::after{content:' ↑';color:var(--gold)}
+table.listings td{padding:11px 14px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12.5px;vertical-align:middle}
+table.listings tr:hover td{background:rgba(216,180,106,.05)}
+table.listings td.name{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;max-width:280px;color:var(--ink)}
+table.listings .status{display:inline-block;padding:3px 9px;border-radius:10px;font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;text-transform:uppercase}
+table.listings .status.good{background:rgba(123,189,143,.15);color:var(--green);border:1px solid var(--green)}
+table.listings .status.due{background:rgba(224,167,103,.15);color:var(--orange);border:1px solid var(--orange)}
+table.listings .status.under{background:rgba(217,138,138,.15);color:var(--red);border:1px solid var(--red)}
+table.listings .status.fresh{background:rgba(127,169,216,.15);color:var(--blue);border:1px solid var(--blue)}
+table.listings .action-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px;font-family:inherit}
+table.listings .action-btn:hover{border-color:var(--red);color:var(--red)}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif}
+.form-grid input{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 12px;font-size:13px;font-family:'JetBrains Mono',monospace}
+.form-grid input:focus{outline:none;border-color:var(--gold-dim)}
+
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
+@media (max-width:980px){.chart-grid{grid-template-columns:1fr}}
+.chart-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-height:300px}
+.chart-box h3{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+
+.recos{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.reco{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.reco.priority{border-color:var(--orange);background:linear-gradient(180deg,rgba(224,167,103,.07),transparent)}
+.reco.success{border-color:var(--green);background:linear-gradient(180deg,rgba(123,189,143,.07),transparent)}
+.reco h4{font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.reco.priority h4{color:var(--orange)} .reco.success h4{color:var(--green)}
+.reco .list{font-family:'EB Garamond',serif;font-size:13.5px;color:var(--muted)}
+.reco .list b{color:var(--ink)}
+.reco .list ul{margin:6px 0 0;padding-left:18px}
+.reco .list li{margin:3px 0}
+
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.dropzone{background:var(--panel);border:2px dashed var(--gold-dim);border-radius:12px;padding:30px;text-align:center;margin-bottom:14px;cursor:pointer;transition:.2s}
+.dropzone.over{border-color:var(--orange);background:rgba(224,167,103,.08)}
+.dropzone input{display:none}
+.dropzone p{margin:4px 0;color:var(--muted);font-size:13px}
+.dropzone .h{font-family:'Cinzel',serif;color:var(--gold);font-size:15px;margin-bottom:8px}
+
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:16px}
+.empty-state .e{font-size:42px;display:block;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Etsy Dashboard</div>
+  <span class="tag">Performance Tracking</span>
+  <div class="controls">
+    <a class="btn ghost" href="./pipeline.html" title="Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./quality.html" title="Quality" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
+    <a class="btn ghost" href="./splitter.html" title="Splitter" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./thumbnail.html" title="Thumbnails" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./backlog.html">← Backlog</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Tracking deiner <b class="gold">Etsy-Listings</b>: Sales · CTR · Conversion · Renewal-Due.
+    Manuell pflegen oder CSV aus dem Etsy-Shop-Manager importieren.
+    <br>→ <b>Sales-Threshold-Trigger:</b> Bei 20 Sales/Woche durchgehend → Plattform-Expansion auf DriveThruRPG/Gumroad freischalten.
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="tab-row">
+    <button class="tab active" data-tab="overview">📊 Overview</button>
+    <button class="tab" data-tab="listings">📝 Listings</button>
+    <button class="tab" data-tab="add">➕ Add Listing</button>
+    <button class="tab" data-tab="import">📂 CSV Import</button>
+    <button class="tab" data-tab="recos">💡 Recommendations</button>
+  </div>
+
+  <div class="section active" data-section="overview">
+    <div class="chart-grid">
+      <div class="chart-box">
+        <h3>Sales over Time (last 30 days)</h3>
+        <canvas id="chartSales" style="max-height:280px"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Top 5 Listings (by Revenue)</h3>
+        <canvas id="chartTop" style="max-height:280px"></canvas>
+      </div>
+    </div>
+    <div class="panel-box">
+      <h2>🎯 Sales-Threshold-Progress</h2>
+      <p style="color:var(--muted);font-family:'EB Garamond',serif;font-size:14.5px">
+        Ziel: <b style="color:var(--ink)">20 Sales/Woche durchgehend für 4 Wochen</b> → dann Expansion zu DriveThruRPG/Gumroad.
+      </p>
+      <div id="thresholdBar" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <div class="section" data-section="listings">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap">
+      <h2 style="color:var(--gold);font-size:16px">Listings Performance</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="exportJson">⬇ Export JSON</button>
+        <button class="btn danger" id="clearAll">🗑 Clear All</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="listings" id="listingsTable">
+        <thead>
+          <tr>
+            <th data-sort="name">Listing</th>
+            <th data-sort="created">Days Old</th>
+            <th data-sort="views">Views</th>
+            <th data-sort="visits">Visits</th>
+            <th data-sort="sales">Sales</th>
+            <th data-sort="ctr">CTR</th>
+            <th data-sort="conv">Conv</th>
+            <th data-sort="revenue">Revenue</th>
+            <th data-sort="status">Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="listingsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section" data-section="add">
+    <div class="panel-box">
+      <h2>➕ Neues Listing tracken</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Trag manuell ein neues Etsy-Listing ein. Updates kannst du in der Listings-Tab vornehmen.</p>
+      <form id="addForm" class="form-grid">
+        <label>Listing Title<input type="text" name="name" required placeholder="Curse of Strahd · NPC Pack"></label>
+        <label>URL (optional)<input type="url" name="url" placeholder="https://etsy.com/listing/..."></label>
+        <label>Created Date<input type="date" name="created" required></label>
+        <label>Price ($)<input type="number" name="price" step="0.01" value="14.99"></label>
+        <label>Views<input type="number" name="views" value="0"></label>
+        <label>Visits (Clicks)<input type="number" name="visits" value="0"></label>
+        <label>Orders (Sales)<input type="number" name="sales" value="0"></label>
+        <label>Revenue ($)<input type="number" name="revenue" step="0.01" value="0"></label>
+        <label style="grid-column:1/-1">
+          <button class="btn primary" type="submit" style="width:100%;padding:12px">💾 Listing speichern</button>
+        </label>
+      </form>
+    </div>
+  </div>
+
+  <div class="section" data-section="import">
+    <div class="panel-box">
+      <h2>📂 CSV Import (Etsy Shop Manager)</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        In <b>Etsy → Shop Manager → Stats</b>: oben rechts „Export to CSV". Drop die Datei hier rein.
+        Format-Erkennung läuft automatisch (Listing Title, Views, Visits, Orders, Revenue).
+      </p>
+      <div class="dropzone" id="csvDrop">
+        <div class="h">📄 CSV hier ablegen</div>
+        <p>oder klicken — akzeptiert Etsy-CSV-Exports</p>
+        <input type="file" id="csvInput" accept=".csv">
+      </div>
+      <div id="csvPreview"></div>
+    </div>
+  </div>
+
+  <div class="section" data-section="recos">
+    <div id="recoArea" class="recos"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LS_KEY = 'etsy-dashboard:listings';
+
+let listings = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+let sortKey = 'created';
+let sortAsc = false;
+
+function showToast(msg, t=2000){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), t);
+}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function save(){
+  localStorage.setItem(LS_KEY, JSON.stringify(listings));
+  render();
+}
+
+function daysSince(dateStr){
+  const d = new Date(dateStr);
+  return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+
+function statusFor(l){
+  const age = daysSince(l.created);
+  if(age < 7) return 'fresh';
+  if(age >= 28) return 'due';
+  if(l.visits > 50 && l.sales === 0) return 'under';
+  if(l.sales >= 3) return 'good';
+  return 'good';
+}
+
+function statusLabel(s){
+  return { good:'Healthy', due:'Renew', under:'Underperform', fresh:'New' }[s] || s;
+}
+
+function ctr(l){
+  if(!l.views) return 0;
+  return (l.visits / l.views) * 100;
+}
+function conv(l){
+  if(!l.visits) return 0;
+  return (l.sales / l.visits) * 100;
+}
+
+// === KPIs ===
+function renderKPIs(){
+  const totalSales = listings.reduce((s,l)=>s+(+l.sales||0),0);
+  const totalRevenue = listings.reduce((s,l)=>s+(+l.revenue||0),0);
+  const totalVisits = listings.reduce((s,l)=>s+(+l.visits||0),0);
+  const totalViews = listings.reduce((s,l)=>s+(+l.views||0),0);
+  const avgConv = totalVisits ? (totalSales/totalVisits*100) : 0;
+  const avgCtr = totalViews ? (totalVisits/totalViews*100) : 0;
+  const dueRenewal = listings.filter(l=>statusFor(l)==='due').length;
+  const aov = totalSales ? (totalRevenue/totalSales) : 0;
+
+  const html = [
+    {label:'Total Sales', value:totalSales, sub:`across ${listings.length} listings`, klass:totalSales>0?'green':''},
+    {label:'Total Revenue', value:`$${totalRevenue.toFixed(2)}`, sub:`AOV $${aov.toFixed(2)}`, klass:totalRevenue>0?'green':''},
+    {label:'Avg Conversion', value:`${avgConv.toFixed(2)}%`, sub:`target >3%`, klass:avgConv>=3?'green':(avgConv>=1?'':'orange')},
+    {label:'Avg CTR', value:`${avgCtr.toFixed(2)}%`, sub:`target >2%`, klass:avgCtr>=2?'green':(avgCtr>=1?'':'orange')},
+    {label:'Listings Live', value:listings.length, sub:`active shop`, klass:''},
+    {label:'Due for Renewal', value:dueRenewal, sub:dueRenewal?'review needed':'all fresh', klass:dueRenewal>0?'orange':'green'}
+  ];
+
+  document.getElementById('kpiGrid').innerHTML = html.map(k=>`
+    <div class="kpi ${k.klass}">
+      <div class="label">${k.label}</div>
+      <div class="value">${k.value}</div>
+      <div class="sub">${k.sub}</div>
+    </div>
+  `).join('');
+}
+
+// === Listings table ===
+function renderListings(){
+  if(listings.length === 0){
+    document.getElementById('listingsBody').innerHTML = `<tr><td colspan="10" class="empty-state"><span class="e">📊</span>Noch keine Listings — Tab „➕ Add Listing" oder „📂 CSV Import" nutzen.</td></tr>`;
+    return;
+  }
+  const sorted = [...listings].sort((a,b)=>{
+    let va = a[sortKey], vb = b[sortKey];
+    if(sortKey === 'ctr'){ va = ctr(a); vb = ctr(b); }
+    if(sortKey === 'conv'){ va = conv(a); vb = conv(b); }
+    if(sortKey === 'created'){ va = daysSince(a.created); vb = daysSince(b.created); }
+    if(sortKey === 'status'){ va = statusFor(a); vb = statusFor(b); }
+    if(typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return sortAsc ? va - vb : vb - va;
+  });
+
+  document.getElementById('listingsBody').innerHTML = sorted.map(l=>{
+    const st = statusFor(l);
+    return `
+    <tr>
+      <td class="name">${l.url ? `<a href="${escapeHtml(l.url)}" target="_blank" style="color:var(--ink);text-decoration:none;border-bottom:1px dashed var(--gold-dim)">${escapeHtml(l.name)}</a>` : escapeHtml(l.name)}</td>
+      <td>${daysSince(l.created)}d</td>
+      <td>${l.views || 0}</td>
+      <td>${l.visits || 0}</td>
+      <td><b style="color:var(--gold)">${l.sales || 0}</b></td>
+      <td>${ctr(l).toFixed(2)}%</td>
+      <td>${conv(l).toFixed(2)}%</td>
+      <td>$${(+l.revenue || 0).toFixed(2)}</td>
+      <td><span class="status ${st}">${statusLabel(st)}</span></td>
+      <td><button class="action-btn" data-del="${l.id}">✗</button></td>
+    </tr>`;
+  }).join('');
+
+  // Wire sort + delete
+  document.querySelectorAll('th[data-sort]').forEach(th=>{
+    th.classList.toggle('sorted', th.dataset.sort === sortKey && !sortAsc);
+    th.classList.toggle('sorted-asc', th.dataset.sort === sortKey && sortAsc);
+  });
+  document.querySelectorAll('[data-del]').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const id = e.target.dataset.del;
+      if(confirm('Listing löschen?')){
+        listings = listings.filter(x=>x.id !== id);
+        save();
+      }
+    });
+  });
+}
+
+document.querySelectorAll('th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const k = th.dataset.sort;
+    if(sortKey === k) sortAsc = !sortAsc;
+    else { sortKey = k; sortAsc = false; }
+    renderListings();
+  });
+});
+
+// === Tabs ===
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-section="${t.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+// === Add Form ===
+document.getElementById('addForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = e.target;
+  const obj = {
+    id: 'l_' + Date.now() + Math.floor(Math.random()*1000),
+    name: f.name.value.trim(),
+    url: f.url.value.trim(),
+    created: f.created.value,
+    price: parseFloat(f.price.value) || 0,
+    views: parseInt(f.views.value) || 0,
+    visits: parseInt(f.visits.value) || 0,
+    sales: parseInt(f.sales.value) || 0,
+    revenue: parseFloat(f.revenue.value) || 0,
+    createdAt: Date.now()
+  };
+  listings.push(obj);
+  save();
+  showToast('Listing gespeichert');
+  f.reset();
+  // Pre-fill date
+  f.created.value = new Date().toISOString().slice(0,10);
+});
+
+// === Clear All ===
+document.getElementById('clearAll').addEventListener('click', ()=>{
+  if(confirm('Alle Listings löschen? Nicht rückgängig.')){
+    listings = [];
+    save();
+  }
+});
+
+// === Export ===
+document.getElementById('exportJson').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(listings, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'etsy-dashboard-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  setTimeout(()=> URL.revokeObjectURL(a.href), 200);
+  showToast('JSON exportiert');
+});
+
+// === CSV Import ===
+const csvDrop = document.getElementById('csvDrop');
+const csvInput = document.getElementById('csvInput');
+csvDrop.addEventListener('click', ()=> csvInput.click());
+csvDrop.addEventListener('dragover', e=>{ e.preventDefault(); csvDrop.classList.add('over'); });
+csvDrop.addEventListener('dragleave', ()=> csvDrop.classList.remove('over'));
+csvDrop.addEventListener('drop', e=>{
+  e.preventDefault(); csvDrop.classList.remove('over');
+  const f = e.dataTransfer.files[0];
+  if(f) parseCsv(f);
+});
+csvInput.addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(f) parseCsv(f);
+});
+
+async function parseCsv(file){
+  const text = await file.text();
+  // Simple CSV parser (handles quoted commas)
+  const rows = parseCsvText(text);
+  if(rows.length < 2){
+    showToast('CSV ist leer');
+    return;
+  }
+  const header = rows[0].map(h=>String(h).toLowerCase().trim());
+  // Detect columns
+  const cols = {
+    name: ['listing title','title','name','listing','item'].map(n=>header.indexOf(n)).find(i=>i>=0),
+    views: ['views','views (impressions)','impressions'].map(n=>header.indexOf(n)).find(i=>i>=0),
+    visits: ['visits','visits (clicks)','clicks'].map(n=>header.indexOf(n)).find(i=>i>=0),
+    sales: ['orders','sales','order count'].map(n=>header.indexOf(n)).find(i=>i>=0),
+    revenue: ['revenue','total revenue','revenue (gross)','revenue (usd)'].map(n=>header.indexOf(n)).find(i=>i>=0),
+    created: ['date listed','created','listing date','date'].map(n=>header.indexOf(n)).find(i=>i>=0)
+  };
+  if(cols.name === undefined || cols.name < 0){
+    showToast('Keine „Listing Title"-Spalte gefunden');
+    document.getElementById('csvPreview').innerHTML = `<div style="color:var(--red);padding:14px">CSV-Format unbekannt. Erkannte Spalten: ${header.join(', ')}</div>`;
+    return;
+  }
+  let imported = 0, updated = 0;
+  const today = new Date().toISOString().slice(0,10);
+  for(let i=1; i<rows.length; i++){
+    const r = rows[i];
+    if(!r[cols.name]) continue;
+    const name = String(r[cols.name]).trim();
+    const data = {
+      name,
+      views: parseInt(r[cols.views]) || 0,
+      visits: parseInt(r[cols.visits]) || 0,
+      sales: parseInt(r[cols.sales]) || 0,
+      revenue: parseFloat(String(r[cols.revenue]||'0').replace(/[$,]/g,'')) || 0,
+      created: cols.created !== undefined && r[cols.created] ? String(r[cols.created]).slice(0,10) : today
+    };
+    // Find existing by name
+    const existing = listings.find(l=>l.name === name);
+    if(existing){
+      Object.assign(existing, data);
+      updated++;
+    } else {
+      listings.push({
+        id: 'l_csv_' + Date.now() + '_' + i,
+        url: '',
+        price: 0,
+        createdAt: Date.now(),
+        ...data
+      });
+      imported++;
+    }
+  }
+  save();
+  document.getElementById('csvPreview').innerHTML = `<div style="color:var(--green);padding:14px;background:rgba(123,189,143,.1);border:1px solid var(--green);border-radius:8px;margin-top:10px">✓ ${imported} neue + ${updated} aktualisierte Listings importiert.</div>`;
+  showToast(`${imported}+${updated} Listings`);
+}
+
+function parseCsvText(text){
+  const rows = [];
+  let cur = [], field = '', inQuotes = false;
+  for(let i=0; i<text.length; i++){
+    const ch = text[i];
+    if(inQuotes){
+      if(ch === '"' && text[i+1] === '"'){ field += '"'; i++; }
+      else if(ch === '"'){ inQuotes = false; }
+      else field += ch;
+    } else {
+      if(ch === '"') inQuotes = true;
+      else if(ch === ','){ cur.push(field); field = ''; }
+      else if(ch === '\n' || ch === '\r'){
+        if(field || cur.length){ cur.push(field); rows.push(cur); cur = []; field = ''; }
+        if(ch === '\r' && text[i+1] === '\n') i++;
+      }
+      else field += ch;
+    }
+  }
+  if(field || cur.length){ cur.push(field); rows.push(cur); }
+  return rows.filter(r=>r.length>1 && r.some(c=>c));
+}
+
+// === Charts ===
+let chartSales, chartTop;
+function renderCharts(){
+  // Sales over time: synthesize buckets per listing-day
+  const today = new Date();
+  const days = [];
+  for(let i=29;i>=0;i--){
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  // For each day count sales of listings created on/before that day (rough approximation)
+  // Real Etsy data is per-day timeseries — but for manual entry we use cumulative model
+  const cum = days.map(d=> listings.filter(l=> l.created <= d).reduce((s,l)=>s+(+l.sales||0),0));
+  const labels = days.map(d=> d.slice(5));
+
+  if(chartSales) chartSales.destroy();
+  chartSales = new Chart(document.getElementById('chartSales'), {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Cumulative Sales',
+        data:cum,
+        borderColor:'#d8b46a',
+        backgroundColor:'rgba(216,180,106,.15)',
+        fill:true,
+        tension:.35,
+        pointRadius:2
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:'#9aa0b3'}}},
+      scales:{
+        x:{ticks:{color:'#9aa0b3',font:{size:10}}, grid:{color:'rgba(255,255,255,.05)'}},
+        y:{ticks:{color:'#9aa0b3'}, grid:{color:'rgba(255,255,255,.05)'}, beginAtZero:true}
+      }
+    }
+  });
+
+  // Top 5 by revenue
+  const top = [...listings].sort((a,b)=>(+b.revenue||0)-(+a.revenue||0)).slice(0,5);
+  if(chartTop) chartTop.destroy();
+  chartTop = new Chart(document.getElementById('chartTop'), {
+    type:'bar',
+    data:{
+      labels: top.map(l=> l.name.slice(0,18) + (l.name.length>18?'…':'')),
+      datasets:[{
+        label:'Revenue $',
+        data: top.map(l=> +l.revenue || 0),
+        backgroundColor:'rgba(123,189,143,.55)',
+        borderColor:'#7bbd8f',
+        borderWidth:1
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#9aa0b3'}, grid:{color:'rgba(255,255,255,.05)'}, beginAtZero:true},
+        y:{ticks:{color:'#9aa0b3', font:{size:11}}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+// === Threshold-Progress ===
+function renderThreshold(){
+  // Last 7 days sales — approximation
+  const totalSales = listings.reduce((s,l)=>s+(+l.sales||0),0);
+  const oldest = listings.length ? Math.max(...listings.map(l=>daysSince(l.created))) : 0;
+  const salesPerWeek = oldest > 0 ? (totalSales / oldest * 7) : 0;
+  const pct = Math.min(100, salesPerWeek / 20 * 100);
+  const color = pct >= 100 ? 'var(--green)' : pct >= 50 ? 'var(--orange)' : 'var(--blue)';
+
+  document.getElementById('thresholdBar').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:8px">
+      <span style="color:${color}">${salesPerWeek.toFixed(1)} / 20 Sales/Week</span>
+      <span style="color:var(--muted)">${pct.toFixed(0)}% of expansion-trigger</span>
+    </div>
+    <div style="height:14px;background:var(--panel2);border-radius:7px;overflow:hidden;border:1px solid var(--line)">
+      <div style="height:100%;width:${pct}%;background:${color};transition:width .3s"></div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic">
+      ${pct >= 100 ? '🎉 Ziel erreicht! Bereit zur Multi-Platform-Expansion (DriveThruRPG, Gumroad).' : pct >= 50 ? 'Auf Kurs. Fokus auf Etsy beibehalten.' : 'Phase 1: Volume + SEO. Splitter + Thumbnails nutzen.'}
+    </div>
+  `;
+}
+
+// === Recommendations ===
+function renderRecos(){
+  const recos = [];
+  const dueRenewal = listings.filter(l=>statusFor(l)==='due');
+  const underperform = listings.filter(l=>statusFor(l)==='under');
+  const topPerformers = [...listings].sort((a,b)=>(+b.sales||0)-(+a.sales||0)).slice(0,3).filter(l=>(+l.sales||0)>=2);
+  const lowCtr = listings.filter(l=> l.views >= 100 && ctr(l) < 2);
+
+  if(dueRenewal.length){
+    recos.push({
+      klass:'priority',
+      h: '⏰ Renewal fällig',
+      list: `<b>${dueRenewal.length} Listings</b> sind älter als 28 Tage. Renewal ($0.20) macht sie wie neue Listings im Ranking sichtbar.<ul>${dueRenewal.slice(0,5).map(l=>`<li>${escapeHtml(l.name)} (${daysSince(l.created)} Tage)</li>`).join('')}</ul>`
+    });
+  }
+  if(underperform.length){
+    recos.push({
+      klass:'priority',
+      h: '⚠ Underperformer',
+      list: `<b>${underperform.length} Listings</b> haben >50 Visits aber 0 Sales — Conversion-Problem. Mögliche Fixes: bessere Thumbnails, Preis senken, Description schärfen.<ul>${underperform.slice(0,5).map(l=>`<li>${escapeHtml(l.name)} (${l.visits} Visits)</li>`).join('')}</ul>`
+    });
+  }
+  if(lowCtr.length){
+    recos.push({
+      klass:'priority',
+      h: '👁 Niedrige CTR',
+      list: `<b>${lowCtr.length} Listings</b> haben CTR <2%. Erstes Bild austauschen via Thumbnail-Composer.<ul>${lowCtr.slice(0,5).map(l=>`<li>${escapeHtml(l.name)} (CTR ${ctr(l).toFixed(2)}%)</li>`).join('')}</ul>`
+    });
+  }
+  if(topPerformers.length){
+    recos.push({
+      klass:'success',
+      h: '🏆 Top Performers',
+      list: `<b>${topPerformers.length} Listings</b> performen — Kandidaten für Etsy-Ads ($1-3/Tag).<ul>${topPerformers.map(l=>`<li>${escapeHtml(l.name)} (${l.sales} Sales)</li>`).join('')}</ul>`
+    });
+  }
+  if(listings.length < 5){
+    recos.push({
+      klass:'priority',
+      h: '📦 Listing-Volume',
+      list: `Du hast nur <b>${listings.length} Listings</b>. Etsy belohnt aktive Shops. Ziel: <b>2-3 neue/Woche</b>. Nutze den Bundle-Splitter — 1 Bundle wird zu 3 Listings.`
+    });
+  }
+  if(recos.length === 0){
+    recos.push({
+      klass:'success',
+      h: '✓ Alles im grünen Bereich',
+      list: 'Keine kritischen Issues. Maintenance-Mode: Renewals + Reviews + Pinterest-Drip fortsetzen.'
+    });
+  }
+
+  document.getElementById('recoArea').innerHTML = recos.map(r=>`
+    <div class="reco ${r.klass}">
+      <h4>${r.h}</h4>
+      <div class="list">${r.list}</div>
+    </div>
+  `).join('');
+}
+
+function render(){
+  renderKPIs();
+  renderListings();
+  renderCharts();
+  renderThreshold();
+  renderRecos();
+}
+
+// Pre-fill add-form date
+document.querySelector('[name="created"]').value = new Date().toISOString().slice(0,10);
+
+// Seed with Marco's existing Strahd-Listing if completely empty (gentle nudge)
+if(listings.length === 0){
+  listings.push({
+    id: 'l_seed_strahd',
+    name: 'Curse of Strahd · Yester Hill NPC Pack',
+    url: '',
+    created: '2026-04-15',
+    price: 9.95,
+    views: 0,
+    visits: 0,
+    sales: 2,
+    revenue: 19.90,
+    createdAt: Date.now()
+  });
+}
+
+render();
+</script>
+</body>
+</html>

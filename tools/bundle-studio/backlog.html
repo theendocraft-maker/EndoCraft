@@ -85,6 +85,9 @@ dialog .dlg-actions{padding:14px 22px 18px;border-top:1px solid var(--line);disp
   <div class="controls">
     <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
     <a class="btn ghost" href="./quality.html" title="Quality Control für letzten Pipeline-Run" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
+    <a class="btn ghost" href="./splitter.html" title="1 Bundle → 3 Etsy-Listings" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./thumbnail.html" title="Etsy Thumbnails komponieren" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./dashboard.html" title="Etsy Performance Dashboard" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./index.html">🎨 Studio</a>
     <a class="btn ghost" href="./listing.html">✍ Listings</a>
     <a class="btn ghost" href="./pinterest.html">📌 Pinterest</a>
@@ -168,49 +171,46 @@ const STATUSES = ['backlog','production','listed','sold'];
 
 // ═══ Default-Seed (30+ Themen) ═══
 const SEED = [
-  // ─── Flagship: Premium WotC Modules ───
-  { name:'Curse of Strahd · Barovia Master Pack', tag:'aktuell live · 2 sales', tier:'flagship', price:18, status:'listed', sales:2, marketplaces:['etsy'] },
-  { name:'Storm King\'s Thunder · Giants & Mountains', tag:'10 giants + 10 mountain establishing + tokens', tier:'flagship', price:22 },
-  { name:'Tomb of Annihilation · Jungle Mega Pack', tag:'30+ assets · Chult + Aboleths + Dinosaurs', tier:'flagship', price:25 },
-  { name:'Out of the Abyss · Underdark Complete', tag:'demon lords + drow + underdark biomes', tier:'flagship', price:24 },
-  { name:'Rime of the Frostmaiden · Icewind Dale Set', tag:'frozen landscapes + winter monsters', tier:'flagship', price:20 },
-  { name:'Descent into Avernus · Hell Pack', tag:'devils + war machines + infernal vistas', tier:'flagship', price:22 },
-  { name:'Wild Beyond the Witchlight · Feywild Set', tag:'whimsical fey + carnival + dream realms', tier:'flagship', price:20 },
-  { name:'Waterdeep Dragon Heist · City Pack', tag:'urban encounters + NPC portraits + maps', tier:'flagship', price:18 },
-  { name:'Dungeon of the Mad Mage', tag:'multi-level dungeon delve', tier:'flagship', price:22 },
+  // ─── Phase 1: Curse of Strahd Family (Marco's flagship) ───
+  { name:'Curse of Strahd · Barovia Master Pack', tag:'27 canonical NPCs (Strahd, Ireena, Madam Eva, Rictavio, Van Richten) + Ravenloft locations · live · 2 sales', tier:'flagship', price:18, status:'listed', sales:2, marketplaces:['etsy'] },
+  { name:'Barovia Village NPC Pack', tag:'Mad Mary, Donavich, Ismark, Bildrath, Henrik · canonical Village-Cast', tier:'evergreen', price:10 },
+  { name:'Vallaki NPC Pack', tag:'Baron Vallakovich, Father Lucian, Rictavio, Stella Wachter, Lady Wachter', tier:'evergreen', price:10 },
+  { name:'Ravenloft Castle Pack', tag:'Strahd Variants + Rahadin + Escher + Brides of Strahd · finale tier', tier:'flagship', price:14 },
+  { name:'Pyram King Yester Hill · Druid Pack', tag:'Davian, Druiden, Kavan, Malachiel, Wicker Man · Marco existing module', tier:'evergreen', price:12 },
 
-  // ─── Evergreen: kleinere themed packs ───
-  { name:'Lost Mine of Phandelver · Starter Pack', tag:'beginner adventure essentials', tier:'evergreen', price:10 },
-  { name:'Princes of the Apocalypse · Elemental Cults', tag:'4 element cults + temples', tier:'evergreen', price:14 },
-  { name:'Pyram King Yester Hill · Druid Pack', tag:'aktuell durch CoS-Session-15 prep generiert', tier:'evergreen', price:12 },
-  { name:'Kobold Press · Tome of Beasts NPCs', tag:'portraits of unique CR-balanced creatures', tier:'evergreen', price:14 },
+  // ─── Phase 2: WotC Adventure Modules (priority by Etsy search-volume) ───
+  { name:"Lost Mine of Phandelver Master Pack", tag:'Sildar Hallwinter, Glasstaff/Iarno, Klauth red dragon, King Grol bugbear · Beginner Adventure', tier:'flagship', price:18 },
+  { name:"Storm King's Thunder · Giants Pack", tag:'King Hekaton storm giant, Iymrith blue dragon, Harshnag, Cog kobold · Mountains&Giants', tier:'flagship', price:22 },
+  { name:'Tomb of Annihilation · Jungle Pack', tag:'Acererak lich, Ras Nsi, Artus Cimber, Tabaxi NPCs · Chult jungle setting', tier:'flagship', price:25 },
+  { name:'Descent into Avernus · Hell Pack', tag:'Zariel, Mordenkainen, Lulu hollyphant, Olanthius death knight · infernal vistas', tier:'flagship', price:22 },
+  { name:'Rime of the Frostmaiden · Icewind Dale Set', tag:'Auril, Vaelish Gant, Avarice, Dzaan · frozen tundra Tymora-cult', tier:'flagship', price:20 },
+  { name:'Wild Beyond the Witchlight · Feywild Set', tag:'Mr. Witch & Mr. Light, Hourglass Coven, Iggwilv · whimsical Feywild', tier:'flagship', price:20 },
+  { name:'Waterdeep Dragon Heist · City Pack', tag:'Volo, Mirt, Xanathar, Jarlaxle Baenre · urban heist crew', tier:'flagship', price:18 },
+  { name:'Dungeon of the Mad Mage', tag:'Halaster Blackcloak + multi-level dungeon NPCs · Undermountain delve', tier:'flagship', price:22 },
+  { name:'Princes of the Apocalypse · Elemental Cults', tag:'4 element cults (Air/Earth/Fire/Water) + cult leaders Aerisi/Marlos/Vanifer/Gar', tier:'evergreen', price:16 },
+  { name:'Out of the Abyss · Underdark Complete', tag:'Demogorgon, Lolth-priestess, Drow nobles + underdark biomes', tier:'flagship', price:24 },
 
-  // ─── Trope: generic but always-selling categories ───
-  { name:'Tavern Encounter Pack', tag:'NPCs, brawls, mysterious strangers', tier:'trope', price:8 },
-  { name:'Forest Encounter Pack', tag:'beasts, druids, ambushes', tier:'trope', price:8 },
-  { name:'Dungeon Crawl Essentials', tag:'traps, doors, rooms, undead', tier:'trope', price:9 },
-  { name:'Pirate Adventure Pack', tag:'ships, sea monsters, port NPCs', tier:'trope', price:9 },
-  { name:'Gothic Horror Set', tag:'vampires, ghosts, haunted mansions', tier:'trope', price:9 },
-  { name:'Desert Travel Pack', tag:'dunes, oases, mummies, sand worms', tier:'trope', price:8 },
-  { name:'Arctic Survival Pack', tag:'glaciers, frost giants, ice trolls', tier:'trope', price:8 },
-  { name:'Swamp Encounter Pack', tag:'witches, lizardfolk, marshes', tier:'trope', price:8 },
-  { name:'Mountain Pass Set', tag:'cliffs, giants, climbing encounters', tier:'trope', price:8 },
-  { name:'Festival & Market Pack', tag:'NPCs, stalls, performers', tier:'trope', price:9 },
-  { name:'Noble Court Encounter Pack', tag:'royal portraits, ballrooms, intrigue', tier:'trope', price:10 },
-  { name:'Underdark Mini Pack', tag:'drow, mind flayers, fungi', tier:'trope', price:9 },
-  { name:'Cyberpunk Fantasy Crossover', tag:'tech-arcane, dystopian magic-cities', tier:'trope', price:11 },
-  { name:'Wild West Fantasy Pack', tag:'frontier towns, magical revolvers', tier:'trope', price:10 },
-  { name:'Eastern Fantasy Pack', tag:'samurai, oni, cherry blossoms', tier:'trope', price:11 },
-  { name:'Pirate Cove Battle Maps', tag:'5 top-down maps, grid-ready', tier:'trope', price:9 },
-  { name:'Holiday Adventure: Winter Solstice', tag:'seasonal one-shot pack', tier:'trope', price:8 },
-  { name:'Holiday Adventure: Spring Festival', tag:'seasonal one-shot pack', tier:'trope', price:8 },
-  { name:'Holiday Adventure: Halloween/Samhain', tag:'horror seasonal pack', tier:'trope', price:9 },
+  // ─── Phase 3: Trope-Bundles mit klassischen Archetypen ───
+  { name:'Tavern Encounter Pack (classic)', tag:'bärtiger Wirt, buxom Magd, cloaked stranger, Lute-Bard, grizzled veteran · timeless seller', tier:'trope', price:8 },
+  { name:'Forest Encounter Pack', tag:'druid wildshape, hunter ranger, bandit, dryad, witch in shack · classic Wald-Encounters', tier:'trope', price:8 },
+  { name:'Dungeon Crawl Essentials', tag:'classic traps, undead, treasure hoards, dungeon doors · evergreen DM tool', tier:'trope', price:9 },
+  { name:'Pirate Adventure Pack', tag:'ship captain, first mate, ship cabin, sea monsters, port NPCs', tier:'trope', price:9 },
+  { name:'Gothic Horror Set (classic)', tag:'vampire lord, banshee, headless horseman, mad scientist, witch · classic horror tropes', tier:'trope', price:9 },
+  { name:'Noble Court Encounter Pack', tag:'king, queen, court mage, royal guard, scheming advisor · throne room intrigue', tier:'trope', price:10 },
+  { name:'Underdark Mini Pack', tag:'classic drow noble, mind flayer, drow priestess, beholder lair', tier:'trope', price:9 },
+  { name:'Desert Travel Pack', tag:'caravan merchant, dune nomads, mummies, sand worms, oasis NPCs', tier:'trope', price:8 },
+  { name:'Arctic Survival Pack', tag:'frost giants, ice trolls, hunters in fur, frozen wastes', tier:'trope', price:8 },
+  { name:'Swamp Encounter Pack', tag:'lizardfolk, hag witches, swamp druids, decayed marshes', tier:'trope', price:8 },
+  { name:'Mountain Pass Set', tag:'hill giants, climbing encounters, mountain bandits, ancient cairns', tier:'trope', price:8 },
+  { name:'Festival & Market Pack', tag:'street performers, merchants, stalls, jugglers, courtyard atmosphere', tier:'trope', price:9 },
+  { name:'Holiday Adventure: Halloween/Samhain', tag:'haunted manor, costumed villagers, pumpkin lanterns, ghost stories · seasonal', tier:'trope', price:9 },
+  { name:'Holiday Adventure: Winter Solstice', tag:'snowy village, gift-giving spirits, winter festival, hearth fire · seasonal', tier:'trope', price:8 },
 
-  // ─── Asset-spezifische Mini-Packs (immer easy sells) ───
-  { name:'100 NPC Portraits · Mixed Races', tag:'volume pack — character portraits only', tier:'trope', price:12 },
-  { name:'50 Battle Maps · Top-Down', tag:'volume pack — grid-ready maps only', tier:'trope', price:15 },
-  { name:'30 Trinkets & Magic Items', tag:'illustrated item cards', tier:'trope', price:7 },
-  { name:'D&D Trading Card Templates', tag:'PSD/PNG templates for own cards', tier:'trope', price:6 }
+  // ─── Volume / Asset-spezifische Packs ───
+  { name:'100 NPC Portraits · Classic Archetypes', tag:'volume pack — paladin, mage, rogue, ranger, druid, barbarian variants · classic art style', tier:'trope', price:12 },
+  { name:'50 Battle Maps · Top-Down', tag:'volume pack — grid-ready maps (caves, dungeons, taverns, forests)', tier:'trope', price:15 },
+  { name:'30 Magic Items Illustrated', tag:'illustrated item cards (weapons, armor, potions, artifacts) parchment style', tier:'trope', price:7 },
+  { name:'Adventure Hook Hooks Pack', tag:'10 scenarios with hooks + NPCs + locations · campaign-starter ready', tier:'evergreen', price:11 }
 ];
 
 let backlog = loadBacklog();
@@ -349,16 +349,4 @@ function confirmAdd() {
 
 // ─── Import/Export ───
 function exportJSON() {
-  const blob = new Blob([JSON.stringify(backlog,null,2)],{type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'bundle-backlog-'+new Date().toISOString().slice(0,10)+'.json';
-  a.click(); URL.revokeObjectURL(a.href); toast('⬇ Exportiert');
-}
-function importJSON(e) {
-  const f = e.target.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try {
-      const arr = JSON.parse(r.result);
-      if (!Array.isArray(arr)) throw new Error('not array');
-      if (confirm(`${arr.length} Einträge importieren? (überschreib
+  const blob = new Blob([JSON.stringify(backlog,null,2

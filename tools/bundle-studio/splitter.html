@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Bundle Splitter (1 → 3 Etsy-Listings)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+  --split:#b78cf2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--split);box-shadow:0 0 12px var(--split)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.split{background:var(--split);color:#1a1408;border-color:var(--split);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.wrap{max-width:1280px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .gold{color:var(--gold)} .intro .split{color:var(--split)}
+
+.dropzone{background:var(--panel);border:2px dashed var(--gold-dim);border-radius:12px;padding:40px;text-align:center;margin-bottom:20px;cursor:pointer;transition:.2s}
+.dropzone.over{border-color:var(--split);background:rgba(183,140,242,.08)}
+.dropzone h2{color:var(--gold);font-size:20px;margin-bottom:12px}
+.dropzone p{color:var(--muted);margin:4px 0}
+.dropzone input{display:none}
+
+.form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form .full{grid-column:1 / -1}
+.form label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:5px;display:block}
+.form input, .form textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:13.5px;font-family:inherit}
+.form input:focus, .form textarea:focus{outline:none;border-color:var(--gold-dim)}
+.form textarea{min-height:60px;resize:vertical}
+
+.split-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.split-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.split-card.full{border-color:var(--gold-dim);box-shadow:0 0 0 1px rgba(216,180,106,.15) inset}
+.split-card h3{font-size:15px;color:var(--gold);display:flex;align-items:center;gap:8px}
+.split-card .icon{width:24px;height:24px;border-radius:6px;background:var(--panel2);display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+.split-card .stats{display:flex;gap:12px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;flex-wrap:wrap}
+.split-card .stats b{color:var(--ink)}
+.split-card .price{font-size:24px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace}
+.split-card .price input{width:90px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--gold);padding:4px 8px;font-size:18px;font-family:inherit;text-align:center}
+.split-card .files{max-height:130px;overflow-y:auto;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.split-card .files .f{padding:2px 0;display:flex;justify-content:space-between;gap:6px}
+.split-card .files .f i{color:var(--green);font-style:normal}
+.split-card .files .f.locked i{color:var(--muted)}
+.split-card .actions{display:flex;gap:8px;margin-top:auto}
+.split-card .actions .btn{flex:1;padding:7px;font-size:12px}
+.split-card .listing-prev{background:var(--panel2);border-left:3px solid var(--split);padding:10px 12px;border-radius:0 6px 6px 0;font-size:12.5px;font-family:'EB Garamond',serif;font-style:italic;color:var(--muted)}
+.split-card .listing-prev b{color:var(--ink);font-style:normal}
+
+.bar{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.progress{flex:1;min-width:200px;height:9px;background:var(--panel2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--split),var(--gold));transition:width .3s}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.empty{text-align:center;padding:50px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:16px}
+.empty .e-emoji{font-size:42px;display:block;margin-bottom:14px}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.api-state{font-size:12px;color:var(--muted)} .api-state b{color:var(--ink)}
+.err{background:rgba(217,138,138,.1);border:1px solid var(--red);border-radius:8px;padding:14px;color:var(--red);margin-bottom:14px;font-size:13.5px}
+.success{background:rgba(123,189,143,.1);border:1px solid var(--green);border-radius:8px;padding:14px;color:var(--green);margin-bottom:14px;font-size:13.5px}
+.cat-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:16px}
+.cat-summary .cat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px}
+.cat-summary .cat span:first-child{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:'Cinzel',serif}
+.cat-summary .cat span:last-child{font-size:22px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Bundle Splitter</div>
+  <span class="tag">1 ZIP → 3 Etsy-Listings</span>
+  <div class="controls">
+    <span class="api-state" id="apiState">API: <b>—</b></span>
+    <a class="btn ghost" href="./pipeline.html" title="Master-Auto-Production-Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./quality.html" title="Quality Control" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
+    <a class="btn ghost" href="./thumbnail.html" title="Etsy Thumbnails" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./dashboard.html" title="Etsy Performance" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
+    <a class="btn ghost" href="./backlog.html">← Backlog</a>
+    <a class="btn ghost" href="./index.html">Bundle Studio</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Lädt einen <b>Master-Bundle-ZIP</b> hoch — splittet ihn automatisch in <b class="split">3 thematische Sub-Bundles</b>
+    (NPC-Pack · Maps & Locations · Complete-Pack) und erstellt <b class="gold">3 SEO-optimierte Etsy-Listings</b>.
+    <br>→ <b>SEO-Domination:</b> 3 Such-Ergebnisse statt 1 für „curse of strahd". Käufer wählt Preisstufe selbst.
+  </div>
+
+  <div id="errArea"></div>
+
+  <div class="dropzone" id="dropzone">
+    <h2>📦 Bundle-ZIP hier ablegen</h2>
+    <p>oder klicken zum Auswählen</p>
+    <p style="font-size:12px;margin-top:8px">Akzeptiert .zip-Dateien aus der Pipeline (z.B. <code>curse-of-strahd-master-pack-bundle.zip</code>)</p>
+    <input type="file" id="zipFile" accept=".zip">
+  </div>
+
+  <div id="loadedArea" style="display:none">
+    <div class="form" id="form">
+      <div class="full">
+        <label>Bundle-Name (Basis)</label>
+        <input type="text" id="bundleName" placeholder="z.B. Curse of Strahd · Barovia Master Pack">
+      </div>
+      <div class="full">
+        <label>Tagline / Themen-Kontext</label>
+        <input type="text" id="tagline" placeholder="z.B. 27 hand-crafted assets for Curse of Strahd: NPCs, Locations, Maps">
+      </div>
+    </div>
+
+    <div class="cat-summary" id="catSummary"></div>
+
+    <div class="bar" id="actionBar">
+      <button class="btn split" id="genListings">📝 Generate all 3 Listings</button>
+      <button class="btn primary" id="downloadAll">⬇ Download all 3 ZIPs + Listings</button>
+      <div class="progress"><i id="progFill"></i></div>
+      <span class="count" id="progCount">0 / 3</span>
+    </div>
+
+    <div class="split-grid" id="splitGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const LS_KEY = 'splitter:state';
+
+const dropzone = document.getElementById('dropzone');
+const zipInput = document.getElementById('zipFile');
+const loadedArea = document.getElementById('loadedArea');
+const apiStateEl = document.getElementById('apiState');
+const errArea = document.getElementById('errArea');
+const catSummaryEl = document.getElementById('catSummary');
+const splitGridEl = document.getElementById('splitGrid');
+const progFill = document.getElementById('progFill');
+const progCount = document.getElementById('progCount');
+const bundleNameInput = document.getElementById('bundleName');
+const taglineInput = document.getElementById('tagline');
+
+let state = {
+  bundleName: '',
+  tagline: '',
+  fileName: '',
+  zipBlob: null,
+  files: [],
+  categories: { npc:[], location:[], map:[], item:[], other:[] },
+  listings: { npc:null, locations:null, complete:null },
+  prices: { npc:14.99, locations:9.99, complete:19.99 }
+};
+
+function showToast(msg, t=2200){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), t);
+}
+function showError(msg){
+  errArea.innerHTML = `<div class="err">⚠ ${escapeHtml(msg)}</div>`;
+  setTimeout(()=>{ errArea.innerHTML=''; }, 6000);
+}
+function showSuccess(msg){
+  errArea.innerHTML = `<div class="success">✓ ${escapeHtml(msg)}</div>`;
+  setTimeout(()=>{ errArea.innerHTML=''; }, 4000);
+}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// Drag-drop handlers
+dropzone.addEventListener('click', ()=> zipInput.click());
+dropzone.addEventListener('dragover', e=>{ e.preventDefault(); dropzone.classList.add('over'); });
+dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('over'));
+dropzone.addEventListener('drop', e=>{
+  e.preventDefault(); dropzone.classList.remove('over');
+  const f = e.dataTransfer.files[0];
+  if(f) handleZipFile(f);
+});
+zipInput.addEventListener('change', e=>{
+  const f = e.target.files[0];
+  if(f) handleZipFile(f);
+});
+
+async function handleZipFile(file){
+  if(!file.name.toLowerCase().endsWith('.zip')){
+    showError('Bitte eine .zip-Datei verwenden.');
+    return;
+  }
+  try {
+    const buf = await file.arrayBuffer();
+    const zip = await JSZip.loadAsync(buf);
+
+    // Bundle-Name aus Dateiname raten
+    let guessName = file.name.replace(/\.zip$/i,'').replace(/-bundle$/i,'').replace(/[-_]/g,' ');
+    guessName = guessName.replace(/\b\w/g, c=>c.toUpperCase());
+
+    state.fileName = file.name;
+    state.bundleName = guessName;
+    state.zipBlob = file;
+    state.files = [];
+    state.categories = { npc:[], location:[], map:[], item:[], other:[] };
+
+    // Iterate files in zip
+    const filePromises = [];
+    zip.forEach((path, zipEntry)=>{
+      if(zipEntry.dir) return;
+      const lower = path.toLowerCase();
+      // skip listing/listing files, keep image-relevant entries
+      filePromises.push(zipEntry.async('blob').then(blob=>{
+        state.files.push({ path, name: path.split('/').pop(), blob, size: blob.size });
+      }));
+    });
+    await Promise.all(filePromises);
+
+    // Auto-categorize
+    categorize();
+
+    bundleNameInput.value = guessName;
+    taglineInput.value = `${state.files.length} hand-crafted assets — ${guessName}`;
+
+    renderCatSummary();
+    renderSplitCards();
+    loadedArea.style.display = 'block';
+    dropzone.style.display = 'none';
+    showSuccess(`ZIP geladen: ${state.files.length} Files in ${Object.values(state.categories).filter(a=>a.length).length} Kategorien`);
+  } catch(err){
+    showError('ZIP-Parse fehlgeschlagen: ' + err.message);
+  }
+}
+
+function categorize(){
+  for(const f of state.files){
+    const n = f.name.toLowerCase();
+    // priority order: map → location → npc → item → other
+    if(/\b(map|battlemap|battle-map|dungeon|grid)\b/.test(n)){
+      state.categories.map.push(f);
+    } else if(/\b(location|locale|scene|interior|exterior|tavern|castle|forest|cave|temple|church)\b/.test(n)){
+      state.categories.location.push(f);
+    } else if(/\b(npc|character|portrait|villain|hero|monster|creature|enemy|ally)\b/.test(n)){
+      state.categories.npc.push(f);
+    } else if(/\b(item|weapon|magic-item|treasure|loot|scroll|tome|artifact|relic|potion)\b/.test(n)){
+      state.categories.item.push(f);
+    } else if(/\b(listing|readme|info|manifest|metadata)\b/.test(n)){
+      // skip — diese fließen nicht in Sub-ZIPs
+    } else if(/\.(json|txt|md|pdf|html)$/i.test(n)){
+      // skip listings/text-content
+    } else {
+      state.categories.other.push(f);
+    }
+  }
+}
+
+function renderCatSummary(){
+  const labels = { npc:'NPCs', location:'Locations', map:'Maps', item:'Items', other:'Other' };
+  catSummaryEl.innerHTML = Object.entries(state.categories).filter(([k,arr])=>arr.length>0).map(([k,arr])=>
+    `<div class="cat"><span>${labels[k]}</span><span>${arr.length}</span></div>`
+  ).join('') + `<div class="cat"><span>Total</span><span>${state.files.length - (state.categories.other.filter(f=>/\.(json|txt|md|pdf|html)$/i.test(f.name)).length)}</span></div>`;
+}
+
+function renderSplitCards(){
+  const npcFiles = state.categories.npc.concat(state.categories.other.filter(f=>/\.(png|jpg|jpeg|webp)$/i.test(f.name) && /character|npc|portrait/.test(f.name.toLowerCase())));
+  const mapFiles = state.categories.map.concat(state.categories.location);
+  const allFiles = [
+    ...state.categories.npc, ...state.categories.location, ...state.categories.map,
+    ...state.categories.item, ...state.categories.other.filter(f=>/\.(png|jpg|jpeg|webp)$/i.test(f.name))
+  ];
+
+  const cards = [
+    {
+      id:'npc', icon:'👤', title:'NPC Pack', color:'var(--blue)',
+      files: npcFiles.length ? npcFiles : state.categories.npc,
+      angle:'NPC-only mini-pack for DMs who need just characters'
+    },
+    {
+      id:'locations', icon:'🗺', title:'Maps & Locations', color:'var(--green)',
+      files: mapFiles,
+      angle:'Maps + location art mini-pack for DMs who already have NPCs'
+    },
+    {
+      id:'complete', icon:'📦', title:'Complete Bundle', color:'var(--gold)', isFull:true,
+      files: allFiles,
+      angle:'Complete master pack — best value, all NPCs + maps + locations + items'
+    }
+  ];
+
+  splitGridEl.innerHTML = cards.map(c=>`
+    <div class="split-card ${c.isFull?'full':''}" data-card="${c.id}">
+      <h3><span class="icon">${c.icon}</span> ${c.title}</h3>
+      <div class="stats"><span><b>${c.files.length}</b> assets</span> · <span>${(c.files.reduce((s,f)=>s+f.size,0)/1024/1024).toFixed(1)} MB</span></div>
+      <div class="price">$<input type="number" step="0.01" value="${state.prices[c.id]}" data-price="${c.id}"></div>
+      <div class="files">${c.files.slice(0,12).map(f=>`<div class="f"><span>${escapeHtml(f.name)}</span><i>✓</i></div>`).join('') + (c.files.length>12?`<div class="f"><span style="text-align:center;flex:1">… +${c.files.length-12} weitere</span></div>`:'')}</div>
+      <div class="listing-prev" id="prev-${c.id}"><b>Listing:</b> <span style="color:var(--muted)">noch nicht generiert</span></div>
+      <div class="actions">
+        <button class="btn ghost" data-action="download-zip" data-id="${c.id}">⬇ Nur ZIP</button>
+        <button class="btn" data-action="gen-listing" data-id="${c.id}">📝 Listing</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Wire price inputs
+  splitGridEl.querySelectorAll('input[data-price]').forEach(inp=>{
+    inp.addEventListener('change', e=>{
+      const id = e.target.dataset.price;
+      state.prices[id] = parseFloat(e.target.value) || 0;
+    });
+  });
+
+  // Wire actions
+  splitGridEl.querySelectorAll('button[data-action]').forEach(btn=>{
+    btn.addEventListener('click', async e=>{
+      const id = e.target.dataset.id;
+      const action = e.target.dataset.action;
+      if(action==='download-zip') return downloadSubZip(id);
+      if(action==='gen-listing') return genListing(id);
+    });
+  });
+}
+
+async function downloadSubZip(id){
+  showToast(`Erstelle ${id}-ZIP …`);
+  const zip = new JSZip();
+  const cardConfigs = { npc:'NPC Pack', locations:'Maps & Locations', complete:'Complete Bundle' };
+  const filesForId = filesByCardId(id);
+  for(const f of filesForId){
+    zip.file(f.name, f.blob);
+  }
+  // Include listing JSON if generated
+  if(state.listings[id]){
+    zip.file('listing.json', JSON.stringify(state.listings[id], null, 2));
+    zip.file('listing.txt', formatListingText(state.listings[id]));
+  }
+  // README
+  const readmeContent = `${state.bundleName} — ${cardConfigs[id]}\n\n${state.tagline}\n\nIncluded: ${filesForId.length} assets\nPrice: $${state.prices[id]}\n\nGenerated by EndoCraft Bundle Splitter — ${new Date().toISOString().slice(0,10)}\n`;
+  zip.file('README.txt', readmeContent);
+
+  const blob = await zip.generateAsync({type:'blob'});
+  const slug = slugify(state.bundleName) + '-' + id + '-pack.zip';
+  triggerDl(blob, slug);
+  showToast(`${slug} heruntergeladen`);
+}
+
+function filesByCardId(id){
+  if(id==='npc'){
+    return state.categories.npc.concat(state.categories.other.filter(f=>/\.(png|jpg|jpeg|webp)$/i.test(f.name) && /character|npc|portrait/.test(f.name.toLowerCase())));
+  }
+  if(id==='locations'){
+    return state.categories.map.concat(state.categories.location);
+  }
+  // complete
+  return [
+    ...state.categories.npc, ...state.categories.location, ...state.categories.map,
+    ...state.categories.item, ...state.categories.other.filter(f=>/\.(png|jpg|jpeg|webp)$/i.test(f.name))
+  ];
+}
+
+async function genListing(id){
+  const cardLabels = {
+    npc: { name:`${state.bundleName} · NPC Pack`, focus:'NPCs only — character portraits for Curse of Strahd / D&D campaigns' },
+    locations: { name:`${state.bundleName} · Maps & Locations`, focus:'Battle maps + location art only — for DMs with existing NPCs' },
+    complete: { name:`${state.bundleName} · Complete Master Bundle`, focus:'Complete bundle — NPCs + maps + locations + items, best value' }
+  };
+  const c = cardLabels[id];
+  const filesForId = filesByCardId(id);
+
+  showToast(`Generiere ${c.name} Listing …`);
+  try {
+    const apiResp = await fetch(API_BASE + '/api/listing-generator', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        bundleName: c.name,
+        tagline: state.tagline,
+        contentSummary: `${filesForId.length} assets · ${c.focus}`,
+        targetPrice: state.prices[id]
+      })
+    });
+    if(!apiResp.ok) throw new Error('API '+apiResp.status);
+    const listing = await apiResp.json();
+    state.listings[id] = listing;
+    const prevEl = document.getElementById('prev-'+id);
+    const titleVar = (listing.titles && listing.titles[0]) || (listing.etsy && listing.etsy.title) || c.name;
+    const tagCount = (listing.tags && listing.tags.length) || 0;
+    prevEl.innerHTML = `<b>${escapeHtml(titleVar.slice(0,80))}…</b><br>${tagCount} tags · 4 marketplace descriptions ready`;
+    apiStateEl.innerHTML = 'API: <b style="color:var(--green)">listing-ok</b>';
+    showToast(`${c.name} fertig`);
+    return listing;
+  } catch(err){
+    apiStateEl.innerHTML = 'API: <b style="color:var(--red)">'+err.message+'</b>';
+    showError(`Listing fehlgeschlagen: ${err.message}`);
+    return null;
+  }
+}
+
+function formatListingText(listing){
+  const lines = [];
+  if(listing.titles){
+    lines.push('# TITLE VARIANTS\n');
+    listing.titles.forEach((t,i)=> lines.push(`${i+1}. ${t}`));
+    lines.push('');
+  }
+  if(listing.tags){
+    lines.push('# ETSY TAGS (13)');
+    lines.push(listing.tags.join(', '));
+    lines.push('');
+  }
+  if(listing.etsy){
+    lines.push('# ETSY DESCRIPTION');
+    lines.push(listing.etsy.description || '');
+    lines.push('');
+  }
+  if(listing.gumroad){
+    lines.push('# GUMROAD DESCRIPTION');
+    lines.push(listing.gumroad.description || '');
+    lines.push('');
+  }
+  if(listing.itch){
+    lines.push('# ITCH.IO DESCRIPTION');
+    lines.push(listing.itch.description || '');
+    lines.push('');
+  }
+  if(listing.pricing){
+    lines.push('# PRICING REASONING');
+    lines.push(JSON.stringify(listing.pricing, null, 2));
+  }
+  return lines.join('\n');
+}
+
+document.getElementById('genListings').addEventListener('click', async ()=>{
+  state.bundleName = bundleNameInput.value || state.bundleName;
+  state.tagline = taglineInput.value || state.tagline;
+  const ids = ['npc','locations','complete'];
+  let done = 0;
+  for(const id of ids){
+    progFill.style.width = (done/ids.length*100)+'%';
+    progCount.textContent = `${done} / ${ids.length}`;
+    await genListing(id);
+    done++;
+  }
+  progFill.style.width = '100%';
+  progCount.textContent = `${ids.length} / ${ids.length}`;
+  showSuccess('Alle 3 Listings generiert — bereit zum Download');
+});
+
+document.getElementById('downloadAll').addEventListener('click', async ()=>{
+  state.bundleName = bundleNameInput.value || state.bundleName;
+  state.tagline = taglineInput.value || state.tagline;
+  const ids = ['npc','locations','complete'];
+  for(const id of ids){
+    if(!state.listings[id]){
+      await genListing(id);
+    }
+    await downloadSubZip(id);
+    await new Promise(r=>setTimeout(r,400)); // browser download throttle
+  }
+  // Combined library JSON for paste-into-etsy
+  const lib = {
+    bundle: state.bundleName,
+    generated: new Date().toISOString(),
+    listings: state.listings,
+    prices: state.prices
+  };
+  const blob = new Blob([JSON.stringify(lib, null, 2)], {type:'application/json'});
+  triggerDl(blob, slugify(state.bundleName) + '-split-listings.json');
+  showSuccess('Alle 3 ZIPs + Listings + Library-JSON heruntergeladen');
+});
+
+function slugify(s){return String(s||'bundle').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+function triggerDl(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 100);
+}
+
+// API ping
+fetch(API_BASE + '/api/listing-generator', { method:'OPTIONS' })
+  .then(r => apiStateEl.innerHTML = 'API: <b style="color:var(--green)">ready</b>')
+  .catch(()=> apiStateEl.innerHTML = 'API: <b style="color:var(--red)">offline</b>');
+</script>
+</body>
+</html>
