@@ -541,9 +541,11 @@ function drawCoverImg(ctx, img, x, y, w, h){
   const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
   const r = Math.max(w/iw, h/ih);
   const dw = iw*r, dh = ih*r;
+  // Portrait-Asset in flacherer Zelle: Top-anchored croppen (Köpfe sitzen oben — nie center-croppen!)
+  const vAnchor = (dh - h > 4 && ih > iw) ? 0.1 : 0.5;
   ctx.save();
   ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
-  ctx.drawImage(img, x+(w-dw)/2, y+(h-dh)/2, dw, dh);
+  ctx.drawImage(img, x+(w-dw)/2, y-(dh-h)*vAnchor, dw, dh);
   ctx.restore();
 }
 
