@@ -428,11 +428,35 @@ async function runBundle(b, idx, total) {
   log('head', `[${idx+1}/${total}] ${b.name} (${b.tier})`);
 
   const tpl = TEMPLATES[b.tier] || TEMPLATES.evergreen;
+
+  // ─── Fetch unique Concept-Variations für diesen Bundle ───
+  bp.querySelector('.bp-state').textContent = 'cast generieren…';
+  log('info', `  → Cast-Variation via Claude…`);
+  let concepts = {};
+  try {
+    const slots = tpl.map(t => ({ type: t.type, count: t.count }));
+    const cr = await fetch(API_BASE + '/api/asset-concepts', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ bundleName: b.name, tagline: b.tag||'', tier: b.tier, slots })
+    });
+    const cd = await cr.json();
+    if (cd.ok && cd.concepts) {
+      concepts = cd.concepts;
+      const counts = Object.entries(concepts).map(([k,v]) => `${v.length}× ${k}`).join(', ');
+      log('ok', `  ✓ Cast generiert: ${counts}`);
+    } else {
+      log('warn', `  ⚠ Cast-Gen fail (falle auf generische Prompts zurück): ${cd.error||'unknown'}`);
+    }
+  } catch(e) { log('warn', `  ⚠ Cast-API nicht erreichbar: ${e.message}`); }
+
   const allAssets = [];
   let assetSeq = 1;
   tpl.forEach(t => {
+    const typeConcepts = concepts[t.type] || [];
     for (let k = 0; k < t.count; k++) {
-      allAssets.push({ id:`${b.id}_a${assetSeq++}`, type:t.type, name:t.name + (t.count>1?` ${k+1}`:''), prompt:t.prompt, w:t.w, h:t.h });
+      const concept = typeConcepts[k] && typeConcepts[k].modifier ? typeConcepts[k].modifier : null;
+      const finalPrompt = concept ? `${concept}, ${t.prompt}` : t.prompt;
+      allAssets.push({ id:`${b.id}_a${assetSeq++}`, type:t.type, name:t.name + (t.count>1?` ${k+1}`:''), prompt:finalPrompt, w:t.w, h:t.h, concept });
     }
   });
 
@@ -717,7 +741,6 @@ async function downloadAllMaster() {
     }
     root.file('manifest.json', JSON.stringify({ bundle: R.bundle, generated_at: new Date().toISOString(), asset_count: R.assets.length, pin_count: R.pins.length }, null, 2));
   }
-  // Top-level Master-Manifest
   zip.file('MASTER-MANIFEST.json', JSON.stringify({
     generated_at: new Date().toISOString(),
     total_bundles: list.length,
@@ -739,4 +762,13 @@ function triggerDl(blob, name) {
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
 }
 
-function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle'; }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200); }
+
+if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission().catch(()=>{});
+
+init();
+</script>
+</body>
+</html>
