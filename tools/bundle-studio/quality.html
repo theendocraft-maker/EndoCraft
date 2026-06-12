@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Quality Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:19px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.success{background:rgba(123,189,143,.15);border-color:var(--green);color:var(--green);font-weight:700}
+.btn.danger{background:rgba(217,138,138,.15);border-color:var(--red);color:var(--red);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.wrap{max-width:1480px;margin:0 auto;padding:22px}
+.intro{background:linear-gradient(135deg,rgba(123,189,143,.07),rgba(123,189,143,.02));border:1px solid var(--green);border-radius:14px;padding:18px 22px;margin-bottom:22px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted);line-height:1.65}
+.intro h2{color:var(--green);font-size:18px;margin-bottom:8px;font-family:'Cinzel',serif}
+.intro b{color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+.kpi-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif}
+.kpi-value{font-size:22px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace;margin-top:3px}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.kpi.good .kpi-value{color:var(--green)}
+.kpi.bad .kpi-value{color:var(--red)}
+.kpi.warn .kpi-value{color:var(--orange)}
+.toolbar{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:20px;flex-wrap:wrap}
+.toolbar .grow{flex:1}
+.filter{display:flex;gap:4px;background:var(--panel2);border-radius:8px;padding:3px}
+.filter button{background:transparent;border:none;color:var(--muted);padding:6px 13px;font-size:12px;cursor:pointer;border-radius:6px;font-family:'Cinzel',serif;letter-spacing:.5px}
+.filter button.active{background:var(--gold);color:#1a1408;font-weight:700}
+.bundle-section{margin-bottom:34px}
+.bundle-head{padding:14px 20px;background:linear-gradient(90deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px 12px 0 0;display:flex;gap:14px;align-items:center}
+.bundle-head h2{flex:1;font-size:15px;color:var(--gold);font-family:'Cinzel',serif;letter-spacing:1px}
+.bundle-head .meta{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.tier-pill{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Cinzel',serif}
+.tier-flagship{background:rgba(216,180,106,.18);color:var(--gold);border:1px solid var(--gold-dim)}
+.tier-evergreen{background:rgba(127,169,216,.1);color:var(--blue);border:1px solid rgba(127,169,216,.25)}
+.tier-trope{background:rgba(154,160,179,.1);color:var(--muted);border:1px solid rgba(154,160,179,.25)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:18px;background:var(--panel);border:1px solid var(--line);border-top:none;border-radius:0 0 12px 12px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;position:relative;transition:.15s}
+.card.keep{border-color:var(--green);box-shadow:0 0 12px rgba(123,189,143,.12)}
+.card.reroll{border-color:var(--red);box-shadow:0 0 12px rgba(217,138,138,.15);opacity:.92}
+.card.rerolling{border-color:var(--orange);box-shadow:0 0 18px rgba(224,167,103,.25)}
+.thumb{aspect-ratio:1/1;background:#08090e center/cover no-repeat;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.thumb .stub{color:#41485e;font-size:30px}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.score-badge{position:absolute;top:8px;left:8px;background:rgba(8,9,14,.85);backdrop-filter:blur(8px);border-radius:8px;padding:5px 10px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px;color:var(--ink)}
+.score-badge.good{background:rgba(123,189,143,.85);color:#0d1f15}
+.score-badge.mid{background:rgba(224,167,103,.85);color:#321e0c}
+.score-badge.bad{background:rgba(217,138,138,.85);color:#3a0e0e}
+.score-badge.pending{background:rgba(154,160,179,.4);color:var(--ink)}
+.type-tag{position:absolute;top:8px;right:8px;background:rgba(8,9,14,.75);backdrop-filter:blur(6px);border-radius:6px;padding:3px 8px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-family:'Cinzel',serif}
+.body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.name{font-family:'Cinzel',serif;font-size:12px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reasoning{font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;min-height:28px;line-height:1.4}
+.issues{display:flex;flex-wrap:wrap;gap:4px}
+.issue{font-size:9px;background:rgba(217,138,138,.15);color:var(--red);padding:2px 6px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase;font-family:'Cinzel',serif}
+.actions{display:flex;gap:4px;padding:8px 10px;background:var(--panel);border-top:1px solid var(--line)}
+.actions button{flex:1;padding:6px;font-size:11px;background:transparent;border:1px solid var(--line);border-radius:5px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.5px;cursor:pointer;transition:.1s}
+.actions button:hover{color:var(--ink);border-color:var(--gold-dim)}
+.actions button.keep.active{background:rgba(123,189,143,.18);border-color:var(--green);color:var(--green)}
+.actions button.reroll.active{background:rgba(217,138,138,.18);border-color:var(--red);color:var(--red)}
+.spinner{width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--orange);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.center{display:flex;justify-content:center;align-items:center;flex-direction:column;gap:14px;padding:80px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:16px;text-align:center}
+.center .e-emoji{font-size:48px}
+.api-state{font-size:12px;color:var(--muted)} .api-state b{color:var(--ink)}
+dialog.viewer{border:none;background:transparent;max-width:92vw;max-height:92vh;padding:0}
+dialog.viewer img{max-width:92vw;max-height:92vh;border-radius:10px;border:1px solid var(--gold-dim);display:block}
+dialog.viewer::backdrop{background:rgba(8,9,14,.92);backdrop-filter:blur(4px)}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.progress-overlay{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold-dim);border-radius:10px;padding:14px 22px;color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px;z-index:50;display:none;align-items:center;gap:12px;min-width:300px}
+.progress-overlay.show{display:flex}
+.progress-overlay .progress-bar{flex:1;height:6px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.progress-overlay .progress-bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .3s}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Quality Control</div>
+  <span class="tag">AI Review + Manual Reroll</span>
+  <div class="controls">
+    <span class="api-state" id="apiState">API: <b>—</b></span>
+    <a class="btn ghost" href="./pipeline.html">⚡ Pipeline</a>
+    <a class="btn ghost" href="./backlog.html">📋 Backlog</a>
+    <a class="btn ghost" href="./index.html">🎨 Studio</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    <h2>🎯 Quality Control</h2>
+    Bewertet alle Pipeline-Assets via <b>Claude Vision</b> (Haiku 4.5 · ~$0.001/Asset),
+    markiert schlechte automatisch zum <b>Reroll</b>, du machst manuelle Final-Entscheidung.
+    Nach Reroll: aktualisierte ZIPs runterladen — saubere Production-Outputs.
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<dialog class="viewer" id="viewer"><img id="viewerImg" alt=""></dialog>
+
+<div class="progress-overlay" id="progressOverlay">
+  <span id="progressLabel">⚡ AI Rating...</span>
+  <div class="progress-bar"><i id="progressBar"></i></div>
+  <span id="progressCount">0/0</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const STORAGE_KEY = 'ec_pipeline_last_run';
+const REVIEW_KEY = 'ec_quality_review_v1';
+const STYLE_SUFFIX = 'cinematic fantasy, photorealistic, dramatic cinematic lighting, highly detailed, 8k, no text, no watermark';
+
+let runData = null;
+let review = {};
+let currentFilter = 'all';
+
+(async function ping() {
+  try { await fetch(API_BASE + '/health'); document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--green)">online</b>'; }
+  catch(e) { document.getElementById('apiState').innerHTML = 'API: <b style="color:var(--red)">offline</b>'; }
+})();
+
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function proxied(url){ return API_BASE + '/api/image/proxy?url=' + encodeURIComponent(url); }
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle'; }
+
+function loadRun() {
+  try { runData = JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); } catch(e) {}
+  try { review = JSON.parse(localStorage.getItem(REVIEW_KEY)||'{}'); } catch(e){ review = {}; }
+  if (!runData || !runData.results || !Object.keys(runData.results).length) {
+    document.getElementById('content').innerHTML = `
+      <div class="center">
+        <span class="e-emoji">📭</span>
+        <div>Noch kein Pipeline-Run im localStorage.</div>
+        <div style="font-size:13.5px">Geh erst zur <a href="./pipeline.html" style="color:var(--gold)">⚡ Pipeline</a>, fahre einen Run durch — dann kommst du hier mit allen Assets zum Reviewen wieder.</div>
+      </div>`;
+    return;
+  }
+  render();
+}
+
+function getReviewState(assetId) { return review[assetId] || { score:null, issues:[], reasoning:'', decision:null, rerolling:false }; }
+
+function render() {
+  const bundles = Object.values(runData.results);
+  let totalAssets = 0, ratedCount = 0, goodCount = 0, badCount = 0, keepCount = 0, rerollCount = 0;
+  bundles.forEach(R => {
+    (R.assets||[]).forEach(a => {
+      totalAssets++;
+      const rs = getReviewState(a.id);
+      if (rs.score !== null) {
+        ratedCount++;
+        if (rs.score >= 7) goodCount++;
+        else if (rs.score < 5) badCount++;
+      }
+      if (rs.decision === 'keep') keepCount++;
+      if (rs.decision === 'reroll') rerollCount++;
+    });
+  });
+
+  const kpis = `
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-label">Total Assets</div><div class="kpi-value">${totalAssets}</div></div>
+      <div class="kpi"><div class="kpi-label">Auto-Rated</div><div class="kpi-value">${ratedCount}</div><div class="kpi-sub">${ratedCount<totalAssets?Math.floor((totalAssets-ratedCount)/totalAssets*100)+'% pending':'alle bewertet'}</div></div>
+      <div class="kpi good"><div class="kpi-label">Score ≥ 7</div><div class="kpi-value">${goodCount}</div><div class="kpi-sub">verkaufsfertig</div></div>
+      <div class="kpi bad"><div class="kpi-label">Score &lt; 5</div><div class="kpi-value">${badCount}</div><div class="kpi-sub">Reroll empfohlen</div></div>
+      <div class="kpi good"><div class="kpi-label">✓ Keep</div><div class="kpi-value">${keepCount}</div></div>
+      <div class="kpi bad"><div class="kpi-label">↻ Reroll</div><div class="kpi-value">${rerollCount}</div></div>
+    </div>`;
+
+  const toolbar = `
+    <div class="toolbar">
+      <div class="filter">
+        <button onclick="setFilter('all')" class="${currentFilter==='all'?'active':''}">Alle</button>
+        <button onclick="setFilter('rated')" class="${currentFilter==='rated'?'active':''}">Rated</button>
+        <button onclick="setFilter('unrated')" class="${currentFilter==='unrated'?'active':''}">Unrated</button>
+        <button onclick="setFilter('bad')" class="${currentFilter==='bad'?'active':''}">Score &lt; 7</button>
+        <button onclick="setFilter('reroll')" class="${currentFilter==='reroll'?'active':''}">↻ Marked</button>
+      </div>
+      <div class="grow"></div>
+      <button class="btn" onclick="autoRateAll()" id="autoRateBtn">🤖 Auto-Rate all unrated</button>
+      <button class="btn" onclick="autoMarkRerolls()" id="autoMarkBtn">🎯 Mark Score &lt; 7 as Reroll</button>
+      <button class="btn danger" onclick="rerollAllMarked()" id="rerollAllBtn">↻ Reroll all marked (${rerollCount})</button>
+      <button class="btn primary" onclick="downloadFinal()" id="dlBtn">⬇ Download cleaned ZIPs</button>
+    </div>`;
+
+  const bundleHtml = bundles.map(R => {
+    const assets = (R.assets||[]).filter(a => filterMatches(a));
+    if (!assets.length && currentFilter !== 'all') return '';
+    const cards = (R.assets||[]).map(a => filterMatches(a) ? renderCard(a, R.bundle.name) : '').join('');
+    return `
+      <div class="bundle-section">
+        <div class="bundle-head">
+          <span class="tier-pill tier-${R.bundle.tier}">${R.bundle.tier}</span>
+          <h2>${esc(R.bundle.name)}</h2>
+          <div class="meta">${R.assets.length} Assets</div>
+        </div>
+        <div class="grid">${cards || '<div class="center" style="grid-column:1/-1;padding:30px"><div style="font-size:13px">In dieser Ansicht keine Assets</div></div>'}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('content').innerHTML = kpis + toolbar + bundleHtml;
+}
+
+function filterMatches(a) {
+  const rs = getReviewState(a.id);
+  if (currentFilter === 'all') return true;
+  if (currentFilter === 'rated') return rs.score !== null;
+  if (currentFilter === 'unrated') return rs.score === null;
+  if (currentFilter === 'bad') return rs.score !== null && rs.score < 7;
+  if (currentFilter === 'reroll') return rs.decision === 'reroll';
+  return true;
+}
+
+function renderCard(a, bundleName) {
+  const rs = getReviewState(a.id);
+  const cardCls = rs.rerolling ? 'rerolling' : (rs.decision === 'keep' ? 'keep' : (rs.decision === 'reroll' ? 'reroll' : ''));
+  const scoreCls = rs.score === null ? 'pending' : (rs.score >= 7 ? 'good' : (rs.score >= 5 ? 'mid' : 'bad'));
+  const scoreText = rs.score === null ? '—' : rs.score + '/10';
+  const issuesHtml = (rs.issues||[]).map(i => `<span class="issue">${esc(i.replace(/_/g,' '))}</span>`).join('');
+  return `
+    <div class="card ${cardCls}" data-id="${a.id}">
+      <div class="thumb" onclick="openViewer('${a.url}')">
+        <img src="${proxied(a.url)}" alt="${esc(a.name)}" loading="lazy">
+        <div class="score-badge ${scoreCls}">${scoreText}</div>
+        <div class="type-tag">${esc(a.type)}</div>
+      </div>
+      <div class="body">
+        <div class="name">${esc(a.name)}</div>
+        <div class="reasoning">${rs.rerolling ? '<span style="color:var(--orange)">🔄 wird neu generiert...</span>' : (rs.reasoning || (rs.score===null ? 'Noch nicht bewertet' : ''))}</div>
+        ${issuesHtml ? `<div class="issues">${issuesHtml}</div>` : ''}
+      </div>
+      <div class="actions">
+        <button class="keep ${rs.decision==='keep'?'active':''}" onclick="setDecision('${a.id}','keep')">✓ Keep</button>
+        <button class="reroll ${rs.decision==='reroll'?'active':''}" onclick="setDecision('${a.id}','reroll')">✗ Reroll</button>
+        <button onclick="rerollAsset('${a.id}','${esc(bundleName)}')" ${rs.rerolling?'disabled':''}>↻ Now</button>
+        <button onclick="rateAsset('${a.id}','${esc(bundleName)}')">🤖</button>
+      </div>
+    </div>`;
+}
+
+function setFilter(f) { currentFilter = f; render(); }
+function setDecision(assetId, decision) {
+  const rs = getReviewState(assetId);
+  if (rs.decision === decision) rs.decision = null;
+  else rs.decision = decision;
+  review[assetId] = rs;
+  saveReview();
+  render();
+}
+function saveReview() { try { localStorage.setItem(REVIEW_KEY, JSON.stringify(review)); } catch(e){} }
+function openViewer(url) {
+  document.getElementById('viewerImg').src = proxied(url);
+  document.getElementById('viewer').showModal();
+}
+document.getElementById('viewer').addEventListener('click', e => { if (e.target.tagName !== 'IMG') document.getElementById('viewer').close(); });
+
+async function rateAsset(assetId, bundleName) {
+  const asset = findAsset(assetId);
+  if (!asset) return;
+  const rs = getReviewState(assetId);
+  if (rs.rerolling) return;
+  try {
+    const r = await fetch(API_BASE + '/api/quality-check', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ imageUrl: asset.url, assetType: asset.type, bundleName })
+    });
+    const data = await r.json();
+    if (data.ok) {
+      rs.score = data.score; rs.issues = data.issues || []; rs.reasoning = data.reasoning || '';
+      review[assetId] = rs; saveReview(); render();
+    } else { toast('Rate-Fehler: ' + (data.error||'unknown').slice(0,50)); }
+  } catch(e) { toast('Rate-Fehler: ' + e.message); }
+}
+
+async function autoRateAll() {
+  const all = [];
+  Object.values(runData.results).forEach(R => (R.assets||[]).forEach(a => {
+    if (getReviewState(a.id).score === null) all.push({ a, bundle: R.bundle.name });
+  }));
+  if (!all.length) return toast('Alle schon bewertet');
+  document.getElementById('progressOverlay').classList.add('show');
+  document.getElementById('autoRateBtn').disabled = true;
+  document.getElementById('progressLabel').textContent = '🤖 Claude bewertet...';
+  let done = 0, fail = 0;
+  const CONC = 3;
+  const queue = [...all];
+  async function worker() {
+    while (queue.length) {
+      const { a, bundle } = queue.shift();
+      try { await rateAsset(a.id, bundle); done++; }
+      catch(e){ fail++; }
+      const total = all.length;
+      const completed = done + fail;
+      document.getElementById('progressBar').style.width = (completed/total*100)+'%';
+      document.getElementById('progressCount').textContent = `${completed}/${total}`;
+    }
+  }
+  await Promise.all(Array.from({length:CONC}, worker));
+  document.getElementById('progressOverlay').classList.remove('show');
+  document.getElementById('autoRateBtn').disabled = false;
+  toast(`✓ ${done} bewertet, ${fail} fehler`);
+}
+
+function autoMarkRerolls() {
+  let count = 0;
+  Object.values(runData.results).forEach(R => (R.assets||[]).forEach(a => {
+    const rs = getReviewState(a.id);
+    if (rs.score !== null && rs.score < 7 && rs.decision !== 'keep') {
+      rs.decision = 'reroll';
+      review[a.id] = rs; count++;
+    }
+  }));
+  saveReview(); render();
+  toast(`✓ ${count} Assets als Reroll markiert`);
+}
+
+async function rerollAsset(assetId, bundleName) {
+  const asset = findAsset(assetId); if (!asset) return;
+  const bundleResult = Object.values(runData.results).find(R => R.assets.some(a => a.id === assetId));
+  if (!bundleResult) return;
+  const rs = getReviewState(assetId);
+  rs.rerolling = true; review[assetId] = rs; saveReview(); render();
+  try {
+    const prompt = asset.prompt.replace(/\{\{THEME\}\}/g, bundleResult.bundle.name + (bundleResult.bundle.tag ? ', ' + bundleResult.bundle.tag : '')) + ', ' + STYLE_SUFFIX;
+    const r = await fetch(API_BASE + '/api/image', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ prompt, model:'bytedance/seedream-4-5', width: asset.w||1800, height: asset.h||2400 })
+    });
+    const data = await r.json();
+    if (data.url) {
+      asset.url = data.url;  // replace URL in runData
+      rs.rerolling = false; rs.score = null; rs.issues = []; rs.reasoning = '↻ Just rerolled'; rs.decision = null;
+      review[assetId] = rs;
+      // Save back to runData
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(runData));
+      saveReview();
+      render();
+      toast('✓ ' + asset.name + ' neu generiert');
+    } else {
+      rs.rerolling = false; review[assetId] = rs; saveReview(); render();
+      toast('Reroll-Fehler');
+    }
+  } catch(e) {
+    rs.rerolling = false; review[assetId] = rs; saveReview(); render();
+    toast('Reroll-Fehler: ' + e.message);
+  }
+}
+
+async function rerollAllMarked() {
+  const marked = [];
+  Object.values(runData.results).forEach(R => (R.assets||[]).forEach(a => {
+    if (getReviewState(a.id).decision === 'reroll') marked.push({ a, bundleName: R.bundle.name });
+  }));
+  if (!marked.length) return toast('Keine ↻-Markierungen');
+  if (!confirm(`${marked.length} Assets rerollen? Kostet ~$${(marked.length*0.02).toFixed(2)}.`)) return;
+  document.getElementById('progressOverlay').classList.add('show');
+  document.getElementById('progressLabel').textContent = '↻ Reroll läuft...';
+  document.getElementById('rerollAllBtn').disabled = true;
+  let done = 0;
+  const CONC = 2;
+  const queue = [...marked];
+  async function worker() {
+    while (queue.length) {
+      const { a, bundleName } = queue.shift();
+      await rerollAsset(a.id, bundleName);
+      done++;
+      document.getElementById('progressBar').style.width = (done/marked.length*100)+'%';
+      document.getElementById('progressCount').textContent = `${done}/${marked.length}`;
+    }
+  }
+  await Promise.all(Array.from({length:CONC}, worker));
+  document.getElementById('progressOverlay').classList.remove('show');
+  document.getElementById('rerollAllBtn').disabled = false;
+  toast('🎉 Alle Rerolls fertig');
+}
+
+function findAsset(assetId) {
+  for (const R of Object.values(runData.results)) {
+    const a = (R.assets||[]).find(x => x.id === assetId);
+    if (a) return a;
+  }
+  return null;
+}
+
+async function downloadFinal() {
+  toast('Building cleaned ZIPs…');
+  const bundles = Object.values(runData.results);
+  document.getElementById('dlBtn').disabled = true;
+  document.getElementById('dlBtn').textContent = 'Building…';
+  for (const R of bundles) {
+    const zip = new JSZip();
+    const root = zip.folder(slugify(R.bundle.name));
+    const byType = {};
+    R.assets.forEach(a => {
+      const rs = getReviewState(a.id);
+      if (rs.decision === 'reroll') return;  // skip rejected
+      (byType[a.type] = byType[a.type] || []).push(a);
+    });
+    for (const [type, arr] of Object.entries(byType)) {
+      const f = root.folder('assets/' + type);
+      for (let i=0; i<arr.length; i++) {
+        try {
+          const r = await fetch(proxied(arr[i].url));
+          if (!r.ok) continue;
+          const blob = await r.blob();
+          f.file(`${String(i+1).padStart(2,'0')}_${slugify(arr[i].name)}.png`, blob);
+        } catch(e){}
+      }
+    }
+    if (R.listing) {
+      const lf = root.folder('listings');
+      lf.file('listing.json', JSON.stringify(R.listing, null, 2));
+      lf.file('etsy.txt', `TITLES:\n${(R.listing.titles||[]).map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\nTAGS:\n${(R.listing.etsy_tags||[]).join(', ')}\n\nDESCRIPTION:\n${R.listing.etsy_description||''}`);
+    }
+    root.file('quality-report.json', JSON.stringify({
+      bundle: R.bundle,
+      generated_at: new Date().toISOString(),
+      qc_passes: R.assets.filter(a => getReviewState(a.id).decision !== 'reroll').length,
+      qc_rejected: R.assets.filter(a => getReviewState(a.id).decision === 'reroll').length,
+      reviews: R.assets.map(a => ({ name: a.name, type: a.type, ...getReviewState(a.id) }))
+    }, null, 2));
+    const blob = await zip.generateAsync({type:'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = slugify(R.bundle.name) + '-CLEANED.zip';
+    a.click(); URL.revokeObjectURL(a.href);
+    await new Promise(r => setTimeout(r, 1500));
+  }
+  document.getElementById('dlBtn').disabled = false;
+  document.getElementById('dlBtn').textContent = '⬇ Download cleaned ZIPs';
+  toast('🎉 ' + bundles.length + ' cleaned ZIPs downloaded');
+}
+
+loadRun();
+</script>
+</body>
+</html>

@@ -392,6 +392,21 @@ async function startRun() {
   document.getElementById('startBtn').disabled = false;
   document.getElementById('stopBtn').style.display = 'none';
   log('head', `✓ Pipeline fertig in ${fmtDur(Date.now() - runState.startTime)}`);
+  // Persist run state for Quality-Review page
+  try {
+    const persist = {
+      timestamp: Date.now(),
+      results: Object.fromEntries(Object.entries(runState.results).map(([id,R]) => [id, {
+        bundle: R.bundle,
+        assets: R.assets,
+        pins: R.pins,
+        listing: R.listing,
+        status: R.status,
+        assetCount: R.assets.length
+      }]))
+    };
+    localStorage.setItem('ec_pipeline_last_run', JSON.stringify(persist));
+  } catch(e) { console.warn('Could not persist run state:', e); }
   showResults();
   try { if (Notification.permission === 'granted') new Notification('EndoCraft Pipeline · Fertig!', { body: `${chosen.length} Bundles produziert.` }); } catch(e){}
   toast('🎉 Pipeline complete!');
@@ -716,4 +731,12 @@ async function downloadAllMaster() {
   toast('🎉 Master-ZIP fertig');
 }
 
-fun
+function triggerDl(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
