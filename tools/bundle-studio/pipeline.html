@@ -469,7 +469,8 @@ async function runBundle(b, idx, total) {
     while (idxA < allAssets.length && !runState.stopRequested && failCount < failTol) {
       const a = allAssets[idxA++];
       try {
-        const fullPrompt = a.prompt.replace(/\{\{THEME\}\}/g, b.name + (b.tag ? ', ' + b.tag : '')) + ', ' + STYLE_SUFFIX;
+        // Stil pro Bundle übersteuerbar: Backlog-Bundle kann ein "style"-Feld tragen (z.B. Cthulhu-Sepia, Aquarell)
+        const fullPrompt = a.prompt.replace(/\{\{THEME\}\}/g, b.name + (b.tag ? ', ' + b.tag : '')) + ', ' + (b.style || STYLE_SUFFIX);
         const r = await fetch(API_BASE + '/api/image', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ prompt: fullPrompt, model:'bytedance/seedream-4-5', width:a.w, height:a.h })
