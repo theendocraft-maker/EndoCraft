@@ -505,4 +505,27 @@ async function downloadFinal() {
       qc_passes: R.assets.filter(a => getReviewState(a.id).decision !== 'reroll').length,
       qc_rejected: R.assets.filter(a => getReviewState(a.id).decision === 'reroll').length,
       lessons_learned: getLessons(R.bundle.id || R.bundle.name),
-      reviews: R.assets.map(a => ({ name: a.name, type: a.type, ...getReviewState
+      reviews: R.assets.map(a => ({ name: a.name, type: a.type, ...getReviewState(a.id) }))
+    }, null, 2));
+    try {
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = slugify(R.bundle.name) + '-cleaned.zip';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    } catch(e) {
+      toast('ZIP-Fehler: ' + e.message);
+    }
+    await new Promise(r => setTimeout(r, 400));
+  }
+  document.getElementById('dlBtn').disabled = false;
+  document.getElementById('dlBtn').textContent = '⬇ Download cleaned ZIPs';
+  toast('🎉 Cleaned ZIPs heruntergeladen');
+}
+
+loadRun();
+</script>
+</body>
+</html>
