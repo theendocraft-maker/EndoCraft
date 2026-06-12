@@ -247,20 +247,20 @@ const STYLE_SUFFIX = 'cinematic fantasy, photorealistic, dramatic cinematic ligh
 const TEMPLATES = {
   flagship: [
     { type:'cover',    name:'Cover · Hero Establishing',     prompt:'cinematic establishing shot, dramatic hero composition showcasing {{THEME}}, atmospheric depth, marketing-poster aesthetic', count:1, w:2880, h:1620 },
-    { type:'npc',      name:'NPC Portrait',                  prompt:'cinematic fantasy character portrait, unique distinctive {{THEME}}-themed character, dramatic lighting, professional fantasy art style', count:12, w:1440, h:1800 },
+    { type:'npc',      name:'NPC Portrait',                  prompt:'cinematic fantasy character portrait, unique distinctive {{THEME}}-themed character, dramatic lighting, professional fantasy art style', count:12, w:1800, h:2400 },
     { type:'location', name:'Location Establishing Shot',    prompt:'cinematic fantasy establishing wide shot of an atmospheric location within {{THEME}}, evocative environment, dramatic perspective', count:8, w:2560, h:1440 },
     { type:'map',      name:'Battle Map · Top-Down',         prompt:'top-down tabletop battle map of {{THEME}} scene, bird eye view, gridded fantasy cartography, photorealistic textures, atmospheric', count:4, w:2240, h:1680 },
-    { type:'item',     name:'Magic Item / Trinket Card',     prompt:'illustrated magic item card on parchment background, ornate fantasy detail, {{THEME}}-flavored artifact, museum-quality illustration', count:2, w:1440, h:1800 }
+    { type:'item',     name:'Magic Item / Trinket Card',     prompt:'illustrated magic item card on parchment background, ornate fantasy detail, {{THEME}}-flavored artifact, museum-quality illustration', count:2, w:1800, h:2400 }
   ],
   evergreen: [
     { type:'cover',    name:'Cover · Hero',                  prompt:'cinematic establishing shot showcasing {{THEME}}, atmospheric, marketing-poster style', count:1, w:2880, h:1620 },
-    { type:'npc',      name:'NPC Portrait',                  prompt:'cinematic character portrait, {{THEME}}-themed, dramatic lighting, fantasy art style', count:8, w:1440, h:1800 },
+    { type:'npc',      name:'NPC Portrait',                  prompt:'cinematic character portrait, {{THEME}}-themed, dramatic lighting, fantasy art style', count:8, w:1800, h:2400 },
     { type:'location', name:'Location Shot',                 prompt:'cinematic establishing wide shot of {{THEME}} location, atmospheric depth', count:5, w:2560, h:1440 },
     { type:'map',      name:'Battle Map',                    prompt:'top-down tabletop battle map of {{THEME}}, bird eye view, gridded fantasy cartography', count:3, w:2240, h:1680 }
   ],
   trope: [
     { type:'cover',    name:'Cover',                         prompt:'cinematic establishing shot of {{THEME}}, atmospheric', count:1, w:2880, h:1620 },
-    { type:'npc',      name:'NPC Portrait',                  prompt:'character portrait, {{THEME}} themed, fantasy art', count:5, w:1440, h:1800 },
+    { type:'npc',      name:'NPC Portrait',                  prompt:'character portrait, {{THEME}} themed, fantasy art', count:5, w:1800, h:2400 },
     { type:'location', name:'Location',                      prompt:'establishing shot of {{THEME}} location', count:3, w:2560, h:1440 }
   ]
 };
@@ -436,14 +436,27 @@ async function runBundle(b, idx, total) {
           body: JSON.stringify({ prompt: fullPrompt, model:'bytedance/seedream-4-5', width:a.w, height:a.h })
         });
         const data = await r.json();
-        if (!data.url) throw new Error(data.error || 'no url');
+        if (!data.url) {
+          const errObj = data.error;
+          const errMsg = typeof errObj === 'string' ? errObj : (errObj && errObj.message ? errObj.message : JSON.stringify(errObj || 'no url'));
+          throw new Error(errMsg);
+        }
         a.url = data.url;
         R.assets.push(a);
         okCount++;
         log('ok', `  ✓ ${a.name}`);
       } catch(e) {
         failCount++;
-        log('fail', `  ✗ ${a.name}: ${e.message}`);
+        const errStr = (e && e.message) ? (typeof e.message === 'string' ? e.message : JSON.stringify(e.message)) : JSON.stringify(e);
+        if (errStr.includes('OutOfFunds') || errStr.includes('insufficient_credits') || errStr.includes('run out of funds')) {
+          log('fail', `  ✗ ${a.name}: AIML OUT OF FUNDS — Pipeline stoppt. Top-Up: https://aimlapi.com/app/billing/`);
+          runState.stopRequested = true;
+          break;
+        } else if (errStr.includes('image size must be at least')) {
+          log('fail', `  ✗ ${a.name}: Image-Size zu klein (Seedream min 3.686.400px). Template-Fix nötig.`);
+        } else {
+          log('fail', `  ✗ ${a.name}: ${errStr.slice(0, 200)}`);
+        }
       }
       const done = okCount + failCount;
       bp.querySelector('.bp-state').textContent = `${done}/${allAssets.length}`;
@@ -487,7 +500,7 @@ async function runBundle(b, idx, total) {
             const imgPrompt = `${b.name}, ${p.visual_style||'cinematic'}, vertical pinterest pin format, atmospheric depth, room for text overlay top and bottom, dark moody fantasy aesthetic, photorealistic, 8k, no text, no watermark`;
             const ir = await fetch(API_BASE + '/api/image', {
               method:'POST', headers:{'Content-Type':'application/json'},
-              body: JSON.stringify({ prompt: imgPrompt, model:'bytedance/seedream-4-5', width:1440, height:2160 })
+              body: JSON.stringify({ prompt: imgPrompt, model:'bytedance/seedream-4-5', width:1600, height:2400 })
             });
             const id = await ir.json();
             if (id.url) p.imgUrl = id.url;
@@ -703,21 +716,4 @@ async function downloadAllMaster() {
   toast('🎉 Master-ZIP fertig');
 }
 
-function triggerDl(blob, name) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
-}
-
-function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle'; }
-function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200); }
-
-if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission().catch(()=>{});
-
-init();
-</script>
-</body>
-</html>
+fun
