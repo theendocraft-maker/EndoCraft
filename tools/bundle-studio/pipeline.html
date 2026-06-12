@@ -119,12 +119,6 @@ h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
   <span class="tag">Auto-Production</span>
   <div class="controls">
     <span class="api-state" id="apiState">API: <b>—</b></span>
-    <a class="btn ghost" href="./quality.html" title="Quality Control" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
-    <a class="btn ghost" href="./splitter.html" title="1 Bundle → 3 Etsy-Listings" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
-    <a class="btn ghost" href="./thumbnail.html" title="Etsy Thumbnails komponieren" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
-    <a class="btn ghost" href="./etsy.html" title="Etsy Draft-Listing Uploader" style="background:rgba(241,100,30,.1);color:#f1641e;border-color:#f1641e">🛒 Etsy Upload</a>
-    <a class="btn ghost" href="./cover-lab.html" title="Cover-Upgrade Lab" style="background:rgba(240,168,255,.1);color:#f0a8ff;border-color:#f0a8ff">🧪 Cover-Lab</a>
-    <a class="btn ghost" href="./dashboard.html" title="Etsy Performance Dashboard" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./backlog.html">📋 Backlog</a>
     <a class="btn ghost" href="./index.html">🎨 Bundle Studio</a>
     <a class="btn ghost" href="./listing.html">✍ Listings</a>
@@ -765,4 +759,24 @@ async function downloadAllMaster() {
   const blob = await zip.generateAsync({type:'blob'});
   triggerDl(blob, `endocraft-master-bundle-${new Date().toISOString().slice(0,10)}.zip`);
   document.getElementById('dlAllBtn').disabled = false;
-  document.getElementById('dlAllBtn').textContent = '⬇ Alle Bundles als Master-Mega-ZIP
+  document.getElementById('dlAllBtn').textContent = '⬇ Alle Bundles als Master-Mega-ZIP';
+  toast('🎉 Master-ZIP fertig');
+}
+
+function triggerDl(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'bundle'; }
+function toast(msg) { const t = document.getElementById('toast'); if(t){t.textContent = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);} }
+
+if (typeof Notification !== 'undefined' && Notification.permission === 'default') Notification.requestPermission().catch(()=>{});
+init();
+</script>
+</body>
+</html>

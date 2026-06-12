@@ -349,4 +349,36 @@ function confirmAdd() {
 
 // ─── Import/Export ───
 function exportJSON() {
-  const blob = new Blob([JSON.stringify(backlog,null,2
+  const blob = new Blob([JSON.stringify(backlog,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'endocraft-bundle-backlog.json';
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Backlog exportiert');
+}
+
+function importJSON(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const arr = JSON.parse(reader.result);
+      if (!Array.isArray(arr)) throw new Error('Kein Array');
+      if (confirm(`${arr.length} Bundles importieren? Ersetzt den aktuellen Backlog.`)) {
+        backlog = arr;
+        saveBacklog(); renderTable(); renderKpis();
+        toast('Backlog importiert');
+      }
+    } catch(e) { toast('Import fehlgeschlagen: ' + e.message); }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+// ─── Init ───
+renderTable();
+renderKpis();
+</script>
+</body>
+</html>
