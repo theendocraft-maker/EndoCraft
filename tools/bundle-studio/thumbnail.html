@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft · Etsy Thumbnail Composer</title>
+<title>EndoCraft · Etsy Cover Composer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root{
   --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
   --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
   --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
-  --thumb:#7fa9d8;
+  --thumb:#7fa9d8;--etsy:#f1641e;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
@@ -41,8 +41,16 @@ h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
 .form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .form .full{grid-column:1 / -1}
 .form label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:5px;display:block}
-.form input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:13.5px;font-family:inherit}
-.form input:focus{outline:none;border-color:var(--gold-dim)}
+.form input,.form select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:13.5px;font-family:inherit}
+.form input:focus,.form select:focus{outline:none;border-color:var(--gold-dim)}
+.hook-row{display:flex;gap:8px;align-items:center}
+.hook-row input{flex:1}
+.hook-row select{width:130px;flex-shrink:0}
+.hook-row .btn{padding:9px 12px;flex-shrink:0}
+.hook-chips{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;margin-top:-4px}
+.hook-chip{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--gold);background:rgba(216,180,106,.07);border:1px solid var(--gold-dim);border-radius:18px;padding:6px 16px;cursor:pointer;transition:.15s}
+.hook-chip:hover{background:rgba(216,180,106,.16)}
+.hook-chip.picked{background:var(--gold);color:#1a1408;font-weight:600}
 
 .source-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:18px;max-height:360px;overflow-y:auto}
 .source-tile{aspect-ratio:1/1;border-radius:8px;background:var(--panel2) center/cover no-repeat;border:2px solid var(--line);cursor:pointer;position:relative;overflow:hidden;transition:.15s}
@@ -52,11 +60,10 @@ h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
 .source-tile.selected .pick-badge{display:flex}
 .source-tile .name{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));color:#fff;padding:4px 6px;font-size:9px;font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-.thumb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.thumb-grid{display:grid;grid-template-columns:repeat(2,minmax(280px,460px));gap:16px;margin-bottom:20px;justify-content:center}
 .thumb-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
 .thumb-card .canvas-wrap{aspect-ratio:1/1;background:#0c0e16;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
-.thumb-card canvas{width:100%;height:100%;object-fit:cover;display:block}
-.thumb-card .stub{color:#41485e;font-size:42px}
+.thumb-card img{width:100%;height:100%;object-fit:cover;display:block}
 .thumb-card .meta{padding:10px 14px;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line)}
 .thumb-card .style-name{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:.5px}
 .thumb-card .style-desc{font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;min-height:30px}
@@ -81,13 +88,14 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
 </head>
 <body>
 <div class="topbar">
-  <div class="brand"><span class="dot"></span> EndoCraft · Thumbnail Composer</div>
-  <span class="tag">Etsy 1080×1080 · 6 Varianten</span>
+  <div class="brand"><span class="dot"></span> EndoCraft · Etsy Cover Composer</div>
+  <span class="tag">Etsy 1080×1080 · Hero + Grid</span>
   <div class="controls">
     <a class="btn ghost" href="./pipeline.html" title="Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
     <a class="btn ghost" href="./quality.html" title="Quality" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
     <a class="btn ghost" href="./splitter.html" title="Bundle Splitter" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
-    <a class="btn ghost" href="./cover-lab.html" title="Cover-Upgrade Lab" style="background:rgba(240,168,255,.1);color:#f0a8ff;border-color:#f0a8ff">🧪 Cover-Lab</a>
+    <a class="btn ghost" href="./pinterest.html" title="Pinterest Pins" style="background:rgba(230,0,35,.08);color:#e60023;border-color:#e60023">📌 Pinterest</a>
+    <a class="btn ghost" href="./etsy.html" title="Etsy Draft-Listing Uploader" style="background:rgba(241,100,30,.1);color:var(--etsy);border-color:var(--etsy)">🛒 Etsy Upload</a>
     <a class="btn ghost" href="./dashboard.html" title="Etsy Performance" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./backlog.html">← Backlog</a>
   </div>
@@ -95,9 +103,9 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
 
 <div class="wrap">
   <div class="intro">
-    Komponiert <b class="thumb">6 Etsy-Thumbnail-Varianten</b> aus deinen Bundle-Assets (1080×1080, mobile-optimiert).
-    Wähle 1-6 Hero-Bilder aus dem ZIP → klicke <b>Compose</b> → A/B-Testing-Ready.
-    <br>→ <b class="gold">Erstes Bild entscheidet 90% der Etsy-Klickrate.</b>
+    Komponiert <b class="thumb">2 polierte Etsy-Cover</b> aus deinen Bundle-Assets (1080×1080, mobile-optimiert):
+    <b>Hero Close-Up</b> (Titel im Top-Band, Augen bleiben frei) + <b>3×3 Grid</b> (9 verschiedene Assets).
+    Subtitle kommt als <b class="gold">Auto-Hook</b> via Claude — derselbe Hook läuft auch auf den Pinterest-Pins.
   </div>
 
   <div id="errArea"></div>
@@ -105,7 +113,7 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
   <div class="dropzone" id="dropzone">
     <h2>📦 Bundle-ZIP hier ablegen</h2>
     <p>oder klicken zum Auswählen</p>
-    <p style="font-size:12px;margin-top:8px">Akzeptiert ZIPs aus der Pipeline. Wähle dann 1-6 Hero-Assets für die Thumbnails.</p>
+    <p style="font-size:12px;margin-top:8px">Akzeptiert ZIPs aus der Pipeline. Wähle dann bis zu 9 Assets (Hero = Nr. 1, Grid nutzt alle 9).</p>
     <input type="file" id="zipFile" accept=".zip">
   </div>
 
@@ -116,28 +124,36 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
         <input type="text" id="bundleName" placeholder="z.B. Curse of Strahd Master Pack">
       </div>
       <div>
-        <label>Asset-Count Badge (z.B. "27 Cards")</label>
+        <label>Asset-Count Badge (z.B. "27 Cards Included")</label>
         <input type="text" id="badgeText" placeholder="z.B. 27 Cards Included">
       </div>
       <div>
-        <label>Hook-Subtitle (für Style 3)</label>
-        <input type="text" id="subtitle" placeholder="z.B. For Curse of Strahd · D&D 5e">
+        <label>Hook-Subtitle</label>
+        <div class="hook-row">
+          <select id="subtitleMode">
+            <option value="auto" selected>Auto-Hook</option>
+            <option value="custom">Custom</option>
+          </select>
+          <input type="text" id="subtitle" placeholder="z.B. 27 souls. one curse.">
+          <button class="btn" id="hookRefresh" title="3 neue Hook-Varianten holen">↻</button>
+        </div>
       </div>
+      <div class="hook-chips" id="hookChips"></div>
     </div>
 
     <div class="section-title">
-      Hero-Auswahl <span class="hint">— wähle 1-6 Bilder · die Komposition nutzt die ersten 3 für die Multi-Tile-Varianten</span>
+      Asset-Auswahl <span class="hint">— bis zu 9 Bilder · Nr. 1 = Hero-Close-Up · Grid nutzt 9 VERSCHIEDENE (füllt automatisch aus dem Rest auf)</span>
     </div>
     <div class="source-grid" id="sourceGrid"></div>
 
     <div class="bar">
-      <button class="btn thumb" id="composeAll">🎨 Alle 6 Thumbnails komponieren</button>
-      <button class="btn primary" id="downloadAll" disabled>⬇ Download ZIP (6 Thumbnails)</button>
+      <button class="btn thumb" id="composeAll">🎨 Beide Cover komponieren</button>
+      <button class="btn primary" id="downloadAll" disabled>⬇ Download ZIP (2 Cover)</button>
       <div class="progress"><i id="progFill"></i></div>
-      <span class="count" id="progCount">0 / 6</span>
+      <span class="count" id="progCount">0 / 2</span>
     </div>
 
-    <div class="section-title">Thumbnails <span class="hint">— Klick auf Bild zum Vergrößern</span></div>
+    <div class="section-title">Cover <span class="hint">— Klick auf Bild zum Vergrößern · Lesbarkeits-Check: auf 200×200 denken</span></div>
     <div class="thumb-grid" id="thumbGrid"></div>
   </div>
 </div>
@@ -146,13 +162,10 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
 <div class="toast" id="toast"></div>
 
 <script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
 const STYLES = [
-  { id:'hero', name:'Hero Close-Up', desc:'1 Bild voll, goldener Frame + Titel oben' },
-  { id:'grid3x3', name:'3×3 Grid', desc:'9 Tiles mit "Cards Included"-Badge unten' },
-  { id:'sessions', name:'Sessions Legendary', desc:'Hero + große Hook-Headline' },
-  { id:'trio', name:'3-NPC Trio', desc:'3 Bilder Side-by-Side, Bundle-Name Center' },
-  { id:'gothic', name:'Dark Moody', desc:'Vignette + dramatisches Schwarz/Gold' },
-  { id:'masterpack', name:'Master Pack', desc:'Großes Hero + 4 Tiles Pile, Premium-Style' }
+  { id:'hero', name:'Hero Close-Up', desc:'Fullbleed-Hero, Titel im Top-Band (12% schwarz), Hook in Gold-Italic, Badge-Pill unten' },
+  { id:'grid3x3', name:'3×3 Grid', desc:'9 verschiedene Assets, Gold-Gridlines, Bottom-Band mit Name + Count + Hook' }
 ];
 
 const dropzone = document.getElementById('dropzone');
@@ -167,10 +180,13 @@ const downloadBtn = document.getElementById('downloadAll');
 const bundleNameInput = document.getElementById('bundleName');
 const badgeInput = document.getElementById('badgeText');
 const subtitleInput = document.getElementById('subtitle');
+const subtitleMode = document.getElementById('subtitleMode');
+const hookChipsEl = document.getElementById('hookChips');
 const viewer = document.getElementById('viewer');
 
 let images = []; // {name, blob, dataUrl, img, selected, idx}
 let composed = {}; // styleId → blob
+let currentHooks = [];
 
 function showToast(msg, t=2200){
   const el = document.getElementById('toast');
@@ -186,7 +202,62 @@ function showSuccess(msg){
   setTimeout(()=>{ errArea.innerHTML=''; }, 4000);
 }
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function slugify(s){return String(s||'bundle').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
 
+// ─── Auto-Hook (Backend /api/cover-hook · Hooks werden für Pinterest in localStorage geteilt) ───
+let hookDebounce = null;
+async function fetchHooks(){
+  const name = bundleNameInput.value.trim();
+  if(!name) return;
+  hookChipsEl.innerHTML = '<span style="color:var(--muted);font-size:12px">⏳ Claude schreibt Hooks…</span>';
+  try{
+    const r = await fetch(API_BASE + '/api/cover-hook', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ bundleName: name, bundleTag: '', count: images.length || undefined })
+    });
+    const data = await r.json();
+    if(!r.ok || !data.ok) throw new Error(data.error || 'Hook-Fetch fehlgeschlagen');
+    currentHooks = data.hooks;
+    renderHookChips();
+    if(subtitleMode.value === 'auto' && currentHooks[0]) pickHook(0);
+  } catch(e){
+    hookChipsEl.innerHTML = '';
+    showError('Auto-Hook: ' + e.message);
+  }
+}
+function renderHookChips(){
+  hookChipsEl.innerHTML = currentHooks.map((h,i)=>
+    `<span class="hook-chip ${subtitleInput.value===h?'picked':''}" data-i="${i}">„${escapeHtml(h)}"</span>`
+  ).join('');
+  hookChipsEl.querySelectorAll('.hook-chip').forEach(ch=>{
+    ch.addEventListener('click', ()=> pickHook(+ch.dataset.i));
+  });
+}
+function pickHook(i){
+  subtitleInput.value = currentHooks[i] || '';
+  renderHookChips();
+  saveHooksForPinterest();
+}
+function saveHooksForPinterest(){
+  const slug = slugify(bundleNameInput.value);
+  if(!slug) return;
+  try{
+    localStorage.setItem('ec_hooks_' + slug, JSON.stringify({ hooks: currentHooks, picked: subtitleInput.value, ts: Date.now() }));
+  }catch(e){}
+}
+bundleNameInput.addEventListener('input', ()=>{
+  if(subtitleMode.value !== 'auto') return;
+  clearTimeout(hookDebounce);
+  hookDebounce = setTimeout(fetchHooks, 900);
+});
+subtitleMode.addEventListener('change', ()=>{
+  if(subtitleMode.value === 'auto') fetchHooks();
+  else hookChipsEl.innerHTML = '';
+});
+document.getElementById('hookRefresh').addEventListener('click', fetchHooks);
+subtitleInput.addEventListener('change', saveHooksForPinterest);
+
+// ─── ZIP laden ───
 dropzone.addEventListener('click', ()=> zipInput.click());
 dropzone.addEventListener('dragover', e=>{ e.preventDefault(); dropzone.classList.add('over'); });
 dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('over'));
@@ -230,18 +301,17 @@ async function handleZip(file){
       return;
     }
 
-    // Auto-select first 6 (or all if < 6)
-    images.slice(0, Math.min(6, images.length)).forEach((im,i)=>{
+    images.slice(0, Math.min(9, images.length)).forEach((im,i)=>{
       im.selected = true;
       im.idx = i+1;
     });
     badgeInput.value = `${images.length} Cards Included`;
-    subtitleInput.value = 'Premium D&D Asset Pack';
 
     renderSourceGrid();
     loadedArea.style.display = 'block';
     dropzone.style.display = 'none';
-    showSuccess(`${images.length} Bilder geladen, erste 6 automatisch ausgewählt`);
+    showSuccess(`${images.length} Bilder geladen, erste ${Math.min(9, images.length)} ausgewählt`);
+    fetchHooks();
   } catch(err){
     showError('ZIP-Parse fehlgeschlagen: '+err.message);
   }
@@ -273,21 +343,20 @@ function renderSourceGrid(){
     </div>
   `).join('');
   sourceGrid.querySelectorAll('.source-tile').forEach(tile=>{
-    tile.addEventListener('click', e=>{
+    tile.addEventListener('click', ()=>{
       const i = +tile.dataset.i;
       const im = images[i];
       if(im.selected){
         im.selected = false; im.idx = null;
       } else {
         const used = images.filter(x=>x.selected).length;
-        if(used >= 6){
-          showToast('Maximal 6 Hero-Bilder');
+        if(used >= 9){
+          showToast('Maximal 9 Bilder');
           return;
         }
         im.selected = true;
         im.idx = used + 1;
       }
-      // Re-index
       let k = 1;
       images.forEach(x=>{ if(x.selected) x.idx = k++; });
       renderSourceGrid();
@@ -299,12 +368,32 @@ function getSelected(){
   return images.filter(im=>im.selected).sort((a,b)=>a.idx - b.idx);
 }
 
+// Grid braucht 9 VERSCHIEDENE Assets: ausgewählte zuerst, dann aus dem Rest auffüllen
+function getNineDistinct(selected){
+  const out = [...selected];
+  for(const im of images){
+    if(out.length >= 9) break;
+    if(!out.includes(im)) out.push(im);
+  }
+  return out.slice(0, 9);
+}
+
 document.getElementById('composeAll').addEventListener('click', async ()=>{
   const selected = getSelected();
   if(selected.length === 0){
     showError('Wähle mind. 1 Hero-Bild aus');
     return;
   }
+  // Fonts sicher laden, bevor Canvas zeichnet
+  try{
+    await Promise.all([
+      document.fonts.load('900 56px "Cinzel Decorative"'),
+      document.fonts.load('700 56px "Cinzel Decorative"'),
+      document.fonts.load('italic 600 44px "Cormorant Garamond"'),
+      document.fonts.load('700 44px "Cinzel"'),
+      document.fonts.load('700 32px "Playfair Display"')
+    ]);
+  }catch(e){}
   composed = {};
   thumbGrid.innerHTML = '';
   for(let i=0; i<STYLES.length; i++){
@@ -319,7 +408,8 @@ document.getElementById('composeAll').addEventListener('click', async ()=>{
   progFill.style.width = '100%';
   progCount.textContent = `${STYLES.length} / ${STYLES.length}`;
   downloadBtn.disabled = false;
-  showSuccess('Alle 6 Thumbnails fertig');
+  saveHooksForPinterest();
+  showSuccess('Beide Cover fertig');
 });
 
 function addThumbCard(style, blob){
@@ -353,7 +443,7 @@ function addThumbCard(style, blob){
         viewer.showModal();
         viewer.addEventListener('click', ()=> viewer.close(), { once:true });
       } else if(act==='download'){
-        triggerDl(b, slugify(bundleNameInput.value || 'bundle') + '-thumb-' + sid + '.png');
+        triggerDl(b, slugify(bundleNameInput.value || 'bundle') + '-cover-' + sid + '.png');
       }
     });
   });
@@ -367,10 +457,10 @@ downloadBtn.addEventListener('click', async ()=>{
   const zip = new JSZip();
   const slug = slugify(bundleNameInput.value || 'bundle');
   for(const sid in composed){
-    zip.file(`${slug}-thumb-${sid}.png`, composed[sid]);
+    zip.file(`${slug}-cover-${sid}.png`, composed[sid]);
   }
   const blob = await zip.generateAsync({type:'blob'});
-  triggerDl(blob, `${slug}-thumbnails-pack.zip`);
+  triggerDl(blob, `${slug}-etsy-covers.zip`);
   showSuccess('ZIP heruntergeladen');
 });
 
@@ -383,135 +473,80 @@ async function compose(styleId, selected){
   ctx.fillRect(0,0,SIZE,SIZE);
 
   const bundleName = (bundleNameInput.value || 'EndoCraft Bundle').toUpperCase();
-  const badge = badgeInput.value || `${images.length} Cards`;
-  const subtitle = subtitleInput.value || 'Premium D&D Pack';
+  const badge = badgeInput.value || `${images.length} Cards Included`;
+  const subtitle = subtitleInput.value || '';
 
   if(styleId === 'hero'){
-    // Single image cover-fill + gold frame + title overlay
+    // ── Template A · Hero Close-Up ──
+    // Fullbleed-Hero — Augen bleiben IMMER sichtbar, Titel sitzt im Top-Band
     drawCover(ctx, selected[0].img, 0, 0, SIZE, SIZE);
-    // Dark gradient bottom + top for text contrast
-    const g = ctx.createLinearGradient(0,0,0,SIZE);
-    g.addColorStop(0, 'rgba(0,0,0,.65)');
-    g.addColorStop(0.18,'rgba(0,0,0,0)');
-    g.addColorStop(0.68,'rgba(0,0,0,0)');
-    g.addColorStop(1, 'rgba(0,0,0,.78)');
+
+    // Bottom-Gradient für Badge-Lesbarkeit
+    const g = ctx.createLinearGradient(0, SIZE*0.62, 0, SIZE);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(1,'rgba(0,0,0,.78)');
     ctx.fillStyle = g;
-    ctx.fillRect(0,0,SIZE,SIZE);
-    // Gold frame
-    drawGoldFrame(ctx, SIZE);
-    // Title top
-    drawText(ctx, bundleName, SIZE/2, 90, { font:'700 56px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth:SIZE - 140 });
-    // Badge bottom
+    ctx.fillRect(0, SIZE*0.62, SIZE, SIZE*0.38);
+
+    // Top-Band: 12% schwarzer Strip — Titel landet HIER, nicht auf dem Gesicht
+    const bandH = Math.round(SIZE * 0.12); // 130px
+    ctx.fillStyle = 'rgba(8,9,14,.96)';
+    ctx.fillRect(0, 0, SIZE, bandH);
+    // Subtiler Gold-Frame im Band
+    ctx.strokeStyle = 'rgba(216,180,106,.55)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(14, 12, SIZE-28, bandH-24);
+    // Gold-Hairline an Band-Unterkante
+    ctx.fillStyle = '#d8b46a';
+    ctx.fillRect(0, bandH-2, SIZE, 2);
+
+    // Titel zentriert im Band
+    drawText(ctx, bundleName, SIZE/2, bandH/2 + 2, { font:'700 54px "Cinzel Decorative"', color:'#e6c878', align:'center', maxWidth: SIZE - 120 });
+
+    // Hook-Subtitle direkt unterm Band — Cormorant Garamond Italic, Gold
+    if(subtitle){
+      drawText(ctx, '„' + subtitle + '"', SIZE/2, bandH + 52, { font:'italic 600 46px "Cormorant Garamond"', color:'#e6c878', align:'center', shadow:true, maxWidth: SIZE - 140 });
+    }
+
+    // Single Gold-Frame (KEIN Double-Frame)
+    ctx.strokeStyle = '#d8b46a';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(18, 18, SIZE-36, SIZE-36);
+
+    // Badge unten als Gold-Pill
     drawBadge(ctx, badge, SIZE/2, SIZE - 100);
   }
   else if(styleId === 'grid3x3'){
-    // 3x3 grid using available selected (cycled)
+    // ── Template B · Grid-Cover ──
+    // 9 VERSCHIEDENE Assets (kein Cycling über dieselben Bilder)
+    const nine = getNineDistinct(selected);
     const cell = SIZE / 3;
     for(let i=0; i<9; i++){
-      const im = selected[i % selected.length].img;
+      const im = nine[i % nine.length].img;
       const col = i % 3, row = Math.floor(i/3);
       drawCover(ctx, im, col*cell, row*cell, cell, cell);
     }
-    // Inner grid lines
-    ctx.strokeStyle = 'rgba(216,180,106,.55)'; ctx.lineWidth = 4;
+    // Inner-Gridlines in Gold
+    ctx.strokeStyle = 'rgba(216,180,106,.6)'; ctx.lineWidth = 4;
     for(let i=1; i<3; i++){
       ctx.beginPath(); ctx.moveTo(i*cell, 0); ctx.lineTo(i*cell, SIZE); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(0, i*cell); ctx.lineTo(SIZE, i*cell); ctx.stroke();
     }
-    // Outer frame
-    drawGoldFrame(ctx, SIZE);
-    // Bottom banner overlay with badge
-    ctx.fillStyle = 'rgba(8,9,14,.92)';
+    // Single Gold-Frame
+    ctx.strokeStyle = '#d8b46a';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(18, 18, SIZE-36, SIZE-36);
+
+    // Bottom-Band (200px schwarz): Name + Count + Hook
+    ctx.fillStyle = 'rgba(8,9,14,.93)';
     ctx.fillRect(0, SIZE - 200, SIZE, 200);
     ctx.fillStyle = '#d8b46a';
-    ctx.fillRect(0, SIZE - 200, SIZE, 4);
-    drawText(ctx, bundleName, SIZE/2, SIZE - 130, { font:'700 44px "Cinzel"', color:'#e6c878', align:'center', maxWidth:SIZE - 80 });
-    drawText(ctx, badge.toUpperCase(), SIZE/2, SIZE - 65, { font:'700 32px "Playfair Display"', color:'#fff', align:'center', maxWidth:SIZE - 80 });
-  }
-  else if(styleId === 'sessions'){
-    // Top 55% image, bottom 45% dark with big hook
-    drawCover(ctx, selected[0].img, 0, 0, SIZE, SIZE * 0.55);
-    ctx.fillStyle = '#0c0e16';
-    ctx.fillRect(0, SIZE * 0.55, SIZE, SIZE * 0.45);
-    // Gold separator
-    ctx.fillStyle = '#d8b46a';
-    ctx.fillRect(0, SIZE * 0.55 - 2, SIZE, 4);
-    // Hook text
-    drawText(ctx, 'MAKE YOUR', SIZE/2, SIZE * 0.66, { font:'700 70px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:false });
-    drawText(ctx, 'SESSIONS', SIZE/2, SIZE * 0.76, { font:'900 96px "Playfair Display"', color:'#fff', align:'center', shadow:false });
-    drawText(ctx, 'LEGENDARY', SIZE/2, SIZE * 0.86, { font:'900 96px "Playfair Display"', color:'#d8b46a', align:'center', shadow:false });
-    drawText(ctx, subtitle, SIZE/2, SIZE - 50, { font:'italic 30px "EB Garamond"', color:'#9aa0b3', align:'center', maxWidth:SIZE - 80 });
-    drawGoldFrame(ctx, SIZE);
-  }
-  else if(styleId === 'trio'){
-    // 3 images side-by-side, top 70%, bottom 30% dark with name
-    const colW = SIZE / 3;
-    const imgH = SIZE * 0.70;
-    for(let i=0;i<3;i++){
-      const im = selected[i % selected.length].img;
-      drawCover(ctx, im, i*colW, 0, colW, imgH);
+    ctx.fillRect(0, SIZE - 200, SIZE, 3);
+    drawText(ctx, bundleName, SIZE/2, SIZE - 150, { font:'700 44px "Cinzel"', color:'#e6c878', align:'center', maxWidth:SIZE - 80 });
+    drawText(ctx, badge.toUpperCase(), SIZE/2, SIZE - 96, { font:'700 30px "Playfair Display"', color:'#fff', align:'center', maxWidth:SIZE - 80 });
+    if(subtitle){
+      drawText(ctx, '„' + subtitle + '"', SIZE/2, SIZE - 46, { font:'italic 600 34px "Cormorant Garamond"', color:'#d8b46a', align:'center', maxWidth:SIZE - 100 });
     }
-    // Inner separators
-    ctx.strokeStyle = 'rgba(216,180,106,.7)'; ctx.lineWidth = 4;
-    for(let i=1;i<3;i++){ ctx.beginPath(); ctx.moveTo(i*colW,0); ctx.lineTo(i*colW, imgH); ctx.stroke(); }
-    // Bottom dark section
-    ctx.fillStyle = '#0c0e16';
-    ctx.fillRect(0, imgH, SIZE, SIZE - imgH);
-    ctx.fillStyle = '#d8b46a'; ctx.fillRect(0, imgH-2, SIZE, 4);
-    drawText(ctx, bundleName, SIZE/2, imgH + 90, { font:'700 50px "Cinzel"', color:'#e6c878', align:'center', maxWidth:SIZE - 60 });
-    drawText(ctx, badge.toUpperCase() + ' · CURSE OF STRAHD READY', SIZE/2, imgH + 170, { font:'700 24px "Playfair Display"', color:'#fff', align:'center', maxWidth:SIZE - 60 });
-    drawGoldFrame(ctx, SIZE);
-  }
-  else if(styleId === 'gothic'){
-    // Single image very darkened with strong vignette + gold name center
-    drawCover(ctx, selected[0].img, 0, 0, SIZE, SIZE);
-    // Heavy dark overlay
-    ctx.fillStyle = 'rgba(8,9,14,.55)';
-    ctx.fillRect(0,0,SIZE,SIZE);
-    // Vignette
-    const grad = ctx.createRadialGradient(SIZE/2, SIZE/2, SIZE*0.15, SIZE/2, SIZE/2, SIZE*0.75);
-    grad.addColorStop(0, 'rgba(0,0,0,0)');
-    grad.addColorStop(1, 'rgba(0,0,0,.95)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0,0,SIZE,SIZE);
-    // Decorative center bar
-    ctx.fillStyle = '#d8b46a';
-    ctx.fillRect(SIZE*0.15, SIZE/2 - 110, SIZE*0.7, 2);
-    ctx.fillRect(SIZE*0.15, SIZE/2 + 110, SIZE*0.7, 2);
-    drawText(ctx, bundleName, SIZE/2, SIZE/2 - 20, { font:'900 60px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth: SIZE * 0.85 });
-    drawText(ctx, subtitle.toUpperCase(), SIZE/2, SIZE/2 + 60, { font:'500 24px "Cinzel"', color:'#9aa0b3', align:'center', maxWidth: SIZE * 0.85 });
-    drawText(ctx, badge.toUpperCase(), SIZE/2, SIZE - 90, { font:'700 28px "Playfair Display"', color:'#d8b46a', align:'center' });
-    drawGoldFrame(ctx, SIZE);
-  }
-  else if(styleId === 'masterpack'){
-    // Big hero left 60%, right 40% has 4 small tiles + premium label
-    const heroW = SIZE * 0.60;
-    drawCover(ctx, selected[0].img, 0, 0, heroW, SIZE);
-    // Right side dark
-    ctx.fillStyle = '#0c0e16';
-    ctx.fillRect(heroW, 0, SIZE - heroW, SIZE);
-    // Gold divider
-    ctx.fillStyle = '#d8b46a'; ctx.fillRect(heroW-2, 0, 4, SIZE);
-    // 4 small tiles top-right (or 2x2 grid)
-    const tilesArea = { x: heroW + 25, y: 25, w: SIZE - heroW - 50, h: 380 };
-    const tileW = (tilesArea.w - 12) / 2;
-    const tileH = (tilesArea.h - 12) / 2;
-    for(let i=0;i<4;i++){
-      const im = selected[(i+1) % selected.length].img;
-      const col = i % 2, row = Math.floor(i/2);
-      drawCover(ctx, im, tilesArea.x + col*(tileW+12), tilesArea.y + row*(tileH+12), tileW, tileH);
-    }
-    // Premium label
-    drawText(ctx, 'MASTER', heroW + (SIZE-heroW)/2, 480, { font:'700 38px "Cinzel"', color:'#9aa0b3', align:'center', letterSpacing:4 });
-    drawText(ctx, 'PACK', heroW + (SIZE-heroW)/2, 540, { font:'900 64px "Playfair Display"', color:'#e6c878', align:'center' });
-    // Mid divider
-    ctx.fillStyle = '#d8b46a'; ctx.fillRect(heroW + 70, 580, SIZE - heroW - 140, 2);
-    // Bundle name + badge
-    drawText(ctx, bundleName, heroW + (SIZE-heroW)/2, 660, { font:'700 24px "Cinzel"', color:'#fff', align:'center', maxWidth: SIZE - heroW - 40 });
-    drawText(ctx, badge.toUpperCase(), heroW + (SIZE-heroW)/2, 720, { font:'700 20px "Playfair Display"', color:'#9aa0b3', align:'center', maxWidth: SIZE - heroW - 40 });
-    // "PREMIUM" stamp bottom
-    drawText(ctx, '★ PREMIUM ★', heroW + (SIZE-heroW)/2, SIZE - 90, { font:'700 28px "Cinzel"', color:'#d8b46a', align:'center', letterSpacing:3 });
-    drawGoldFrame(ctx, SIZE);
   }
 
   return await new Promise(res=>{
@@ -532,15 +567,6 @@ function drawCover(ctx, img, x, y, w, h){
   ctx.restore();
 }
 
-function drawGoldFrame(ctx, S){
-  ctx.strokeStyle = '#d8b46a';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(18, 18, S-36, S-36);
-  ctx.strokeStyle = 'rgba(216,180,106,.45)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(34, 34, S-68, S-68);
-}
-
 function drawText(ctx, text, x, y, opts){
   opts = opts || {};
   ctx.save();
@@ -553,46 +579,26 @@ function drawText(ctx, text, x, y, opts){
     ctx.shadowBlur = 12;
     ctx.shadowOffsetY = 3;
   }
-  // Manual letter-spacing emulation
-  if(opts.letterSpacing){
-    const ls = opts.letterSpacing;
-    const chars = String(text).split('');
-    // measure
-    const widths = chars.map(c=> ctx.measureText(c).width);
-    const total = widths.reduce((s,w)=>s+w,0) + ls * (chars.length-1);
-    let cx;
-    if(opts.align === 'center') cx = x - total/2;
-    else if(opts.align === 'right') cx = x - total;
-    else cx = x;
-    chars.forEach((c,i)=>{
-      ctx.textAlign = 'left';
-      ctx.fillText(c, cx, y);
-      cx += widths[i] + ls;
-    });
-  } else {
-    let displayText = String(text);
-    if(opts.maxWidth){
-      // Auto-shrink font if too wide
-      let measure = ctx.measureText(displayText).width;
-      let fontSize = parseInt(opts.font.match(/(\d+)px/)?.[1] || '40', 10);
-      while(measure > opts.maxWidth && fontSize > 14){
-        fontSize -= 2;
-        ctx.font = opts.font.replace(/\d+px/, fontSize+'px');
-        measure = ctx.measureText(displayText).width;
-      }
+  let displayText = String(text);
+  if(opts.maxWidth){
+    let measure = ctx.measureText(displayText).width;
+    let fontSize = parseInt(opts.font.match(/(\d+)px/)?.[1] || '40', 10);
+    while(measure > opts.maxWidth && fontSize > 14){
+      fontSize -= 2;
+      ctx.font = opts.font.replace(/\d+px/, fontSize+'px');
+      measure = ctx.measureText(displayText).width;
     }
-    ctx.fillText(displayText, x, y);
   }
+  ctx.fillText(displayText, x, y);
   ctx.restore();
 }
 
 function drawBadge(ctx, text, x, y){
   ctx.save();
   ctx.font = '700 32px "Playfair Display"';
-  const padX = 32, padY = 16;
+  const padX = 32;
   const w = ctx.measureText(text).width + padX*2;
   const h = 64;
-  // Gold pill
   ctx.fillStyle = '#d8b46a';
   roundRect(ctx, x - w/2, y - h/2, w, h, h/2);
   ctx.fill();
@@ -613,7 +619,13 @@ function roundRect(ctx, x, y, w, h, r){
   ctx.closePath();
 }
 
-function slugify(s){return String(s||'bundle').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
 function triggerDl(blob, name){
   const a = document.createElement('a');
-  a.href = URL.createObjectURL
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 100);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Etsy Draft-Listing Uploader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+  --etsy:#f1641e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--etsy);box-shadow:0 0 12px var(--etsy)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.etsy{background:var(--etsy);color:#fff;border-color:var(--etsy);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.wrap{max-width:1200px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .gold{color:var(--gold)} .intro .et{color:var(--etsy)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px}
+.card h2{font-size:15px;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.card h2 .step{background:var(--etsy);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-family:'DM Sans',sans-serif}
+.card h2 .hint{font-size:11px;color:var(--muted);text-transform:none;letter-spacing:.3px;font-family:'DM Sans',sans-serif;font-weight:400}
+label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:5px;display:block}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:10px 12px;font-size:13.5px;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold-dim)}
+textarea{min-height:140px;resize:vertical;font-size:13px;line-height:1.5}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.full{margin-bottom:14px}
+.dz{border:2px dashed var(--gold-dim);border-radius:10px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;transition:.2s;font-size:13px}
+.dz.over{border-color:var(--etsy);background:rgba(241,100,30,.06)}
+.dz.loaded{border-color:var(--green);color:var(--green)}
+.status-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:20px;font-size:13px;border:1px solid var(--line)}
+.status-pill.on{border-color:var(--green);color:var(--green);background:rgba(123,189,143,.07)}
+.status-pill.off{border-color:var(--red);color:var(--red);background:rgba(217,138,138,.07)}
+.covers{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.cover-tile{width:104px;height:104px;border-radius:8px;background:var(--panel2) center/cover no-repeat;border:2px solid var(--line);position:relative}
+.cover-tile .rank{position:absolute;top:4px;left:4px;background:var(--gold);color:#1a1408;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px}
+.cover-tile .rm{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;width:20px;height:20px;border-radius:50%;border:none;cursor:pointer;font-size:11px;line-height:1}
+.tagbox{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tagchip{background:rgba(216,180,106,.08);border:1px solid var(--gold-dim);color:var(--gold);border-radius:14px;padding:4px 12px;font-size:12px}
+.tagchip.bad{border-color:var(--red);color:var(--red)}
+.tax-results{margin-top:8px;max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.tax-item{padding:8px 12px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;font-size:12.5px;cursor:pointer;color:var(--muted)}
+.tax-item:hover{border-color:var(--gold-dim);color:var(--ink)}
+.tax-item.picked{border-color:var(--green);color:var(--green)}
+.fileplan{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.fileplan .fp{display:flex;justify-content:space-between;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:12.5px;font-variant-numeric:tabular-nums}
+.fileplan .fp.ok{border-color:var(--green)} .fileplan .fp.bad{border-color:var(--red);color:var(--red)}
+.log{background:#0c0e16;border:1px solid var(--line);border-radius:10px;padding:14px;font-family:'JetBrains Mono',Consolas,monospace;font-size:12px;max-height:300px;overflow-y:auto;display:none;white-space:pre-wrap;line-height:1.7}
+.log .ok{color:var(--green)} .log .err{color:var(--red)} .log .info{color:var(--blue)}
+.err-box{background:rgba(217,138,138,.1);border:1px solid var(--red);border-radius:8px;padding:14px;color:var(--red);margin-bottom:14px;font-size:13.5px}
+.success-box{background:rgba(123,189,143,.1);border:1px solid var(--green);border-radius:8px;padding:16px;color:var(--green);margin-bottom:14px;font-size:14px}
+.success-box a{color:var(--gold);font-weight:700}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.muted-note{font-size:11.5px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Etsy Uploader</div>
+  <span class="tag">Draft-Listings · Open API v3</span>
+  <div class="controls">
+    <a class="btn ghost" href="./pipeline.html" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
+    <a class="btn ghost" href="./splitter.html" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./thumbnail.html" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Covers</a>
+    <a class="btn ghost" href="./pinterest.html" style="background:rgba(230,0,35,.08);color:#e60023;border-color:#e60023">📌 Pinterest</a>
+    <a class="btn ghost" href="./dashboard.html" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
+    <a class="btn ghost" href="./backlog.html">← Backlog</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Erstellt <b class="et">komplette Etsy-Draft-Listings</b> per API: Titel, Description, 13 Tags, Preis, Cover-Bilder + Digital-ZIP — du klickst am Ende nur noch <b>Publish</b> im Etsy-Editor.
+    Kein Auto-Publish = <b class="gold">keine versehentlichen Listing-Gebühren</b> ($0.20 erst beim Publish).
+    Input: Listing-ZIP vom <b>Splitter</b> + Cover vom <b>Cover Composer</b>.
+  </div>
+
+  <div id="errArea"></div>
+
+  <!-- Schritt 1: Verbindung -->
+  <div class="card">
+    <h2><span class="step">1</span> Etsy-Verbindung <span class="hint">— einmalig, Token wird serverseitig gespeichert & auto-refreshed</span></h2>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <span class="status-pill off" id="connPill">⏳ prüfe…</span>
+      <button class="btn etsy" id="connectBtn" style="display:none">🔗 Mit Etsy verbinden</button>
+      <button class="btn ghost" id="recheckBtn">↻ Status prüfen</button>
+    </div>
+    <div class="muted-note" id="connNote"></div>
+  </div>
+
+  <!-- Schritt 2: Listing-Daten -->
+  <div class="card">
+    <h2><span class="step">2</span> Listing-Daten <span class="hint">— ZIP vom Splitter reinziehen = alles wird vorausgefüllt</span></h2>
+    <div class="dz" id="listingDz">📦 Listing-Pack-ZIP hier ablegen (vom Splitter, enthält listing.json + Assets)<br><span style="font-size:11px">oder Felder manuell ausfüllen — die Assets aus dem ZIP werden automatisch das Käufer-Download-Paket</span></div>
+    <input type="file" id="listingZip" accept=".zip" style="display:none">
+    <div style="height:14px"></div>
+    <div class="full" id="titlePickWrap" style="display:none">
+      <label>Titel-Variante (aus listing.json)</label>
+      <select id="titlePick"></select>
+    </div>
+    <div class="full">
+      <label>Titel (max 140 Zeichen, Keywords nach vorn)</label>
+      <input type="text" id="title" maxlength="140" placeholder="z.B. Curse of Strahd NPC Portraits Bundle, 27 DnD Character Art Cards...">
+    </div>
+    <div class="row3">
+      <div>
+        <label>Tags (13, kommagetrennt, je max 20 Zeichen)</label>
+        <input type="text" id="tags" placeholder="dnd npc tokens, strahd, ...">
+        <div class="tagbox" id="tagbox"></div>
+      </div>
+      <div>
+        <label>Preis (€)</label>
+        <input type="text" id="price" placeholder="19.99">
+      </div>
+      <div>
+        <label>Menge</label>
+        <input type="number" id="quantity" value="999">
+      </div>
+    </div>
+    <div class="full">
+      <label>Description</label>
+      <textarea id="description" placeholder="Etsy-Description (kommt aus listing.json oder manuell)"></textarea>
+    </div>
+    <div class="full">
+      <label>Kategorie (Taxonomy) — 1× wählen, wird gemerkt</label>
+      <input type="text" id="taxSearch" placeholder="Suchen, z.B. role playing games / digital prints / dungeons">
+      <div class="tax-results" id="taxResults"></div>
+      <div class="muted-note" id="taxPicked">Keine Kategorie gewählt</div>
+    </div>
+  </div>
+
+  <!-- Schritt 3: Cover -->
+  <div class="card">
+    <h2><span class="step">3</span> Cover & Galerie-Bilder <span class="hint">— Reihenfolge = Etsy-Rank, Bild 1 = Hauptbild · max 10</span></h2>
+    <div class="dz" id="coverDz">🖼 Cover-PNGs hier ablegen (einzeln oder das Cover-ZIP vom Composer)</div>
+    <input type="file" id="coverFiles" accept=".png,.jpg,.jpeg,.zip" multiple style="display:none">
+    <div class="covers" id="coverList"></div>
+  </div>
+
+  <!-- Schritt 4: Digital-Files -->
+  <div class="card">
+    <h2><span class="step">4</span> Käufer-Download <span class="hint">— Etsy-Limit: max 5 Files à 20MB · große Bundles werden automatisch gesplittet</span></h2>
+    <div class="muted-note" id="filesNote">Assets kommen aus dem Listing-ZIP (Schritt 2) — listing.json/listing.txt werden NICHT mitgepackt. Alternativ eigenes ZIP wählen:</div>
+    <div style="height:8px"></div>
+    <button class="btn ghost" id="ownZipBtn">📁 Eigenes ZIP wählen</button>
+    <input type="file" id="ownZip" accept=".zip" style="display:none">
+    <div class="fileplan" id="fileplan"></div>
+  </div>
+
+  <!-- Schritt 5: Go -->
+  <div class="card">
+    <h2><span class="step">5</span> Draft erstellen</h2>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <button class="btn etsy" id="goBtn" style="font-size:15px;padding:12px 26px">🛒 Draft-Listing auf Etsy erstellen</button>
+      <span class="muted-note">Erstellt Draft + lädt Bilder & Files hoch. Publish machst du danach selbst im Etsy-Editor.</span>
+    </div>
+    <div style="height:14px"></div>
+    <div id="resultArea"></div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const MAX_PART = 19 * 1024 * 1024; // 19MB Sicherheitsmarge unter Etsys 20MB-Limit
+let listingData = null;     // geparste listing.json
+let bundleAssets = [];      // {name, blob, size} fürs Käufer-Paket
+let covers = [];            // {name, blob, dataUrl}
+let filePlan = [];          // geplante Upload-Parts {name, blob, size}
+let taxonomyPicked = null;
+
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showError(m){ document.getElementById('errArea').innerHTML = `<div class="err-box">⚠ ${esc(m)}</div>`; setTimeout(()=>document.getElementById('errArea').innerHTML='',8000); }
+function slugify(s){ return String(s||'bundle').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function fmtMB(b){ return (b/1048576).toFixed(1) + ' MB'; }
+function log(msg, cls){ const el=document.getElementById('log'); el.style.display='block'; el.innerHTML += `<span class="${cls||''}">${esc(msg)}</span>\n`; el.scrollTop = el.scrollHeight; }
+
+// ─── Schritt 1: Verbindung ───
+async function checkStatus(){
+  const pill = document.getElementById('connPill');
+  const btn = document.getElementById('connectBtn');
+  const note = document.getElementById('connNote');
+  pill.className = 'status-pill off'; pill.textContent = '⏳ prüfe…';
+  try{
+    const r = await fetch(API_BASE + '/api/etsy/status');
+    const d = await r.json();
+    if(!d.keystringConfigured){
+      pill.textContent = '✗ ETSY_KEYSTRING fehlt';
+      note.innerHTML = 'Railway-Variable <b>ETSY_KEYSTRING</b> setzen (API-Key von <a href="https://www.etsy.com/developers/your-apps" target="_blank" style="color:var(--gold)">etsy.com/developers</a>). Callback-URL der App: <code>' + API_BASE + '/api/etsy/callback</code>';
+      btn.style.display = 'none';
+      return;
+    }
+    if(d.connected){
+      pill.className = 'status-pill on';
+      pill.textContent = '✓ Verbunden: ' + (d.shop_name || ('Shop ' + d.shop_id));
+      btn.style.display = 'none';
+      note.textContent = '';
+    } else {
+      pill.textContent = '✗ Nicht verbunden';
+      btn.style.display = 'inline-block';
+      note.textContent = d.error || '';
+    }
+  }catch(e){
+    pill.textContent = '✗ API offline';
+    note.textContent = e.message;
+  }
+}
+document.getElementById('connectBtn').addEventListener('click', ()=>{
+  window.open(API_BASE + '/api/etsy/connect', '_blank');
+  toast('Etsy-Fenster geöffnet — danach hier „Status prüfen"');
+});
+document.getElementById('recheckBtn').addEventListener('click', checkStatus);
+checkStatus();
+
+// ─── Schritt 2: Listing-ZIP ───
+const listingDz = document.getElementById('listingDz');
+const listingZipInput = document.getElementById('listingZip');
+listingDz.addEventListener('click', ()=> listingZipInput.click());
+listingDz.addEventListener('dragover', e=>{ e.preventDefault(); listingDz.classList.add('over'); });
+listingDz.addEventListener('dragleave', ()=> listingDz.classList.remove('over'));
+listingDz.addEventListener('drop', e=>{ e.preventDefault(); listingDz.classList.remove('over'); if(e.dataTransfer.files[0]) loadListingZip(e.dataTransfer.files[0]); });
+listingZipInput.addEventListener('change', e=>{ if(e.target.files[0]) loadListingZip(e.target.files[0]); });
+
+async function loadListingZip(file){
+  try{
+    const zip = await JSZip.loadAsync(await file.arrayBuffer());
+    bundleAssets = [];
+    listingData = null;
+    const promises = [];
+    zip.forEach((path, entry)=>{
+      if(entry.dir) return;
+      const base = path.split('/').pop();
+      if(base === 'listing.json'){
+        promises.push(entry.async('string').then(s=>{ try{ listingData = JSON.parse(s); }catch(e){} }));
+      } else if(base === 'listing.txt'){
+        // skip — nicht ins Käufer-Paket
+      } else {
+        promises.push(entry.async('blob').then(blob=>{ bundleAssets.push({ name: base, blob, size: blob.size }); }));
+      }
+    });
+    await Promise.all(promises);
+    listingDz.classList.add('loaded');
+    listingDz.innerHTML = `✓ ${bundleAssets.length} Asset-Files geladen (${fmtMB(bundleAssets.reduce((s,a)=>s+a.size,0))})` + (listingData ? ' · listing.json gefunden — Felder vorausgefüllt' : ' · kein listing.json — Felder manuell füllen');
+    if(listingData) applyListingData();
+    buildFilePlan();
+  }catch(e){ showError('ZIP-Parse: ' + e.message); }
+}
+
+function applyListingData(){
+  const L = listingData;
+  // Titel-Varianten
+  const titles = L.titles || (L.etsy && L.etsy.titles) || [];
+  if(titles.length){
+    const wrap = document.getElementById('titlePickWrap');
+    const sel = document.getElementById('titlePick');
+    wrap.style.display = 'block';
+    sel.innerHTML = titles.map((t,i)=>`<option value="${i}">${esc(t)}</option>`).join('');
+    sel.onchange = ()=>{ document.getElementById('title').value = titles[+sel.value] || ''; };
+    document.getElementById('title').value = titles[0];
+  }
+  const tags = L.etsy_tags || (L.etsy && L.etsy.tags) || [];
+  if(tags.length) document.getElementById('tags').value = tags.join(', ');
+  renderTags();
+  const desc = L.etsy_description || (L.etsy && L.etsy.description) || '';
+  if(desc) document.getElementById('description').value = desc;
+  const price = (L.pricing && (L.pricing.etsy || L.pricing.price)) || '';
+  if(price) document.getElementById('price').value = price;
+  toast('Listing-Daten übernommen');
+}
+
+// Tags-Live-Validierung
+function getTags(){ return document.getElementById('tags').value.split(',').map(t=>t.trim()).filter(Boolean); }
+function renderTags(){
+  const tags = getTags();
+  document.getElementById('tagbox').innerHTML = tags.map(t=>
+    `<span class="tagchip ${t.length>20?'bad':''}">${esc(t)}${t.length>20?' ('+t.length+'!)':''}</span>`
+  ).join('') + `<span class="tagchip" style="border-style:dashed">${tags.length} / 13</span>`;
+}
+document.getElementById('tags').addEventListener('input', renderTags);
+
+// ─── Taxonomy ───
+let taxDebounce = null;
+document.getElementById('taxSearch').addEventListener('input', ()=>{
+  clearTimeout(taxDebounce);
+  taxDebounce = setTimeout(searchTaxonomy, 500);
+});
+async function searchTaxonomy(){
+  const q = document.getElementById('taxSearch').value.trim();
+  if(q.length < 2) return;
+  try{
+    const r = await fetch(API_BASE + '/api/etsy/taxonomy?q=' + encodeURIComponent(q));
+    const d = await r.json();
+    if(!d.ok) throw new Error(d.error || 'Taxonomy-Fehler');
+    document.getElementById('taxResults').innerHTML = d.nodes.map(n=>
+      `<div class="tax-item" data-id="${n.id}" data-path="${esc(n.path)}">${esc(n.path)}</div>`
+    ).join('') || '<div class="muted-note">Nichts gefunden</div>';
+    document.querySelectorAll('.tax-item').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        taxonomyPicked = { id: +el.dataset.id, path: el.dataset.path };
+        localStorage.setItem('ec_etsy_taxonomy', JSON.stringify(taxonomyPicked));
+        document.getElementById('taxPicked').innerHTML = '✓ <b style="color:var(--green)">' + esc(taxonomyPicked.path) + '</b> (id ' + taxonomyPicked.id + ')';
+        document.querySelectorAll('.tax-item').forEach(x=>x.classList.remove('picked'));
+        el.classList.add('picked');
+      });
+    });
+  }catch(e){ showError(e.message); }
+}
+(function restoreTax(){
+  try{
+    const raw = localStorage.getItem('ec_etsy_taxonomy');
+    if(raw){
+      taxonomyPicked = JSON.parse(raw);
+      document.getElementById('taxPicked').innerHTML = '✓ <b style="color:var(--green)">' + esc(taxonomyPicked.path) + '</b> (id ' + taxonomyPicked.id + ', gemerkt)';
+    }
+  }catch(e){}
+})();
+
+// ─── Schritt 3: Cover ───
+const coverDz = document.getElementById('coverDz');
+const coverInput = document.getElementById('coverFiles');
+coverDz.addEventListener('click', ()=> coverInput.click());
+coverDz.addEventListener('dragover', e=>{ e.preventDefault(); coverDz.classList.add('over'); });
+coverDz.addEventListener('dragleave', ()=> coverDz.classList.remove('over'));
+coverDz.addEventListener('drop', e=>{ e.preventDefault(); coverDz.classList.remove('over'); addCoverFiles([...e.dataTransfer.files]); });
+coverInput.addEventListener('change', e=> addCoverFiles([...e.target.files]));
+
+async function addCoverFiles(files){
+  for(const f of files){
+    if(f.name.toLowerCase().endsWith('.zip')){
+      const zip = await JSZip.loadAsync(await f.arrayBuffer());
+      const entries = [];
+      zip.forEach((path, entry)=>{ if(!entry.dir && /\.(png|jpg|jpeg)$/i.test(path)) entries.push(entry); });
+      for(const entry of entries){
+        const blob = await entry.async('blob');
+        await pushCover(entry.name.split('/').pop(), blob);
+      }
+    } else if(/\.(png|jpg|jpeg)$/i.test(f.name)){
+      await pushCover(f.name, f);
+    }
+  }
+  renderCovers();
+}
+function pushCover(name, blob){
+  return new Promise(res=>{
+    if(covers.length >= 10){ res(); return; }
+    const r = new FileReader();
+    r.onload = ()=>{ covers.push({ name, blob, dataUrl: r.result }); res(); };
+    r.readAsDataURL(blob);
+  });
+}
+function renderCovers(){
+  document.getElementById('coverList').innerHTML = covers.map((c,i)=>`
+    <div class="cover-tile" style="background-image:url('${c.dataUrl}')">
+      <span class="rank">${i+1}</span>
+      <button class="rm" data-i="${i}">✕</button>
+    </div>
+  `).join('');
+  document.querySelectorAll('.cover-tile .rm').forEach(b=>{
+    b.addEventListener('click', ()=>{ covers.splice(+b.dataset.i,1); renderCovers(); });
+  });
+}
+
+// ─── Schritt 4: File-Plan (Auto-Split bei >19MB) ───
+document.getElementById('ownZipBtn').addEventListener('click', ()=> document.getElementById('ownZip').click());
+document.getElementById('ownZip').addEventListener('change', async e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  if(f.size <= MAX_PART){
+    filePlan = [{ name: f.name, blob: f, size: f.size }];
+    renderFilePlan();
+  } else {
+    // ZIP entpacken und neu auf Parts verteilen
+    const zip = await JSZip.loadAsync(await f.arrayBuffer());
+    bundleAssets = [];
+    const promises = [];
+    zip.forEach((path, entry)=>{
+      if(entry.dir) return;
+      promises.push(entry.async('blob').then(blob=> bundleAssets.push({ name: path.split('/').pop(), blob, size: blob.size })));
+    });
+    await Promise.all(promises);
+    buildFilePlan();
+  }
+});
+
+async function buildFilePlan(){
+  if(!bundleAssets.length){ filePlan = []; renderFilePlan(); return; }
+  const slug = slugify(document.getElementById('title').value || 'bundle').slice(0, 40) || 'bundle';
+  // Greedy-Packing: Files auf Parts verteilen, jeder Part < 19MB (PNG komprimiert kaum)
+  const parts = [[]];
+  let cur = 0;
+  const sorted = [...bundleAssets].sort((a,b)=>b.size - a.size);
+  for(const a of sorted){
+    if(a.size > MAX_PART){ showError(`${a.name} ist allein schon ${fmtMB(a.size)} — passt nicht unter Etsys 20MB-Limit`); continue; }
+    let placed = false;
+    for(let p=0; p<parts.length; p++){
+      const psize = parts[p].reduce((s,x)=>s+x.size, 0);
+      if(psize + a.size <= MAX_PART){ parts[p].push(a); placed = true; break; }
+    }
+    if(!placed){ parts.push([a]); }
+  }
+  if(parts.length > 5){
+    showError(`Bundle braucht ${parts.length} Parts — Etsy erlaubt max 5 Files. Assets verkleinern oder Bundle splitten (Splitter!).`);
+  }
+  document.getElementById('fileplan').innerHTML = '<div class="muted-note">⏳ packe ZIPs…</div>';
+  filePlan = [];
+  for(let p=0; p<Math.min(parts.length, 5); p++){
+    const zip = new JSZip();
+    for(const a of parts[p]) zip.file(a.name, a.blob);
+    const blob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{level:6} });
+    const name = parts.length === 1 ? `${slug}.zip` : `${slug}-part-${p+1}-of-${Math.min(parts.length,5)}.zip`;
+    filePlan.push({ name, blob, size: blob.size });
+  }
+  renderFilePlan();
+}
+function renderFilePlan(){
+  document.getElementById('fileplan').innerHTML = filePlan.map(f=>
+    `<div class="fp ${f.size<=20*1048576?'ok':'bad'}"><span>📦 ${esc(f.name)}</span><span>${fmtMB(f.size)}</span></div>`
+  ).join('') || '<div class="muted-note">Noch keine Files — Listing-ZIP laden oder eigenes ZIP wählen</div>';
+}
+renderFilePlan();
+
+// ─── Schritt 5: Upload-Flow ───
+function blobToBase64(blob){
+  return new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload = ()=> res(String(r.result).split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+
+document.getElementById('goBtn').addEventListener('click', async ()=>{
+  const title = document.getElementById('title').value.trim();
+  const description = document.getElementById('description').value.trim();
+  const price = parseFloat(String(document.getElementById('price').value).replace(',','.'));
+  const quantity = parseInt(document.getElementById('quantity').value) || 999;
+  const tags = getTags();
+
+  if(!title) return showError('Titel fehlt');
+  if(!description) return showError('Description fehlt');
+  if(!price || price <= 0) return showError('Preis fehlt/ungültig');
+  if(!taxonomyPicked) return showError('Kategorie (Taxonomy) wählen — Schritt 2 unten');
+  if(tags.some(t=>t.length>20)) return showError('Mindestens ein Tag ist länger als 20 Zeichen');
+  if(!covers.length) return showError('Mindestens 1 Cover-Bild (Schritt 3)');
+  if(!filePlan.length) return showError('Keine Digital-Files (Schritt 4)');
+  if(filePlan.length > 5) return showError('Mehr als 5 Files — Etsy-Limit');
+
+  const btn = document.getElementById('goBtn');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('resultArea').innerHTML = '';
+
+  try{
+    log('① Draft-Listing erstellen…', 'info');
+    const r1 = await fetch(API_BASE + '/api/etsy/draft-listing', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ title, description, price, tags, taxonomy_id: taxonomyPicked.id, quantity })
+    });
+    const d1 = await r1.json();
+    if(!r1.ok || !d1.ok) throw new Error(d1.error || 'Draft-Erstellung fehlgeschlagen');
+    log(`✓ Draft erstellt — listing_id ${d1.listing_id}`, 'ok');
+
+    for(let i=0; i<covers.length; i++){
+      log(`② Bild ${i+1}/${covers.length} hochladen (${covers[i].name})…`, 'info');
+      const b64 = await blobToBase64(covers[i].blob);
+      const r2 = await fetch(`${API_BASE}/api/etsy/listing/${d1.listing_id}/image`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ imageBase64: b64, filename: covers[i].name, rank: i+1 })
+      });
+      const d2 = await r2.json();
+      if(!r2.ok || !d2.ok) throw new Error('Bild-Upload: ' + (d2.error || 'failed'));
+      log(`✓ Bild ${i+1} ok`, 'ok');
+    }
+
+    for(let i=0; i<filePlan.length; i++){
+      log(`③ File ${i+1}/${filePlan.length} hochladen (${filePlan[i].name}, ${fmtMB(filePlan[i].size)})…`, 'info');
+      const b64 = await blobToBase64(filePlan[i].blob);
+      const r3 = await fetch(`${API_BASE}/api/etsy/listing/${d1.listing_id}/file`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ fileBase64: b64, filename: filePlan[i].name, rank: i+1 })
+      });
+      const d3 = await r3.json();
+      if(!r3.ok || !d3.ok) throw new Error('File-Upload: ' + (d3.error || 'failed'));
+      log(`✓ File ${i+1} ok`, 'ok');
+    }
+
+    log('🎉 Fertig — Draft komplett!', 'ok');
+    document.getElementById('resultArea').innerHTML = `
+      <div class="success-box">
+        ✓ Draft-Listing <b>${d1.listing_id}</b> komplett hochgeladen (${covers.length} Bilder, ${filePlan.length} Files).<br><br>
+        → <a href="${d1.edit_url}" target="_blank">Im Etsy-Editor öffnen & publishen</a><br>
+        → <a href="${d1.drafts_url}" target="_blank">Alle Drafts ansehen</a>
+      </div>`;
+    toast('✓ Draft komplett');
+  }catch(e){
+    log('✗ ' + e.message, 'err');
+    showError(e.message);
+  }finally{
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
