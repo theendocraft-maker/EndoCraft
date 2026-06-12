@@ -87,6 +87,7 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.85)}
     <a class="btn ghost" href="./pipeline.html" title="Pipeline" style="background:rgba(216,180,106,.08);color:var(--gold);border-color:var(--gold-dim)">⚡ Pipeline</a>
     <a class="btn ghost" href="./quality.html" title="Quality" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
     <a class="btn ghost" href="./splitter.html" title="Bundle Splitter" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./cover-lab.html" title="Cover-Upgrade Lab" style="background:rgba(240,168,255,.1);color:#f0a8ff;border-color:#f0a8ff">🧪 Cover-Lab</a>
     <a class="btn ghost" href="./dashboard.html" title="Etsy Performance" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./backlog.html">← Backlog</a>
   </div>
@@ -615,11 +616,4 @@ function roundRect(ctx, x, y, w, h, r){
 function slugify(s){return String(s||'bundle').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
 function triggerDl(blob, name){
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 100);
-}
-</script>
-</body>
-</html>
+  a.href = URL.createObjectURL

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Cover-Upgrade Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:ital,wght@1,500;0,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+  --lab:#f0a8ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--lab);box-shadow:0 0 12px var(--lab)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.lab{background:var(--lab);color:#3a0a3f;border-color:var(--lab);font-weight:700}
+.btn.ghost{background:transparent}
+.wrap{max-width:1440px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .lab{color:var(--lab)} .intro .gold{color:var(--gold)}
+
+.form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:20px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px}
+.form .full{grid-column:1 / -1}
+.form label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:5px;display:block}
+.form input,.form select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 12px;font-size:13.5px;font-family:inherit}
+.form input:focus,.form select:focus{outline:none;border-color:var(--gold-dim)}
+
+.variants-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+.var-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.var-card.featured{border-color:var(--lab);box-shadow:0 0 0 1px rgba(240,168,255,.15) inset}
+.var-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.var-num{width:24px;height:24px;border-radius:50%;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0}
+.var-card.featured .var-num{background:var(--lab);color:#3a0a3f}
+.var-title{font-family:'Cinzel',serif;font-size:13px;color:var(--ink);flex:1;letter-spacing:.5px}
+.var-subtitle{font-size:10px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic}
+.canvas-wrap{aspect-ratio:1/1;background:#0c0e16;display:flex;align-items:center;justify-content:center;position:relative}
+.canvas-wrap canvas{width:100%;height:100%;display:block;cursor:zoom-in}
+.var-foot{padding:8px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.var-foot .effort{padding:2px 7px;border-radius:8px;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);background:rgba(216,180,106,.12)}
+
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+dialog.viewer{border:none;background:transparent;max-width:96vw;max-height:96vh;padding:0}
+dialog.viewer canvas,dialog.viewer img{max-width:96vw;max-height:96vh;border-radius:10px;border:1px solid var(--gold-dim)}
+dialog.viewer::backdrop{background:rgba(8,9,14,.92)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:15px}
+.empty a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Cover-Upgrade Lab</div>
+  <span class="tag">Live Vergleich · echtes Asset</span>
+  <div class="controls">
+    <a class="btn ghost" href="./thumbnail.html" title="Aktueller Composer" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./quality.html" title="Quality" style="background:rgba(123,189,143,.08);color:var(--green);border-color:var(--green)">🎯 Quality</a>
+    <a class="btn ghost" href="./splitter.html" title="Splitter" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./pipeline.html">⚡ Pipeline</a>
+    <a class="btn ghost" href="./backlog.html">📋 Backlog</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Komponiert <b class="lab">8 Cover-Varianten</b> live mit deinem echten Strahd-Asset — Baseline + 6 Upgrades + alle kombiniert.
+    Klick auf jedes Cover für Vergrößerung. <b class="gold">Entscheidungs-Hilfe</b>: welche Upgrades willst du in den Composer integrieren?
+  </div>
+
+  <div class="form">
+    <div>
+      <label>Hero-Asset wählen (aus letztem Pipeline-Run)</label>
+      <select id="heroSel"></select>
+    </div>
+    <div>
+      <label>Bundle-Name</label>
+      <input type="text" id="bundleName" value="Curse of Strahd">
+    </div>
+    <div>
+      <label>Badge-Text</label>
+      <input type="text" id="badgeText" value="27 Cards Included">
+    </div>
+    <div>
+      <label>Auto-Hook (Variante 3 + Premium)</label>
+      <select id="hookSel">
+        <option value="0">27 souls. one curse.</option>
+        <option value="1">Where ancient evil sleeps.</option>
+        <option value="2">The night never ends in Barovia.</option>
+        <option value="3">Cursed since 1389.</option>
+        <option value="4">Premium D&D Pack (generic)</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="status"></div>
+  <div class="variants-grid" id="grid"></div>
+</div>
+
+<dialog class="viewer" id="viewer"></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'ec_pipeline_last_run';
+const API_BASE = 'https://endocraft-production.up.railway.app';
+const proxied = u => API_BASE + '/api/image/proxy?url=' + encodeURIComponent(u);
+
+const VARIANTS = [
+  { id:'baseline', title:'Baseline · Hero Close-Up', desc:'Wie aktuell im Composer', effort:'CURRENT', featured:false },
+  { id:'colorgrade', title:'1 · Color-Grade + Grain', desc:'Teal-Orange-Split-Toning + Film-Korn-Overlay', effort:'30 min', featured:false },
+  { id:'ornaments', title:'2 · Corner Ornaments + Double-Frame', desc:'Fleur-de-Lis Caps + 2 Gold-Linien + embossed', effort:'1 h', featured:false },
+  { id:'hook', title:'3 · Auto-Hook-Subtitle', desc:'Claude generiert scharfe 4-6 Wort Story-Zeile', effort:'30 min', featured:false },
+  { id:'spotlight', title:'4 · Spotlight Template (NEU)', desc:'Dunkler Hintergrund + circular Light auf Hero', effort:'1 h', featured:false },
+  { id:'cardreveal', title:'5 · Card-Reveal Template (NEU)', desc:'3-Karten-Fan, mittlere im Fokus', effort:'1 h', featured:false },
+  { id:'compatbadges', title:'6 · Compatibility-Badges', desc:'D&D 5e · Foundry · Roll20 · Owlbear · PNG', effort:'30 min', featured:false },
+  { id:'premium', title:'★ Premium Master · ALLE Upgrades', desc:'Color-Grade + Ornaments + Hook + Badges kombiniert', effort:'★', featured:true }
+];
+
+const HOOKS = [
+  '27 souls. one curse.',
+  'Where ancient evil sleeps.',
+  'The night never ends in Barovia.',
+  'Cursed since 1389.',
+  'Premium D&D Pack'
+];
+
+let runData = null;
+let heroImg = null;
+let currentHeroUrl = '';
+
+function showToast(msg, t=2200){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), t);
+}
+
+function loadAssets(){
+  try { runData = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); }
+  catch(e){ runData = null; }
+
+  const sel = document.getElementById('heroSel');
+  if (!runData || !runData.results){
+    sel.innerHTML = '<option value="">Kein Pipeline-Run gefunden</option>';
+    document.getElementById('status').innerHTML = `<div class="empty">📭 Kein Pipeline-Run im localStorage.<br>Lauf <a href="./pipeline.html">⚡ Pipeline</a> erst durch, dann komm wieder.</div>`;
+    return false;
+  }
+
+  // Flatten alle Assets across all bundles
+  const options = [];
+  Object.entries(runData.results).forEach(([key, R])=>{
+    (R.assets||[]).forEach(a=>{
+      if (a.url) options.push({
+        url: a.url,
+        label: `[${R.bundle?.name?.slice(0,18) || key.slice(0,12)}] ${a.name}`
+      });
+    });
+  });
+
+  if (!options.length){
+    sel.innerHTML = '<option value="">Keine Assets gefunden</option>';
+    document.getElementById('status').innerHTML = `<div class="empty">Im Pipeline-Run sind keine Assets mit URLs.</div>`;
+    return false;
+  }
+
+  sel.innerHTML = options.map((o,i)=>`<option value="${o.url}">${o.label}</option>`).join('');
+  // Auto-select first Strahd asset if available
+  const strahdIdx = options.findIndex(o => /strahd/i.test(o.label) && /cover|hero|portrait/i.test(o.label));
+  if (strahdIdx >= 0) sel.selectedIndex = strahdIdx;
+  return true;
+}
+
+function loadImage(url){
+  return new Promise((res, rej)=>{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = ()=> res(img);
+    img.onerror = rej;
+    img.src = proxied(url);
+  });
+}
+
+async function loadHero(url){
+  if (url === currentHeroUrl && heroImg) return heroImg;
+  document.getElementById('status').innerHTML = '<div class="empty">Lade Hero-Bild …</div>';
+  try {
+    heroImg = await loadImage(url);
+    currentHeroUrl = url;
+    document.getElementById('status').innerHTML = '';
+    return heroImg;
+  } catch(e){
+    document.getElementById('status').innerHTML = `<div class="empty">⚠ Bild konnte nicht geladen werden: ${e.message}</div>`;
+    return null;
+  }
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = VARIANTS.map(v=>`
+    <div class="var-card ${v.featured?'featured':''}">
+      <div class="var-head">
+        <div class="var-num">${v.featured ? '★' : (VARIANTS.indexOf(v))}</div>
+        <div style="flex:1">
+          <div class="var-title">${v.title}</div>
+          <div class="var-subtitle">${v.desc}</div>
+        </div>
+      </div>
+      <div class="canvas-wrap"><canvas id="cv-${v.id}" width="1080" height="1080"></canvas></div>
+      <div class="var-foot"><span>${v.featured ? 'Best of all worlds' : 'Toggle-fähig im Composer'}</span><span class="effort">${v.effort}</span></div>
+    </div>
+  `).join('');
+
+  // Wire canvas click for fullscreen
+  document.querySelectorAll('canvas[id^="cv-"]').forEach(cv=>{
+    cv.addEventListener('click', ()=>{
+      const viewer = document.getElementById('viewer');
+      viewer.innerHTML = '<canvas></canvas>';
+      const target = viewer.querySelector('canvas');
+      target.width = cv.width; target.height = cv.height;
+      target.getContext('2d').drawImage(cv, 0, 0);
+      viewer.showModal();
+      viewer.addEventListener('click', ()=> viewer.close(), { once:true });
+    });
+  });
+}
+
+async function recomposeAll(){
+  if (!heroImg) return;
+  const opts = {
+    bundleName: (document.getElementById('bundleName').value || 'EndoCraft Bundle').toUpperCase(),
+    badge: document.getElementById('badgeText').value || '27 Cards',
+    hook: HOOKS[+document.getElementById('hookSel').value || 0],
+    img: heroImg
+  };
+  for (const v of VARIANTS){
+    const cv = document.getElementById('cv-' + v.id);
+    if (!cv) continue;
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    try {
+      await composers[v.id](ctx, opts);
+    } catch(e){
+      console.error(v.id, e);
+    }
+  }
+}
+
+// === COMPOSITION HELPERS ===
+function drawCover(ctx, img, x, y, w, h){
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  const ratio = Math.max(w/iw, h/ih);
+  const dw = iw*ratio, dh = ih*ratio;
+  const dx = x + (w-dw)/2;
+  const dy = y + (h-dh)/2;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+}
+
+function drawText(ctx, text, x, y, opts){
+  opts = opts || {};
+  ctx.save();
+  ctx.font = opts.font || '40px serif';
+  ctx.fillStyle = opts.color || '#fff';
+  ctx.textAlign = opts.align || 'center';
+  ctx.textBaseline = 'middle';
+  if (opts.shadow){
+    ctx.shadowColor = 'rgba(0,0,0,.85)';
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetY = 3;
+  }
+  if (opts.letterSpacing){
+    const ls = opts.letterSpacing;
+    const chars = String(text).split('');
+    const widths = chars.map(c=> ctx.measureText(c).width);
+    const total = widths.reduce((s,w)=>s+w,0) + ls*(chars.length-1);
+    let cx;
+    if (opts.align === 'center') cx = x - total/2;
+    else if (opts.align === 'right') cx = x - total;
+    else cx = x;
+    chars.forEach((c,i)=>{
+      ctx.textAlign = 'left';
+      ctx.fillText(c, cx, y);
+      cx += widths[i] + ls;
+    });
+  } else {
+    let displayText = String(text);
+    if (opts.maxWidth){
+      let measure = ctx.measureText(displayText).width;
+      let fontSize = parseInt((opts.font||'').match(/(\d+)px/)?.[1] || '40', 10);
+      while (measure > opts.maxWidth && fontSize > 14){
+        fontSize -= 2;
+        ctx.font = opts.font.replace(/\d+px/, fontSize+'px');
+        measure = ctx.measureText(displayText).width;
+      }
+    }
+    ctx.fillText(displayText, x, y);
+  }
+  ctx.restore();
+}
+
+function drawBadge(ctx, text, x, y, fontSize){
+  fontSize = fontSize || 32;
+  ctx.save();
+  ctx.font = `700 ${fontSize}px "Playfair Display"`;
+  const padX = 32, padY = 16;
+  const w = ctx.measureText(text).width + padX*2;
+  const h = fontSize + padY*2 - 8;
+  ctx.fillStyle = '#d8b46a';
+  roundRect(ctx, x - w/2, y - h/2, w, h, h/2); ctx.fill();
+  ctx.fillStyle = '#1a1408';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function drawSingleFrame(ctx, S){
+  ctx.strokeStyle = '#d8b46a';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(18, 18, S-36, S-36);
+  ctx.strokeStyle = 'rgba(216,180,106,.45)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(34, 34, S-68, S-68);
+}
+
+function drawDoubleFrameWithOrnaments(ctx, S){
+  // Outer thick gold line
+  ctx.strokeStyle = '#e6c878';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(16, 16, S-32, S-32);
+  // Inner thin line at gap
+  ctx.strokeStyle = 'rgba(216,180,106,.55)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(40, 40, S-80, S-80);
+  // Embossed shadow effect — 1px dark on inside of outer line
+  ctx.strokeStyle = 'rgba(0,0,0,.35)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(22, 22, S-44, S-44);
+  // Corner ornaments — fleur-de-lis style at 4 corners
+  drawCornerOrnament(ctx, 50, 50, 0);
+  drawCornerOrnament(ctx, S-50, 50, 1);
+  drawCornerOrnament(ctx, 50, S-50, 3);
+  drawCornerOrnament(ctx, S-50, S-50, 2);
+}
+
+function drawCornerOrnament(ctx, cx, cy, quadrant){
+  // 0=TL, 1=TR, 2=BR, 3=BL — rotate ornament
+  const angle = quadrant * 90 * Math.PI / 180;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  ctx.fillStyle = '#e6c878';
+  // Stylized fleur-de-lis (3-petal flame)
+  ctx.beginPath();
+  // Center petal
+  ctx.moveTo(0, -18);
+  ctx.quadraticCurveTo(8, -10, 4, 0);
+  ctx.quadraticCurveTo(0, 4, -4, 0);
+  ctx.quadraticCurveTo(-8, -10, 0, -18);
+  ctx.fill();
+  // Left petal
+  ctx.beginPath();
+  ctx.moveTo(-12, -10);
+  ctx.quadraticCurveTo(-22, -2, -10, 6);
+  ctx.quadraticCurveTo(-4, 2, -6, -4);
+  ctx.quadraticCurveTo(-10, -8, -12, -10);
+  ctx.fill();
+  // Right petal
+  ctx.beginPath();
+  ctx.moveTo(12, -10);
+  ctx.quadraticCurveTo(22, -2, 10, 6);
+  ctx.quadraticCurveTo(4, 2, 6, -4);
+  ctx.quadraticCurveTo(10, -8, 12, -10);
+  ctx.fill();
+  // Tiny ring at base
+  ctx.beginPath(); ctx.arc(0, 8, 3, 0, 2*Math.PI); ctx.fill();
+  ctx.restore();
+}
+
+function applyColorGrade(ctx, S){
+  // Teal shadow tint (subtle)
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = 'rgb(140, 200, 220)'; // cool teal tint
+  ctx.globalAlpha = 0.12;
+  ctx.fillRect(0, S*0.5, S, S*0.5);
+  ctx.restore();
+  // Warm orange highlights
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = 'rgb(220, 150, 90)';
+  ctx.globalAlpha = 0.10;
+  ctx.fillRect(0, 0, S, S*0.5);
+  ctx.restore();
+  // Film grain overlay (small noise pattern via tiny dots)
+  ctx.save();
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = 0.18;
+  // Generate procedural noise via fillRect 1x1 with random
+  for (let i = 0; i < 1800; i++){
+    const x = Math.random() * S;
+    const y = Math.random() * S;
+    const v = Math.random();
+    ctx.fillStyle = v > 0.5 ? 'rgba(255,255,255,1)' : 'rgba(0,0,0,1)';
+    ctx.fillRect(x, y, 2, 2);
+  }
+  ctx.restore();
+  // Subtle vignette
+  ctx.save();
+  const grad = ctx.createRadialGradient(S/2, S/2, S*0.3, S/2, S/2, S*0.75);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.45)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, S, S);
+  ctx.restore();
+}
+
+function drawCompatBadges(ctx, S){
+  const badges = ['D&D 5e', 'FOUNDRY', 'ROLL20', 'OWLBEAR', 'PNG·PDF'];
+  const yBar = S - 70;
+  // Background bar
+  ctx.fillStyle = 'rgba(8,9,14,.85)';
+  ctx.fillRect(40, yBar, S - 80, 56);
+  // Top gold line
+  ctx.fillStyle = '#d8b46a';
+  ctx.fillRect(40, yBar, S - 80, 2);
+  // Badges spaced evenly
+  const innerW = S - 120;
+  const badgeW = innerW / badges.length;
+  badges.forEach((b, i)=>{
+    const cx = 60 + badgeW/2 + badgeW*i;
+    const cy = yBar + 28;
+    // Box outline
+    ctx.strokeStyle = 'rgba(216,180,106,.4)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - badgeW/2 + 8, cy - 14, badgeW - 16, 28);
+    // Text
+    ctx.fillStyle = '#d8b46a';
+    ctx.font = '700 18px "Cinzel"';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b, cx, cy);
+  });
+}
+
+// === COMPOSERS ===
+const composers = {};
+
+composers.baseline = async (ctx, opts) => {
+  const S = 1080;
+  drawCover(ctx, opts.img, 0, 0, S, S);
+  const g = ctx.createLinearGradient(0,0,0,S);
+  g.addColorStop(0, 'rgba(0,0,0,.65)');
+  g.addColorStop(0.18,'rgba(0,0,0,0)');
+  g.addColorStop(0.68,'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.78)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,S,S);
+  drawSingleFrame(ctx, S);
+  drawText(ctx, opts.bundleName, S/2, 90, { font:'700 56px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth:S-140 });
+  drawText(ctx, 'PREMIUM D&D PACK', S/2, 150, { font:'500 22px "Cinzel"', color:'#9aa0b3', align:'center', letterSpacing:3 });
+  drawBadge(ctx, opts.badge, S/2, S - 100);
+};
+
+composers.colorgrade = async (ctx, opts) => {
+  const S = 1080;
+  drawCover(ctx, opts.img, 0, 0, S, S);
+  applyColorGrade(ctx, S);
+  const g = ctx.createLinearGradient(0,0,0,S);
+  g.addColorStop(0, 'rgba(0,0,0,.55)');
+  g.addColorStop(0.20,'rgba(0,0,0,0)');
+  g.addColorStop(0.70,'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.82)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,S,S);
+  drawSingleFrame(ctx, S);
+  drawText(ctx, opts.bundleName, S/2, 90, { font:'700 56px "Cinzel Decorative"', color:'#f0d088', align:'center', shadow:true, maxWidth:S-140 });
+  drawText(ctx, 'PREMIUM D&D PACK', S/2, 150, { font:'500 22px "Cinzel"', color:'#b5c5c8', align:'center', letterSpacing:3 });
+  drawBadge(ctx, opts.badge, S/2, S - 100);
+};
+
+composers.ornaments = async (ctx, opts) => {
+  const S = 1080;
+  drawCover(ctx, opts.img, 0, 0, S, S);
+  const g = ctx.createLinearGradient(0,0,0,S);
+  g.addColorStop(0, 'rgba(0,0,0,.65)');
+  g.addColorStop(0.20,'rgba(0,0,0,0)');
+  g.addColorStop(0.70,'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.78)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,S,S);
+  drawDoubleFrameWithOrnaments(ctx, S);
+  drawText(ctx, opts.bundleName, S/2, 110, { font:'700 54px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth:S-180 });
+  // Small divider
+  ctx.fillStyle = '#d8b46a';
+  ctx.fillRect(S/2 - 110, 162, 220, 1.5);
+  drawText(ctx, 'PREMIUM D&D PACK', S/2, 188, { font:'500 22px "Cinzel"', color:'#9aa0b3', align:'center', letterSpacing:3 });
+  drawBadge(ctx, opts.badge, S/2, S - 100);
+};
+
+composers.hook = async (ctx, opts) => {
+  const S = 1080;
+  drawCover(ctx, opts.img, 0, 0, S, S);
+  const g = ctx.createLinearGradient(0,0,0,S);
+  g.addColorStop(0, 'rgba(0,0,0,.65)');
+  g.addColorStop(0.20,'rgba(0,0,0,0)');
+  g.addColorStop(0.65,'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.82)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,S,S);
+  drawSingleFrame(ctx, S);
+  drawText(ctx, opts.bundleName, S/2, 95, { font:'700 56px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth:S-140 });
+  // Italic hook subtitle — Cormorant Garamond italic
+  drawText(ctx, '"' + opts.hook + '"', S/2, 165, { font:'italic 36px "Cormorant Garamond"', color:'#e8b8c8', align:'center', shadow:true, maxWidth:S-160 });
+  drawBadge(ctx, opts.badge, S/2, S - 100);
+};
+
+composers.spotlight = async (ctx, opts) => {
+  const S = 1080;
+  // Black bg
+  ctx.fillStyle = '#08090e';
+  ctx.fillRect(0, 0, S, S);
+  // Circular spotlight area
+  const cx = S/2, cy = S * 0.46;
+  const radius = S * 0.32;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, 2*Math.PI);
+  ctx.clip();
+  drawCover(ctx, opts.img, cx - radius, cy - radius, radius * 2, radius * 2);
+  ctx.restore();
+  // Strong vignette radial around spotlight (artificial light glow)
+  const grad = ctx.createRadialGradient(cx, cy, radius * 0.7, cx, cy, radius * 1.6);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,1)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, S, S);
+  // Subtle outer glow ring
+  ctx.strokeStyle = 'rgba(216,180,106,.45)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(cx, cy, radius, 0, 2*Math.PI); ctx.stroke();
+  // Bundle name plaque at bottom
+  drawText(ctx, opts.bundleName, S/2, S*0.86, { font:'700 44px "Cinzel"', color:'#e6c878', align:'center', letterSpacing:6, maxWidth:S-200 });
+  // Divider
+  ctx.fillStyle = '#d8b46a';
+  ctx.fillRect(S/2 - 80, S*0.89, 160, 1.5);
+  drawText(ctx, opts.badge.toUpperCase() + ' · MASTER PACK', S/2, S*0.92, { font:'500 18px "Cinzel"', color:'#9aa0b3', align:'center', letterSpacing:3, maxWidth:S-200 });
+  drawSingleFrame(ctx, S);
+};
+
+composers.cardreveal = async (ctx, opts) => {
+  const S = 1080;
+  // Background — dark with subtle radial
+  ctx.fillStyle = '#10131c';
+  ctx.fillRect(0, 0, S, S);
+  // Subtle radial behind cards
+  const rg = ctx.createRadialGradient(S/2, S*0.6, 50, S/2, S*0.6, S*0.6);
+  rg.addColorStop(0, 'rgba(216,180,106,.12)');
+  rg.addColorStop(1, 'rgba(216,180,106,0)');
+  ctx.fillStyle = rg; ctx.fillRect(0, 0, S, S);
+  // Title banner top
+  drawText(ctx, opts.bundleName, S/2, 110, { font:'700 56px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth:S-160 });
+  ctx.fillStyle = '#d8b46a';
+  ctx.fillRect(S/2 - 130, 158, 260, 1.5);
+  drawText(ctx, 'MASTER PACK', S/2, 188, { font:'500 22px "Cinzel"', color:'#9aa0b3', align:'center', letterSpacing:5 });
+  // Draw 3 cards fanned
+  const cards = [
+    { x: S*0.27, y: S*0.62, w: 280, h: 420, rot: -14, scale: 0.9, opacity: 0.92 },
+    { x: S/2,     y: S*0.58, w: 320, h: 460, rot: 0,    scale: 1,    opacity: 1 },
+    { x: S*0.73, y: S*0.62, w: 280, h: 420, rot: 14,  scale: 0.9, opacity: 0.92 }
+  ];
+  cards.forEach((c, i)=>{
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.rotate(c.rot * Math.PI / 180);
+    ctx.globalAlpha = c.opacity;
+    // Card background
+    ctx.fillStyle = '#1a1f2e';
+    roundRect(ctx, -c.w/2, -c.h/2, c.w, c.h, 14); ctx.fill();
+    // Inner image area — clipped
+    ctx.save();
+    ctx.beginPath();
+    roundRect(ctx, -c.w/2 + 12, -c.h/2 + 12, c.w - 24, c.h - 24, 8);
+    ctx.clip();
+    drawCover(ctx, opts.img, -c.w/2 + 12, -c.h/2 + 12, c.w - 24, c.h - 24);
+    ctx.restore();
+    // Frame
+    ctx.strokeStyle = i === 1 ? '#e6c878' : '#9c8244';
+    ctx.lineWidth = i === 1 ? 4 : 2;
+    roundRect(ctx, -c.w/2, -c.h/2, c.w, c.h, 14); ctx.stroke();
+    ctx.restore();
+  });
+  // Badge bottom
+  drawBadge(ctx, opts.badge, S/2, S - 60, 28);
+  drawSingleFrame(ctx, S);
+};
+
+composers.compatbadges = async (ctx, opts) => {
+  const S = 1080;
+  drawCover(ctx, opts.img, 0, 0, S, S);
+  const g = ctx.createLinearGradient(0,0,0,S);
+  g.addColorStop(0, 'rgba(0,0,0,.65)');
+  g.addColorStop(0.18,'rgba(0,0,0,0)');
+  g.addColorStop(0.55,'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.92)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,S,S);
+  drawSingleFrame(ctx, S);
+  drawText(ctx, opts.bundleName, S/2, 90, { font:'700 56px "Cinzel Decorative"', color:'#e6c878', align:'center', shadow:true, maxWidth:S-140 });
+  drawText(ctx, 'PREMIUM D&D PACK', S/2, 150, { font:'500 22px "Cinzel"', color:'#9aa0b3', align:'center', letterSpacing:3 });
+  // Badge mid
+  drawBadge(ctx, opts.badge, S/2, S - 170);
+  // Compat badges row
+  drawCompatBadges(ctx, S);
+};
+
+composers.premium = async (ctx, opts) => {
+  const S = 1080;
+  drawCover(ctx, opts.img, 0, 0, S, S);
+  // Color grade
+  applyColorGrade(ctx, S);
+  // Strong gradient overlay
+  const g = ctx.createLinearGradient(0,0,0,S);
+  g.addColorStop(0, 'rgba(0,0,0,.72)');
+  g.addColorStop(0.20,'rgba(0,0,0,0)');
+  g.addColorStop(0.55,'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.92)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,S,S);
+  // Double frame + ornaments
+  drawDoubleFrameWithOrnaments(ctx, S);
+  // Title + hook + divider
+  drawText(ctx, opts.bundleName, S/2, 115, { font:'700 56px "Cinzel Decorative"', color:'#f0d088', align:'center', shadow:true, maxWidth:S-180 });
+  ctx.fillStyle = '#d8b46a';
+  ctx.fillRect(S/2 - 130, 168, 260, 1.5);
+  // Italic hook
+  drawText(ctx, '"' + opts.hook + '"', S/2, 210, { font:'italic 32px "Cormorant Garamond"', color:'#f0c0d0', align:'center', shadow:true, maxWidth:S-160 });
+  // Badge mid
+  drawBadge(ctx, opts.badge, S/2, S - 170);
+  // Compat badges row
+  drawCompatBadges(ctx, S);
+};
+
+// === BOOT ===
+async function init(){
+  renderGrid();
+  if (!loadAssets()) return;
+  const sel = document.getElementById('heroSel');
+  const refresh = async ()=>{
+    await loadHero(sel.value);
+    await recomposeAll();
+  };
+  sel.addEventListener('change', refresh);
+  ['bundleName','badgeText','hookSel'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', recomposeAll);
+    document.getElementById(id).addEventListener('change', recomposeAll);
+  });
+  await refresh();
+  showToast('8 Cover-Varianten gerendert');
+}
+
+init();
+</script>
+</body>
+</html>

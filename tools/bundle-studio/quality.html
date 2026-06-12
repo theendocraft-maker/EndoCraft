@@ -102,6 +102,7 @@ dialog.viewer::backdrop{background:rgba(8,9,14,.92);backdrop-filter:blur(4px)}
     <a class="btn ghost" href="./pipeline.html">⚡ Pipeline</a>
     <a class="btn ghost" href="./splitter.html" title="1 Bundle → 3 Etsy-Listings" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
     <a class="btn ghost" href="./thumbnail.html" title="Etsy Thumbnails komponieren" style="background:rgba(127,169,216,.08);color:var(--blue);border-color:var(--blue)">🖼 Thumbnails</a>
+    <a class="btn ghost" href="./cover-lab.html" title="Cover-Upgrade Lab" style="background:rgba(240,168,255,.1);color:#f0a8ff;border-color:#f0a8ff">🧪 Cover-Lab</a>
     <a class="btn ghost" href="./dashboard.html" title="Etsy Performance Dashboard" style="background:rgba(224,167,103,.08);color:var(--orange);border-color:var(--orange)">📊 Dashboard</a>
     <a class="btn ghost" href="./backlog.html">📋 Backlog</a>
     <a class="btn ghost" href="./index.html">🎨 Studio</a>
@@ -520,12 +521,4 @@ async function downloadFinal() {
     }
     await new Promise(r => setTimeout(r, 400));
   }
-  document.getElementById('dlBtn').disabled = false;
-  document.getElementById('dlBtn').textContent = '⬇ Download cleaned ZIPs';
-  toast('🎉 Cleaned ZIPs heruntergeladen');
-}
-
-loadRun();
-</script>
-</body>
-</html>
+  document.getElementById('dlBtn').disabled = fa
