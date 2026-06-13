@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft · Etsy Listing Updater</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#10131c;--panel:#181c28;--panel2:#1f2433;--line:#2c3247;
+  --gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3;
+  --green:#7bbd8f;--red:#d98a8a;--blue:#7fa9d8;--orange:#e0a767;
+  --etsy:#f1641e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55}
+h1,h2,h3{font-family:'Cinzel',serif;letter-spacing:.5px;margin:0}
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141826,#10131c);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;font-size:18px;color:var(--gold);display:flex;align-items:center;gap:9px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--etsy);box-shadow:0 0 12px var(--etsy)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-left:auto}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;color:var(--ink);font-family:inherit;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--gold-dim);background:#262b3c}
+.btn.primary{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border-color:var(--gold-dim);font-weight:700}
+.btn.etsy{background:var(--etsy);color:#1a0a04;border-color:var(--etsy);font-weight:700}
+.btn.green{background:linear-gradient(180deg,#8fcfa3,#6cab83);color:#0a1f12;border-color:var(--green);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent}
+.wrap{max-width:1440px;margin:0 auto;padding:22px}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:20px;font-family:'EB Garamond',serif;font-size:15px;color:var(--muted)}
+.intro b{color:var(--ink)} .intro .gold{color:var(--gold)} .intro .etsy{color:var(--etsy)} .intro .green{color:var(--green)}
+
+.toolbar{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.status-pill{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:14px;font-family:'Cinzel',serif}
+.status-pill.ok{background:rgba(123,189,143,.15);color:var(--green);border:1px solid var(--green)}
+.status-pill.warn{background:rgba(217,138,138,.15);color:var(--red);border:1px solid var(--red)}
+
+.listing-grid{display:grid;grid-template-columns:1fr;gap:18px}
+.listing{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.listing-head{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.listing-thumb{width:80px;height:80px;background:#0c0e16 center/cover no-repeat;border-radius:8px;flex-shrink:0;border:1px solid var(--line)}
+.listing-info{flex:1;min-width:0}
+.listing-title{font-family:'Cinzel',serif;font-size:14.5px;color:var(--gold);font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.listing-meta{display:flex;gap:14px;font-size:11.5px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.listing-meta b{color:var(--ink)}
+.listing-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 18px}
+.diff-col h4{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Cinzel',serif;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.diff-col h4 .pill{font-size:9.5px;padding:2px 7px;border-radius:8px;background:var(--panel2);color:var(--muted)}
+.diff-col h4 .pill.new{background:rgba(123,189,143,.15);color:var(--green);border:1px solid var(--green)}
+.diff-text{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-family:'EB Garamond',serif;font-size:13px;color:var(--ink);max-height:340px;overflow-y:auto;white-space:pre-wrap;line-height:1.55}
+.diff-text.new{border-color:var(--green)}
+.diff-text textarea{width:100%;background:transparent;border:none;color:var(--ink);font-family:'EB Garamond',serif;font-size:13px;line-height:1.55;outline:none;resize:vertical;min-height:280px}
+.tags-row{padding:0 18px 14px;display:flex;flex-wrap:wrap;gap:6px}
+.tag-chip{font-size:11px;padding:3px 9px;border-radius:10px;background:var(--panel2);color:var(--muted);font-family:'JetBrains Mono',monospace}
+.tag-chip.new{background:rgba(123,189,143,.12);color:var(--green);border:1px solid var(--green)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-family:'EB Garamond',serif;font-size:16px}
+.empty .e-emoji{font-size:42px;display:block;margin-bottom:14px}
+.toast{position:fixed;top:20px;right:20px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:8px;padding:11px 18px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;z-index:100;opacity:0;transform:translateY(-10px);transition:.2s;max-width:380px}
+.toast.show{opacity:1;transform:translateY(0)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.bar{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0;transition:width .3s}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> EndoCraft · Etsy Listing Updater</div>
+  <span class="tag">Bulk Update für Premium-Honest-Texte</span>
+  <div class="controls">
+    <a class="btn ghost" href="./pipeline.html">⚡ Pipeline</a>
+    <a class="btn ghost" href="./listing.html">✍ Generator</a>
+    <a class="btn ghost" href="./splitter.html" style="background:rgba(183,140,242,.08);color:#b78cf2;border-color:#b78cf2">🪓 Splitter</a>
+    <a class="btn ghost" href="./backlog.html">← Backlog</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="intro">
+    Fetcht alle <b class="etsy">aktiven Etsy-Listings</b>, generiert für jedes eine neue <b class="green">Premium-Honest-Description</b> (Quality-Promise + Disclosure),
+    und du klickst <b>„Apply"</b> pro Listing zum direkten Update auf Etsy. Etsy-OAuth muss verbunden sein.
+  </div>
+
+  <div class="toolbar">
+    <button class="btn primary" id="fetchBtn">📥 Fetch alle Listings</button>
+    <button class="btn etsy" id="regenAllBtn" disabled>✨ Regenerate alle Descriptions</button>
+    <button class="btn green" id="applyAllBtn" disabled>🚀 Apply alle (Bulk-Update)</button>
+    <span id="etsyStatus" class="status-pill warn">Etsy: ?</span>
+    <span id="counter" style="margin-left:auto;font-family:'JetBrains Mono',monospace;color:var(--muted)">0 / 0</span>
+  </div>
+
+  <div id="progressArea"></div>
+  <div class="listing-grid" id="grid">
+    <div class="empty">
+      <span class="e-emoji">📋</span>
+      Klick <b>„Fetch alle Listings"</b> um deine aktiven Etsy-Listings zu laden.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://endocraft-production.up.railway.app';
+let listings = []; // { listing_id, title, description, tags, thumb, ... }
+let regenerated = {}; // listing_id → { description, tags }
+let pendingApply = new Set();
+
+function showToast(msg, t=2200){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), t);
+}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function checkStatus(){
+  try {
+    const r = await fetch(API_BASE + '/api/etsy/status');
+    const data = await r.json();
+    const el = document.getElementById('etsyStatus');
+    if (data.connected){
+      el.className = 'status-pill ok';
+      el.textContent = '✓ Etsy: ' + (data.shop_name || data.shop_id || 'connected');
+      return true;
+    } else {
+      el.className = 'status-pill warn';
+      el.textContent = '⚠ Etsy: nicht verbunden';
+      return false;
+    }
+  } catch(e){
+    document.getElementById('etsyStatus').textContent = '⚠ API offline';
+    return false;
+  }
+}
+
+async function fetchListings(){
+  showToast('Lade Listings …');
+  document.getElementById('fetchBtn').disabled = true;
+  try {
+    const r = await fetch(API_BASE + '/api/etsy/my-listings?state=active');
+    const data = await r.json();
+    if (!data.ok){
+      showToast('Fehler: ' + (data.error || 'unknown'), 4000);
+      document.getElementById('fetchBtn').disabled = false;
+      return;
+    }
+    listings = data.listings || [];
+    document.getElementById('counter').textContent = `0 / ${listings.length} updated`;
+    document.getElementById('regenAllBtn').disabled = false;
+    renderListings();
+    showToast(`${listings.length} Listings geladen`);
+  } catch(e){
+    showToast('Fehler: ' + e.message, 4000);
+  }
+  document.getElementById('fetchBtn').disabled = false;
+}
+
+function renderListings(){
+  const grid = document.getElementById('grid');
+  if (!listings.length){
+    grid.innerHTML = '<div class="empty"><span class="e-emoji">📭</span>Keine aktiven Listings gefunden.</div>';
+    return;
+  }
+  grid.innerHTML = listings.map(l => {
+    const r = regenerated[l.listing_id];
+    const hasNew = !!r;
+    return `
+    <div class="listing" data-id="${l.listing_id}">
+      <div class="listing-head">
+        <div class="listing-thumb" style="background-image:url('${escapeHtml(l.thumb || '')}')"></div>
+        <div class="listing-info">
+          <div class="listing-title">${escapeHtml(l.title)}</div>
+          <div class="listing-meta">
+            <span>ID: <b>${l.listing_id}</b></span>
+            <span>Price: <b>${l.price?.toFixed(2) || '?'} ${l.currency || ''}</b></span>
+            <span>Tags: <b>${(l.tags || []).length}</b></span>
+            <span>State: <b>${l.state}</b></span>
+          </div>
+        </div>
+        <div class="listing-actions">
+          <button class="btn" data-act="regen" data-id="${l.listing_id}" ${hasNew?'':''}>✨ ${hasNew?'Re-Generate':'Generate'}</button>
+          ${hasNew ? `<button class="btn green" data-act="apply" data-id="${l.listing_id}">🚀 Apply</button>` : ''}
+          <a class="btn ghost" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">↗ View</a>
+        </div>
+      </div>
+      <div class="diff-grid">
+        <div class="diff-col">
+          <h4>Original <span class="pill">${(l.description || '').length} chars</span></h4>
+          <div class="diff-text">${escapeHtml(l.description || '(empty)')}</div>
+        </div>
+        <div class="diff-col">
+          <h4>Premium-Honest ${hasNew ? '<span class="pill new">NEW · ' + (r.description||'').length + ' chars</span>' : '<span class="pill">noch nicht generiert</span>'}</h4>
+          ${hasNew
+            ? `<div class="diff-text new"><textarea data-desc-edit="${l.listing_id}">${escapeHtml(r.description)}</textarea></div>`
+            : `<div class="diff-text" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-style:italic;min-height:280px">Klick „Generate" → Premium-Honest-Template wird gefüllt</div>`
+          }
+        </div>
+      </div>
+      <div class="tags-row">
+        <span style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'Cinzel',serif;margin-right:4px;padding-top:4px">Tags:</span>
+        ${(l.tags || []).map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}
+        ${hasNew && r.newTags?.length ? '<span style="font-size:10px;color:var(--green);letter-spacing:1.5px;text-transform:uppercase;font-family:Cinzel,serif;margin-left:8px;padding-top:4px">+ NEW:</span>' : ''}
+        ${hasNew && r.newTags?.length ? r.newTags.filter(nt => !(l.tags || []).includes(nt)).map(t => `<span class="tag-chip new">${escapeHtml(t)}</span>`).join('') : ''}
+      </div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('button[data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      if (act === 'regen') regenerateOne(id);
+      if (act === 'apply') applyOne(id);
+    });
+  });
+}
+
+async function regenerateOne(listingId){
+  const l = listings.find(x => String(x.listing_id) === String(listingId));
+  if (!l) return;
+  showToast('Generiere Premium-Description für ' + l.title.slice(0,40) + ' …');
+  // Tier-Detection aus Asset-Count (im Title, z.B. "39 D&D")
+  const m = l.title.match(/(\d+)\s*(?:D&D|D&amp;D|Assets|Items)/i);
+  const assetCount = m ? parseInt(m[1]) : 14;
+  const tier = assetCount >= 30 ? 'flagship' : (assetCount >= 15 ? 'evergreen' : 'trope');
+  try {
+    const r = await fetch(API_BASE + '/api/listing-generator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        bundleName: l.title,
+        tier,
+        assetCount,
+        marketplace: 'etsy'
+      })
+    });
+    const data = await r.json();
+    if (!data.ok){
+      showToast('Fehler: ' + (data.error || 'unknown'), 4000);
+      return;
+    }
+    const newDesc = data.listing?.etsy_description || data.listing?.description || '';
+    const newTags = data.listing?.etsy_tags || [];
+    regenerated[listingId] = { description: newDesc, newTags };
+    renderListings();
+    showToast('✓ Generiert für ' + l.title.slice(0,40));
+  } catch(e){
+    showToast('Fehler: ' + e.message, 4000);
+  }
+}
+
+async function applyOne(listingId){
+  const l = listings.find(x => String(x.listing_id) === String(listingId));
+  const r = regenerated[listingId];
+  if (!l || !r) return;
+  if (!confirm('Listing "' + l.title.slice(0,40) + '" auf Etsy live updaten?\\n\\nDescription wird ersetzt.\\nDie 4 neuen Tags werden hinzugefügt (sofern Slot frei).')) return;
+  // Take possibly-edited textarea content
+  const ta = document.querySelector(`textarea[data-desc-edit="${listingId}"]`);
+  const finalDesc = ta ? ta.value : r.description;
+  // Merge tags: existing + new (max 13)
+  const merged = [...new Set([...(l.tags || []), ...(r.newTags || [])])].slice(0, 13);
+  pendingApply.add(listingId);
+  try {
+    const resp = await fetch(API_BASE + '/api/etsy/listing/' + listingId, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: finalDesc,
+        tags: merged
+      })
+    });
+    const data = await resp.json();
+    pendingApply.delete(listingId);
+    if (!data.ok && !data.listing_id){
+      showToast('Fehler: ' + (data.error || 'unknown'), 4000);
+      return;
+    }
+    // Update local copy
+    l.description = finalDesc;
+    l.tags = merged;
+    delete regenerated[listingId];
+    renderListings();
+    const done = listings.filter(x => !regenerated[x.listing_id] && x.tags?.length).length;
+    document.getElementById('counter').textContent = `${done} / ${listings.length} updated`;
+    showToast('✓ Live auf Etsy: ' + l.title.slice(0,40));
+  } catch(e){
+    pendingApply.delete(listingId);
+    showToast('Fehler: ' + e.message, 4000);
+  }
+}
+
+document.getElementById('fetchBtn').addEventListener('click', fetchListings);
+
+document.getElementById('regenAllBtn').addEventListener('click', async ()=>{
+  if (!confirm('Alle ' + listings.length + ' Listings sequentiell regenerieren?\\nDauert ca. ' + listings.length + ' × 6s = ' + Math.ceil(listings.length * 6 / 60) + ' Min. Kostet pro Listing ~$0.01.')) return;
+  document.getElementById('regenAllBtn').disabled = true;
+  document.getElementById('applyAllBtn').disabled = true;
+  const total = listings.length;
+  let done = 0;
+  for (const l of listings){
+    document.getElementById('progressArea').innerHTML = `<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px"><span style="font-family:'Cinzel',serif;color:var(--gold)">⚡ Generating ${done+1}/${total}: ${escapeHtml(l.title.slice(0,40))}…</span><div class="bar" style="flex:1"><i style="width:${(done/total*100).toFixed(0)}%"></i></div></div>`;
+    await regenerateOne(l.listing_id);
+    done++;
+  }
+  document.getElementById('progressArea').innerHTML = '';
+  document.getElementById('regenAllBtn').disabled = false;
+  document.getElementById('applyAllBtn').disabled = false;
+  showToast(`✓ ${done} Listings regeneriert. Review + Apply pro Listing.`);
+});
+
+document.getElementById('applyAllBtn').addEventListener('click', async ()=>{
+  const regenCount = Object.keys(regenerated).length;
+  if (!regenCount) { showToast('Keine regenerierten Listings zum Apply'); return; }
+  if (!confirm('Alle ' + regenCount + ' regenerierten Descriptions auf Etsy live updaten?\\n\\nNicht rückgängig (Original-Text geht verloren).')) return;
+  document.getElementById('applyAllBtn').disabled = true;
+  const ids = Object.keys(regenerated);
+  let ok = 0;
+  for (const id of ids){
+    document.getElementById('progressArea').innerHTML = `<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px"><span style="font-family:'Cinzel',serif;color:var(--green)">🚀 Applying ${ok+1}/${ids.length}…</span><div class="bar" style="flex:1"><i style="width:${(ok/ids.length*100).toFixed(0)}%"></i></div></div>`;
+    await applyOne(id);
+    ok++;
+    await new Promise(r => setTimeout(r, 800)); // Etsy rate-limit-Schutz
+  }
+  document.getElementById('progressArea').innerHTML = '';
+  document.getElementById('applyAllBtn').disabled = false;
+  showToast(`🎉 ${ok} Listings live auf Etsy aktualisiert`);
+});
+
+checkStatus();
+</script>
+</body>
+</html>
