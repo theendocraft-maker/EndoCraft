@@ -3,40 +3,96 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Free-Pack Leads · EndoCraft Admin</title>
+<title>EndoCraft Cockpit · Admin</title>
 <style>
-  :root { --bg:#0b0f17; --bg2:#141a26; --line:#222b3d; --text:#e9eef7; --muted:#7c8aa1; --gold:#d4af37; --accent:#5b8def; --good:#3ec47a; }
+  :root { --bg:#0b0f17; --bg2:#141a26; --bg3:#1a2030; --line:#222b3d; --line2:#2d3850; --text:#e9eef7; --muted:#7c8aa1; --gold:#d4af37; --accent:#5b8def; --good:#3ec47a; --warn:#f4b942; --bad:#ff6b6b; }
   * { box-sizing:border-box }
-  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 -apple-system,system-ui,Segoe UI,Inter,sans-serif }
-  header { padding:24px 32px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center }
-  h1 { margin:0; font-size:20px; font-weight:600 }
-  .pill { background:var(--bg2); padding:6px 12px; border-radius:999px; font-size:12px; color:var(--muted) }
-  main { padding:32px; max-width:1400px; margin:0 auto }
-  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px }
-  .stat { background:var(--bg2); border:1px solid var(--line); padding:18px; border-radius:10px }
-  .stat .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px }
-  .stat .value { font-size:28px; font-weight:600; color:var(--gold) }
-  .stat .sub { color:var(--muted); font-size:11px; margin-top:4px }
-  .toolbar { display:flex; gap:12px; margin-bottom:16px; align-items:center; flex-wrap:wrap }
-  input[type=text] { background:var(--bg2); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:6px; width:280px }
-  button { background:var(--gold); color:#000; border:none; padding:8px 16px; border-radius:6px; font-weight:600; cursor:pointer }
-  button.ghost { background:transparent; color:var(--text); border:1px solid var(--line) }
-  button:hover { opacity:.85 }
-  table { width:100%; border-collapse:collapse; background:var(--bg2); border-radius:10px; overflow:hidden; border:1px solid var(--line) }
-  th, td { padding:12px 16px; text-align:left; border-bottom:1px solid var(--line); font-size:13px }
-  th { background:#0e1420; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.5px; font-size:11px; cursor:pointer; user-select:none }
-  th:hover { color:var(--text) }
-  tr:hover td { background:rgba(255,255,255,.02) }
-  .source { display:inline-block; padding:2px 8px; border-radius:4px; background:var(--line); font-size:11px; color:var(--text) }
-  .source.pinterest { background:#bd081c33; color:#ff7180 }
-  .source.etsy { background:#f1641e33; color:#ffaa66 }
-  .source.direct { background:#5b8def33; color:#82a8ff }
-  .empty { text-align:center; padding:60px; color:var(--muted) }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,system-ui,Segoe UI,Inter,sans-serif }
+  a { color:var(--accent); text-decoration:none }
+  a:hover { text-decoration:underline }
+  header { padding:20px 32px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; background:rgba(11,15,23,0.95); backdrop-filter:blur(8px); position:sticky; top:0; z-index:100 }
+  header h1 { margin:0; font-size:18px; font-weight:600; letter-spacing:.2px }
+  header h1 .accent { color:var(--gold) }
+  header .timestamp { color:var(--muted); font-size:11px; margin-left:12px }
+  .pill { background:var(--bg2); padding:6px 12px; border-radius:999px; font-size:12px; color:var(--muted); border:1px solid var(--line); display:inline-block }
+  a.pill { color:var(--text) }
+  main { padding:28px 32px; max-width:1500px; margin:0 auto }
+
+  .grid { display:grid; gap:20px }
+  .stat-grid { grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); margin-bottom:32px }
+  .stat { background:linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%); border:1px solid var(--line); padding:20px; border-radius:12px; position:relative; overflow:hidden }
+  .stat .label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.8px; margin-bottom:8px; font-weight:500 }
+  .stat .value { font-size:32px; font-weight:700; color:var(--gold); line-height:1 }
+  .stat .value.muted { color:var(--text); font-size:28px }
+  .stat .sub { color:var(--muted); font-size:11px; margin-top:6px }
+  .stat .delta { display:inline-block; font-size:11px; padding:2px 6px; border-radius:4px; margin-top:8px; font-weight:600 }
+  .delta.up { background:rgba(62,196,122,.15); color:var(--good) }
+  .delta.down { background:rgba(255,107,107,.15); color:var(--bad) }
+  .delta.flat { background:var(--line); color:var(--muted) }
+
+  section { margin-bottom:32px }
+  section h2 { font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin:0 0 14px; font-weight:600; display:flex; align-items:center; gap:10px }
+  section h2 .count { background:var(--line); color:var(--text); padding:2px 8px; border-radius:999px; font-size:11px; font-weight:500 }
+
+  .row { display:grid; gap:20px; grid-template-columns:2fr 1fr }
+  @media (max-width: 1100px) { .row { grid-template-columns:1fr } }
+
+  .card { background:var(--bg2); border:1px solid var(--line); border-radius:12px; overflow:hidden }
+  .card-head { padding:14px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between }
+  .card-head h3 { margin:0; font-size:13px; font-weight:600 }
+  .card-foot { padding:12px 18px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; text-align:center }
+
+  table { width:100%; border-collapse:collapse }
+  th, td { padding:10px 16px; text-align:left; font-size:13px }
+  th { background:var(--bg3); color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.5px; font-size:10px; border-bottom:1px solid var(--line) }
+  td { border-bottom:1px solid rgba(45, 56, 80, 0.4) }
+  tr:last-child td { border-bottom:none }
+  tr:hover td { background:rgba(255,255,255,.025) }
+  td.num { text-align:right; font-variant-numeric:tabular-nums }
+  td .thumb { width:40px; height:32px; border-radius:4px; object-fit:cover; vertical-align:middle; margin-right:10px; border:1px solid var(--line) }
+  td .listing-title { color:var(--text); font-weight:500 }
+
+  .source { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px }
+  .source.pinterest { background:rgba(189,8,28,.15); color:#ff7180 }
+  .source.etsy { background:rgba(241,100,30,.15); color:#ffaa66 }
+  .source.direct { background:rgba(91,141,239,.15); color:#82a8ff }
+  .source.other { background:var(--line); color:var(--muted) }
+
+  .timeline { padding:0 }
+  .timeline-item { display:flex; padding:14px 18px; gap:14px; border-bottom:1px solid rgba(45, 56, 80, 0.4); align-items:flex-start }
+  .timeline-item:last-child { border-bottom:none }
+  .timeline-dot { width:8px; height:8px; border-radius:50%; margin-top:6px; flex-shrink:0 }
+  .timeline-dot.sale { background:var(--good); box-shadow:0 0 12px rgba(62,196,122,.5) }
+  .timeline-dot.lead { background:var(--accent); box-shadow:0 0 8px rgba(91,141,239,.4) }
+  .timeline-content { flex:1; min-width:0 }
+  .timeline-content .title { font-size:13px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .timeline-content .meta { font-size:11px; color:var(--muted); margin-top:2px }
+  .timeline-amount { font-weight:600; color:var(--gold); font-size:13px; white-space:nowrap }
+
+  .pinterest-input { display:flex; gap:8px; padding:0 18px 14px }
+  .pinterest-input input { flex:1; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:6px }
+  .pinterest-input button { background:var(--gold); color:#000; border:none; padding:8px 14px; border-radius:6px; font-weight:600; cursor:pointer }
+
+  button.ghost { background:transparent; color:var(--text); border:1px solid var(--line); padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer }
+  button.ghost:hover { background:var(--bg3) }
+  button.ghost:disabled { opacity:.5; cursor:default }
+
+  .empty { padding:40px 18px; text-align:center; color:var(--muted); font-size:13px }
+  .error { padding:14px 18px; color:var(--bad); font-size:12px; background:rgba(255,107,107,.05); border-bottom:1px solid var(--line); margin-bottom:20px; border-radius:8px }
+
   .login { max-width:400px; margin:120px auto; padding:32px; background:var(--bg2); border:1px solid var(--line); border-radius:12px; text-align:center }
   .login h2 { margin:0 0 8px; font-size:18px }
   .login p { color:var(--muted); font-size:13px; margin-bottom:20px }
-  .login input { width:100%; margin-bottom:12px }
-  .error { color:#ff7180; font-size:12px; margin-top:8px }
+  .login input { width:100%; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:10px 14px; border-radius:6px; margin-bottom:12px }
+  .login button { background:var(--gold); color:#000; border:none; padding:10px 16px; border-radius:6px; font-weight:600; cursor:pointer; width:100% }
+
+  .progress-bar { height:4px; background:var(--line); border-radius:2px; overflow:hidden; margin-top:8px }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--gold) 0%, var(--good) 100%); transition:width .4s }
+
+  .source-tile { background:var(--bg3); padding:10px 14px; border-radius:8px; border:1px solid var(--line) }
+  .source-tile .lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px }
+  .source-tile .val { font-size:20px; font-weight:600; color:var(--gold); margin-top:4px }
+  .source-tile .pct { font-size:10px; color:var(--muted) }
 </style>
 </head>
 <body>
@@ -45,47 +101,63 @@
 <script>
 const BACKEND = 'https://endocraft-production.up.railway.app';
 const KEY_STORAGE = 'endocraft_admin_key_v1';
+const PIN_STORAGE = 'endocraft_pinterest_stats_v1';
+
+const BASELINE = {
+  date: '2026-06-15',
+  reviewDate: '2026-06-27',
+  sales: 3,
+  reviews: 1,
+  leads: 0,
+  pinterestViews: 1500,
+  goals: { sales: 7, reviews: 3, leads: 60, pinterestViews: 4000 }
+};
 
 let state = {
   key: new URLSearchParams(location.search).get('key') || localStorage.getItem(KEY_STORAGE) || '',
-  leads: [],
-  total: 0,
-  bySource: {},
-  filter: '',
-  sortKey: 'created_at',
-  sortDir: 'desc',
+  data: null,
   loading: false,
-  error: ''
+  error: '',
+  pinterestStats: JSON.parse(localStorage.getItem(PIN_STORAGE) || '{"current":1500,"updated":null}')
 };
 
 if (state.key) localStorage.setItem(KEY_STORAGE, state.key);
 
-function fmtDate(s) {
+function fmtEur(n) {
+  if (n == null) return '—';
+  return new Intl.NumberFormat('de-DE', { style:'currency', currency:'EUR', maximumFractionDigits:0 }).format(n);
+}
+function relativeTime(s) {
   if (!s) return '—';
-  const d = new Date(s);
-  return d.toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
+  const d = typeof s === 'number' ? new Date(s * 1000) : new Date(s);
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  if (diff < 7 * 86400) return Math.floor(diff/86400) + 'd ago';
+  const dd = typeof s === 'number' ? new Date(s * 1000) : new Date(s);
+  return dd.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit' });
 }
 
-function loadLeads() {
+function loadAll() {
   if (!state.key) { renderLogin(); return; }
   state.loading = true; state.error = ''; render();
-  fetch(`${BACKEND}/api/free-pack/leads?key=${encodeURIComponent(state.key)}`)
-    .then(r => r.json().then(d => ({ ok: r.ok, d })))
-    .then(({ ok, d }) => {
+  fetch(`${BACKEND}/api/cockpit/overview?key=${encodeURIComponent(state.key)}`)
+    .then(r => r.json().then(d => ({ ok: r.ok, status: r.status, d })))
+    .then(({ ok, status, d }) => {
       if (!ok) {
-        state.error = d.error || 'Unauthorized';
-        if (d.error === 'unauthorized') {
+        state.error = d.error || `HTTP ${status}`;
+        if (status === 401) {
           localStorage.removeItem(KEY_STORAGE);
           state.key = '';
           renderLogin();
           return;
         }
       } else {
-        state.leads = d.leads || [];
-        state.total = d.total || 0;
-        state.bySource = d.bySource || {};
+        state.data = d;
       }
-      state.loading = false; render();
+      state.loading = false;
+      render();
     })
     .catch(e => { state.error = e.message; state.loading = false; render(); });
 }
@@ -93,16 +165,14 @@ function loadLeads() {
 function renderLogin() {
   document.getElementById('app').innerHTML = `
     <div class="login">
-      <h2>Admin Access</h2>
-      <p>Enter your admin key to view free-pack leads.<br>The key is set on the backend as <code>ADMIN_KEY</code> env var.</p>
+      <h2>EndoCraft Cockpit</h2>
+      <p>Enter your admin key.<br>Set as <code>ADMIN_KEY</code> env var on backend.</p>
       <input type="password" id="keyInput" placeholder="Admin key" autofocus />
-      <button onclick="saveKey()" style="width:100%">Unlock</button>
-      ${state.error ? `<div class="error">${state.error}</div>` : ''}
+      <button onclick="saveKey()">Unlock</button>
+      ${state.error ? `<div style="color:var(--bad); font-size:12px; margin-top:8px">${state.error}</div>` : ''}
     </div>`;
-  setTimeout(() => {
-    const i = document.getElementById('keyInput');
-    if (i) i.addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
-  }, 0);
+  const i = document.getElementById('keyInput');
+  if (i) i.addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
 }
 
 function saveKey() {
@@ -111,103 +181,269 @@ function saveKey() {
   state.key = v;
   localStorage.setItem(KEY_STORAGE, v);
   history.replaceState(null, '', location.pathname);
-  loadLeads();
+  loadAll();
 }
 
 function logout() {
   localStorage.removeItem(KEY_STORAGE);
   state.key = '';
-  state.leads = [];
+  state.data = null;
   renderLogin();
 }
 
-function sortLeads(arr) {
-  return [...arr].sort((a, b) => {
-    const av = a[state.sortKey] || '';
-    const bv = b[state.sortKey] || '';
-    const cmp = String(av).localeCompare(String(bv));
-    return state.sortDir === 'asc' ? cmp : -cmp;
-  });
-}
-
-function filterLeads(arr) {
-  if (!state.filter) return arr;
-  const f = state.filter.toLowerCase();
-  return arr.filter(l => (l.email + ' ' + (l.source || '') + ' ' + (l.utm || '')).toLowerCase().includes(f));
-}
-
-function toCSV(rows) {
-  const head = ['email', 'source', 'utm', 'created_at', 'ip'];
-  const esc = v => {
-    const s = v == null ? '' : String(v);
-    return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-  };
-  return [head.join(','), ...rows.map(r => head.map(h => esc(r[h])).join(','))].join('\n');
-}
-
-function exportCSV() {
-  const csv = toCSV(filterLeads(state.leads));
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `endocraft-leads-${new Date().toISOString().slice(0,10)}.csv`;
-  link.click();
-}
-
-function setSort(key) {
-  if (state.sortKey === key) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-  else { state.sortKey = key; state.sortDir = 'desc'; }
+function savePinterestStat() {
+  const v = parseInt(document.getElementById('pinInput').value, 10);
+  if (!v) return;
+  state.pinterestStats = { current: v, updated: new Date().toISOString() };
+  localStorage.setItem(PIN_STORAGE, JSON.stringify(state.pinterestStats));
   render();
+}
+
+function delta(curr, base) {
+  if (!base && !curr) return { html: '', cls: 'flat' };
+  if (!base) return { html: `+${curr} new`, cls: 'up' };
+  const diff = curr - base;
+  const pct = base > 0 ? Math.round((diff / base) * 100) : 100;
+  if (diff > 0) return { html: `↑ +${diff} (${pct > 0 ? '+' : ''}${pct}%)`, cls: 'up' };
+  if (diff < 0) return { html: `↓ ${diff} (${pct}%)`, cls: 'down' };
+  return { html: 'baseline', cls: 'flat' };
+}
+
+function progress(curr, goal) {
+  return Math.min(100, Math.round((curr / goal) * 100));
+}
+
+function buildTimeline(data) {
+  const items = [];
+  (data.sales?.recent || []).forEach(r => {
+    items.push({
+      type: 'sale',
+      ts: r.created,
+      title: r.transactions?.[0]?.title || `Sale #${r.receipt_id}`,
+      meta: `${r.buyer_name || 'Buyer'} · ${r.status}`,
+      amount: r.total ? fmtEur(r.total) : null
+    });
+  });
+  (data.leads?.recent || []).forEach(l => {
+    items.push({
+      type: 'lead',
+      ts: l.created_at,
+      title: l.email || 'Lead signup',
+      meta: `via ${l.source || 'direct'}`,
+      amount: null
+    });
+  });
+  items.sort((a, b) => {
+    const ta = typeof a.ts === 'number' ? a.ts * 1000 : new Date(a.ts).getTime();
+    const tb = typeof b.ts === 'number' ? b.ts * 1000 : new Date(b.ts).getTime();
+    return tb - ta;
+  });
+  return items.slice(0, 14);
 }
 
 function render() {
   if (!state.key) { renderLogin(); return; }
-  const filtered = filterLeads(sortLeads(state.leads));
-  const sourceList = Object.entries(state.bySource).sort((a,b) => b[1] - a[1]);
-  const arrow = k => state.sortKey === k ? (state.sortDir === 'asc' ? ' ↑' : ' ↓') : '';
+  const d = state.data;
+  const sales = d?.sales || {};
+  const leads = d?.leads || {};
+  const etsy = d?.etsy || {};
+  const pin = state.pinterestStats;
+
+  const totalSales = sales.count || 0;
+  const totalRevenue = sales.totalRevenue || 0;
+  const totalLeads = leads.total || 0;
+  const totalViews = etsy.totalViews || 0;
+  const totalFavs = etsy.totalFavorites || 0;
+  const conv = totalViews > 0 ? ((totalSales / totalViews) * 100).toFixed(2) : '—';
+
+  const dSales = delta(totalSales, BASELINE.sales);
+  const dLeads = delta(totalLeads, BASELINE.leads);
+  const dPinViews = delta(pin.current, BASELINE.pinterestViews);
+
+  const timeline = d ? buildTimeline(d) : [];
+  const dayOfPhase = Math.floor((Date.now() - new Date(BASELINE.date).getTime()) / 86400000) + 1;
+
   document.getElementById('app').innerHTML = `
     <header>
-      <h1>Free-Pack Leads <span class="pill">endocraft.app/free</span></h1>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span class="pill">${state.total} total</span>
-        <button class="ghost" onclick="loadLeads()">Refresh</button>
-        <button class="ghost" onclick="logout()">Lock</button>
+      <div style="display:flex; align-items:center">
+        <h1>EndoCraft <span class="accent">Cockpit</span></h1>
+        <span class="timestamp">${d?.ts ? 'Updated ' + relativeTime(d.ts) : ''}</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center">
+        <span class="pill">Validation Day ${dayOfPhase} of 14</span>
+        <button class="ghost" onclick="loadAll()" ${state.loading ? 'disabled' : ''}>${state.loading ? 'Loading…' : '↻ Refresh'}</button>
+        <button class="ghost" onclick="logout()">🔒 Lock</button>
       </div>
     </header>
     <main>
-      <div class="stats">
-        <div class="stat"><div class="label">Total Signups</div><div class="value">${state.total}</div></div>
-        ${sourceList.map(([s, n]) => `<div class="stat"><div class="label">via ${s}</div><div class="value">${n}</div><div class="sub">${((n/state.total)*100).toFixed(0)}% of total</div></div>`).join('')}
+      ${state.error ? `<div class="error">⚠ ${state.error}</div>` : ''}
+
+      <div class="grid stat-grid">
+        <div class="stat">
+          <div class="label">Total Sales</div>
+          <div class="value">${totalSales}</div>
+          <div class="sub">${fmtEur(totalRevenue)} revenue</div>
+          <div class="delta ${dSales.cls}">${dSales.html}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${progress(totalSales, BASELINE.goals.sales)}%"></div></div>
+          <div class="sub">Goal: ${BASELINE.goals.sales} by ${BASELINE.reviewDate}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Lead-Magnet Signups</div>
+          <div class="value">${totalLeads}</div>
+          <div class="sub">${leads.last7d || 0} in last 7 days</div>
+          <div class="delta ${dLeads.cls}">${dLeads.html}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${progress(totalLeads, BASELINE.goals.leads)}%"></div></div>
+          <div class="sub">Goal: ${BASELINE.goals.leads} signups</div>
+        </div>
+        <div class="stat">
+          <div class="label">Etsy Performance</div>
+          <div class="value muted">${totalViews}</div>
+          <div class="sub">views · ${totalFavs} favs · ${etsy.listingCount || 0} listings</div>
+          <div class="delta ${conv !== '—' && parseFloat(conv) > 1 ? 'up' : 'flat'}">${conv}% conv</div>
+        </div>
+        <div class="stat">
+          <div class="label">Pinterest Monthly</div>
+          <div class="value muted">${pin.current.toLocaleString('de-DE')}</div>
+          <div class="sub">Updated ${pin.updated ? relativeTime(pin.updated) : 'manually'}</div>
+          <div class="delta ${dPinViews.cls}">${dPinViews.html}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${progress(pin.current, BASELINE.goals.pinterestViews)}%"></div></div>
+          <div class="sub">Goal: ${BASELINE.goals.pinterestViews.toLocaleString('de-DE')}</div>
+        </div>
       </div>
-      <div class="toolbar">
-        <input type="text" id="filter" placeholder="Filter email, source, utm..." value="${state.filter.replace(/"/g, '&quot;')}" oninput="state.filter = this.value; render(); document.getElementById('filter').focus()" />
-        <button onclick="exportCSV()">Export CSV (${filtered.length})</button>
-        ${state.loading ? '<span style="color:var(--muted)">Loading…</span>' : ''}
-        ${state.error ? `<span class="error">${state.error}</span>` : ''}
+
+      <div class="row">
+        <section>
+          <h2>Etsy Listings <span class="count">${etsy.listingCount || 0}</span></h2>
+          <div class="card">
+            ${etsy.error ? `<div class="error">${etsy.error}</div>` : ''}
+            ${etsy.listings && etsy.listings.length ? `
+              <table>
+                <thead><tr>
+                  <th>Listing</th>
+                  <th class="num">Views</th>
+                  <th class="num">Favs</th>
+                  <th class="num">Price</th>
+                </tr></thead>
+                <tbody>
+                  ${etsy.listings.map(l => `
+                    <tr>
+                      <td>
+                        ${l.thumb ? `<img class="thumb" src="${l.thumb}" />` : ''}
+                        <a class="listing-title" href="${l.url}" target="_blank">${(l.title || '').slice(0, 80).replace(/</g,'&lt;')}</a>
+                      </td>
+                      <td class="num">${l.views.toLocaleString('de-DE')}</td>
+                      <td class="num">${l.num_favorers}</td>
+                      <td class="num">${fmtEur(l.price)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            ` : (etsy.error ? '' : '<div class="empty">No listings or not connected.<br><a href="/tools/bundle-studio/etsy-update.html">Connect Etsy →</a></div>')}
+          </div>
+        </section>
+
+        <section>
+          <h2>Recent Activity</h2>
+          <div class="card">
+            <div class="timeline">
+              ${timeline.length ? timeline.map(it => `
+                <div class="timeline-item">
+                  <div class="timeline-dot ${it.type}"></div>
+                  <div class="timeline-content">
+                    <div class="title">${it.type === 'sale' ? '💰 ' : '📩 '}${(it.title || '').slice(0, 50).replace(/</g,'&lt;')}</div>
+                    <div class="meta">${it.meta} · ${relativeTime(it.ts)}</div>
+                  </div>
+                  ${it.amount ? `<div class="timeline-amount">${it.amount}</div>` : ''}
+                </div>
+              `).join('') : '<div class="empty">No activity yet.</div>'}
+            </div>
+          </div>
+
+          <h2 style="margin-top:24px">Pinterest Manual</h2>
+          <div class="card">
+            <div class="card-head"><h3>Monthly Views</h3></div>
+            <div class="pinterest-input">
+              <input id="pinInput" type="number" value="${pin.current}" placeholder="1500" />
+              <button onclick="savePinterestStat()">Save</button>
+            </div>
+            <div class="card-foot">
+              pinterest.com → Analytics → Monthly Views eintragen
+            </div>
+          </div>
+        </section>
       </div>
-      ${filtered.length === 0 && !state.loading
-        ? `<div class="empty">${state.total === 0 ? 'No signups yet. Promote endocraft.app/free.' : 'No matches for filter.'}</div>`
-        : `<table>
-            <thead><tr>
-              <th onclick="setSort('email')">Email${arrow('email')}</th>
-              <th onclick="setSort('source')">Source${arrow('source')}</th>
-              <th onclick="setSort('utm')">UTM${arrow('utm')}</th>
-              <th onclick="setSort('created_at')">Signed up${arrow('created_at')}</th>
-            </tr></thead>
-            <tbody>
-              ${filtered.map(l => `<tr>
-                <td>${(l.email || '').replace(/</g,'&lt;')}</td>
-                <td><span class="source ${l.source || 'direct'}">${l.source || 'direct'}</span></td>
-                <td style="color:var(--muted);font-size:12px">${(l.utm || '—').replace(/</g,'&lt;')}</td>
-                <td style="color:var(--muted)">${fmtDate(l.created_at)}</td>
-              </tr>`).join('')}
-            </tbody>
-          </table>`
-      }
+
+      <section>
+        <h2>Lead Signups <span class="count">${totalLeads}</span></h2>
+        <div class="card">
+          <div class="card-head">
+            <h3>Source Breakdown</h3>
+            <a href="javascript:exportLeadsCSV()" style="font-size:12px">Export CSV →</a>
+          </div>
+          <div style="padding:16px 18px; display:flex; gap:12px; flex-wrap:wrap">
+            ${Object.entries(leads.bySource || {}).map(([k, v]) => `
+              <div class="source-tile">
+                <div class="lbl">${k}</div>
+                <div class="val">${v}</div>
+                <div class="pct">${Math.round(v / Math.max(totalLeads,1) * 100)}% of total</div>
+              </div>
+            `).join('') || '<div class="empty" style="padding:20px 0">No signups yet. Promote endocraft.app/free</div>'}
+          </div>
+          ${leads.recent && leads.recent.length ? `
+            <table>
+              <thead><tr><th>Email</th><th>Source</th><th>UTM</th><th>When</th></tr></thead>
+              <tbody>
+                ${leads.recent.map(l => `
+                  <tr>
+                    <td>${(l.email || '').replace(/</g,'&lt;')}</td>
+                    <td><span class="source ${l.source || 'direct'}">${l.source || 'direct'}</span></td>
+                    <td style="color:var(--muted); font-size:11px">${(l.utm || '—').replace(/</g,'&lt;')}</td>
+                    <td style="color:var(--muted)">${relativeTime(l.created_at)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+        </div>
+      </section>
+
+      <section>
+        <h2>Quick Links</h2>
+        <div class="card" style="padding:14px 18px">
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <a href="https://etsy.com/shop/EndoCraft" target="_blank" class="pill">🛍 Etsy Shop</a>
+            <a href="https://pinterest.com/theendocraft" target="_blank" class="pill">📌 Pinterest</a>
+            <a href="https://endocraft.app/free" target="_blank" class="pill">🎁 Free Pack</a>
+            <a href="/tools/bundle-studio/" target="_blank" class="pill">🛠 Bundle Studio</a>
+            <a href="/tools/bundle-studio/etsy-update.html" target="_blank" class="pill">📝 Etsy Bulk Updater</a>
+            <a href="/tools/bundle-studio/pinterest.html" target="_blank" class="pill">📌 Pinterest Composer</a>
+            <a href="/tools/bundle-studio/dashboard.html" target="_blank" class="pill">📊 Performance Dashboard</a>
+          </div>
+        </div>
+      </section>
     </main>`;
 }
 
-loadLeads();
+function exportLeadsCSV() {
+  fetch(`${BACKEND}/api/free-pack/leads?key=${encodeURIComponent(state.key)}`)
+    .then(r => r.json())
+    .then(d => {
+      const rows = d.leads || [];
+      const head = ['email', 'source', 'utm', 'created_at', 'ip'];
+      const esc = v => {
+        const s = v == null ? '' : String(v);
+        return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      const csv = [head.join(','), ...rows.map(r => head.map(h => esc(r[h])).join(','))].join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `endocraft-leads-${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    });
+}
+
+loadAll();
 </script>
 </body>
 </html>
