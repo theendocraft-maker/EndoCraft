@@ -102,6 +102,7 @@
 const BACKEND = 'https://endocraft-production.up.railway.app';
 const KEY_STORAGE = 'endocraft_admin_key_v1';
 const PIN_STORAGE = 'endocraft_pinterest_stats_v1';
+const ETSY_MANUAL_STORAGE = 'endocraft_etsy_manual_v1';
 
 const BASELINE = {
   date: '2026-06-15',
@@ -118,7 +119,8 @@ let state = {
   data: null,
   loading: false,
   error: '',
-  pinterestStats: JSON.parse(localStorage.getItem(PIN_STORAGE) || '{"current":1500,"updated":null}')
+  pinterestStats: JSON.parse(localStorage.getItem(PIN_STORAGE) || '{"current":1500,"updated":null}'),
+  etsyManual: JSON.parse(localStorage.getItem(ETSY_MANUAL_STORAGE) || '{"sales":3,"revenue":36,"views":0,"favorites":0,"reviews":1,"updated":null}')
 };
 
 if (state.key) localStorage.setItem(KEY_STORAGE, state.key);
@@ -199,6 +201,17 @@ function savePinterestStat() {
   render();
 }
 
+function saveEtsyManual() {
+  const sales = parseInt(document.getElementById('etsySales').value, 10) || 0;
+  const revenue = parseFloat(document.getElementById('etsyRevenue').value) || 0;
+  const views = parseInt(document.getElementById('etsyViews').value, 10) || 0;
+  const favs = parseInt(document.getElementById('etsyFavs').value, 10) || 0;
+  const reviews = parseInt(document.getElementById('etsyReviews').value, 10) || 0;
+  state.etsyManual = { sales, revenue, views, favorites: favs, reviews, updated: new Date().toISOString() };
+  localStorage.setItem(ETSY_MANUAL_STORAGE, JSON.stringify(state.etsyManual));
+  render();
+}
+
 function delta(curr, base) {
   if (!base && !curr) return { html: '', cls: 'flat' };
   if (!base) return { html: `+${curr} new`, cls: 'up' };
@@ -249,12 +262,15 @@ function render() {
   const etsy = d?.etsy || {};
   const pin = state.pinterestStats;
 
-  const totalSales = sales.count || 0;
-  const totalRevenue = sales.totalRevenue || 0;
+  const em = state.etsyManual;
+  const totalSales = sales.count || em.sales || 0;
+  const totalRevenue = sales.totalRevenue || em.revenue || 0;
   const totalLeads = leads.total || 0;
-  const totalViews = etsy.totalViews || 0;
-  const totalFavs = etsy.totalFavorites || 0;
+  const totalViews = etsy.totalViews || em.views || 0;
+  const totalFavs = etsy.totalFavorites || em.favorites || 0;
+  const totalReviews = em.reviews || BASELINE.reviews;
   const conv = totalViews > 0 ? ((totalSales / totalViews) * 100).toFixed(2) : '—';
+  const usingManualEtsy = !etsy.listings || etsy.listings.length === 0;
 
   const dSales = delta(totalSales, BASELINE.sales);
   const dLeads = delta(totalLeads, BASELINE.leads);
@@ -296,9 +312,9 @@ function render() {
           <div class="sub">Goal: ${BASELINE.goals.leads} signups</div>
         </div>
         <div class="stat">
-          <div class="label">Etsy Performance</div>
+          <div class="label">Etsy Views</div>
           <div class="value muted">${totalViews}</div>
-          <div class="sub">views · ${totalFavs} favs · ${etsy.listingCount || 0} listings</div>
+          <div class="sub">${totalFavs} favs · ${totalReviews}★ reviews ${usingManualEtsy ? '· <span style="color:var(--warn)">manual</span>' : ''}</div>
           <div class="delta ${conv !== '—' && parseFloat(conv) > 1 ? 'up' : 'flat'}">${conv}% conv</div>
         </div>
         <div class="stat">
@@ -338,7 +354,7 @@ function render() {
                   `).join('')}
                 </tbody>
               </table>
-            ` : (etsy.error ? '' : '<div class="empty">No listings or not connected.<br><a href="/tools/bundle-studio/etsy-update.html">Connect Etsy →</a></div>')}
+            ` : (etsy.error ? '' : `<div class="empty">Etsy-API gibt aktuell keine Daten zurück (Auth-Quirk in Debug).<br>Manual-Stats nutzen im rechten Panel "Etsy Manual" →<br><br><a href="https://etsy.com/shop/EndoCraft" target="_blank">Etsy Shop öffnen →</a></div>`)}
           </div>
         </section>
 
@@ -368,6 +384,22 @@ function render() {
             </div>
             <div class="card-foot">
               pinterest.com → Analytics → Monthly Views eintragen
+            </div>
+          </div>
+
+          <h2 style="margin-top:24px">Etsy Manual</h2>
+          <div class="card">
+            <div class="card-head"><h3>Shop Stats</h3><span style="font-size:11px; color:var(--muted)">Updated ${em.updated ? relativeTime(em.updated) : 'never'}</span></div>
+            <div style="padding:14px 18px; display:grid; grid-template-columns:1fr 1fr; gap:8px">
+              <div><label style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px">Sales</label><input id="etsySales" type="number" value="${em.sales}" style="width:100%; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:6px 10px; border-radius:6px; margin-top:4px" /></div>
+              <div><label style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px">Revenue €</label><input id="etsyRevenue" type="number" step="0.01" value="${em.revenue}" style="width:100%; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:6px 10px; border-radius:6px; margin-top:4px" /></div>
+              <div><label style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px">Views (7d)</label><input id="etsyViews" type="number" value="${em.views}" style="width:100%; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:6px 10px; border-radius:6px; margin-top:4px" /></div>
+              <div><label style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px">Favorites</label><input id="etsyFavs" type="number" value="${em.favorites}" style="width:100%; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:6px 10px; border-radius:6px; margin-top:4px" /></div>
+              <div><label style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px">Reviews</label><input id="etsyReviews" type="number" value="${em.reviews}" style="width:100%; background:var(--bg3); border:1px solid var(--line); color:var(--text); padding:6px 10px; border-radius:6px; margin-top:4px" /></div>
+              <div style="display:flex; align-items:flex-end"><button onclick="saveEtsyManual()" style="width:100%; background:var(--gold); color:#000; border:none; padding:8px 14px; border-radius:6px; font-weight:600; cursor:pointer">Save All</button></div>
+            </div>
+            <div class="card-foot">
+              etsy.com → Shop Manager → Stats → kopiere die Zahlen rein. Auto-Fetch noch im Debug.
             </div>
           </div>
         </section>
