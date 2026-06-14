@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Free-Pack Leads · EndoCraft Admin</title>
+<style>
+  :root { --bg:#0b0f17; --bg2:#141a26; --line:#222b3d; --text:#e9eef7; --muted:#7c8aa1; --gold:#d4af37; --accent:#5b8def; --good:#3ec47a; }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 -apple-system,system-ui,Segoe UI,Inter,sans-serif }
+  header { padding:24px 32px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center }
+  h1 { margin:0; font-size:20px; font-weight:600 }
+  .pill { background:var(--bg2); padding:6px 12px; border-radius:999px; font-size:12px; color:var(--muted) }
+  main { padding:32px; max-width:1400px; margin:0 auto }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px }
+  .stat { background:var(--bg2); border:1px solid var(--line); padding:18px; border-radius:10px }
+  .stat .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px }
+  .stat .value { font-size:28px; font-weight:600; color:var(--gold) }
+  .stat .sub { color:var(--muted); font-size:11px; margin-top:4px }
+  .toolbar { display:flex; gap:12px; margin-bottom:16px; align-items:center; flex-wrap:wrap }
+  input[type=text] { background:var(--bg2); border:1px solid var(--line); color:var(--text); padding:8px 12px; border-radius:6px; width:280px }
+  button { background:var(--gold); color:#000; border:none; padding:8px 16px; border-radius:6px; font-weight:600; cursor:pointer }
+  button.ghost { background:transparent; color:var(--text); border:1px solid var(--line) }
+  button:hover { opacity:.85 }
+  table { width:100%; border-collapse:collapse; background:var(--bg2); border-radius:10px; overflow:hidden; border:1px solid var(--line) }
+  th, td { padding:12px 16px; text-align:left; border-bottom:1px solid var(--line); font-size:13px }
+  th { background:#0e1420; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.5px; font-size:11px; cursor:pointer; user-select:none }
+  th:hover { color:var(--text) }
+  tr:hover td { background:rgba(255,255,255,.02) }
+  .source { display:inline-block; padding:2px 8px; border-radius:4px; background:var(--line); font-size:11px; color:var(--text) }
+  .source.pinterest { background:#bd081c33; color:#ff7180 }
+  .source.etsy { background:#f1641e33; color:#ffaa66 }
+  .source.direct { background:#5b8def33; color:#82a8ff }
+  .empty { text-align:center; padding:60px; color:var(--muted) }
+  .login { max-width:400px; margin:120px auto; padding:32px; background:var(--bg2); border:1px solid var(--line); border-radius:12px; text-align:center }
+  .login h2 { margin:0 0 8px; font-size:18px }
+  .login p { color:var(--muted); font-size:13px; margin-bottom:20px }
+  .login input { width:100%; margin-bottom:12px }
+  .error { color:#ff7180; font-size:12px; margin-top:8px }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const BACKEND = 'https://endocraft-production.up.railway.app';
+const KEY_STORAGE = 'endocraft_admin_key_v1';
+
+let state = {
+  key: new URLSearchParams(location.search).get('key') || localStorage.getItem(KEY_STORAGE) || '',
+  leads: [],
+  total: 0,
+  bySource: {},
+  filter: '',
+  sortKey: 'created_at',
+  sortDir: 'desc',
+  loading: false,
+  error: ''
+};
+
+if (state.key) localStorage.setItem(KEY_STORAGE, state.key);
+
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
+}
+
+function loadLeads() {
+  if (!state.key) { renderLogin(); return; }
+  state.loading = true; state.error = ''; render();
+  fetch(`${BACKEND}/api/free-pack/leads?key=${encodeURIComponent(state.key)}`)
+    .then(r => r.json().then(d => ({ ok: r.ok, d })))
+    .then(({ ok, d }) => {
+      if (!ok) {
+        state.error = d.error || 'Unauthorized';
+        if (d.error === 'unauthorized') {
+          localStorage.removeItem(KEY_STORAGE);
+          state.key = '';
+          renderLogin();
+          return;
+        }
+      } else {
+        state.leads = d.leads || [];
+        state.total = d.total || 0;
+        state.bySource = d.bySource || {};
+      }
+      state.loading = false; render();
+    })
+    .catch(e => { state.error = e.message; state.loading = false; render(); });
+}
+
+function renderLogin() {
+  document.getElementById('app').innerHTML = `
+    <div class="login">
+      <h2>Admin Access</h2>
+      <p>Enter your admin key to view free-pack leads.<br>The key is set on the backend as <code>ADMIN_KEY</code> env var.</p>
+      <input type="password" id="keyInput" placeholder="Admin key" autofocus />
+      <button onclick="saveKey()" style="width:100%">Unlock</button>
+      ${state.error ? `<div class="error">${state.error}</div>` : ''}
+    </div>`;
+  setTimeout(() => {
+    const i = document.getElementById('keyInput');
+    if (i) i.addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
+  }, 0);
+}
+
+function saveKey() {
+  const v = document.getElementById('keyInput').value.trim();
+  if (!v) return;
+  state.key = v;
+  localStorage.setItem(KEY_STORAGE, v);
+  history.replaceState(null, '', location.pathname);
+  loadLeads();
+}
+
+function logout() {
+  localStorage.removeItem(KEY_STORAGE);
+  state.key = '';
+  state.leads = [];
+  renderLogin();
+}
+
+function sortLeads(arr) {
+  return [...arr].sort((a, b) => {
+    const av = a[state.sortKey] || '';
+    const bv = b[state.sortKey] || '';
+    const cmp = String(av).localeCompare(String(bv));
+    return state.sortDir === 'asc' ? cmp : -cmp;
+  });
+}
+
+function filterLeads(arr) {
+  if (!state.filter) return arr;
+  const f = state.filter.toLowerCase();
+  return arr.filter(l => (l.email + ' ' + (l.source || '') + ' ' + (l.utm || '')).toLowerCase().includes(f));
+}
+
+function toCSV(rows) {
+  const head = ['email', 'source', 'utm', 'created_at', 'ip'];
+  const esc = v => {
+    const s = v == null ? '' : String(v);
+    return /[,"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  return [head.join(','), ...rows.map(r => head.map(h => esc(r[h])).join(','))].join('\n');
+}
+
+function exportCSV() {
+  const csv = toCSV(filterLeads(state.leads));
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `endocraft-leads-${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+}
+
+function setSort(key) {
+  if (state.sortKey === key) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+  else { state.sortKey = key; state.sortDir = 'desc'; }
+  render();
+}
+
+function render() {
+  if (!state.key) { renderLogin(); return; }
+  const filtered = filterLeads(sortLeads(state.leads));
+  const sourceList = Object.entries(state.bySource).sort((a,b) => b[1] - a[1]);
+  const arrow = k => state.sortKey === k ? (state.sortDir === 'asc' ? ' ↑' : ' ↓') : '';
+  document.getElementById('app').innerHTML = `
+    <header>
+      <h1>Free-Pack Leads <span class="pill">endocraft.app/free</span></h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="pill">${state.total} total</span>
+        <button class="ghost" onclick="loadLeads()">Refresh</button>
+        <button class="ghost" onclick="logout()">Lock</button>
+      </div>
+    </header>
+    <main>
+      <div class="stats">
+        <div class="stat"><div class="label">Total Signups</div><div class="value">${state.total}</div></div>
+        ${sourceList.map(([s, n]) => `<div class="stat"><div class="label">via ${s}</div><div class="value">${n}</div><div class="sub">${((n/state.total)*100).toFixed(0)}% of total</div></div>`).join('')}
+      </div>
+      <div class="toolbar">
+        <input type="text" id="filter" placeholder="Filter email, source, utm..." value="${state.filter.replace(/"/g, '&quot;')}" oninput="state.filter = this.value; render(); document.getElementById('filter').focus()" />
+        <button onclick="exportCSV()">Export CSV (${filtered.length})</button>
+        ${state.loading ? '<span style="color:var(--muted)">Loading…</span>' : ''}
+        ${state.error ? `<span class="error">${state.error}</span>` : ''}
+      </div>
+      ${filtered.length === 0 && !state.loading
+        ? `<div class="empty">${state.total === 0 ? 'No signups yet. Promote endocraft.app/free.' : 'No matches for filter.'}</div>`
+        : `<table>
+            <thead><tr>
+              <th onclick="setSort('email')">Email${arrow('email')}</th>
+              <th onclick="setSort('source')">Source${arrow('source')}</th>
+              <th onclick="setSort('utm')">UTM${arrow('utm')}</th>
+              <th onclick="setSort('created_at')">Signed up${arrow('created_at')}</th>
+            </tr></thead>
+            <tbody>
+              ${filtered.map(l => `<tr>
+                <td>${(l.email || '').replace(/</g,'&lt;')}</td>
+                <td><span class="source ${l.source || 'direct'}">${l.source || 'direct'}</span></td>
+                <td style="color:var(--muted);font-size:12px">${(l.utm || '—').replace(/</g,'&lt;')}</td>
+                <td style="color:var(--muted)">${fmtDate(l.created_at)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>`
+      }
+    </main>`;
+}
+
+loadLeads();
+</script>
+</body>
+</html>
