@@ -33,9 +33,14 @@ it goes in the pack.
 If you've been burned by janky AI shops before, EndoCraft
 isn't one of them.
 
-WANT MORE?
+WANT MORE? · 10% OFF YOUR FIRST PREMIUM PACK
 ─────────────────────────────────────────────────────────────
-Browse our premium asset packs on Etsy:
+As a thank-you, here's 10% off your first premium pack:
+
+  Code:       WELCOME10
+  Auto-apply: https://endocraft.etsy.com?coupon=WELCOME10
+
+Browse premium asset packs on Etsy:
   https://www.etsy.com/shop/EndoCraft
 
 Atmospheric inspiration on Pinterest:

@@ -127,6 +127,14 @@ a:hover{color:var(--gold-bright)}
 .ty-actions a{display:inline-block;padding:14px 22px;border-radius:10px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:.15s}
 .ty-actions .download{background:linear-gradient(180deg,#e6c878,#c7a253);color:#1a1408}
 .ty-actions .download:hover{background:linear-gradient(180deg,#f0d088,#d8b46a)}
+.discount-card{margin-top:24px;padding:20px;background:linear-gradient(135deg,rgba(232,184,109,.08),rgba(74,52,28,.4));border:1px solid rgba(232,184,109,.3);border-radius:12px;text-align:center}
+.discount-label{font-size:13px;color:#d4af37;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
+.discount-code{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px}
+.discount-code code{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;letter-spacing:3px;background:rgba(232,184,109,.12);padding:10px 18px;border-radius:8px;border:1px dashed rgba(232,184,109,.4);color:#f0d088}
+.copy-btn{background:rgba(232,184,109,.2);color:#f0d088;border:1px solid rgba(232,184,109,.4);padding:8px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+.copy-btn:hover{background:rgba(232,184,109,.3)}
+.copy-btn.copied{background:rgba(76,175,125,.25);color:#7bbd8f;border-color:rgba(76,175,125,.4)}
+.discount-card .browse{display:inline-block;color:#d4af37;font-size:13px;text-decoration:underline}
 .ty-actions .browse{background:transparent;color:var(--gold);border:1.5px solid var(--gold-dim)}
 .ty-actions .browse:hover{background:var(--gold-dim);color:#1a1408}
 
@@ -324,9 +332,13 @@ a:hover{color:var(--gold-bright)}
   <div class="ty-inner">
     <div class="ty-check">✓</div>
     <h2>Your pack is ready!</h2>
-    <p>Check your inbox for the download link — or grab it directly below.<br>While you're here: <b>browse our full premium packs</b> for more.</p>
+    <p>Grab the ZIP below. Inside: 5 portraits (1800×2400 PNG) + a quick-reference doc with names, traits and plot hooks.</p>
     <div class="ty-actions">
-      <a class="download" href="/free/endocraft-free-pack.zip" download="endocraft-free-pack.zip">⬇ Download free pack (ZIP)</a>
+      <a class="download" href="/free/endocraft-free-pack.zip" download="endocraft-free-pack.zip">⬇ Download free pack (ZIP · 4.8 MB)</a>
+    </div>
+    <div class="discount-card">
+      <div class="discount-label">As a thank-you · 10% off your first premium pack</div>
+      <div class="discount-code"><code id="discountCode">WELCOME10</code><button class="copy-btn" onclick="copyDiscount()">Copy</button></div>
       <a class="browse" href="https://www.etsy.com/shop/EndoCraft" target="_blank" rel="noopener">Browse premium packs on Etsy →</a>
     </div>
   </div>
@@ -334,6 +346,15 @@ a:hover{color:var(--gold-bright)}
 
 <script>
 const API_BASE = 'https://endocraft-production.up.railway.app';
+function copyDiscount(){
+  const code = document.getElementById('discountCode').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.innerText = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerText = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
 const form = document.getElementById('leadForm');
 const submitBtn = document.getElementById('submitBtn');
 const emailInput = document.getElementById('email');
