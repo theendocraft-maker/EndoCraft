@@ -135,6 +135,15 @@ a:hover{color:var(--gold-bright)}
 .copy-btn:hover{background:rgba(232,184,109,.3)}
 .copy-btn.copied{background:rgba(76,175,125,.25);color:#7bbd8f;border-color:rgba(76,175,125,.4)}
 .discount-card .browse{display:inline-block;color:#d4af37;font-size:13px;text-decoration:underline}
+.wishes-card{margin-top:18px;padding:20px;background:linear-gradient(135deg,rgba(120,80,160,.08),rgba(40,28,74,.4));border:1px solid rgba(160,130,200,.3);border-radius:12px;text-align:left}
+.wishes-label{font-size:13px;color:#c7a8e6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.wishes-help{font-size:13px;color:#a89dbb;margin-bottom:12px;line-height:1.5}
+.wishes-input{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(160,130,200,.3);border-radius:8px;padding:10px 12px;color:#e6dfee;font-family:inherit;font-size:13px;resize:vertical;box-sizing:border-box}
+.wishes-input:focus{outline:none;border-color:rgba(199,168,230,.6);background:rgba(0,0,0,.4)}
+.wishes-submit{margin-top:10px;background:rgba(160,130,200,.2);color:#e0c8f5;border:1px solid rgba(160,130,200,.4);padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px}
+.wishes-submit:hover{background:rgba(160,130,200,.3)}
+.wishes-submit:disabled{opacity:.5;cursor:default}
+.wishes-status{font-size:12px;color:#9fb88f;margin-top:8px;min-height:1.2em}
 .ty-actions .browse{background:transparent;color:var(--gold);border:1.5px solid var(--gold-dim)}
 .ty-actions .browse:hover{background:var(--gold-dim);color:#1a1408}
 
@@ -341,6 +350,13 @@ a:hover{color:var(--gold-bright)}
       <div class="discount-code"><code id="discountCode">WELCOME10</code><button class="copy-btn" onclick="copyDiscount()">Copy</button></div>
       <a class="browse" href="https://www.etsy.com/shop/EndoCraft" target="_blank" rel="noopener">Browse premium packs on Etsy →</a>
     </div>
+    <div class="wishes-card" id="wishesCard">
+      <div class="wishes-label">One more thing — what adventure should we tackle next?</div>
+      <div class="wishes-help">Storm King's Thunder? Tomb of Annihilation? Critical Role? A specific NPC archetype? Drop a wish — we read every one and might build it next.</div>
+      <textarea id="wishText" class="wishes-input" rows="3" maxlength="1000" placeholder="I'm running… and would love to see…"></textarea>
+      <button id="wishBtn" class="wishes-submit" onclick="submitWish()">Send wish</button>
+      <div id="wishStatus" class="wishes-status"></div>
+    </div>
   </div>
 </div>
 
@@ -354,6 +370,34 @@ function copyDiscount(){
     btn.classList.add('copied');
     setTimeout(() => { btn.innerText = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
+}
+
+async function submitWish(){
+  const wishEl = document.getElementById('wishText');
+  const btn = document.getElementById('wishBtn');
+  const status = document.getElementById('wishStatus');
+  const wish = (wishEl.value || '').trim();
+  if (!wish) {
+    status.textContent = 'Type your wish first :)';
+    return;
+  }
+  const emailEl = document.getElementById('email');
+  const email = emailEl ? (emailEl.value || '').trim().toLowerCase() : '';
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await fetch(API_BASE + '/api/wishes/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email || null, wish, source: 'free-thankyou' })
+    });
+    if (!r.ok) throw new Error('Network');
+    btn.textContent = 'Sent ✓';
+    status.textContent = 'Got it — Marco reads every wish. Thanks for the signal.';
+    wishEl.disabled = true;
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Send wish';
+    status.textContent = 'Could not send — try again in a moment.';
+  }
 }
 const form = document.getElementById('leadForm');
 const submitBtn = document.getElementById('submitBtn');

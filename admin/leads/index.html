@@ -144,9 +144,13 @@ function relativeTime(s) {
 function loadAll() {
   if (!state.key) { renderLogin(); return; }
   state.loading = true; state.error = ''; render();
-  fetch(`${BACKEND}/api/cockpit/overview?key=${encodeURIComponent(state.key)}`)
-    .then(r => r.json().then(d => ({ ok: r.ok, status: r.status, d })))
-    .then(({ ok, status, d }) => {
+  const overviewP = fetch(`${BACKEND}/api/cockpit/overview?key=${encodeURIComponent(state.key)}`)
+    .then(r => r.json().then(d => ({ ok: r.ok, status: r.status, d })));
+  const wishesP = fetch(`${BACKEND}/api/wishes?key=${encodeURIComponent(state.key)}`)
+    .then(r => r.ok ? r.json() : { total: 0, items: [] })
+    .catch(() => ({ total: 0, items: [] }));
+  Promise.all([overviewP, wishesP])
+    .then(([{ ok, status, d }, wishes]) => {
       if (!ok) {
         state.error = d.error || `HTTP ${status}`;
         if (status === 401) {
@@ -158,6 +162,7 @@ function loadAll() {
       } else {
         state.data = d;
       }
+      state.wishes = wishes;
       state.loading = false;
       render();
     })
@@ -436,6 +441,31 @@ function render() {
               </tbody>
             </table>
           ` : ''}
+        </div>
+      </section>
+
+      <section>
+        <h2>Adventure Wishes <span class="count">${(state.wishes && state.wishes.total) || 0}</span></h2>
+        <div class="card">
+          <div class="card-head">
+            <h3>Recent wishes from /free thank-you screen</h3>
+            <span style="font-size:11px;color:var(--muted)">What customers want next</span>
+          </div>
+          ${state.wishes && state.wishes.items && state.wishes.items.length ? `
+            <table>
+              <thead><tr><th style="width:40%">Wish</th><th>Email</th><th>Source</th><th>When</th></tr></thead>
+              <tbody>
+                ${state.wishes.items.slice(0, 30).map(w => `
+                  <tr>
+                    <td style="white-space:normal;line-height:1.45;padding:10px 12px">${(w.wish || '').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</td>
+                    <td style="font-size:11px;color:var(--muted)">${(w.email || '— anon —').replace(/</g,'&lt;')}</td>
+                    <td><span class="source ${w.source || 'direct'}">${w.source || 'direct'}</span></td>
+                    <td style="color:var(--muted)">${relativeTime(w.created_at)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : '<div class="empty" style="padding:20px 0">No wishes yet. Buyers + /free visitors will drop them here.</div>'}
         </div>
       </section>
 
