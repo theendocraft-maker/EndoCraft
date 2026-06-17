@@ -38,8 +38,8 @@ a:hover{color:var(--gold-bright)}
 .nav-link{font-family:'Cinzel',serif;font-size:13px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
 
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 24px 60px;background:radial-gradient(ellipse at center,#1a1f2e 0%,#08090e 80%)}
-.hero-bg{position:absolute;inset:0;opacity:.18;background-image:radial-gradient(circle at 20% 30%,#d8b46a 0%,transparent 35%),radial-gradient(circle at 80% 70%,#5a3a4a 0%,transparent 40%);pointer-events:none}
-.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(8,9,14,.4) 60%,rgba(8,9,14,.95) 100%)}
+.hero-bg{position:absolute;inset:0;background-image:url('hero-bg.jpg');background-size:cover;background-position:center 32%;pointer-events:none}
+.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 95% 78% at 50% 44%,rgba(8,9,14,.80) 0%,rgba(8,9,14,.58) 52%,rgba(8,9,14,.9) 100%),linear-gradient(180deg,rgba(8,9,14,.55) 0%,rgba(8,9,14,.2) 32%,rgba(8,9,14,.86) 100%)}
 .hero-inner{position:relative;max-width:720px;text-align:center;z-index:2}
 .eyebrow{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:6px;text-transform:uppercase;margin-bottom:24px;display:inline-flex;align-items:center;gap:14px}
 .eyebrow::before,.eyebrow::after{content:'';width:32px;height:1px;background:var(--gold-dim)}
@@ -76,6 +76,7 @@ a:hover{color:var(--gold-bright)}
 .npc-portrait{aspect-ratio:3/4;background:linear-gradient(180deg,#3a2030 0%,#1a1f2e 100%);border-radius:8px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;border:1px solid var(--gold-dim)}
 .npc-portrait::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top,rgba(216,180,106,.15) 0%,transparent 60%)}
 .npc-silhouette{font-size:80px;color:#3a2030;font-family:'Cinzel Decorative',serif;font-weight:900;opacity:.4}
+.npc-portrait img{width:100%;height:100%;object-fit:cover;object-position:center 18%}
 .npc-name{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:4px}
 .npc-trait{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--muted);min-height:36px}
 
@@ -115,9 +116,9 @@ a:hover{color:var(--gold-bright)}
 .footer-links a:hover{color:var(--gold)}
 .copyright{margin-top:30px;font-size:11px;color:var(--muted);letter-spacing:1px}
 
-.thank-you{position:fixed;inset:0;background:rgba(8,9,14,.97);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+.thank-you{position:fixed;inset:0;background:radial-gradient(ellipse 82% 56% at 50% 6%,rgba(216,180,106,.13) 0%,transparent 55%),rgba(8,9,14,.975);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;overflow-y:auto}
 .thank-you.show{display:flex}
-.ty-inner{max-width:560px;text-align:center;background:var(--panel);border:1px solid var(--gold);border-radius:18px;padding:60px 40px;animation:rise .4s ease-out}
+.ty-inner{max-width:560px;text-align:center;background:linear-gradient(180deg,#1c2130 0%,var(--panel) 60%);border:1px solid rgba(216,180,106,.5);border-radius:18px;padding:52px 40px;animation:rise .4s ease-out;box-shadow:0 24px 70px -20px rgba(0,0,0,.85),0 0 90px -30px rgba(216,180,106,.3)}
 @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .ty-check{width:64px;height:64px;border-radius:50%;background:rgba(123,189,143,.15);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;color:var(--green)}
 .ty-inner h2{font-family:'Cinzel Decorative',serif;font-size:32px;color:var(--gold-bright);margin-bottom:14px;font-weight:900;letter-spacing:1px}
@@ -127,25 +128,35 @@ a:hover{color:var(--gold-bright)}
 .ty-actions a{display:inline-block;padding:14px 22px;border-radius:10px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:.15s}
 .ty-actions .download{background:linear-gradient(180deg,#e6c878,#c7a253);color:#1a1408}
 .ty-actions .download:hover{background:linear-gradient(180deg,#f0d088,#d8b46a)}
-.discount-card{margin-top:24px;padding:20px;background:linear-gradient(135deg,rgba(232,184,109,.08),rgba(74,52,28,.4));border:1px solid rgba(232,184,109,.3);border-radius:12px;text-align:center}
-.discount-label{font-size:13px;color:#d4af37;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
+.discount-card{margin-top:26px;padding:22px;background:linear-gradient(160deg,rgba(216,180,106,.10) 0%,rgba(18,22,32,.55) 100%);border:1px solid rgba(216,180,106,.38);border-radius:14px;text-align:center}
+.discount-label{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-weight:700}
 .discount-code{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px}
-.discount-code code{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;letter-spacing:3px;background:rgba(232,184,109,.12);padding:10px 18px;border-radius:8px;border:1px dashed rgba(232,184,109,.4);color:#f0d088}
-.copy-btn{background:rgba(232,184,109,.2);color:#f0d088;border:1px solid rgba(232,184,109,.4);padding:8px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
-.copy-btn:hover{background:rgba(232,184,109,.3)}
-.copy-btn.copied{background:rgba(76,175,125,.25);color:#7bbd8f;border-color:rgba(76,175,125,.4)}
-.discount-card .browse{display:inline-block;color:#d4af37;font-size:13px;text-decoration:underline}
-.wishes-card{margin-top:18px;padding:20px;background:linear-gradient(135deg,rgba(120,80,160,.08),rgba(40,28,74,.4));border:1px solid rgba(160,130,200,.3);border-radius:12px;text-align:left}
-.wishes-label{font-size:13px;color:#c7a8e6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
-.wishes-help{font-size:13px;color:#a89dbb;margin-bottom:12px;line-height:1.5}
-.wishes-input{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(160,130,200,.3);border-radius:8px;padding:10px 12px;color:#e6dfee;font-family:inherit;font-size:13px;resize:vertical;box-sizing:border-box}
-.wishes-input:focus{outline:none;border-color:rgba(199,168,230,.6);background:rgba(0,0,0,.4)}
-.wishes-submit{margin-top:10px;background:rgba(160,130,200,.2);color:#e0c8f5;border:1px solid rgba(160,130,200,.4);padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px}
-.wishes-submit:hover{background:rgba(160,130,200,.3)}
+.discount-code code{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:700;letter-spacing:3px;background:rgba(216,180,106,.10);padding:11px 20px;border-radius:9px;border:1px dashed rgba(216,180,106,.45);color:var(--gold-bright)}
+.copy-btn{background:transparent;color:var(--gold);border:1px solid var(--gold-dim);padding:11px 16px;border-radius:8px;font-family:'Cinzel',serif;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:.15s}
+.copy-btn:hover{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.copy-btn.copied{background:rgba(123,189,143,.18);color:var(--green);border-color:rgba(123,189,143,.5)}
+.discount-card .browse{display:inline-block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px;transition:.15s}
+.discount-card .browse:hover{color:var(--gold-bright);border-color:var(--gold)}
+.wishes-card{margin-top:16px;padding:22px;background:linear-gradient(160deg,rgba(216,180,106,.04) 0%,rgba(16,19,28,.5) 100%);border:1px solid var(--line);border-radius:14px;text-align:left}
+.wishes-label{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.wishes-help{font-family:'EB Garamond',serif;font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.55}
+.wishes-input{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:9px;padding:12px 14px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical;box-sizing:border-box;transition:.15s}
+.wishes-input::placeholder{color:#6b7185}
+.wishes-input:focus{outline:none;border-color:var(--gold-dim);background:rgba(0,0,0,.4)}
+.wishes-submit{margin-top:12px;background:transparent;color:var(--gold);border:1px solid var(--gold-dim);padding:11px 22px;border-radius:8px;font-family:'Cinzel',serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:.15s}
+.wishes-submit:hover{background:var(--gold);color:#1a1408;border-color:var(--gold)}
 .wishes-submit:disabled{opacity:.5;cursor:default}
-.wishes-status{font-size:12px;color:#9fb88f;margin-top:8px;min-height:1.2em}
+.wishes-status{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--green);margin-top:10px;min-height:1.2em}
 .ty-actions .browse{background:transparent;color:var(--gold);border:1.5px solid var(--gold-dim)}
 .ty-actions .browse:hover{background:var(--gold-dim);color:#1a1408}
+.ty-eyebrow{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:5px;text-transform:uppercase;margin-bottom:12px;display:inline-flex;align-items:center;gap:12px}
+.ty-eyebrow::before,.ty-eyebrow::after{content:'';width:24px;height:1px;background:var(--gold-dim)}
+.ty-seal{width:72px;height:72px;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 34%,#f2d590 0%,#cda659 58%,#9c8244 100%);box-shadow:0 0 0 1px rgba(216,180,106,.65),0 0 34px -6px rgba(216,180,106,.55),inset 0 2px 6px rgba(255,255,255,.4),inset 0 -4px 9px rgba(0,0,0,.32)}
+.ty-seal span{font-family:'Cinzel',serif;font-size:30px;font-weight:900;color:#3a2a08;line-height:1}
+.ty-portraits{display:flex;gap:8px;justify-content:center;margin:24px 0 6px}
+.ty-portraits img{width:100%;max-width:88px;aspect-ratio:3/4;object-fit:cover;object-position:center 16%;border-radius:7px;border:1px solid var(--gold-dim);box-shadow:0 5px 14px -5px rgba(0,0,0,.65)}
+.ty-portraits-label{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:2px}
+@media(max-width:560px){.ty-portraits{gap:6px}.ty-portraits img{max-width:58px}}
 
 .error-msg{background:rgba(217,138,138,.12);border:1px solid var(--red);color:var(--red);padding:12px 16px;border-radius:8px;font-size:13px;text-align:center}
 .success-inline{background:rgba(123,189,143,.12);border:1px solid var(--green);color:var(--green);padding:12px 16px;border-radius:8px;font-size:13px;text-align:center}
@@ -191,11 +202,11 @@ a:hover{color:var(--gold-bright)}
         <span class="trust-label">Etsy Rating</span>
       </div>
       <div class="trust-item">
-        <span class="trust-num">1.5k</span>
+        <span class="trust-num">1.6k</span>
         <span class="trust-label">Monthly Pinterest Views</span>
       </div>
       <div class="trust-item">
-        <span class="trust-num">7</span>
+        <span class="trust-num">8</span>
         <span class="trust-label">Premium Packs Live</span>
       </div>
     </div>
@@ -210,27 +221,27 @@ a:hover{color:var(--gold-bright)}
   </div>
   <div class="cards-row">
     <div class="npc-card">
-      <div class="npc-portrait"><span class="npc-silhouette">B</span></div>
+      <div class="npc-portrait"><img src="portraits/brennan-the-innkeeper.jpg" alt="Brennan the Innkeeper — cinematic D&amp;D NPC portrait" loading="lazy" width="640" height="853"></div>
       <div class="npc-name">BRENNAN</div>
       <div class="npc-trait">„The kind innkeeper who knows too many secrets."</div>
     </div>
     <div class="npc-card">
-      <div class="npc-portrait"><span class="npc-silhouette">V</span></div>
+      <div class="npc-portrait"><img src="portraits/vex-the-wandering-bard.jpg" alt="Vex the Wandering Bard — cinematic D&amp;D NPC portrait" loading="lazy" width="640" height="853"></div>
       <div class="npc-name">VEX</div>
       <div class="npc-trait">„A wandering bard with a forgotten name."</div>
     </div>
     <div class="npc-card">
-      <div class="npc-portrait"><span class="npc-silhouette">C</span></div>
+      <div class="npc-portrait"><img src="portraits/ser-cadwell-the-knight.jpg" alt="Ser Cadwell the Knight — cinematic D&amp;D NPC portrait" loading="lazy" width="640" height="853"></div>
       <div class="npc-name">SER CADWELL</div>
       <div class="npc-trait">„A knight whose oath was never written down."</div>
     </div>
     <div class="npc-card">
-      <div class="npc-portrait"><span class="npc-silhouette">M</span></div>
+      <div class="npc-portrait"><img src="portraits/mira-the-hedge-witch.jpg" alt="Mira the Hedge-Witch — cinematic D&amp;D NPC portrait" loading="lazy" width="640" height="853"></div>
       <div class="npc-name">MIRA</div>
       <div class="npc-trait">„The hedge-witch the villagers fear and visit."</div>
     </div>
     <div class="npc-card">
-      <div class="npc-portrait"><span class="npc-silhouette">T</span></div>
+      <div class="npc-portrait"><img src="portraits/thalon-the-mercenary-captain.jpg" alt="Thalon the Mercenary Captain — cinematic D&amp;D NPC portrait" loading="lazy" width="640" height="853"></div>
       <div class="npc-name">THALON</div>
       <div class="npc-trait">„A mercenary captain who collects old maps."</div>
     </div>
@@ -321,7 +332,7 @@ a:hover{color:var(--gold-bright)}
       </a>
     </div>
     <div class="etsy-cta">
-      <a class="btn-secondary" href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=browse_all&amp;utm_campaign=landing" target="_blank" rel="noopener">Browse all 7 packs on Etsy →</a>
+      <a class="btn-secondary" href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=browse_all&amp;utm_campaign=landing" target="_blank" rel="noopener">Browse all 8 packs on Etsy →</a>
     </div>
   </div>
 </section>
@@ -339,9 +350,18 @@ a:hover{color:var(--gold-bright)}
 
 <div class="thank-you" id="thankYou">
   <div class="ty-inner">
-    <div class="ty-check">✓</div>
+    <div class="ty-seal"><span>✓</span></div>
+    <span class="ty-eyebrow">Your free pack</span>
     <h2>Your pack is ready!</h2>
     <p>Grab the ZIP below. Inside: 5 portraits (1800×2400 PNG) + a quick-reference doc with names, traits and plot hooks.</p>
+    <div class="ty-portraits-label">The party you just unlocked</div>
+    <div class="ty-portraits">
+      <img src="portraits/brennan-the-innkeeper.jpg" alt="Brennan the Innkeeper" loading="lazy">
+      <img src="portraits/vex-the-wandering-bard.jpg" alt="Vex the Wandering Bard" loading="lazy">
+      <img src="portraits/ser-cadwell-the-knight.jpg" alt="Ser Cadwell the Knight" loading="lazy">
+      <img src="portraits/mira-the-hedge-witch.jpg" alt="Mira the Hedge-Witch" loading="lazy">
+      <img src="portraits/thalon-the-mercenary-captain.jpg" alt="Thalon the Mercenary Captain" loading="lazy">
+    </div>
     <div class="ty-actions">
       <a class="download" href="/free/endocraft-free-pack.zip" download="endocraft-free-pack.zip">⬇ Download free pack (ZIP · 4.8 MB)</a>
     </div>
