@@ -6,8 +6,42 @@
 <title>EndoCraft — Premium D&D Asset Packs</title>
 <meta name="description" content="Premium D&D asset packs: NPC portraits, battle maps, locations & item cards. Print & VTT ready. Shop EndoCraft on Etsy.">
 <link rel="canonical" href="https://www.etsy.com/shop/EndoCraft">
-<meta http-equiv="refresh" content="0; url=https://www.etsy.com/shop/EndoCraft">
-<script>window.location.replace('https://www.etsy.com/shop/EndoCraft');</script>
+
+<!-- Privacy-friendly analytics by Plausible (records the visit + traffic source before redirect) -->
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+<!-- noscript fallback: bounce to Etsy if JS is off -->
+<noscript><meta http-equiv="refresh" content="0; url=https://www.etsy.com/shop/EndoCraft"></noscript>
+
+<script>
+  (function () {
+    // Determine traffic source: explicit ?utm_source wins, else infer from referrer.
+    var p = new URLSearchParams(location.search);
+    var src = p.get('utm_source');
+    if (!src) {
+      var ref = (document.referrer || '').toLowerCase();
+      if (/tiktok/.test(ref)) src = 'tiktok';
+      else if (/instagram/.test(ref)) src = 'instagram';
+      else if (/pinterest|pin\.it/.test(ref)) src = 'pinterest';
+    }
+    var social = (src === 'tiktok' || src === 'instagram' || src === 'pinterest');
+    var dest;
+    if (social) {
+      // Social visitors go to the free-pack email funnel (own audience), fully tracked on /free.
+      dest = 'https://endocraft.app/free/?utm_source=' + encodeURIComponent(src) + '&utm_medium=bio&utm_campaign=social';
+    } else {
+      // Everyone else straight to the shop.
+      dest = 'https://www.etsy.com/shop/EndoCraft';
+      if (src) dest += '?utm_source=' + encodeURIComponent(src) + '&utm_medium=referral';
+    }
+    // Give Plausible a moment to record this root pageview before leaving.
+    setTimeout(function () { window.location.replace(dest); }, 650);
+  })();
+</script>
 <style>
 body{margin:0;background:#10131c;color:#e9e4d6;font-family:Georgia,serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
 div{text-align:center;max-width:440px;padding:40px;border:1px solid #9c8244;border-radius:14px}
