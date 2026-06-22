@@ -120,7 +120,7 @@ a:hover{color:var(--gold-bright)}
     <div class="hero-copy">
       <span class="eyebrow">Free for D&amp;D players &amp; dungeon masters</span>
       <h1><span class="free">FREE</span>A Cinematic Cutscene of <em>Your</em> Character</h1>
-      <p class="hero-tag">Tell us your hero or villain. We craft the cutscene — and send it to your inbox.</p>
+      <p class="hero-tag">We craft a cinematic cutscene of your hero or villain — and send it to your inbox. Free.</p>
     </div>
     <div class="monitor">
       <div class="monitor-top"><span class="dot"></span>Now playing</div>
@@ -129,14 +129,13 @@ a:hover{color:var(--gold-bright)}
     </div>
     <div class="hero-cta">
       <form class="form" id="leadForm">
-        <input type="text" id="character" placeholder="Your character or villain…" required maxlength="160" autocomplete="off">
         <div class="form-row">
           <input type="email" id="email" placeholder="your@email.com" required autocomplete="email">
-          <button class="btn-primary" type="submit" id="submitBtn">Forge it — free →</button>
+          <button class="btn-primary" type="submit" id="submitBtn">Get my free cutscene →</button>
         </div>
         <div id="formError"></div>
       </form>
-      <span class="scarcity-badge"><span class="dot"></span>Only the first 50 are free</span>
+      <span class="scarcity-badge"><span class="dot"></span>Only the first 50 are free · no spam</span>
     </div>
    </div>
   </div>
@@ -144,13 +143,13 @@ a:hover{color:var(--gold-bright)}
 
 <div class="thank-you" id="thankYou">
   <div class="ty-inner">
-    <h2>Your cutscene is in the forge 🔥</h2>
-    <p>We've got your request for <b id="tyCharacter">your character</b>. We'll craft it in our cinematic style and email it to you — usually within a few days.</p>
+    <h2>You're on the list 🔥</h2>
+    <p>We'll craft a cinematic cutscene and email it to you. Want to get a head start? Tell us who it should star:</p>
     <div class="wishes-card" id="wishesCard">
-      <div class="wishes-label">Want to add detail? (optional)</div>
-      <div class="wishes-help">Scene, mood, colours, a signature weapon, the moment it should capture — the more you give us, the more it'll feel like <em>yours</em>.</div>
-      <textarea id="wishText" class="wishes-input" rows="3" maxlength="1000" placeholder="It's the moment they enter the throne room… cold blue light, a cracked crown…"></textarea>
-      <button id="wishBtn" class="wishes-submit" onclick="submitDetail()">Add this detail</button>
+      <div class="wishes-label">Your character or villain (optional)</div>
+      <div class="wishes-help">Class, race, name, the vibe — a sentence is enough. Or skip it and we'll ask you by email.</div>
+      <textarea id="wishText" class="wishes-input" rows="3" maxlength="1000" placeholder="Krull, a scarred half-orc barbarian… or the lich-queen of the frozen tower…"></textarea>
+      <button id="wishBtn" class="wishes-submit" onclick="submitDetail()">Send my character →</button>
       <div id="wishStatus" class="wishes-status"></div>
     </div>
     <p class="ty-shop">While you wait — 10% off any pack with <b>WELCOME10</b> · <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=welcome10" target="_blank" rel="noopener">Browse on Etsy →</a></p>
@@ -183,15 +182,15 @@ function getEmail(){ const e=document.getElementById('email'); return e?(e.value
 async function submitDetail(){
   const wishEl=document.getElementById('wishText'),btn=document.getElementById('wishBtn'),status=document.getElementById('wishStatus');
   const detail=(wishEl.value||'').trim();
-  if(!detail){status.textContent='Type a detail first :)';return;}
+  if(!detail){status.textContent='Type your character first :)';return;}
   btn.disabled=true;btn.textContent='Sending…';
   try{
-    const r=await fetch(API_BASE+'/api/wishes/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:getEmail()||null,wish:'CUTSCENE DETAIL: '+detail,source:'free-cutscene-detail'})});
+    const r=await fetch(API_BASE+'/api/wishes/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:getEmail()||null,wish:'CUTSCENE REQUEST: '+detail,source:'free-cutscene'})});
     if(!r.ok)throw new Error('Network');
-    btn.textContent='Added ✓';status.textContent='Got it — this goes straight into your cutscene brief.';wishEl.disabled=true;
-  }catch(e){btn.disabled=false;btn.textContent='Add this detail';status.textContent='Could not send — try again in a moment.';}
+    btn.textContent='Sent ✓';status.textContent='Got it — your character is in our queue. We’ll email your cutscene.';wishEl.disabled=true;
+  }catch(e){btn.disabled=false;btn.textContent='Send my character →';status.textContent='Could not send — try again in a moment.';}
 }
-const form=document.getElementById('leadForm'),submitBtn=document.getElementById('submitBtn'),emailInput=document.getElementById('email'),charInput=document.getElementById('character'),errorEl=document.getElementById('formError'),thankYou=document.getElementById('thankYou');
+const form=document.getElementById('leadForm'),submitBtn=document.getElementById('submitBtn'),emailInput=document.getElementById('email'),errorEl=document.getElementById('formError'),thankYou=document.getElementById('thankYou');
 function detectSource(){
   const p=new URLSearchParams(window.location.search);
   if(p.get('utm_source'))return p.get('utm_source');
@@ -205,22 +204,19 @@ function detectSource(){
 }
 form.addEventListener('submit',async(e)=>{
   e.preventDefault();
-  const email=emailInput.value.trim().toLowerCase(),character=charInput.value.trim();
-  if(!character){errorEl.innerHTML='<div class="error-msg">Tell us your character or villain first.</div>';return;}
+  const email=emailInput.value.trim().toLowerCase();
   if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errorEl.innerHTML='<div class="error-msg">Please enter a valid email address.</div>';return;}
-  errorEl.innerHTML='';submitBtn.disabled=true;submitBtn.textContent='Forging…';
+  errorEl.innerHTML='';submitBtn.disabled=true;submitBtn.textContent='Sending…';
   const source=detectSource();
   try{
     const res=await fetch(API_BASE+'/api/free-pack/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,source,utm:window.location.search||null})});
     if(!res.ok&&res.status!==409){const d=await res.json().catch(()=>({}));throw new Error(d.error||'Network error');}
-    fetch(API_BASE+'/api/wishes/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,wish:'CUTSCENE REQUEST: '+character,source:'free-cutscene'})}).catch(()=>{});
     try{localStorage.setItem('endocraft_free_email',email);}catch(_){}
-    document.getElementById('tyCharacter').textContent=character;
     thankYou.classList.add('show');
-    if(window.plausible)window.plausible('CutsceneRequest');
+    if(window.plausible)window.plausible('CutsceneSignup');
   }catch(err){
     errorEl.innerHTML='<div class="error-msg">Something went wrong: '+(err.message||'unknown')+'. Try again in a moment.</div>';
-    submitBtn.disabled=false;submitBtn.textContent='Forge my cutscene →';
+    submitBtn.disabled=false;submitBtn.textContent='Get my free cutscene →';
   }
 });
 try{if(localStorage.getItem('endocraft_free_email')){emailInput.value=localStorage.getItem('endocraft_free_email');}}catch(_){}
@@ -228,3 +224,4 @@ try{if(localStorage.getItem('endocraft_free_email')){emailInput.value=localStora
 
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     

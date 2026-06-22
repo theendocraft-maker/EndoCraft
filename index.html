@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EndoCraft — Premium D&D Asset Packs</title>
-<meta name="description" content="Premium D&D asset packs: NPC portraits, battle maps, locations & item cards. Print & VTT ready. Shop EndoCraft on Etsy.">
-<link rel="canonical" href="https://www.etsy.com/shop/EndoCraft">
+<title>EndoCraft — Free Cinematic D&D Cutscenes</title>
+<meta name="description" content="Get a free cinematic cutscene of your D&D character or villain. Tell us who — we craft it and email it to you.">
+<link rel="canonical" href="https://endocraft.app/free/">
 
 <!-- Privacy-friendly analytics by Plausible (records the visit + traffic source before redirect) -->
 <script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
@@ -14,12 +14,12 @@
   plausible.init()
 </script>
 
-<!-- noscript fallback: bounce to Etsy if JS is off -->
-<noscript><meta http-equiv="refresh" content="0; url=https://www.etsy.com/shop/EndoCraft"></noscript>
+<!-- noscript fallback: still reach the free funnel if JS is off -->
+<noscript><meta http-equiv="refresh" content="0; url=https://endocraft.app/free/"></noscript>
 
 <script>
   (function () {
-    // Determine traffic source: explicit ?utm_source wins, else infer from referrer.
+    // Send everyone to the free-cutscene funnel; preserve the traffic source for tracking.
     var p = new URLSearchParams(location.search);
     var src = p.get('utm_source');
     if (!src) {
@@ -27,24 +27,18 @@
       if (/tiktok/.test(ref)) src = 'tiktok';
       else if (/instagram/.test(ref)) src = 'instagram';
       else if (/pinterest|pin\.it/.test(ref)) src = 'pinterest';
+      else if (/etsy/.test(ref)) src = 'etsy';
+      else if (/google/.test(ref)) src = 'google';
+      else src = 'direct';
     }
-    var social = (src === 'tiktok' || src === 'instagram' || src === 'pinterest');
-    var dest;
-    if (social) {
-      // Social visitors go to the free-pack email funnel (own audience), fully tracked on /free.
-      dest = 'https://endocraft.app/free/?utm_source=' + encodeURIComponent(src) + '&utm_medium=bio&utm_campaign=social';
-    } else {
-      // Everyone else straight to the shop.
-      dest = 'https://www.etsy.com/shop/EndoCraft';
-      if (src) dest += '?utm_source=' + encodeURIComponent(src) + '&utm_medium=referral';
-    }
+    var dest = 'https://endocraft.app/free/?utm_source=' + encodeURIComponent(src) + '&utm_medium=root&utm_campaign=cutscene';
     // Give Plausible a moment to record this root pageview before leaving.
-    setTimeout(function () { window.location.replace(dest); }, 650);
+    setTimeout(function () { window.location.replace(dest); }, 600);
   })();
 </script>
 <style>
 body{margin:0;background:#10131c;color:#e9e4d6;font-family:Georgia,serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
-div{text-align:center;max-width:440px;padding:40px;border:1px solid #9c8244;border-radius:14px}
+div{text-align:center;max-width:460px;padding:40px;border:1px solid #9c8244;border-radius:14px}
 h1{color:#d8b46a;font-size:26px;letter-spacing:1px;margin:0 0 12px}
 p{color:#9aa0b3;line-height:1.6}
 a{color:#d8b46a;font-weight:700}
@@ -53,8 +47,8 @@ a{color:#d8b46a;font-weight:700}
 <body>
 <div>
   <h1>ENDOCRAFT</h1>
-  <p>Premium D&amp;D asset packs — NPC portraits, battle maps, locations &amp; item cards. Print &amp; VTT ready.</p>
-  <p><a href="https://www.etsy.com/shop/EndoCraft">→ Shop EndoCraft on Etsy</a></p>
+  <p>A free cinematic cutscene of your D&amp;D character — crafted and emailed to you.</p>
+  <p><a href="https://endocraft.app/free/">→ Claim your free cutscene</a></p>
 </div>
 </body>
 </html>
