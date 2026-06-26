@@ -541,7 +541,7 @@ async function generate(){
   document.getElementById('animBtn').style.display='none';
   try{
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({type:cur,subject:subject,variants:3})});
+      body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode})});
     const j=await r.json();
     if(j.urls&&j.urls.length){setBal(balance-d.cost);renderVariants(j.urls);}
     else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}

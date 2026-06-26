@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EndoCraft Studio — Generations (admin)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#10131c;--panel:#181c28;--line:#2c3247;--gold:#d8b46a;--gold-dim:#9c8244;--ink:#e9e4d6;--muted:#9aa0b3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:15px}
+.top{position:sticky;top:0;background:#141826ee;backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:'Cinzel',serif;font-weight:700;color:var(--gold);font-size:18px}
+.muted{color:var(--muted)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px}
+input,button{font-family:inherit;font-size:14px}
+input{background:#0c0e16;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 12px}
+button{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border:1px solid var(--gold-dim);border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer}
+.btn2{background:var(--panel);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.gen{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:14px;margin-bottom:16px}
+.gen-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.pill{border:1px solid var(--gold-dim);color:var(--gold);border-radius:999px;padding:3px 10px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.type{color:var(--muted);text-transform:capitalize}
+.subj{color:var(--ink)}
+.imgs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.imgs a{aspect-ratio:1;border-radius:10px;border:1px solid var(--line);background:#0c0e16 center/cover no-repeat;display:block}
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.empty{color:var(--muted);text-align:center;padding:60px 0}
+@media(max-width:560px){.imgs{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="brand">EndoCraft</span><span class="muted">Studio · generations (admin only)</span>
+  <span style="flex:1"></span>
+  <span id="count" class="muted"></span>
+</div>
+<div class="wrap">
+  <div class="bar" id="auth">
+    <input id="key" type="password" placeholder="Admin key" style="min-width:240px">
+    <button onclick="save()">Unlock</button>
+    <span class="muted">Stored locally on this device.</span>
+  </div>
+  <div class="bar" id="tools" style="display:none">
+    <button class="btn2" onclick="load()">↻ Refresh</button>
+    <button class="btn2" onclick="logout()">Sign out</button>
+  </div>
+  <div id="list"></div>
+</div>
+<script>
+const API='https://endocraft-production.up.railway.app';
+function px(u){return API+'/api/image/proxy?url='+encodeURIComponent(u);}
+function key(){return localStorage.getItem('ec_admin_key')||'';}
+function save(){const k=document.getElementById('key').value.trim();if(!k)return;localStorage.setItem('ec_admin_key',k);load();}
+function logout(){localStorage.removeItem('ec_admin_key');document.getElementById('auth').style.display='flex';document.getElementById('tools').style.display='none';document.getElementById('list').innerHTML='';document.getElementById('count').textContent='';}
+function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function when(t){try{return new Date(t).toLocaleString();}catch(e){return t;}}
+async function load(){
+  const k=key();if(!k){return;}
+  document.getElementById('auth').style.display='none';
+  document.getElementById('tools').style.display='flex';
+  const list=document.getElementById('list');list.innerHTML='<div class="empty">Loading…</div>';
+  try{
+    const r=await fetch(API+'/api/admin/studio-gallery?key='+encodeURIComponent(k),{cache:'no-store'});
+    if(r.status===401){list.innerHTML='<div class="empty">Wrong admin key.</div>';logout();return;}
+    const j=await r.json();const items=j.items||[];
+    document.getElementById('count').textContent=items.length+' generations';
+    if(!items.length){list.innerHTML='<div class="empty">No generations yet. They appear here once testers create something.</div>';return;}
+    list.innerHTML=items.map(function(it){
+      var urls=Array.isArray(it.urls)?it.urls:[];
+      return '<div class="gen"><div class="gen-h"><span class="pill">'+esc(it.code||'no-code')+'</span><span class="type">'+esc(it.type)+'</span><span class="subj">'+esc(it.subject)+'</span><span style="flex:1"></span><span class="muted">'+when(it.created_at)+'</span></div>'
+       +'<div class="imgs">'+urls.map(function(u){return '<a href="'+px(u)+'" target="_blank" rel="noopener" style="background-image:url('+px(u)+')"></a>';}).join('')+'</div></div>';
+    }).join('');
+  }catch(e){list.innerHTML='<div class="empty">Could not load — '+esc(e.message)+'</div>';}
+}
+if(key())load();
+</script>
+</body>
+</html>
