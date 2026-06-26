@@ -85,6 +85,11 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .spin{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:s 1s linear infinite}
 @keyframes s{to{transform:rotate(360deg)}}
 .resbar{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.vargrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.varimg{aspect-ratio:1;border-radius:9px;border:1px solid var(--line);background:#0c0e16 center/cover no-repeat;cursor:pointer;transition:.15s;position:relative}
+.varimg:hover{border-color:var(--gold-dim)}
+.varimg.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-dim)}
+.varimg.sel:after{content:'\2713';position:absolute;top:6px;right:6px;width:18px;height:18px;line-height:18px;text-align:center;font-size:11px;color:#1a1408;background:var(--gold);border-radius:50%;font-weight:700}
 .gate{border:1px solid var(--gold-dim);border-radius:12px;padding:18px;background:rgba(216,180,106,.05);margin-bottom:6px}
 .gate-h{font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
 .gate-p{color:var(--muted);font-size:14px;margin-bottom:12px}
@@ -362,7 +367,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     <div class="topup"><b>60 credits</b><span>€9.99 · save 17%</span></div>
     <div class="topup"><b>150 credits</b><span>€19.99 · save 33%</span></div>
   </div>
-  <p class="note">Image = 1 credit · Cutscene clip (5s) = 4 credits. Credits are deducted before each generation, so you're never billed for surprises. Subscriptions renew monthly · cancel anytime.</p>
+  <p class="note">Every generation creates 3 variants to choose from = 3 credits · Cutscene clip (5s) = 4 credits. Credits are deducted per generation, so you're never billed for surprises. Subscriptions renew monthly · cancel anytime.</p>
 </section>
 
 <footer>EndoCraft Studio · Early access — join the waitlist · endocraft.app</footer>
@@ -387,20 +392,20 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 
 <script>
 const API='https://endocraft-production.up.railway.app';
-// --- Closed-beta invite codes: CODE -> starting credit budget (1 img = 1 credit, 1 clip = 4 credits) ---
-const INVITES={'EC-RAVEN-7F3':20,'EC-EMBER-2K9':20,'EC-VEXX-5M1':20,'EC-GLOOM-8Q4':20,'EC-ORACLE-3H6':20,'EC-FROST-9B2':20,'EC-WYRM-4T7':20,'EC-RELIC-6N8':20,'EC-CRYPT-1J5':20,'EC-OMEN-7D3':20};
+// --- Closed-beta invite codes: CODE -> starting credit budget (1 generation = 3 variants = 3 credits, 1 clip = 4 credits) ---
+const INVITES={'EC-RAVEN-7F3':30,'EC-EMBER-2K9':30,'EC-VEXX-5M1':30,'EC-GLOOM-8Q4':30,'EC-ORACLE-3H6':30,'EC-FROST-9B2':30,'EC-WYRM-4T7':30,'EC-RELIC-6N8':30,'EC-CRYPT-1J5':30,'EC-OMEN-7D3':30};
 let curCode=null,balance=0,lastImageUrl=null;
 const TPL={
-  npc:{label:'1 credit',cost:1,head:'Tips for great NPCs',
+  npc:{label:'3 credits',cost:3,head:'Tips for great NPCs',
     tpl:'A grizzled human innkeeper, kind tired eyes, leaning on the bar, warm tavern light',
     tips:['One subject only — portraits read best','Lead with emotion (kind, weary, fierce) over "pretty"','Chest-up or head-and-shoulders framing','Name a defining detail: a scar, an heirloom, a look','Skip text — we never bake words into art']},
-  monster:{label:'1 credit',cost:1,head:'Tips for great monsters',
+  monster:{label:'3 credits',cost:3,head:'Tips for great monsters',
     tpl:'A towering swamp troll, mossy hide, hunched and watchful, mist between dead trees',
     tips:['Keep the mouth closed — open maws render badly','Menace through pose + light, not action mid-swing','Place it in its lair for atmosphere','Avoid projectiles or spells mid-flight','One creature, clear silhouette']},
-  location:{label:'1 credit',cost:1,head:'Tips for great locations',
+  location:{label:'3 credits',cost:3,head:'Tips for great locations',
     tpl:'A ruined cathedral at dusk, broken stained glass, shafts of fading light, dust in the air',
     tips:['Describe an empty, quiet space — set the mood','Name the light: torchlight, moonbeam, golden hour','Add 2–3 key features, not ten','Wide establishing shot reads as "place"','Atmosphere words: misty, hushed, sacred, abandoned']},
-  item:{label:'1 credit',cost:1,head:'Tips for great items & cards',
+  item:{label:'3 credits',cost:3,head:'Tips for great items & cards',
     tpl:'An ancient sealed letter on aged parchment, dark wax seal, candlelit still life',
     tips:['Frame as a still life / handout','Name material + wear: cracked leather, tarnished gold','One light source = drama','Great for cards, handouts, loot reveals','Keep it a single hero object']},
   clip:{label:'4 credits',cost:4,head:'Tips for great cutscene clips',
@@ -429,33 +434,40 @@ async function generate(){
   if(cur==='clip')return genClip(false);
   const d=TPL[cur];
   if(balance<d.cost){budgetUsed();return;}
-  const prompt=document.getElementById('prompt').value.trim();
-  if(!prompt)return;
+  const subject=document.getElementById('prompt').value.trim();
+  if(!subject)return;
   const res=document.getElementById('result');res.classList.add('show');
   const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
-  bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';frame.innerHTML='<div class="spin"></div>';
+  frame.style.aspectRatio='16 / 9';bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';
+  frame.innerHTML='<div style="text-align:center"><div class="spin" style="margin:0 auto 10px"></div>Crafting 3 variants in the EndoCraft look… ~30–60s.</div>';
+  document.getElementById('animBtn').style.display='none';
   try{
-    const r=await fetch(API+'/api/image',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt:prompt,model:'bytedance/seedream-4-5',width:1800,height:1800})});
+    const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({type:cur,subject:subject,variants:3})});
     const j=await r.json();
-    if(j.url){
-      lastImageUrl=j.url;
-      const proxied=API+'/api/image/proxy?url='+encodeURIComponent(j.url);
-      frame.style.backgroundImage='url('+proxied+')';frame.style.backgroundSize='cover';
-      frame.style.backgroundPosition='center';frame.innerHTML='';
-      const dl=document.getElementById('dlBtn');dl.href=proxied;dl.setAttribute('download','endocraft-asset.jpg');
-      document.getElementById('animBtn').style.display='inline-flex';
-      bar.style.display='flex';setBal(balance-d.cost);
-    }else{
-      frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';
-    }
+    if(j.urls&&j.urls.length){setBal(balance-d.cost);renderVariants(j.urls);}
+    else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}
   }catch(e){frame.innerHTML='<div style="padding:16px">Network hiccup — try again.</div>';}
+}
+function ecPx(u){return API+'/api/image/proxy?url='+encodeURIComponent(u);}
+function renderVariants(urls){
+  const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
+  frame.style.aspectRatio='auto';frame.style.background='transparent';frame.style.backgroundImage='';
+  frame.innerHTML='<div class="vargrid">'+urls.map((u,i)=>'<div class="varimg'+(i===0?' sel':'')+'" data-i="'+i+'" style="background-image:url('+ecPx(u)+')"></div>').join('')+'</div>';
+  frame.querySelectorAll('.varimg').forEach(el=>el.onclick=()=>{frame.querySelectorAll('.varimg').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');selectVariant(urls[+el.dataset.i]);});
+  selectVariant(urls[0]);
+  bar.style.display='flex';
+}
+function selectVariant(u){
+  lastImageUrl=u;
+  const dl=document.getElementById('dlBtn');dl.href=ecPx(u);dl.setAttribute('download','endocraft-asset.jpg');
+  document.getElementById('animBtn').style.display='inline-flex';
 }
 async function genClip(useDefaultMotion){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
   const COST=4;
   const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
-  document.getElementById('result').classList.add('show');
+  document.getElementById('result').classList.add('show');frame.style.aspectRatio='16 / 9';
   if(!lastImageUrl){bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';frame.innerHTML='<div style="text-align:center;padding:16px">Generate an image first — then bring it to life here. ✦</div>';return;}
   if(balance<COST){budgetUsed();return;}
   let motion=document.getElementById('prompt').value.trim();
@@ -519,6 +531,20 @@ async function submitWl(){
   btn.textContent='Join the waitlist';btn.disabled=false;
 }
 document.querySelectorAll('.libcard .dl').forEach(b=>b.onclick=waitlist);
+// showroom: turn the static tiles into real animated location loops
+(function(){
+  const LOOPS={'The Tavern':'tavern','The Old Forest':'forest','The Lost Library':'library','The Frozen Cavern':'icecave','The Forgotten Dungeon':'dungeon','The Empty Throne':'throne'};
+  document.querySelectorAll('.gal .tile').forEach(t=>{
+    const lab=t.querySelector('.lab');if(!lab)return;
+    const key=LOOPS[lab.textContent.trim()];if(!key)return;
+    const v=document.createElement('video');
+    v.src='showroom/'+key+'_loop.mp4';v.autoplay=true;v.loop=true;v.muted=true;v.defaultMuted=true;v.playsInline=true;
+    v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';
+    v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0';
+    t.insertBefore(v,t.firstChild);
+    const p=v.play();if(p&&p.catch)p.catch(()=>{});
+  });
+})();
 load('npc');
 </script>
 </body>
