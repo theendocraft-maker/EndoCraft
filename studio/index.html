@@ -97,6 +97,15 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .gate-row{display:flex;gap:10px}
 .gate-input{flex:1;height:46px;background:#0c0e16;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:0 14px;text-transform:uppercase;letter-spacing:2px;font-family:'Cinzel',serif;font-size:14px}
 .gate-err{color:#e0846b;font-size:13px;margin-top:8px}
+.fbBtn{position:fixed;right:16px;bottom:16px;z-index:50;background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border:1px solid var(--gold-dim);border-radius:999px;padding:11px 18px;font-family:'Cinzel',serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 10px 26px -12px var(--gold)}
+.fbBack{position:fixed;inset:0;z-index:70;background:rgba(8,10,16,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px}
+.fbCard{background:var(--panel);border:1px solid var(--gold-dim);border-radius:16px;padding:24px;max-width:440px;width:100%}
+.fbH{font-family:'Cinzel',serif;color:var(--gold);font-size:18px;margin-bottom:6px}
+.fbP{color:var(--muted);font-size:14px;margin-bottom:14px}
+.fbText{width:100%;min-height:120px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px}
+.fbText:focus{outline:none;border-color:var(--gold)}
+.fbRow{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.fbDone{color:var(--green);text-align:center;margin-top:12px;font-family:'EB Garamond',serif}
 
 /* library / freebies */
 .member{background:linear-gradient(180deg,rgba(216,180,106,.07),transparent);border:1px solid var(--gold-dim);border-radius:16px;padding:30px}
@@ -531,6 +540,16 @@ async function submitWl(){
   btn.textContent='Join the waitlist';btn.disabled=false;
 }
 document.querySelectorAll('.libcard .dl').forEach(b=>b.onclick=waitlist);
+function fbOpen(){document.getElementById('fbBack').style.display='flex';document.getElementById('fbDone').style.display='none';}
+function fbClose(){document.getElementById('fbBack').style.display='none';}
+async function fbSubmit(){
+  const el=document.getElementById('fbText');const msg=el.value.trim();if(!msg)return;
+  const ctx='[STUDIO '+(curCode||'no-code')+' | '+cur+(lastImageUrl?' | generated':'')+'] ';
+  const btn=document.getElementById('fbSend');btn.textContent='Sending…';btn.disabled=true;
+  try{await fetch(API+'/api/wishes/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wish:ctx+msg,source:'studio-feedback'})});}catch(e){}
+  el.value='';btn.textContent='Send feedback';btn.disabled=false;
+  document.getElementById('fbDone').style.display='block';setTimeout(fbClose,1500);
+}
 // showroom: turn the static tiles into real animated location loops — lazy-played only while visible
 (function(){
   const LOOPS={'The Tavern':'tavern','The Old Forest':'forest','The Lost Library':'library','The Frozen Cavern':'icecave','The Forgotten Dungeon':'dungeon','The Empty Throne':'throne'};
@@ -555,5 +574,19 @@ document.querySelectorAll('.libcard .dl').forEach(b=>b.onclick=waitlist);
 })();
 load('npc');
 </script>
+<!-- in-app feedback -->
+<button id="fbBtn" class="fbBtn" onclick="fbOpen()">✦ Feedback</button>
+<div id="fbBack" class="fbBack" onclick="if(event.target===this)fbClose()">
+  <div class="fbCard">
+    <div class="fbH">Tell us what you think</div>
+    <p class="fbP">What worked, what felt off, what you'd want next — it goes straight to the team and helps us tune the look.</p>
+    <textarea id="fbText" class="fbText" placeholder="Your feedback…"></textarea>
+    <div class="fbRow">
+      <button class="btn" onclick="fbClose()">Cancel</button>
+      <button class="btn primary" id="fbSend" onclick="fbSubmit()">Send feedback</button>
+    </div>
+    <div id="fbDone" class="fbDone" style="display:none">Thank you — got it! ✦</div>
+  </div>
+</div>
 </body>
 </html>
