@@ -122,7 +122,96 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 
 .note{font-family:'EB Garamond',serif;color:var(--muted);font-size:14px;text-align:center;max-width:680px;margin:30px auto 0;border-top:1px solid var(--line);padding-top:22px}
 footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
-@media(max-width:880px){.studio .body{grid-template-columns:1fr}.studio .right{border-left:none;border-top:1px solid var(--line)}.gal,.libgrid{grid-template-columns:repeat(2,1fr)}.tiers{grid-template-columns:1fr}.hero h1{font-size:34px}}
+/* ===== PREMIUM PASS + MOBILE-FIRST ===== */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+::selection{background:rgba(216,180,106,.32);color:#fff}
+section[id],header[id]{scroll-margin-top:74px}
+img{max-width:100%}
+
+/* cinematic vignette + film grain over the whole page */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:8;
+  background:radial-gradient(135% 110% at 50% -10%,transparent 52%,rgba(0,0,0,.5) 100%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:8;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topbar{z-index:40}
+#wlBack{z-index:60}
+
+/* refined gold accents */
+.brand,.hero h1 em,.sec-head h2 span,.tier .tn{
+  background:linear-gradient(180deg,#f2d68c,#c79f4e 90%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.brand .dot{box-shadow:0 0 14px var(--gold),0 0 4px var(--gold)}
+.sec-head:after{content:"";display:block;width:58px;height:2px;margin:16px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold-dim),var(--gold),var(--gold-dim),transparent)}
+
+/* fluid type */
+.hero h1{font-size:clamp(30px,6.4vw,48px);letter-spacing:.2px}
+.hero p.lead{font-size:clamp(16px,3vw,21px)}
+.sec-head h2{font-size:clamp(23px,4.4vw,32px)}
+.brand{font-size:clamp(17px,4.4vw,20px)}
+.hero .inner{padding:clamp(54px,9vw,84px) 0 clamp(48px,7vw,72px)}
+
+/* richer hero scrim */
+.hero .bgimg{opacity:.4}
+.hero .scrim{background:linear-gradient(180deg,rgba(16,19,28,.15),rgba(16,19,28,.6) 62%,var(--bg)),radial-gradient(120% 120% at 26% 16%,transparent,var(--bg) 82%)}
+
+/* depth + motion on surfaces */
+.studio{box-shadow:0 28px 70px -38px #000}
+.member{box-shadow:0 24px 64px -40px #000}
+.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.btn.primary{box-shadow:0 10px 24px -14px var(--gold)}
+.gal .tile,.libcard,.tier{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.gal .tile{box-shadow:0 12px 32px -22px #000}
+.gal .tile:hover{transform:translateY(-3px);border-color:var(--gold-dim);box-shadow:0 22px 46px -24px #000}
+.libcard:hover{transform:translateY(-2px);border-color:var(--gold-dim)}
+.tier:hover{transform:translateY(-3px)}
+.gal .tile .anim{backdrop-filter:blur(3px)}
+
+/* inputs: clear gold focus ring + comfortable targets */
+textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,180,106,.13)}
+.gate-input{height:48px}
+.studio .types button{min-height:48px}
+
+/* lock glyph */
+.lk svg,.gate-h svg{color:var(--gold);vertical-align:-2px}
+
+/* ===== responsive ===== */
+@media(max-width:900px){
+  .studio .body{grid-template-columns:1fr}
+  .studio .right{border-left:none;border-top:1px solid var(--line)}
+  .gal{grid-template-columns:repeat(2,1fr)}
+  .libgrid{grid-template-columns:repeat(3,1fr)}
+  .tiers{grid-template-columns:1fr;max-width:430px;margin:0 auto}
+  .nav{display:none}
+}
+@media(max-width:640px){
+  .wrap{padding:0 16px}
+  section{padding:46px 0}
+  .topbar{padding:11px 0}
+  .topbar .wrap{gap:10px}
+  .proto{display:none}
+  .pill{font-size:11px;padding:4px 10px}
+  .hero p.lead{margin:14px 0 22px}
+  .hero .cta{flex-direction:column;align-items:stretch}
+  .hero .cta .btn{width:100%}
+  .btn.lg{padding:14px 22px}
+  .trust{flex-direction:column;gap:9px;font-size:12.5px;margin-top:22px}
+  .sec-head{margin-bottom:26px}
+  .libgrid{grid-template-columns:repeat(2,1fr)}
+  .member{padding:22px 18px}
+  .studio .types{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .studio .types::-webkit-scrollbar{display:none}
+  .studio .types button{flex:0 0 auto;min-width:auto;padding:14px 18px;white-space:nowrap}
+  .studio .left,.studio .right{padding:18px}
+  .genrow{flex-wrap:wrap;gap:10px}
+  .genrow #balInline{margin-left:0!important;width:100%}
+  .gate-row{flex-direction:column}
+  .gate-input,.gate-row .btn{width:100%}
+  .topups{gap:10px}
+}
+@media(max-width:420px){
+  .gal{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -189,7 +278,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted);font-s
     <div class="body">
       <div class="left">
         <div class="gate" id="gate">
-          <div class="gate-h">🔒 Closed Beta — invite only</div>
+          <div class="gate-h"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Closed Beta — invite only</div>
           <div class="gate-p">Enter your invite code to start creating. No code yet? <a href="#pricing">Join the waitlist.</a></div>
           <div class="gate-row">
             <input id="gateCode" class="gate-input" placeholder="INVITE CODE" autocomplete="off" spellcheck="false">
@@ -198,7 +287,7 @@ footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted);font-s
           <div class="gate-err" id="gateErr" style="display:none">That code isn't valid. Check it and try again.</div>
         </div>
         <div id="genWrap" style="display:none">
-        <div class="lockrow"><span class="lk">🔒</span> EndoCraft cinematic look — locked in automatically</div>
+        <div class="lockrow"><span class="lk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span> EndoCraft cinematic look — locked in automatically</div>
         <label class="fl">Describe it</label>
         <textarea class="prompt" id="prompt"></textarea>
         <div class="genrow">
