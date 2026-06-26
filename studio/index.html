@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EndoCraft Studio — Create in our look</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#10131c; --panel:#181c28; --panel2:#1f2433; --line:#2c3247;
@@ -153,6 +153,26 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .mm-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .mm-b{display:inline-flex;margin:0 8px 8px 0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;transition:.15s}
 .mm-b:hover{border-color:var(--gold);color:var(--gold)}
+/* ===== DIRECTION A: GAME-TITLE RESKIN ===== */
+.hero h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(40px,8vw,84px);line-height:.97;letter-spacing:1px;color:#f2e7cd;text-shadow:0 2px 0 #6e531f,0 3px 2px rgba(0,0,0,.5),0 0 46px rgba(216,180,106,.28)}
+.hero h1 em{font-style:normal;background:linear-gradient(180deg,#f6dd97,#c79f4e 92%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hero .kicker{display:inline-flex;align-items:center;gap:14px;color:#d8b46a}
+.hero .kicker:before,.hero .kicker:after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.hero-vid{opacity:.55}
+.brand{font-family:'Cinzel Decorative',serif;letter-spacing:.5px}
+.nav a{text-transform:uppercase;letter-spacing:1.5px;font-size:12px}
+.btn{border-radius:3px;letter-spacing:.5px}
+.btn.primary{background:linear-gradient(180deg,#ecca7e,#c9a14e);border-color:#7a5e23;color:#1c1408;box-shadow:0 6px 18px -8px #000,inset 0 1px 0 #fff6d8,inset 0 -2px 0 #8a6a2a;text-shadow:0 1px 0 #f3e1ad}
+.hero .cta .btn{font-family:'Cinzel',serif;text-transform:uppercase;letter-spacing:2px;font-size:13px}
+.hero .cta .btn.lg{clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);padding-left:34px;padding-right:34px}
+.sec-head h2{font-family:'Cinzel',serif;letter-spacing:2px;text-transform:uppercase}
+.sec-head:after{content:"\25C6 \2726 \25C6";display:block;width:auto;height:auto;background:none;color:var(--gold-dim);font-size:12px;letter-spacing:8px;margin-top:14px}
+.gal .tile .lab,.galp .tile .lab{font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;font-size:11.5px}
+.char-head{font-family:'Cinzel',serif;letter-spacing:1px}
+.studio,.member{position:relative}
+.studio:before,.studio:after,.member:before,.member:after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--gold-dim);pointer-events:none;opacity:.65;z-index:3}
+.studio:before,.member:before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.studio:after,.member:after{bottom:-1px;right:-1px;border-left:0;border-top:0}
 @media(max-width:560px){.galp{grid-template-columns:repeat(2,1fr)}}
 .member .libcard .dl{display:none}
 #locDlWrap{text-align:center;margin-top:24px}
