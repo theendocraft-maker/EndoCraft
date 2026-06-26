@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EndoCraft — Design-Richtungen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700&family=EB+Garamond:ital@0;1&family=UnifrakturCook:wght@700&family=Archivo+Black&family=Oswald:wght@500;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#06070b;color:#fff;font-family:'DM Sans',sans-serif}
+.lab{position:absolute;top:18px;left:18px;z-index:9;font-family:'DM Sans';font-size:12px;letter-spacing:2px;text-transform:uppercase;background:#000a;border:1px solid #d8b46a;color:#d8b46a;padding:7px 14px;border-radius:999px}
+.dir{position:relative;min-height:640px;overflow:hidden;border-bottom:3px solid #d8b46a}
+.wrap{max-width:1120px;margin:0 auto;padding:0 40px;position:relative;z-index:3;height:640px;display:flex;flex-direction:column;justify-content:center}
+
+/* ===== A · GAME TITLE / CINEMATIC MENU ===== */
+.A{background:#05060a}
+.A .bg{position:absolute;inset:0;background:url(examples/loc-throne.jpg) center/cover;opacity:.55}
+.A .vig{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 35%,transparent,#05060a 78%),linear-gradient(180deg,#05060a55,#05060a)}
+.A .kick{font-family:'Cinzel';letter-spacing:8px;font-size:13px;color:#c9a25a;text-transform:uppercase;text-align:center;margin-bottom:10px}
+.A h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:96px;line-height:.9;text-align:center;color:#f4e9cf;text-shadow:0 2px 0 #7a5e23,0 0 40px #d8b46a55;letter-spacing:2px}
+.A .sub{font-family:'Cinzel';letter-spacing:18px;font-size:22px;color:#d8b46a;text-align:center;margin:14px 0 36px;padding-left:18px}
+.A .menu{display:flex;gap:0;justify-content:center;align-items:center}
+.A .mi{font-family:'Cinzel';font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#d8cdb0;padding:14px 30px;cursor:pointer;position:relative}
+.A .mi.on{color:#06070b;background:linear-gradient(180deg,#e7c477,#c39c4d);clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);padding:14px 42px;box-shadow:0 0 30px #d8b46a66}
+.A .mi+.mi{margin-left:6px}
+.A .rune{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);color:#d8b46a;font-size:20px;letter-spacing:14px;opacity:.7}
+
+/* ===== B · ARCANE GRIMOIRE ===== */
+.B{background:#1a130b}
+.B .page{position:absolute;inset:26px;border-radius:6px;background:
+   radial-gradient(120% 120% at 30% 0%,#efe2c2,#e3d2a8 60%,#cdb888);
+   box-shadow:inset 0 0 120px #00000040, inset 0 0 0 2px #b79b5e;}
+.B .page:after{content:"";position:absolute;inset:0;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.B .wrap{height:640px;color:#2a2012}
+.B .corner{position:absolute;width:120px;height:120px;border:2px solid #9c7c3a;opacity:.55}
+.B .c1{top:48px;left:62px;border-right:0;border-bottom:0}
+.B .c2{top:48px;right:62px;border-left:0;border-bottom:0}
+.B .c3{bottom:48px;left:62px;border-right:0;border-top:0}
+.B .c4{bottom:48px;right:62px;border-left:0;border-top:0}
+.B .ghead{font-family:'UnifrakturCook',cursive;font-weight:700;font-size:72px;line-height:1;color:#3a2a14;max-width:760px}
+.B .drop{float:left;font-family:'UnifrakturCook',cursive;font-size:128px;line-height:.8;color:#8c2b22;margin:6px 16px 0 0}
+.B .gbody{font-family:'EB Garamond',serif;font-size:21px;line-height:1.6;color:#4a3a22;max-width:560px;margin-top:18px}
+.B .seal{position:absolute;right:120px;top:50%;transform:translateY(-50%) rotate(-8deg);width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#b5392c,#7a1f17);box-shadow:0 6px 18px #0005, inset 0 0 0 4px #5e150f;display:flex;align-items:center;justify-content:center;font-family:'Cinzel';color:#efc9b0;font-size:11px;letter-spacing:2px;text-align:center;text-transform:uppercase}
+.B .gbtn{display:inline-block;margin-top:26px;font-family:'Cinzel';font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#f2e6c8;background:#3a2a14;border:1px solid #1f1608;padding:14px 28px;border-radius:3px}
+
+/* ===== C · DARK-FANTASY MAGAZINE ===== */
+.C{background:#0c0c10}
+.C .grid{position:absolute;inset:0;display:grid;grid-template-columns:1fr 44%}
+.C .img{background:url(examples/mon-dragon.jpg) center/cover;position:relative}
+.C .img:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0c0c10,transparent 30%)}
+.C .side{position:absolute;left:40px;top:0;height:640px;display:flex;align-items:center}
+.C .vert{writing-mode:vertical-rl;transform:rotate(180deg);font-family:'Oswald';font-weight:700;letter-spacing:6px;text-transform:uppercase;color:#b3322a;font-size:15px}
+.C .wrap{height:640px;padding-left:90px}
+.C .num{font-family:'Archivo Black';font-size:24px;color:#b3322a;letter-spacing:-1px}
+.C h1{font-family:'Archivo Black',sans-serif;font-size:104px;line-height:.86;letter-spacing:-3px;color:#f3f0ea;margin:8px 0 0;text-transform:uppercase}
+.C h1 em{font-style:normal;color:#b3322a}
+.C .quote{font-family:'EB Garamond',serif;font-style:italic;font-size:22px;color:#c9c4ba;max-width:440px;margin-top:24px;border-left:3px solid #b3322a;padding-left:16px}
+.C .cbtn{display:inline-block;margin-top:28px;font-family:'Oswald';font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:14px;color:#0c0c10;background:#f3f0ea;padding:14px 30px}
+.C .cbtn.alt{background:transparent;color:#f3f0ea;border:1px solid #555;margin-left:10px}
+@media(max-width:760px){.A h1{font-size:54px}.B .ghead{font-size:44px}.C h1{font-size:54px}.C .grid{grid-template-columns:1fr}.C .img{display:none}.wrap{padding:0 22px}.C .wrap{padding-left:60px}}
+</style>
+</head>
+<body>
+
+<section class="dir A">
+  <div class="lab">Richtung A · Game-Title / Kino-Menü</div>
+  <div class="bg"></div><div class="vig"></div>
+  <div class="wrap">
+    <div class="kick">Your table · your legend</div>
+    <h1>ENDOCRAFT</h1>
+    <div class="sub">STUDIO</div>
+    <div class="menu">
+      <div class="mi on">Enter the forge</div>
+      <div class="mi">Gallery</div>
+      <div class="mi">The free vault</div>
+    </div>
+    <div class="rune">✦ ◆ ✦</div>
+  </div>
+</section>
+
+<section class="dir B">
+  <div class="lab">Richtung B · Arkanes Grimoire / Zauberbuch</div>
+  <div class="page"></div>
+  <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+  <div class="wrap">
+    <div class="ghead">Forge your own<br>legends</div>
+    <div class="seal">One look<br>· sealed ·</div>
+    <p class="gbody"><span class="drop">C</span>onjure cinematic NPCs, monsters and locations in the unmistakable EndoCraft hand. You describe the moment — the craft, the light and the lore are bound into every page.</p>
+    <a class="gbtn">✦ Begin the ritual</a>
+  </div>
+</section>
+
+<section class="dir C">
+  <div class="lab">Richtung C · Dark-Fantasy-Magazin</div>
+  <div class="grid"><div></div><div class="img"></div></div>
+  <div class="side"><div class="vert">Issue 01 — The Studio</div></div>
+  <div class="wrap">
+    <div class="num">01 / CREATE</div>
+    <h1>Your D&amp;D,<br>in our <em>look.</em></h1>
+    <p class="quote">"You just describe the moment. We forge the cinema — cast, monsters, locations, motion."</p>
+    <div>
+      <a class="cbtn">Start creating</a>
+      <a class="cbtn alt">See the look</a>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -149,6 +149,10 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .galp .tile .lab{position:absolute;left:0;right:0;bottom:0;padding:18px 12px 10px;font-family:'Cinzel',serif;font-size:12px;color:var(--ink);background:linear-gradient(transparent,#0b0d14ee);z-index:2}
 .wz-or{text-align:center;font-family:'EB Garamond',serif;color:var(--muted);font-size:13px;margin:18px 0 12px;letter-spacing:.5px}
 .wz-ex .wz-card.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-dim)}
+.motion-menu{margin-top:12px;border:1px solid var(--gold-dim);border-radius:12px;padding:14px;background:rgba(216,180,106,.05)}
+.mm-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.mm-b{display:inline-flex;margin:0 8px 8px 0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;transition:.15s}
+.mm-b:hover{border-color:var(--gold);color:var(--gold)}
 @media(max-width:560px){.galp{grid-template-columns:repeat(2,1fr)}}
 .member .libcard .dl{display:none}
 #locDlWrap{text-align:center;margin-top:24px}
@@ -494,7 +498,7 @@ function setBal(n){n=Math.max(0,n|0);balance=n;
 function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">Your beta budget is used up — thank you for testing! ✦<br><span style="color:var(--muted);font-size:13px">Tell Marco what you made.</span></div>';}
 async function generate(){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
-  if(cur==='clip')return genClip(false);
+  if(cur==='clip')return genClip();
   const d=TPL[cur];
   if(balance<d.cost){budgetUsed();return;}
   const subject=document.getElementById('prompt').value.trim();
@@ -526,15 +530,15 @@ function selectVariant(u){
   const dl=document.getElementById('dlBtn');dl.href=ecPx(u);dl.setAttribute('download','endocraft-asset.jpg');
   document.getElementById('animBtn').style.display='inline-flex';
 }
-async function genClip(useDefaultMotion){
+async function genClip(motionArg){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
   const COST=4;
   const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
   document.getElementById('result').classList.add('show');frame.style.aspectRatio='16 / 9';
   if(!lastImageUrl){bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';frame.innerHTML='<div style="text-align:center;padding:16px">Generate an image first — then bring it to life here. ✦</div>';return;}
   if(balance<COST){budgetUsed();return;}
-  let motion=document.getElementById('prompt').value.trim();
-  if(useDefaultMotion||!motion||motion===TPL.clip.tpl)motion='subtle cinematic motion — drifting embers, a slow blink, faint sway of cloak, otherwise completely still, camera static, slow and atmospheric';
+  let motion=(typeof motionArg==='string'&&motionArg)?motionArg:document.getElementById('prompt').value.trim();
+  if(!motion||motion===TPL.clip.tpl)motion='subtle cinematic motion — drifting embers, a slow blink, faint sway of cloak, otherwise completely still, camera static, slow and atmospheric';
   bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';frame.innerHTML='<div style="text-align:center"><div class="spin" style="margin:0 auto 10px"></div>Bringing it to life… this takes ~30–60s.</div>';
   let id=null;
   try{
@@ -565,7 +569,23 @@ async function genClip(useDefaultMotion){
 }
 document.getElementById('genBtn').onclick=generate;
 document.getElementById('regenBtn').onclick=generate;
-document.getElementById('animBtn').onclick=()=>genClip(true);
+const MOTIONS=[
+ ['Drifting embers','embers and sparks drift slowly upward, a faint glow gently pulsing, everything else perfectly still, camera completely static, cinematic and slow'],
+ ['Slow breath & blink','a slow deep breath and a single slow blink, the faintest sway, otherwise completely still, camera static, atmospheric'],
+ ['Cloak in the wind','cloak and hair drift gently in a slow wind, dust motes floating in the air, the figure still, camera static, slow and cinematic'],
+ ['Eyes ignite','the eyes slowly glow brighter as a faint magical light rises, otherwise completely still, camera static, ominous and slow'],
+ ['Slow push-in','an extremely slow cinematic push-in toward the subject, subtle drifting particles, otherwise still, dramatic and slow']
+];
+function showMotions(){
+  if(!lastImageUrl)return genClip();
+  var bar=document.getElementById('resbar');
+  var ex=document.getElementById('motionMenu');if(ex){ex.remove();return;}
+  var m=document.createElement('div');m.id='motionMenu';m.className='motion-menu';
+  m.innerHTML='<div class="mm-h">Bring it to life — pick a motion (our specialty)</div>'+MOTIONS.map(function(x,i){return '<button class="mm-b" data-i="'+i+'">✦ '+x[0]+'</button>';}).join('');
+  bar.parentNode.insertBefore(m,bar.nextSibling);
+  m.querySelectorAll('.mm-b').forEach(function(b){b.onclick=function(){m.remove();genClip(MOTIONS[+b.getAttribute('data-i')][1]);};});
+}
+document.getElementById('animBtn').onclick=showMotions;
 // --- Invite gate ---
 function unlock(raw){
   const code=String(raw||'').trim().toUpperCase();
