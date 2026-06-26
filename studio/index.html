@@ -154,12 +154,11 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .mm-b{display:inline-flex;margin:0 8px 8px 0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;transition:.15s}
 .mm-b:hover{border-color:var(--gold);color:var(--gold)}
 /* ===== DIRECTION A: GAME-TITLE RESKIN ===== */
-.hero h1{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:clamp(40px,8vw,84px);line-height:.97;letter-spacing:1px;color:#f2e7cd;text-shadow:0 2px 0 #6e531f,0 3px 2px rgba(0,0,0,.5),0 0 46px rgba(216,180,106,.28)}
-.hero h1 em{font-style:normal;background:linear-gradient(180deg,#f6dd97,#c79f4e 92%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hero h1{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(30px,6.4vw,50px);line-height:1.1;letter-spacing:.2px}
 .hero .kicker{display:inline-flex;align-items:center;gap:14px;color:#d8b46a}
 .hero .kicker:before,.hero .kicker:after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
 .hero-vid{opacity:.55}
-.brand{font-family:'Cinzel Decorative',serif;letter-spacing:.5px}
+.brand{letter-spacing:.5px}
 .nav a{text-transform:uppercase;letter-spacing:1.5px;font-size:12px}
 .btn{border-radius:3px;letter-spacing:.5px}
 .btn.primary{background:linear-gradient(180deg,#ecca7e,#c9a14e);border-color:#7a5e23;color:#1c1408;box-shadow:0 6px 18px -8px #000,inset 0 1px 0 #fff6d8,inset 0 -2px 0 #8a6a2a;text-shadow:0 1px 0 #f3e1ad}
@@ -173,6 +172,18 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .studio:before,.studio:after,.member:before,.member:after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--gold-dim);pointer-events:none;opacity:.65;z-index:3}
 .studio:before,.member:before{top:-1px;left:-1px;border-right:0;border-bottom:0}
 .studio:after,.member:after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+@media(max-width:680px){
+  .hero h1{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(27px,7.6vw,40px);line-height:1.1;letter-spacing:.3px;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+  .hero .cta{flex-direction:column;align-items:stretch}
+  .hero .cta .btn,.hero .cta .btn.lg{width:100%;clip-path:none;padding-left:20px;padding-right:20px}
+  .hero .kicker{font-size:10.5px;letter-spacing:2px}
+  .hero .kicker:before,.hero .kicker:after{width:14px}
+  .sec-head h2{letter-spacing:1px;font-size:clamp(20px,5.4vw,24px)}
+  .sec-head:after{letter-spacing:5px}
+  .brand{font-size:16px;letter-spacing:0}
+  .topbar .wrap{gap:8px}
+  .studio:before,.studio:after,.member:before,.member:after{display:none}
+}
 @media(max-width:560px){.galp{grid-template-columns:repeat(2,1fr)}}
 .member .libcard .dl{display:none}
 #locDlWrap{text-align:center;margin-top:24px}
