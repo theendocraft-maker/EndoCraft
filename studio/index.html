@@ -526,7 +526,24 @@ function setBal(n){n=Math.max(0,n|0);balance=n;
   document.getElementById('balPill').textContent=n;
   document.querySelector('#balInline b').textContent=n;
   if(curCode){try{localStorage.setItem('ec_studio_bal_'+curCode,String(n));}catch(e){}}}
-function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">Your beta budget is used up — thank you for testing! ✦<br><span style="color:var(--muted);font-size:13px">Tell Marco what you made.</span></div>';}
+function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">Your beta budget is used up — thank you for testing! ✦<br><span style="color:var(--muted);font-size:13px">Got another code? You can switch below.</span><br><button class="btn primary" style="margin-top:14px" onclick="switchCode()">Use a different code</button></div>';}
+function switchCode(){
+  curCode=null;
+  try{localStorage.removeItem('ec_studio_code');}catch(e){}
+  document.getElementById('gate').style.display='block';
+  document.getElementById('genWrap').style.display='none';
+  document.getElementById('gateErr').style.display='none';
+  var gc=document.getElementById('gateCode');if(gc){gc.value='';gc.focus();}
+  document.getElementById('balPill').textContent='—';
+  document.querySelector('#balInline b').textContent='—';
+  var sw=document.getElementById('switchLink');if(sw)sw.style.display='none';
+  document.getElementById('gate').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function showSwitchLink(){
+  var sw=document.getElementById('switchLink');
+  if(!sw){var pill=document.querySelector('.topbar .pill');if(pill){sw=document.createElement('a');sw.id='switchLink';sw.href='javascript:void(0)';sw.textContent='switch code';sw.style.cssText='color:var(--muted);font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline';sw.onclick=switchCode;pill.parentNode.insertBefore(sw,pill.nextSibling);}}
+  if(sw)sw.style.display='inline';
+}
 async function generate(){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
   if(cur==='clip')return genClip();
@@ -627,6 +644,7 @@ function unlock(raw){
   try{localStorage.setItem('ec_studio_code',code);}catch(e){}
   document.getElementById('gate').style.display='none';
   document.getElementById('genWrap').style.display='block';
+  showSwitchLink();
   setBal(bal);
 }
 document.getElementById('gateBtn').onclick=()=>unlock(document.getElementById('gateCode').value);

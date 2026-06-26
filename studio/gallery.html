@@ -27,6 +27,12 @@ button{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border:1
 .imgs a{aspect-ratio:1;border-radius:10px;border:1px solid var(--line);background:#0c0e16 center/cover no-repeat;display:block}
 .bar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
 .empty{color:var(--muted);text-align:center;padding:60px 0}
+.prompt{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);background:#0c0e16;border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin-bottom:10px;line-height:1.55;white-space:pre-wrap}
+.rate{display:inline-flex;gap:6px}
+.rb{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.5px}
+.rb:hover{border-color:var(--gold-dim);color:var(--gold)}
+.gen.rate-up{border-color:#3b6d11;box-shadow:0 0 0 1px #3b6d1155}
+.gen.rate-down{border-color:#79241f;box-shadow:0 0 0 1px #79241f55}
 @media(max-width:560px){.imgs{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -56,6 +62,11 @@ function save(){const k=document.getElementById('key').value.trim();if(!k)return
 function logout(){localStorage.removeItem('ec_admin_key');document.getElementById('auth').style.display='flex';document.getElementById('tools').style.display='none';document.getElementById('list').innerHTML='';document.getElementById('count').textContent='';}
 function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function when(t){try{return new Date(t).toLocaleString();}catch(e){return t;}}
+async function rate(id,val,btn){
+  const k=key();if(!k)return;
+  var gen=btn.closest('.gen');if(gen){gen.classList.remove('rate-up','rate-down');gen.classList.add(val===1?'rate-up':'rate-down');}
+  try{await fetch(API+'/api/admin/studio-rate?key='+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,rating:val})});}catch(e){}
+}
 async function load(){
   const k=key();if(!k){return;}
   document.getElementById('auth').style.display='none';
@@ -69,7 +80,9 @@ async function load(){
     if(!items.length){list.innerHTML='<div class="empty">No generations yet. They appear here once testers create something.</div>';return;}
     list.innerHTML=items.map(function(it){
       var urls=Array.isArray(it.urls)?it.urls:[];
-      return '<div class="gen"><div class="gen-h"><span class="pill">'+esc(it.code||'no-code')+'</span><span class="type">'+esc(it.type)+'</span><span class="subj">'+esc(it.subject)+'</span><span style="flex:1"></span><span class="muted">'+when(it.created_at)+'</span></div>'
+      var rc=it.rating===1?'rate-up':it.rating===-1?'rate-down':'';
+      return '<div class="gen '+rc+'" data-id="'+it.id+'"><div class="gen-h"><span class="pill">'+esc(it.code||'no-code')+'</span><span class="type">'+esc(it.type)+'</span><span class="subj">'+esc(it.subject)+'</span><span style="flex:1"></span><span class="rate"><button class="rb" onclick="rate('+it.id+',1,this)">▲ good</button><button class="rb" onclick="rate('+it.id+',-1,this)">▼ weak</button></span><span class="muted" style="margin-left:10px">'+when(it.created_at)+'</span></div>'
+       +(it.prompt?'<div class="prompt">'+esc(it.prompt)+'</div>':'')
        +'<div class="imgs">'+urls.map(function(u){return '<a href="'+px(u)+'" target="_blank" rel="noopener" style="background-image:url('+px(u)+')"></a>';}).join('')+'</div></div>';
     }).join('');
   }catch(e){list.innerHTML='<div class="empty">Could not load — '+esc(e.message)+'</div>';}
