@@ -496,7 +496,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 const API='https://endocraft-production.up.railway.app';
 // --- Closed-beta invite codes: CODE -> starting credit budget (1 generation = 3 variants = 3 credits, 1 clip = 4 credits) ---
 const INVITES={'EC-RAVEN-7F3':30,'EC-EMBER-2K9':30,'EC-VEXX-5M1':30,'EC-GLOOM-8Q4':30,'EC-ORACLE-3H6':30,'EC-FROST-9B2':30,'EC-WYRM-4T7':30,'EC-RELIC-6N8':30,'EC-CRYPT-1J5':30,'EC-OMEN-7D3':30};
-let curCode=null,balance=0,lastImageUrl=null,lastSubject='';
+let curCode=null,balance=0,lastImageUrl=null,lastSubject='',lastUrls=[];
 const TPL={
   npc:{label:'3 credits',cost:3,head:'Tips for great NPCs',
     tpl:'A grizzled human innkeeper, kind tired eyes, leaning on the bar, warm tavern light',
@@ -564,7 +564,7 @@ async function generate(feedback){
   document.getElementById('animBtn').style.display='none';
   try{
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined})});
+      body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined,beforeUrls:(fb&&lastUrls.length)?lastUrls.slice(0,4):undefined})});
     const j=await r.json();
     if(j.urls&&j.urls.length){setBal(balance-d.cost);renderVariants(j.urls);}
     else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}
@@ -572,6 +572,7 @@ async function generate(feedback){
 }
 function ecPx(u){return API+'/api/image/proxy?url='+encodeURIComponent(u);}
 function renderVariants(urls){
+  lastUrls=Array.isArray(urls)?urls.slice():[];
   const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
   frame.style.aspectRatio='auto';frame.style.background='transparent';frame.style.backgroundImage='';
   frame.innerHTML='<div class="vargrid">'+urls.map((u,i)=>'<div class="varimg'+(i===0?' sel':'')+'" data-i="'+i+'" style="background-image:url('+ecPx(u)+')"></div>').join('')+'</div>';
