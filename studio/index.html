@@ -153,6 +153,10 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .mm-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .mm-b{display:inline-flex;margin:0 8px 8px 0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:9px 15px;cursor:pointer;transition:.15s}
 .mm-b:hover{border-color:var(--gold);color:var(--gold)}
+.reroll-box{margin-top:12px;border:1px solid var(--gold-dim);border-radius:12px;padding:14px;background:rgba(216,180,106,.05)}
+.rb-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.reroll-ta{width:100%;min-height:70px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px;margin-bottom:10px}
+.reroll-ta:focus{outline:none;border-color:var(--gold)}
 /* ===== DIRECTION A: GAME-TITLE RESKIN ===== */
 .hero h1{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(30px,6.4vw,50px);line-height:1.1;letter-spacing:.2px}
 .hero .kicker{display:inline-flex;align-items:center;gap:14px;color:#d8b46a}
@@ -402,7 +406,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
           <div class="frame" id="frame">—</div>
           <div class="resbar" id="resbar" style="display:none">
             <a class="btn primary" id="dlBtn" download="endocraft-asset.jpg">Download</a>
-            <button class="btn" id="regenBtn">Regenerate</button>
+            <button class="btn" id="regenBtn">↻ Reroll</button>
             <button class="btn" id="animBtn" style="display:none">✦ Animate (4 cr)</button>
           </div>
         </div>
@@ -492,7 +496,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 const API='https://endocraft-production.up.railway.app';
 // --- Closed-beta invite codes: CODE -> starting credit budget (1 generation = 3 variants = 3 credits, 1 clip = 4 credits) ---
 const INVITES={'EC-RAVEN-7F3':30,'EC-EMBER-2K9':30,'EC-VEXX-5M1':30,'EC-GLOOM-8Q4':30,'EC-ORACLE-3H6':30,'EC-FROST-9B2':30,'EC-WYRM-4T7':30,'EC-RELIC-6N8':30,'EC-CRYPT-1J5':30,'EC-OMEN-7D3':30};
-let curCode=null,balance=0,lastImageUrl=null;
+let curCode=null,balance=0,lastImageUrl=null,lastSubject='';
 const TPL={
   npc:{label:'3 credits',cost:3,head:'Tips for great NPCs',
     tpl:'A grizzled human innkeeper, kind tired eyes, leaning on the bar, warm tavern light',
@@ -544,13 +548,15 @@ function showSwitchLink(){
   if(!sw){var pill=document.querySelector('.topbar .pill');if(pill){sw=document.createElement('a');sw.id='switchLink';sw.href='javascript:void(0)';sw.textContent='switch code';sw.style.cssText='color:var(--muted);font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline';sw.onclick=switchCode;pill.parentNode.insertBefore(sw,pill.nextSibling);}}
   if(sw)sw.style.display='inline';
 }
-async function generate(){
+async function generate(feedback){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
   if(cur==='clip')return genClip();
   const d=TPL[cur];
   if(balance<d.cost){budgetUsed();return;}
-  const subject=document.getElementById('prompt').value.trim();
+  const fb=(typeof feedback==='string'&&feedback)?feedback:null;
+  const subject=fb?lastSubject:document.getElementById('prompt').value.trim();
   if(!subject)return;
+  lastSubject=subject;
   const res=document.getElementById('result');res.classList.add('show');
   const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
   frame.style.aspectRatio='16 / 9';bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';
@@ -558,7 +564,7 @@ async function generate(){
   document.getElementById('animBtn').style.display='none';
   try{
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode})});
+      body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined})});
     const j=await r.json();
     if(j.urls&&j.urls.length){setBal(balance-d.cost);renderVariants(j.urls);}
     else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}
@@ -575,7 +581,7 @@ function renderVariants(urls){
 }
 function selectVariant(u){
   lastImageUrl=u;
-  const dl=document.getElementById('dlBtn');dl.href=ecPx(u);dl.setAttribute('download','endocraft-asset.jpg');
+  const dl=document.getElementById('dlBtn');dl.href=ecPx(u);dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'.jpg');
   document.getElementById('animBtn').style.display='inline-flex';
 }
 async function genClip(motionArg){
@@ -605,7 +611,7 @@ async function genClip(motionArg){
     if(url){
       const proxied=API+'/api/video/proxy?url='+encodeURIComponent(url);
       frame.innerHTML='<video src="'+proxied+'" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover"></video>';
-      const dl=document.getElementById('dlBtn');dl.href=proxied;dl.setAttribute('download','endocraft-cutscene.mp4');
+      const dl=document.getElementById('dlBtn');dl.href=proxied;dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'-cutscene.mp4');
       document.getElementById('animBtn').style.display='none';
       bar.style.display='flex';setBal(balance-COST);return;
     }
@@ -616,7 +622,18 @@ async function genClip(motionArg){
   poll();
 }
 document.getElementById('genBtn').onclick=generate;
-document.getElementById('regenBtn').onclick=generate;
+function ecSlug(s){return (String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,42))||'asset';}
+function rerollOpen(){
+  if(!lastImageUrl)return;
+  var bar=document.getElementById('resbar');
+  var ex=document.getElementById('rerollBox');if(ex){ex.remove();return;}
+  var m=document.createElement('div');m.id='rerollBox';m.className='reroll-box';
+  m.innerHTML='<div class="rb-h">Not quite right? Tell us what to change — we use it to do better</div><textarea id="rerollTxt" class="reroll-ta" placeholder="e.g. too dark, wrong armour, more menacing, older face"></textarea><button class="btn primary" id="rerollGo">↻ Reroll · 3 credits</button>';
+  bar.parentNode.insertBefore(m,bar.nextSibling);
+  document.getElementById('rerollGo').onclick=function(){var t=document.getElementById('rerollTxt').value.trim();if(!t){document.getElementById('rerollTxt').focus();return;}m.remove();generate(t);};
+  document.getElementById('rerollTxt').focus();
+}
+document.getElementById('regenBtn').onclick=rerollOpen;
 const MOTIONS=[
  ['Drifting embers','embers and sparks drift slowly upward, a faint glow gently pulsing, everything else perfectly still, camera completely static, cinematic and slow'],
  ['Slow breath & blink','a slow deep breath and a single slow blink, the faintest sway, otherwise completely still, camera static, atmospheric'],
