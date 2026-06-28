@@ -157,6 +157,22 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .rb-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
 .reroll-ta{width:100%;min-height:70px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px;margin-bottom:10px}
 .reroll-ta:focus{outline:none;border-color:var(--gold)}
+.pill.low{border-color:#a8542e;color:#f0b07a}
+.mine-link{color:var(--gold);font-size:12px;margin-left:12px;cursor:pointer;text-decoration:none;font-family:'Cinzel',serif;letter-spacing:.5px;white-space:nowrap}
+.mine-link:hover{text-decoration:underline}
+.mine-ov{position:fixed;inset:0;z-index:80;background:rgba(8,9,14,.78);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+.mine-card{width:100%;max-width:880px;background:var(--panel);border:1px solid var(--gold-dim);border-radius:16px;padding:20px}
+.mine-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mine-ttl{font-family:'Cinzel',serif;color:var(--gold);font-size:16px;letter-spacing:1px}
+.mine-x{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:15px}
+.mine-x:hover{border-color:var(--gold)}
+.mine-empty{color:var(--muted);text-align:center;padding:40px 0;font-family:'EB Garamond',serif}
+.mine-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mine-it{cursor:pointer;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0c0e16;transition:transform .2s,border-color .2s}
+.mine-it:hover{transform:translateY(-3px);border-color:var(--gold)}
+.mine-th{aspect-ratio:3/4;background:#0c0e16 center/cover no-repeat}
+.mine-lb{padding:8px 10px;font-family:'Cinzel',serif;font-size:11px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:640px){.mine-grid{grid-template-columns:repeat(2,1fr)}.mine-card{padding:16px}}
 /* ===== DIRECTION A: GAME-TITLE RESKIN ===== */
 .hero h1{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(30px,6.4vw,50px);line-height:1.1;letter-spacing:.2px}
 .hero .kicker{display:inline-flex;align-items:center;gap:14px;color:#d8b46a}
@@ -529,7 +545,34 @@ document.querySelectorAll('#types button').forEach(b=>b.onclick=()=>{
 function setBal(n){n=Math.max(0,n|0);balance=n;
   document.getElementById('balPill').textContent=n;
   document.querySelector('#balInline b').textContent=n;
+  try{var pp=document.querySelector('.topbar .pill');if(pp)pp.classList.toggle('low',!!curCode&&n<=6);}catch(e){}
+  try{updateMineLink();}catch(e){}
   if(curCode){try{localStorage.setItem('ec_studio_bal_'+curCode,String(n));}catch(e){}}}
+/* ---- My Creations (per-device, per-code) ---- */
+function mineKey(){return 'ec_studio_mine_'+(curCode||'anon');}
+function mineGet(){try{return JSON.parse(localStorage.getItem(mineKey())||'[]');}catch(e){return [];}}
+function mineSave(a){try{localStorage.setItem(mineKey(),JSON.stringify(a.slice(0,60)));}catch(e){}}
+function mineAdd(type,subject,urls){if(!urls||!urls.length)return;var a=mineGet();a.unshift({t:type,s:subject,u:urls.slice(0,4),ts:Date.now()});mineSave(a);updateMineLink();}
+function mineEsc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function updateMineLink(){var l=document.getElementById('mineLink');if(!l)return;var n=mineGet().length;l.style.display=n?'inline':'none';l.textContent='✦ My Creations ('+n+')';}
+function closeMine(){var m=document.getElementById('mineModal');if(m)m.remove();}
+function openMine(){
+  closeMine();var items=mineGet();
+  var ov=document.createElement('div');ov.id='mineModal';ov.className='mine-ov';
+  var h='<div class="mine-card"><div class="mine-top"><span class="mine-ttl">✦ My Creations</span><button class="mine-x" id="mineX">✕</button></div>';
+  if(!items.length)h+='<div class="mine-empty">Nothing yet — every generation is saved here on this device.</div>';
+  else h+='<div class="mine-grid">'+items.map(function(it,i){return '<div class="mine-it" data-i="'+i+'"><div class="mine-th" style="background-image:url('+ecPx(it.u[0])+')"></div><div class="mine-lb">'+mineEsc(it.s||it.t)+'</div></div>';}).join('')+'</div>';
+  h+='</div>';ov.innerHTML=h;document.body.appendChild(ov);
+  document.getElementById('mineX').onclick=closeMine;
+  ov.onclick=function(e){if(e.target===ov)closeMine();};
+  ov.querySelectorAll('.mine-it').forEach(function(el){el.onclick=function(){mineOpenItem(+el.dataset.i);};});
+}
+function mineOpenItem(i){var it=mineGet()[i];if(!it)return;closeMine();cur=it.t;lastSubject=it.s||'';
+  var res=document.getElementById('result');res.classList.add('show');
+  document.getElementById('frame').style.aspectRatio='auto';
+  renderVariants(it.u);
+  res.scrollIntoView({behavior:'smooth',block:'center'});}
+(function(){var pill=document.querySelector('.topbar .pill');if(pill&&!document.getElementById('mineLink')){var a=document.createElement('a');a.id='mineLink';a.href='javascript:void(0)';a.className='mine-link';a.style.display='none';a.onclick=openMine;pill.parentNode.insertBefore(a,pill);}try{updateMineLink();}catch(e){}})();
 function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">Your beta budget is used up — thank you for testing! ✦<br><span style="color:var(--muted);font-size:13px">Got another code? You can switch below.</span><br><button class="btn primary" style="margin-top:14px" onclick="switchCode()">Use a different code</button></div>';}
 function switchCode(){
   curCode=null;
@@ -566,7 +609,7 @@ async function generate(feedback){
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined,beforeUrls:(fb&&lastUrls.length)?lastUrls.slice(0,4):undefined})});
     const j=await r.json();
-    if(j.urls&&j.urls.length){setBal(balance-d.cost);renderVariants(j.urls);}
+    if(j.urls&&j.urls.length){setBal(balance-d.cost);mineAdd(cur,subject,j.urls);renderVariants(j.urls);}
     else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}
   }catch(e){frame.innerHTML='<div style="padding:16px">Network hiccup — try again.</div>';}
 }
