@@ -33,6 +33,10 @@ button{background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border:1
 .seclab.gold{color:var(--gold)}
 .imgs.before{margin-bottom:8px}
 .imgs.before a{opacity:.5;filter:grayscale(.25)}
+.imgs a{position:relative}
+.imgs a.won{box-shadow:0 0 0 2px #6db33b,0 0 0 4px rgba(109,179,59,.25)}
+.imgs a .wlab{display:none}
+.imgs a.won .wlab{display:block;position:absolute;left:6px;bottom:6px;background:#2e4d18;color:#d3ecb6;font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;padding:2px 7px;border-radius:6px}
 .rate{display:inline-flex;gap:6px}
 .rb{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.5px}
 .rb:hover{border-color:var(--gold-dim);color:var(--gold)}
@@ -90,7 +94,7 @@ async function load(){
        +(it.feedback?'<div class="fb">↻ Reroll — tester wanted: "'+esc(it.feedback)+'"</div>':'')
        +(it.prompt?'<div class="prompt">'+esc(it.prompt)+'</div>':'')
        +((Array.isArray(it.before_urls)&&it.before_urls.length)?'<div class="seclab">Before — rejected</div><div class="imgs before">'+it.before_urls.map(function(u){return '<a href="'+px(u)+'" target="_blank" rel="noopener" style="background-image:url('+px(u)+')"></a>';}).join('')+'</div><div class="seclab gold">After reroll</div>':'')
-       +'<div class="imgs">'+urls.map(function(u){return '<a href="'+px(u)+'" target="_blank" rel="noopener" style="background-image:url('+px(u)+')"></a>';}).join('')+'</div></div>';
+       +'<div class="imgs">'+urls.map(function(u,ui){return '<a class="'+(it.chosen_index===ui?'won':'')+'" href="'+px(u)+'" target="_blank" rel="noopener" style="background-image:url('+px(u)+')"><span class="wlab">✓ kept</span></a>';}).join('')+'</div></div>';
     }).join('');
   }catch(e){list.innerHTML='<div class="empty">Could not load — '+esc(e.message)+'</div>';}
 }

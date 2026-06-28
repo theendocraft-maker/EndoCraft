@@ -512,7 +512,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 const API='https://endocraft-production.up.railway.app';
 // --- Closed-beta invite codes: CODE -> starting credit budget (1 generation = 3 variants = 3 credits, 1 clip = 4 credits) ---
 const INVITES={'EC-RAVEN-7F3':30,'EC-EMBER-2K9':30,'EC-VEXX-5M1':30,'EC-GLOOM-8Q4':30,'EC-ORACLE-3H6':30,'EC-FROST-9B2':30,'EC-WYRM-4T7':30,'EC-RELIC-6N8':30,'EC-CRYPT-1J5':30,'EC-OMEN-7D3':30};
-let curCode=null,balance=0,lastImageUrl=null,lastSubject='',lastUrls=[];
+let curCode=null,balance=0,lastImageUrl=null,lastSubject='',lastUrls=[],lastGenId=null;
 const TPL={
   npc:{label:'3 credits',cost:3,head:'Tips for great NPCs',
     tpl:'A grizzled human innkeeper, kind tired eyes, leaning on the bar, warm tavern light',
@@ -567,7 +567,7 @@ function openMine(){
   ov.onclick=function(e){if(e.target===ov)closeMine();};
   ov.querySelectorAll('.mine-it').forEach(function(el){el.onclick=function(){mineOpenItem(+el.dataset.i);};});
 }
-function mineOpenItem(i){var it=mineGet()[i];if(!it)return;closeMine();cur=it.t;lastSubject=it.s||'';
+function mineOpenItem(i){var it=mineGet()[i];if(!it)return;closeMine();cur=it.t;lastSubject=it.s||'';lastGenId=null;
   var res=document.getElementById('result');res.classList.add('show');
   document.getElementById('frame').style.aspectRatio='auto';
   renderVariants(it.u);
@@ -609,7 +609,7 @@ async function generate(feedback){
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined,beforeUrls:(fb&&lastUrls.length)?lastUrls.slice(0,4):undefined})});
     const j=await r.json();
-    if(j.urls&&j.urls.length){setBal(balance-d.cost);mineAdd(cur,subject,j.urls);renderVariants(j.urls);}
+    if(j.urls&&j.urls.length){lastGenId=j.id||null;setBal(balance-d.cost);mineAdd(cur,subject,j.urls);renderVariants(j.urls);}
     else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}
   }catch(e){frame.innerHTML='<div style="padding:16px">Network hiccup — try again.</div>';}
 }
@@ -620,14 +620,16 @@ function renderVariants(urls){
   frame.style.aspectRatio='auto';frame.style.background='transparent';frame.style.backgroundImage='';
   frame.innerHTML='<div class="vargrid">'+urls.map((u,i)=>'<div class="varimg'+(i===0?' sel':'')+'" data-i="'+i+'" style="background-image:url('+ecPx(u)+')"></div>').join('')+'</div>';
   frame.querySelectorAll('.varimg').forEach(el=>el.onclick=()=>{frame.querySelectorAll('.varimg').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');selectVariant(urls[+el.dataset.i]);});
-  selectVariant(urls[0]);
+  selectVariant(urls[0],true);
   bar.style.display='flex';
 }
-function selectVariant(u){
+function selectVariant(u,auto){
   lastImageUrl=u;
   const dl=document.getElementById('dlBtn');dl.href=ecPx(u);dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'.jpg');
   document.getElementById('animBtn').style.display='inline-flex';
+  if(!auto&&lastGenId){var idx=lastUrls.indexOf(u);if(idx>=0)pickVariant(lastGenId,idx);}
 }
+function pickVariant(id,idx){try{fetch(API+'/api/studio-pick',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,chosen:idx})}).catch(function(){});}catch(e){}}
 async function genClip(motionArg){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
   const COST=4;
