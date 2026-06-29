@@ -510,8 +510,8 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 
 <script>
 const API='https://endocraft-production.up.railway.app';
-// --- Closed-beta invite codes: CODE -> starting credit budget (1 generation = 3 variants = 3 credits, 1 clip = 4 credits) ---
-const INVITES={'EC-RAVEN-7F3':30,'EC-EMBER-2K9':30,'EC-VEXX-5M1':30,'EC-GLOOM-8Q4':30,'EC-ORACLE-3H6':30,'EC-FROST-9B2':30,'EC-WYRM-4T7':30,'EC-RELIC-6N8':30,'EC-CRYPT-1J5':30,'EC-OMEN-7D3':30};
+// --- Closed beta: invite codes are validated server-side via /api/redeem-code (no codes shipped in the frontend, so they can't be guessed) ---
+const DEFAULT_CREDITS=30;
 let curCode=null,balance=0,lastImageUrl=null,lastSubject='',lastUrls=[],lastGenId=null;
 const TPL={
   npc:{label:'3 credits',cost:3,head:'Tips for great NPCs',
@@ -697,24 +697,36 @@ function showMotions(){
   m.querySelectorAll('.mm-b').forEach(function(b){b.onclick=function(){m.remove();genClip(MOTIONS[+b.getAttribute('data-i')][1]);};});
 }
 document.getElementById('animBtn').onclick=showMotions;
-// --- Invite gate ---
-function unlock(raw){
-  const code=String(raw||'').trim().toUpperCase();
-  if(!(code in INVITES)){document.getElementById('gateErr').style.display='block';return;}
+// --- Invite gate (server-validated via /api/redeem-code) ---
+function applyUnlock(code,credits){
   curCode=code;
-  let bal;try{const s=localStorage.getItem('ec_studio_bal_'+code);bal=(s===null?INVITES[code]:parseInt(s,10));}catch(e){bal=INVITES[code];}
-  if(isNaN(bal))bal=INVITES[code];
+  let bal;try{const s=localStorage.getItem('ec_studio_bal_'+code);bal=(s===null?credits:parseInt(s,10));}catch(e){bal=credits;}
+  if(isNaN(bal))bal=credits;
   try{localStorage.setItem('ec_studio_code',code);}catch(e){}
   document.getElementById('gate').style.display='none';
   document.getElementById('genWrap').style.display='block';
   showSwitchLink();
   setBal(bal);
 }
+async function unlock(raw,silent){
+  const code=String(raw||'').trim().toUpperCase();
+  const errEl=document.getElementById('gateErr');
+  const btn=document.getElementById('gateBtn');
+  if(!code){if(!silent)errEl.style.display='block';return;}
+  if(errEl)errEl.style.display='none';
+  let prev='';if(btn&&!silent){prev=btn.textContent;btn.disabled=true;btn.textContent='Checking…';}
+  let j=null;
+  try{const r=await fetch(API+'/api/redeem-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})});j=await r.json();}catch(e){j=null;}
+  if(btn&&!silent){btn.disabled=false;btn.textContent=prev||'Unlock';}
+  if(!j||!j.ok){if(!silent&&errEl)errEl.style.display='block';return;}
+  const credits=(typeof j.credits==='number'&&j.credits>0)?j.credits:DEFAULT_CREDITS;
+  applyUnlock(j.code||code,credits);
+}
 document.getElementById('gateBtn').onclick=()=>unlock(document.getElementById('gateCode').value);
 document.getElementById('gateCode').addEventListener('keydown',e=>{if(e.key==='Enter')unlock(e.target.value);});
 document.getElementById('balPill').textContent='—';
 document.querySelector('#balInline b').textContent='—';
-(function(){try{const c=localStorage.getItem('ec_studio_code');if(c&&(c in INVITES))unlock(c);}catch(e){}})();
+(function(){try{const c=localStorage.getItem('ec_studio_code');if(c)unlock(c,true);}catch(e){}})();
 function waitlist(){document.getElementById('wlForm').style.display='block';document.getElementById('wlDone').style.display='none';document.getElementById('wlErr').style.display='none';document.getElementById('wlBack').style.display='flex';}
 function closeWl(){document.getElementById('wlBack').style.display='none';}
 async function submitWl(){
