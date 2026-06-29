@@ -609,7 +609,9 @@ async function generate(feedback){
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined,beforeUrls:(fb&&lastUrls.length)?lastUrls.slice(0,4):undefined})});
     const j=await r.json();
-    if(j.urls&&j.urls.length){lastGenId=j.id||null;setBal(balance-d.cost);mineAdd(cur,subject,j.urls);renderVariants(j.urls);}
+    if(typeof j.balance==='number')setBal(j.balance);
+    if(j.urls&&j.urls.length){lastGenId=j.id||null;mineAdd(cur,subject,j.urls);renderVariants(j.urls);}
+    else if(r.status===402||j.status==='insufficient'){budgetUsed();}
     else{frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Generator is briefly offline (top-up pending). Try again shortly.':'Could not generate — try a different description.')+'</div>';}
   }catch(e){frame.innerHTML='<div style="padding:16px">Network hiccup — try again.</div>';}
 }
@@ -643,9 +645,11 @@ async function genClip(motionArg){
   let id=null;
   try{
     const r=await fetch(API+'/api/video',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt:motion,image_url:lastImageUrl,duration:5,negative_prompt:'text, watermark, distortion, extra limbs, fast motion, jitter, morphing, flicker'})});
-    const j=await r.json();id=j.id||j.task_id||j.requestId||null;
-    if(!id){frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Cutscene engine is briefly offline (top-up pending). Try again shortly.':'Couldn’t start the clip — try again.')+'</div>';return;}
+      body:JSON.stringify({prompt:motion,image_url:lastImageUrl,duration:5,code:curCode,negative_prompt:'text, watermark, distortion, extra limbs, fast motion, jitter, morphing, flicker'})});
+    const j=await r.json();
+    if(typeof j.balance==='number')setBal(j.balance);
+    id=j.id||j.task_id||j.requestId||null;
+    if(!id){if(r.status===402||j.status==='insufficient'){budgetUsed();return;}frame.innerHTML='<div style="text-align:center;padding:16px">'+(j.error&&String(j.error).toLowerCase().includes('fund')?'Cutscene engine is briefly offline (top-up pending). Try again shortly.':'Couldn’t start the clip — try again.')+'</div>';return;}
   }catch(e){frame.innerHTML='<div style="padding:16px">Network hiccup — try again.</div>';return;}
   let tries=0;const max=30;
   await new Promise(s=>setTimeout(s,6000));
@@ -659,7 +663,7 @@ async function genClip(motionArg){
       frame.innerHTML='<video src="'+proxied+'" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover"></video>';
       const dl=document.getElementById('dlBtn');dl.href=proxied;dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'-cutscene.mp4');
       document.getElementById('animBtn').style.display='none';
-      bar.style.display='flex';setBal(balance-COST);return;
+      bar.style.display='flex';return;
     }
     if(st==='failed'||st==='error'){frame.innerHTML='<div style="text-align:center;padding:16px">That clip didn’t render cleanly — try a simpler motion.</div>';return;}
     if(tries>=max){frame.innerHTML='<div style="text-align:center;padding:16px">Still rendering — give it a moment, then try again.</div>';return;}
@@ -699,14 +703,13 @@ function showMotions(){
 document.getElementById('animBtn').onclick=showMotions;
 // --- Invite gate (server-validated via /api/redeem-code) ---
 function applyUnlock(code,credits){
+  // Server ist die Wahrheit: Kontostand kommt aus /api/redeem-code, nicht aus localStorage.
   curCode=code;
-  let bal;try{const s=localStorage.getItem('ec_studio_bal_'+code);bal=(s===null?credits:parseInt(s,10));}catch(e){bal=credits;}
-  if(isNaN(bal))bal=credits;
   try{localStorage.setItem('ec_studio_code',code);}catch(e){}
   document.getElementById('gate').style.display='none';
   document.getElementById('genWrap').style.display='block';
   showSwitchLink();
-  setBal(bal);
+  setBal(credits|0);
 }
 async function unlock(raw,silent){
   const code=String(raw||'').trim().toUpperCase();
