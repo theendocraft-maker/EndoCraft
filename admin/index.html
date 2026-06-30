@@ -281,6 +281,27 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
   <div class="content">
 
+    <!-- Quick Links hub -->
+    <div style="margin-bottom:24px">
+      <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Quick Links</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <a class="btn-ghost" href="/studio/" target="_blank" style="text-decoration:none">🎨 Studio</a>
+        <a class="btn-ghost" href="/free/" target="_blank" style="text-decoration:none">🖼️ Free Pack</a>
+        <a class="btn-ghost" href="/scroll/" target="_blank" style="text-decoration:none">📜 Session Scroll</a>
+        <a class="btn-ghost" href="/my-cards/" target="_blank" style="text-decoration:none">🃏 My Cards</a>
+        <a class="btn-ghost" href="/dm-studio/" target="_blank" style="text-decoration:none">⚡ DM Studio</a>
+        <a class="btn-ghost" href="/player/" target="_blank" style="text-decoration:none">🎲 Player</a>
+        <a class="btn-ghost" href="/hall-of-fame/" target="_blank" style="text-decoration:none">🏛️ Hall of Fame</a>
+        <a class="btn-ghost" href="/tools/bundle-studio/" target="_blank" style="text-decoration:none">📦 Bundle Studio</a>
+        <span style="width:1px;height:22px;background:var(--border);margin:0 4px"></span>
+        <a class="btn-ghost" href="https://www.etsy.com/shop/EndoCraft" target="_blank" style="text-decoration:none">🛒 Etsy Shop</a>
+        <a class="btn-ghost" href="https://www.pinterest.com/theendocraft/" target="_blank" style="text-decoration:none">📌 Pinterest</a>
+        <a class="btn-ghost" href="https://search.google.com/search-console" target="_blank" style="text-decoration:none">🔍 Search Console</a>
+        <a class="btn-ghost" href="https://supabase.com/dashboard" target="_blank" style="text-decoration:none">🗄️ Supabase</a>
+        <a class="btn-ghost" href="https://railway.app/dashboard" target="_blank" style="text-decoration:none">🚂 Railway</a>
+      </div>
+    </div>
+
     <!-- Stats Grid -->
     <div class="stats-grid">
       <div class="stat-card accent">
@@ -322,6 +343,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <button class="tab" data-tab="cards" onclick="switchTab('cards')">Cards <span class="tab-count" id="tabCardsCount">—</span></button>
       <button class="tab" data-tab="sessions" onclick="switchTab('sessions')">Sessions <span class="tab-count" id="tabSessionsCount">—</span></button>
       <button class="tab" data-tab="tiktok" onclick="switchTab('tiktok')">TikTok <span class="tab-count" id="tabTiktokCount">3</span></button>
+      <button class="tab" data-tab="codes" onclick="switchTab('codes');loadCodeStats()">Codes <span class="tab-count" id="tabCodesCount">—</span></button>
     </div>
 
     <!-- Subscribers Panel -->
@@ -335,6 +357,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
         <button class="filter-pill" data-source-filter="scroll" onclick="filterSubsSource('scroll')">Scroll</button>
       </div>
       <div class="data-table subs-table" id="subsList"><div class="loading-row">Loading…</div></div>
+    </div>
+
+    <!-- Codes Panel (beta-code tracking) -->
+    <div class="tab-panel" id="panelCodes">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn-ghost" onclick="loadCodeStats()">↻ Load / refresh</button>
+        <button class="btn-ghost" onclick="setAdminApiKey()">🔑 Set admin key</button>
+        <span id="codeStatsTotals" style="color:var(--text-dim);font-size:13px"></span>
+      </div>
+      <div id="codeChannels" style="margin-bottom:16px"></div>
+      <div class="data-table" id="codesList"><div class="loading-row" style="color:var(--text-dim)">Click “Load” — needs your ADMIN_KEY once (stored locally only).</div></div>
     </div>
 
     <!-- Cards Panel -->
@@ -609,6 +642,45 @@ function uniqueSources(subs){
 function switchTab(name){
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1)));
+}
+
+// ========== Codes (beta-code tracking) ==========
+function _csEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function _csDate(s){if(!s)return'—';try{return new Date(s).toLocaleDateString();}catch(e){return'—';}}
+function getAdminApiKey(){return localStorage.getItem('ec_admin_apikey')||'';}
+function setAdminApiKey(){var k=window.prompt('ADMIN_KEY (Railway-Env) — wird nur lokal in diesem Browser gespeichert:',getAdminApiKey());if(k!=null){localStorage.setItem('ec_admin_apikey',k.trim());loadCodeStats();}}
+async function loadCodeStats(){
+  var list=document.getElementById('codesList');if(!list)return;
+  var key=getAdminApiKey();
+  if(!key){list.innerHTML='<div class="loading-row" style="color:var(--text-dim)">Kein Admin-Key gesetzt — klick „🔑 Set admin key".</div>';return;}
+  list.innerHTML='<div class="loading-row">Loading…</div>';
+  try{
+    var r=await fetch('https://endocraft-production.up.railway.app/api/admin/code-stats?key='+encodeURIComponent(key));
+    if(r.status===401){list.innerHTML='<div class="loading-row" style="color:#e08">Falscher Admin-Key.</div>';return;}
+    var j=await r.json();
+    if(!j||!j.ok){list.innerHTML='<div class="loading-row" style="color:#e08">Konnte nicht laden.</div>';return;}
+    renderCodeStats(j);
+  }catch(e){list.innerHTML='<div class="loading-row" style="color:#e08">Netzwerkfehler.</div>';}
+}
+function renderCodeStats(j){
+  var t=j.totals||{};
+  var tt=document.getElementById('codeStatsTotals');if(tt)tt.textContent=(t.codes||0)+' Codes · '+(t.activated||0)+' aktiviert · '+(t.generations||0)+' Generierungen';
+  var tc=document.getElementById('tabCodesCount');if(tc)tc.textContent=(t.codes||0);
+  var ch=(j.by_channel||[]).map(function(c){return '<span class="btn-ghost" style="cursor:default">'+_csEsc(c.label)+': '+c.activated+'/'+c.codes+' aktiv · '+c.generations+' gen · '+c.credits_remaining+' cr</span>';}).join(' ');
+  var cc=document.getElementById('codeChannels');if(cc)cc.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px">'+ch+'</div>';
+  var grid='display:grid;grid-template-columns:1.3fr .9fr .7fr .5fr .6fr .8fr;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);align-items:center';
+  var head='<div style="'+grid+';font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim)"><span>Code</span><span>Kanal</span><span>Status</span><span>Gens</span><span>Rest</span><span>Letzte</span></div>';
+  var rows=(j.codes||[]).map(function(c){
+    return '<div style="'+grid+';font-size:13px">'
+      +'<span style="font-family:\'JetBrains Mono\',monospace;color:var(--text)">'+_csEsc(c.code)+'</span>'
+      +'<span style="color:var(--text-muted)">'+_csEsc(c.label)+'</span>'
+      +'<span style="color:'+(c.activated?'#4CAF7D':'var(--text-dim)')+'">'+(c.activated?'✓ aktiv':(c.active?'offen':'inaktiv'))+'</span>'
+      +'<span>'+c.generations+'</span>'
+      +'<span style="color:var(--text-muted)">'+c.credits_remaining+'</span>'
+      +'<span style="color:var(--text-dim)">'+_csDate(c.last_generation_at)+'</span>'
+      +'</div>';
+  }).join('');
+  document.getElementById('codesList').innerHTML=head+(rows||'<div class="loading-row">Keine Codes.</div>');
 }
 
 // ========== Subscribers ==========

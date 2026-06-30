@@ -436,6 +436,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
             <a class="btn primary" id="dlBtn" download="endocraft-asset.jpg">Download</a>
             <button class="btn" id="regenBtn">↻ Reroll</button>
             <button class="btn" id="animBtn" style="display:none">✦ Animate (4 cr)</button>
+            <button class="btn" id="shareBtn" style="display:none">↗ Share link</button>
           </div>
         </div>
         </div>
@@ -621,6 +622,7 @@ async function generate(feedback){
   frame.style.aspectRatio='16 / 9';bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';
   frame.innerHTML='<div style="text-align:center"><div class="spin" style="margin:0 auto 10px"></div>Crafting 3 variants in the EndoCraft look… ~30–60s.</div>';
   document.getElementById('animBtn').style.display='none';
+  var _sb0=document.getElementById('shareBtn');if(_sb0)_sb0.style.display='none';window._ecShareUrl=null;
   try{
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined,beforeUrls:(fb&&lastUrls.length)?lastUrls.slice(0,4):undefined})});
@@ -645,6 +647,7 @@ function selectVariant(u,auto){
   lastImageUrl=u;
   const dl=document.getElementById('dlBtn');dl.href=ecPx(u);dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'.jpg');
   document.getElementById('animBtn').style.display='inline-flex';
+  ecPreSaveAsset('image',cur,u,lastSubject);
   if(!auto&&lastGenId){var idx=lastUrls.indexOf(u);if(idx>=0)pickVariant(lastGenId,idx);}
 }
 function pickVariant(id,idx){try{fetch(API+'/api/studio-pick',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,chosen:idx})}).catch(function(){});}catch(e){}}
@@ -679,6 +682,7 @@ async function genClip(motionArg){
       frame.innerHTML='<video src="'+proxied+'" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover"></video>';
       const dl=document.getElementById('dlBtn');dl.href=proxied;dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'-cutscene.mp4');
       document.getElementById('animBtn').style.display='none';
+      ecPreSaveAsset('video',cur,url,lastSubject);
       bar.style.display='flex';return;
     }
     if(st==='failed'||st==='error'){frame.innerHTML='<div style="text-align:center;padding:16px">That clip didn’t render cleanly — try a simpler motion.</div>';return;}
@@ -700,23 +704,45 @@ function rerollOpen(){
   document.getElementById('rerollTxt').focus();
 }
 document.getElementById('regenBtn').onclick=rerollOpen;
-const MOTIONS=[
- ['Drifting embers','embers and sparks drift slowly upward, a faint glow gently pulsing, everything else perfectly still, camera completely static, cinematic and slow'],
- ['Slow breath & blink','a slow deep breath and a single slow blink, the faintest sway, otherwise completely still, camera static, atmospheric'],
- ['Cloak in the wind','cloak and hair drift gently in a slow wind, dust motes floating in the air, the figure still, camera static, slow and cinematic'],
- ['Eyes ignite','the eyes slowly glow brighter as a faint magical light rises, otherwise completely still, camera static, ominous and slow'],
- ['Slow push-in','an extremely slow cinematic push-in toward the subject, subtle drifting particles, otherwise still, dramatic and slow']
-];
-function showMotions(){
+// Per-type optimal motion — our specialty: subject stays still, the world breathes, camera locked, slow & cinematic.
+const OPTIMAL_MOTION={
+ npc:'the figure stays completely still; cloak, hair and fine embers drift slowly in a faint wind; dust motes float in the air; the eyes hold a steady faint glow; camera locked and static; slow, cinematic, atmospheric',
+ monster:'the creature stays still — only a slow, deep breath and the faintest settling of the head; embers and ash drift, thin smoke curls; the eyes glow steadily; camera locked and static; slow, ominous, cinematic',
+ location:'the scene holds perfectly still; mist and thin smoke drift slowly; embers and dust float in the air; the light flickers faintly; no one moves through the frame; camera completely static; slow, cinematic, atmospheric',
+ item:'the object rests perfectly still; a soft flame flickers, fine dust motes drift, a faint glint travels across metal; everything else still; camera locked and static; slow, intimate, cinematic'
+};
+function animateNow(){
   if(!lastImageUrl)return genClip();
-  var bar=document.getElementById('resbar');
-  var ex=document.getElementById('motionMenu');if(ex){ex.remove();return;}
-  var m=document.createElement('div');m.id='motionMenu';m.className='motion-menu';
-  m.innerHTML='<div class="mm-h">Bring it to life — pick a motion (our specialty)</div>'+MOTIONS.map(function(x,i){return '<button class="mm-b" data-i="'+i+'">✦ '+x[0]+'</button>';}).join('');
-  bar.parentNode.insertBefore(m,bar.nextSibling);
-  m.querySelectorAll('.mm-b').forEach(function(b){b.onclick=function(){m.remove();genClip(MOTIONS[+b.getAttribute('data-i')][1]);};});
+  genClip(OPTIMAL_MOTION[cur]||OPTIMAL_MOTION.location);
 }
-document.getElementById('animBtn').onclick=showMotions;
+document.getElementById('animBtn').onclick=animateNow;
+
+// --- Share: reuse of the Session Scroll share mechanism (pre-save → short link → copy / native share) ---
+var _ecSaveSeq=0;
+function ecPreSaveAsset(mt,kind,url,subject){
+  var sb=document.getElementById('shareBtn');window._ecShareUrl=null;
+  if(sb){sb.style.display='none';sb.textContent='↗ Share link';sb.style.background='';sb.style.borderColor='';sb.style.color='';}
+  if(!url)return;var seq=++_ecSaveSeq;
+  fetch(API+'/api/save-asset',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({media_type:mt,kind:kind,url:url,subject:subject||'',code:curCode||null})})
+   .then(function(r){return r.json();}).then(function(j){
+     if(seq!==_ecSaveSeq)return;
+     if(j&&j.ok&&j.id){window._ecShareUrl=API+'/s/'+j.id;if(sb)sb.style.display='inline-flex';}
+   }).catch(function(){});
+}
+function _ecCopy(url,done){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){_ecCopyFb(url,done);});}
+  else _ecCopyFb(url,done);
+}
+function _ecCopyFb(url,done){try{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');done();setTimeout(function(){document.body.removeChild(ta);},100);}catch(_){window.prompt('Copy this link:',url);}}
+function ecShare(btn){
+  var url=window._ecShareUrl;if(!url||!btn)return;
+  var orig=btn.textContent;
+  var done=function(){btn.textContent='✓ Link copied — paste anywhere';btn.style.background='rgba(76,175,125,.18)';btn.style.borderColor='rgba(76,175,125,.5)';btn.style.color='#4CAF7D';setTimeout(function(){btn.textContent=orig;btn.style.background='';btn.style.borderColor='';btn.style.color='';},2600);};
+  if(navigator.share){navigator.share({title:'My EndoCraft creation',url:url}).then(function(){}).catch(function(){_ecCopy(url,done);});}
+  else _ecCopy(url,done);
+}
+document.getElementById('shareBtn').onclick=function(){ecShare(this);};
 // --- Invite gate (server-validated via /api/redeem-code) ---
 function applyUnlock(code,credits){
   // Server ist die Wahrheit: Kontostand kommt aus /api/redeem-code, nicht aus localStorage.
