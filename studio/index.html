@@ -485,7 +485,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     <div class="topup"><b>60 credits</b><span>€9.99 · save 17%</span></div>
     <div class="topup"><b>150 credits</b><span>€19.99 · save 33%</span></div>
   </div>
-  <p class="note">Every generation creates 3 variants to choose from = 3 credits · Cutscene clip (5s) = 4 credits. Credits are deducted per generation, so you're never billed for surprises. Subscriptions renew monthly · cancel anytime.</p>
+  <p class="note">Every generation creates 3 variants to choose from = 3 credits · Cutscene clip (5s) = 8 credits. Credits are deducted per generation, so you're never billed for surprises. Subscriptions renew monthly · cancel anytime.</p>
 </section>
 
 <footer>EndoCraft Studio · Early access — join the waitlist · endocraft.app</footer>
@@ -526,7 +526,7 @@ const TPL={
   item:{label:'3 credits',cost:3,head:'Tips for great items & cards',
     tpl:'An ancient sealed letter on aged parchment, dark wax seal, candlelit still life',
     tips:['Frame as a still life / handout','Name material + wear: cracked leather, tarnished gold','One light source = drama','Great for cards, handouts, loot reveals','Keep it a single hero object']},
-  clip:{label:'4 credits',cost:4,head:'Tips for great cutscene clips',
+  clip:{label:'8 credits',cost:8,head:'Tips for great cutscene clips',
     tpl:'A red dragon coiled on its hoard, one slow breath, embers drifting, eye opening',
     tips:['Subtle motion only — drifting embers, a blink, swaying cloak','No smoke, no speaking mouths, no fast action','One "threatening gesture" beats a whole fight','Start from a strong still — motion is the seasoning','5 seconds, cinematic and slow']}
 };
@@ -634,7 +634,7 @@ function selectVariant(u,auto){
 function pickVariant(id,idx){try{fetch(API+'/api/studio-pick',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,chosen:idx})}).catch(function(){});}catch(e){}}
 async function genClip(motionArg){
   if(!curCode){document.getElementById('gate').scrollIntoView({behavior:'smooth'});return;}
-  const COST=4;
+  const COST=8;
   const frame=document.getElementById('frame');const bar=document.getElementById('resbar');
   document.getElementById('result').classList.add('show');frame.style.aspectRatio='16 / 9';
   if(!lastImageUrl){bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';frame.innerHTML='<div style="text-align:center;padding:16px">Generate an image first — then bring it to life here. ✦</div>';return;}
@@ -748,7 +748,7 @@ async function openBuy(){
   ov.style.cssText='position:fixed;inset:0;background:rgba(6,7,12,.82);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
   ov.innerHTML='<div style="background:#11131d;border:1px solid #2a3142;border-radius:16px;max-width:440px;width:100%;padding:24px">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="cz" style="font-size:20px;color:#f3ecda;font-weight:700">Get more credits</div><a href="javascript:void(0)" onclick="document.getElementById(\'buyModal\').remove()" style="color:var(--muted);font-size:24px;text-decoration:none;line-height:1">×</a></div>'
-    +'<div style="color:var(--muted);font-size:13px;margin-bottom:16px">1 image = 3 credits · 1 clip = 4 credits</div>'
+    +'<div style="color:var(--muted);font-size:13px;margin-bottom:16px">1 image = 3 credits · 1 clip = 8 credits</div>'
     +packs.map(p=>'<button class="btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;margin:8px 0;padding:13px 16px;text-align:left" onclick="buyPack(\''+p.id+'\')"><b style="color:#f3ecda">'+p.credits+' credits</b><span class="cz" style="color:#d8b46a;font-size:18px">'+eur(p.amount)+'</span></button>').join('')
     +'<div style="color:var(--muted);font-size:11px;text-align:center;margin-top:12px">Secure checkout via Stripe</div></div>';
   ov.onclick=e=>{if(e.target===ov)ov.remove();};
