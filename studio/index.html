@@ -83,7 +83,7 @@ section{padding:58px 0}
 .lockrow{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--gold);margin-bottom:14px}
 .lockrow .lk{font-size:14px}
 label.fl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px}
-textarea.prompt{width:100%;min-height:120px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px;font-size:15px;font-family:'EB Garamond',serif;color:var(--ink);line-height:1.5}
+textarea.prompt{width:100%;min-height:120px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px;font-size:16px;font-family:'EB Garamond',serif;color:var(--ink);line-height:1.5}
 textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .genrow{display:flex;align-items:center;gap:14px;margin-top:16px}
 .cost{font-size:13px;color:var(--muted)}.cost b{color:var(--gold)}
@@ -107,7 +107,7 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .gate-p{color:var(--muted);font-size:14px;margin-bottom:12px}
 .gate-p a{color:var(--gold)}
 .gate-row{display:flex;gap:10px}
-.gate-input{flex:1;height:46px;background:#0c0e16;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:0 14px;text-transform:uppercase;letter-spacing:2px;font-family:'Cinzel',serif;font-size:14px}
+.gate-input{flex:1;height:46px;background:#0c0e16;border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:0 14px;text-transform:uppercase;letter-spacing:2px;font-family:'Cinzel',serif;font-size:16px}
 .gate-err{color:#e0846b;font-size:13px;margin-top:8px}
 .fbBtn{position:fixed;right:16px;bottom:16px;z-index:50;background:linear-gradient(180deg,#e0bd76,#c7a253);color:#1a1408;border:1px solid var(--gold-dim);border-radius:999px;padding:11px 18px;font-family:'Cinzel',serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 10px 26px -12px var(--gold)}
 .fbBack{position:fixed;inset:0;z-index:70;background:rgba(8,10,16,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px}
@@ -167,8 +167,13 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .mm-b:hover{border-color:var(--gold);color:var(--gold)}
 .reroll-box{margin-top:12px;border:1px solid var(--gold-dim);border-radius:12px;padding:14px;background:rgba(216,180,106,.05)}
 .rb-h{font-family:'Cinzel',serif;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
-.reroll-ta{width:100%;min-height:70px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px;margin-bottom:10px}
+.reroll-ta{width:100%;min-height:70px;resize:vertical;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;margin-bottom:10px}
 .reroll-ta:focus{outline:none;border-color:var(--gold)}
+.share-callout{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:16px 18px;border:1px solid var(--gold-dim);border-radius:14px;background:linear-gradient(180deg,rgba(216,180,106,.12),rgba(216,180,106,.03));animation:scPulse 2.4s ease-in-out 1}
+.share-callout .sc-line{font-family:'Cinzel',serif;font-size:15px;color:var(--ink)}
+.share-cta{background:linear-gradient(180deg,#f2d68c,#c79f4e 90%);color:#1a1408;border:none;border-radius:10px;padding:13px 28px;font-family:'Cinzel',serif;font-weight:700;font-size:15px;letter-spacing:.5px;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 20px rgba(216,180,106,.30)}
+.share-cta:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(216,180,106,.46)}
+@keyframes scPulse{0%{box-shadow:0 0 0 0 rgba(216,180,106,.0)}30%{box-shadow:0 0 0 6px rgba(216,180,106,.16)}100%{box-shadow:0 0 0 0 rgba(216,180,106,0)}}
 .pill.low{border-color:#a8542e;color:#f0b07a}
 .mine-link{color:var(--gold);font-size:12px;margin-left:12px;cursor:pointer;text-decoration:none;font-family:'Cinzel',serif;letter-spacing:.5px;white-space:nowrap}
 .mine-link:hover{text-decoration:underline}
@@ -319,8 +324,12 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 @media(max-width:640px){
   .wrap{padding:0 20px}
   section{padding:46px 0}
-  .topbar{padding:11px 0}
-  .topbar .wrap{gap:10px}
+  .topbar{padding:10px 0}
+  .topbar .wrap{gap:8px;flex-wrap:nowrap}
+  .brand{font-size:15px}
+  .mine-link{font-size:11px;margin-left:6px}
+  .hero .inner{padding:38px 0 32px}
+  .hero .kicker{font-size:11px;gap:8px}
   .proto{display:none}
   .pill{font-size:11px;padding:4px 10px}
   .hero p.lead{margin:14px 0 22px}
@@ -368,15 +377,14 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
   <div class="wrap inner">
     <div class="kicker">Your table. Your legend.</div>
     <h1>Create your own D&amp;D assets — in the <em>EndoCraft look</em>.</h1>
-    <p class="lead">Cinematic NPCs, monsters, locations and cutscenes. Our signature style and prompt craft, guided — you just describe the moment.</p>
+    <p class="lead">Cinematic NPCs, monsters, locations &amp; cutscenes — you describe the moment, we craft the look.</p>
     <div class="cta">
       <a class="btn primary lg" href="#generate">Start creating</a>
       <a class="btn lg" href="#showroom">See the look</a>
     </div>
     <div class="trust">
-      <span><b>One look, locked in.</b> No prompt-wrangling.</span>
-      <span><b>Members</b> get a free standard library — instantly.</span>
-      <span><b>Top up</b> or subscribe. Cancel anytime.</span>
+      <span><b>One look, locked in</b> — no prompt-wrangling.</span>
+      <span>Free starter library · cancel anytime.</span>
     </div>
   </div>
 </header>
@@ -436,7 +444,10 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
             <a class="btn primary" id="dlBtn" download="endocraft-asset.jpg">Download</a>
             <button class="btn" id="regenBtn">↻ Reroll</button>
             <button class="btn" id="animBtn" style="display:none">✦ Animate (4 cr)</button>
-            <button class="btn" id="shareBtn" style="display:none">↗ Share link</button>
+          </div>
+          <div class="share-callout" id="shareCallout" style="display:none">
+            <span class="sc-line">✦ Love it? Show your party —</span>
+            <button class="share-cta" id="shareBtn">↗ Share your creation</button>
           </div>
         </div>
         </div>
@@ -605,7 +616,7 @@ function switchCode(){
 }
 function showSwitchLink(){
   var sw=document.getElementById('switchLink');
-  if(!sw){var pill=document.querySelector('.topbar .pill');if(pill){sw=document.createElement('a');sw.id='switchLink';sw.href='javascript:void(0)';sw.textContent='switch code';sw.style.cssText='color:var(--muted);font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline';sw.onclick=switchCode;pill.parentNode.insertBefore(sw,pill.nextSibling);}}
+  if(!sw){var pill=document.querySelector('.topbar .pill');if(pill){sw=document.createElement('a');sw.id='switchLink';sw.href='javascript:void(0)';sw.textContent='switch code';sw.style.cssText='color:var(--muted);font-size:11px;margin-left:8px;cursor:pointer;text-decoration:underline;white-space:nowrap';sw.onclick=switchCode;pill.parentNode.insertBefore(sw,pill.nextSibling);}}
   if(sw)sw.style.display='inline';
 }
 async function generate(feedback){
@@ -622,7 +633,7 @@ async function generate(feedback){
   frame.style.aspectRatio='16 / 9';bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';
   frame.innerHTML='<div style="text-align:center"><div class="spin" style="margin:0 auto 10px"></div>Crafting 3 variants in the EndoCraft look… ~30–60s.</div>';
   document.getElementById('animBtn').style.display='none';
-  var _sb0=document.getElementById('shareBtn');if(_sb0)_sb0.style.display='none';window._ecShareUrl=null;
+  var _sc0=document.getElementById('shareCallout');if(_sc0)_sc0.style.display='none';window._ecShareUrl=null;
   try{
     const r=await fetch(API+'/api/studio-image',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({type:cur,subject:subject,variants:3,code:curCode,feedback:fb||undefined,beforeUrls:(fb&&lastUrls.length)?lastUrls.slice(0,4):undefined})});
@@ -660,6 +671,7 @@ async function genClip(motionArg){
   if(balance<COST){budgetUsed();return;}
   let motion=(typeof motionArg==='string'&&motionArg)?motionArg:document.getElementById('prompt').value.trim();
   if(!motion||motion===TPL.clip.tpl)motion='subtle cinematic motion — drifting embers, a slow blink, faint sway of cloak, otherwise completely still, camera static, slow and atmospheric';
+  var _scA=document.getElementById('shareCallout');if(_scA)_scA.style.display='none';window._ecShareUrl=null;
   bar.style.display='none';frame.style.background='#0c0e16';frame.style.backgroundImage='';frame.innerHTML='<div style="text-align:center"><div class="spin" style="margin:0 auto 10px"></div>Bringing it to life… this takes ~30–60s.</div>';
   let id=null;
   try{
@@ -719,15 +731,25 @@ document.getElementById('animBtn').onclick=animateNow;
 
 // --- Share: reuse of the Session Scroll share mechanism (pre-save → short link → copy / native share) ---
 var _ecSaveSeq=0;
+// Kurzer Share-Titel statt komplettem Prompt: erste Phrase bis Komma/Punkt, max ~48 Zeichen.
+function ecShortTitle(s){
+  s=String(s||'').trim();
+  if(!s)return 'A cinematic D&D creation';
+  var m=s.split(/[,.;—–\n]/)[0].trim();
+  if(!m)m=s;
+  if(m.length>48)m=m.slice(0,46).replace(/\s+\S*$/,'')+'…';
+  return m.charAt(0).toUpperCase()+m.slice(1);
+}
 function ecPreSaveAsset(mt,kind,url,subject){
-  var sb=document.getElementById('shareBtn');window._ecShareUrl=null;
-  if(sb){sb.style.display='none';sb.textContent='↗ Share link';sb.style.background='';sb.style.borderColor='';sb.style.color='';}
+  var sb=document.getElementById('shareBtn');var sc=document.getElementById('shareCallout');window._ecShareUrl=null;
+  if(sc)sc.style.display='none';
+  if(sb){sb.textContent='↗ Share your creation';sb.style.background='';sb.style.borderColor='';sb.style.color='';}
   if(!url)return;var seq=++_ecSaveSeq;
   fetch(API+'/api/save-asset',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({media_type:mt,kind:kind,url:url,subject:subject||'',code:curCode||null})})
+    body:JSON.stringify({media_type:mt,kind:kind,url:url,subject:ecShortTitle(subject),code:curCode||null})})
    .then(function(r){return r.json();}).then(function(j){
      if(seq!==_ecSaveSeq)return;
-     if(j&&j.ok&&j.id){window._ecShareUrl=API+'/s/'+j.id;if(sb)sb.style.display='inline-flex';}
+     if(j&&j.ok&&j.id){window._ecShareUrl=API+'/s/'+j.id;if(sc)sc.style.display='flex';}
    }).catch(function(){});
 }
 function _ecCopy(url,done){
