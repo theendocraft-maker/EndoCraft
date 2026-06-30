@@ -488,7 +488,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
   <p class="note">Every generation creates 3 variants to choose from = 3 credits · Cutscene clip (5s) = 8 credits. Credits are deducted per generation, so you're never billed for surprises. Subscriptions renew monthly · cancel anytime.</p>
 </section>
 
-<footer>EndoCraft Studio · Early access — join the waitlist · endocraft.app</footer>
+<footer>EndoCraft Studio · Early access — join the waitlist · endocraft.app<br><span id="legalLinks" style="font-size:12px;display:none"><a href="/legal/impressum.html" style="color:var(--muted)">Impressum</a> · <a href="/legal/datenschutz.html" style="color:var(--muted)">Datenschutz</a> · <a href="/legal/agb.html" style="color:var(--muted)">AGB</a> · <a href="/legal/widerruf.html" style="color:var(--muted)">Widerruf</a></span></footer>
 
 <div id="wlBack" style="display:none;position:fixed;inset:0;background:#08090fdd;backdrop-filter:blur(3px);z-index:60;align-items:center;justify-content:center">
   <div style="background:var(--panel);border:1px solid var(--gold-dim);border-radius:16px;max-width:430px;width:92vw;padding:30px;position:relative">
@@ -512,6 +512,8 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 const API='https://endocraft-production.up.railway.app';
 // --- Closed beta: invite codes are validated server-side via /api/redeem-code (no codes shipped in the frontend, so they can't be guessed) ---
 const DEFAULT_CREDITS=30;
+// Verkauf erst nach Gewerbe-Anmeldung + Rechtstexten scharf schalten → auf true setzen, dann ist die Kauf-UI wieder live.
+const SELLING_ENABLED=false;
 let curCode=null,balance=0,lastImageUrl=null,lastSubject='',lastUrls=[],lastGenId=null;
 const TPL={
   npc:{label:'3 credits',cost:3,head:'Tips for great NPCs',
@@ -573,7 +575,9 @@ function mineOpenItem(i){var it=mineGet()[i];if(!it)return;closeMine();cur=it.t;
   renderVariants(it.u);
   res.scrollIntoView({behavior:'smooth',block:'center'});}
 (function(){var pill=document.querySelector('.topbar .pill');if(pill&&!document.getElementById('mineLink')){var a=document.createElement('a');a.id='mineLink';a.href='javascript:void(0)';a.className='mine-link';a.style.display='none';a.onclick=openMine;pill.parentNode.insertBefore(a,pill);}try{updateMineLink();}catch(e){}})();
-function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">You’re out of credits — thanks for creating! ✦<br><span style="color:var(--muted);font-size:13px">Top up to keep going, or switch codes.</span><br><button class="btn primary" style="margin-top:14px" onclick="openBuy()">Get more credits</button> <button class="btn" style="margin-top:14px" onclick="switchCode()">Use a different code</button></div>';}
+function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';var _buyBtn=SELLING_ENABLED?'<button class="btn primary" style="margin-top:14px" onclick="openBuy()">Get more credits</button> ':'';
+var _buyMsg=SELLING_ENABLED?'Top up to keep going, or switch codes.':'Got another code? You can switch below.';
+f.innerHTML='<div style="text-align:center;padding:16px">You’re out of credits — thanks for creating! ✦<br><span style="color:var(--muted);font-size:13px">'+_buyMsg+'</span><br>'+_buyBtn+'<button class="btn" style="margin-top:14px" onclick="switchCode()">Use a different code</button></div>';}
 function switchCode(){
   curCode=null;
   try{localStorage.removeItem('ec_studio_code');}catch(e){}
@@ -733,6 +737,8 @@ document.querySelector('#balInline b').textContent='—';
 // --- Credit-Kauf (Stripe Checkout) ---
 async function buyPack(id){
   if(!curCode)return;
+  var cb=document.getElementById('buyConsent');
+  if(!cb||!cb.checked){var w=document.getElementById('buyConsentWarn');if(w)w.style.display='block';return;}
   try{
     const r=await fetch(API+'/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:curCode,pack:id})});
     const j=await r.json();
@@ -740,6 +746,7 @@ async function buyPack(id){
   }catch(e){alert('Network hiccup — try again.');}
 }
 async function openBuy(){
+  if(!SELLING_ENABLED)return;
   let packs=[];
   try{const r=await fetch(API+'/api/credit-packs');const j=await r.json();packs=j.packs||[];}catch(e){}
   if(!packs.length)packs=[{id:'starter',credits:60,amount:499,label:'Starter'},{id:'plus',credits:160,amount:999,label:'Plus'},{id:'pro',credits:400,amount:1999,label:'Pro'}];
@@ -750,11 +757,13 @@ async function openBuy(){
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="cz" style="font-size:20px;color:#f3ecda;font-weight:700">Get more credits</div><a href="javascript:void(0)" onclick="document.getElementById(\'buyModal\').remove()" style="color:var(--muted);font-size:24px;text-decoration:none;line-height:1">×</a></div>'
     +'<div style="color:var(--muted);font-size:13px;margin-bottom:16px">1 image = 3 credits · 1 clip = 8 credits</div>'
     +packs.map(p=>'<button class="btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;margin:8px 0;padding:13px 16px;text-align:left" onclick="buyPack(\''+p.id+'\')"><b style="color:#f3ecda">'+p.credits+' credits</b><span class="cz" style="color:#d8b46a;font-size:18px">'+eur(p.amount)+'</span></button>').join('')
+    +'<label style="display:flex;gap:8px;align-items:flex-start;margin-top:16px;font-size:12.5px;color:var(--muted);line-height:1.5;cursor:pointer"><input type="checkbox" id="buyConsent" style="margin-top:3px"><span>I agree to the <a href="/legal/agb.html" target="_blank" style="color:#d8b46a">Terms</a> and <a href="/legal/widerruf.html" target="_blank" style="color:#d8b46a">Right of Withdrawal</a>. I expressly consent that my credits are made available immediately and understand my 14-day right of withdrawal expires once I begin using them.</span></label>'
+    +'<div id="buyConsentWarn" style="display:none;color:#e0a04a;font-size:12px;text-align:center;margin-top:8px">Please confirm the checkbox to continue.</div>'
     +'<div style="color:var(--muted);font-size:11px;text-align:center;margin-top:12px">Secure checkout via Stripe</div></div>';
   ov.onclick=e=>{if(e.target===ov)ov.remove();};
   document.body.appendChild(ov);
 }
-(function(){var pill=document.querySelector('.topbar .pill');if(pill){var a=document.createElement('a');a.href='javascript:void(0)';a.textContent='+ credits';a.style.cssText='color:#d8b46a;font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline';a.onclick=openBuy;pill.parentNode.insertBefore(a,pill.nextSibling);}})();
+(function(){if(!SELLING_ENABLED)return;var pill=document.querySelector('.topbar .pill');if(pill){var a=document.createElement('a');a.href='javascript:void(0)';a.textContent='+ credits';a.style.cssText='color:#d8b46a;font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline';a.onclick=openBuy;pill.parentNode.insertBefore(a,pill.nextSibling);}var ll=document.getElementById('legalLinks');if(ll)ll.style.display='inline';})();
 (function(){try{var q=new URLSearchParams(location.search);
   if(q.get('paid')==='1'){var c=localStorage.getItem('ec_studio_code');if(c){fetch(API+'/api/credits?code='+encodeURIComponent(c)).then(r=>r.json()).then(j=>{if(j&&j.ok)setBal(j.credits);}).catch(()=>{});}setTimeout(function(){alert('Thank you! Your credits have been added. ✦');},400);}
   if(q.get('paid')||q.get('canceled')){history.replaceState({},'',location.pathname);}
