@@ -573,7 +573,7 @@ function mineOpenItem(i){var it=mineGet()[i];if(!it)return;closeMine();cur=it.t;
   renderVariants(it.u);
   res.scrollIntoView({behavior:'smooth',block:'center'});}
 (function(){var pill=document.querySelector('.topbar .pill');if(pill&&!document.getElementById('mineLink')){var a=document.createElement('a');a.id='mineLink';a.href='javascript:void(0)';a.className='mine-link';a.style.display='none';a.onclick=openMine;pill.parentNode.insertBefore(a,pill);}try{updateMineLink();}catch(e){}})();
-function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">Your beta budget is used up — thank you for testing! ✦<br><span style="color:var(--muted);font-size:13px">Got another code? You can switch below.</span><br><button class="btn primary" style="margin-top:14px" onclick="switchCode()">Use a different code</button></div>';}
+function budgetUsed(){const f=document.getElementById('frame');document.getElementById('result').classList.add('show');document.getElementById('resbar').style.display='none';f.style.background='#0c0e16';f.style.backgroundImage='';f.innerHTML='<div style="text-align:center;padding:16px">You’re out of credits — thanks for creating! ✦<br><span style="color:var(--muted);font-size:13px">Top up to keep going, or switch codes.</span><br><button class="btn primary" style="margin-top:14px" onclick="openBuy()">Get more credits</button> <button class="btn" style="margin-top:14px" onclick="switchCode()">Use a different code</button></div>';}
 function switchCode(){
   curCode=null;
   try{localStorage.removeItem('ec_studio_code');}catch(e){}
@@ -730,6 +730,35 @@ document.getElementById('gateCode').addEventListener('keydown',e=>{if(e.key==='E
 document.getElementById('balPill').textContent='—';
 document.querySelector('#balInline b').textContent='—';
 (function(){try{const c=localStorage.getItem('ec_studio_code');if(c)unlock(c,true);}catch(e){}})();
+// --- Credit-Kauf (Stripe Checkout) ---
+async function buyPack(id){
+  if(!curCode)return;
+  try{
+    const r=await fetch(API+'/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:curCode,pack:id})});
+    const j=await r.json();
+    if(j.url){window.location.href=j.url;}else{alert(j.error||'Could not start checkout — try again.');}
+  }catch(e){alert('Network hiccup — try again.');}
+}
+async function openBuy(){
+  let packs=[];
+  try{const r=await fetch(API+'/api/credit-packs');const j=await r.json();packs=j.packs||[];}catch(e){}
+  if(!packs.length)packs=[{id:'starter',credits:60,amount:499,label:'Starter'},{id:'plus',credits:160,amount:999,label:'Plus'},{id:'pro',credits:400,amount:1999,label:'Pro'}];
+  const eur=c=>'€'+(c/100).toFixed(2).replace('.',',');
+  const ov=document.createElement('div');ov.id='buyModal';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(6,7,12,.82);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML='<div style="background:#11131d;border:1px solid #2a3142;border-radius:16px;max-width:440px;width:100%;padding:24px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="cz" style="font-size:20px;color:#f3ecda;font-weight:700">Get more credits</div><a href="javascript:void(0)" onclick="document.getElementById(\'buyModal\').remove()" style="color:var(--muted);font-size:24px;text-decoration:none;line-height:1">×</a></div>'
+    +'<div style="color:var(--muted);font-size:13px;margin-bottom:16px">1 image = 3 credits · 1 clip = 4 credits</div>'
+    +packs.map(p=>'<button class="btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;margin:8px 0;padding:13px 16px;text-align:left" onclick="buyPack(\''+p.id+'\')"><b style="color:#f3ecda">'+p.credits+' credits</b><span class="cz" style="color:#d8b46a;font-size:18px">'+eur(p.amount)+'</span></button>').join('')
+    +'<div style="color:var(--muted);font-size:11px;text-align:center;margin-top:12px">Secure checkout via Stripe</div></div>';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
+}
+(function(){var pill=document.querySelector('.topbar .pill');if(pill){var a=document.createElement('a');a.href='javascript:void(0)';a.textContent='+ credits';a.style.cssText='color:#d8b46a;font-size:12px;margin-left:10px;cursor:pointer;text-decoration:underline';a.onclick=openBuy;pill.parentNode.insertBefore(a,pill.nextSibling);}})();
+(function(){try{var q=new URLSearchParams(location.search);
+  if(q.get('paid')==='1'){var c=localStorage.getItem('ec_studio_code');if(c){fetch(API+'/api/credits?code='+encodeURIComponent(c)).then(r=>r.json()).then(j=>{if(j&&j.ok)setBal(j.credits);}).catch(()=>{});}setTimeout(function(){alert('Thank you! Your credits have been added. ✦');},400);}
+  if(q.get('paid')||q.get('canceled')){history.replaceState({},'',location.pathname);}
+}catch(e){}})();
 function waitlist(){document.getElementById('wlForm').style.display='block';document.getElementById('wlDone').style.display='none';document.getElementById('wlErr').style.display='none';document.getElementById('wlBack').style.display='flex';}
 function closeWl(){document.getElementById('wlBack').style.display='none';}
 async function submitWl(){
