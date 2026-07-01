@@ -1,0 +1,45 @@
+THE BLOOMROT SAINT
+Large celestial, neutral  ·  CR 11 (7,200 XP)
+Armor Class 17 (blessed plate)
+Hit Points 168 (16d10 + 80)
+Speed 30 ft., fly 30 ft. (hover)
+STR 18 (+4)  DEX 12 (+1)  CON 18 (+4)  INT 10 (+0)  WIS 15 (+2)  CHA 16 (+3)
+Saving Throws CON +8, WIS +6, CHA +7
+Skills Insight +6, Perception +6
+Damage Resistances radiant; bludgeoning, piercing, slashing from nonmagical attacks
+Condition Immunities charmed, exhaustion, frightened
+Senses truesight 30 ft., darkvision 120 ft., passive Perception 16
+Languages Celestial, Common; telepathy 60 ft.
+Proficiency Bonus +4
+
+TRAITS
+Magic Resistance. Advantage on saving throws against spells and other magical effects.
+Radiant Petals. When the Saint takes damage, luminous petals burst. Each creature within 5 ft. must make a DC 16 Constitution save or gain 1 Radiance.
+Sorrow's Grace. Advantage on saves against being knocked prone or moved against her will.
+Second Bloom. The first time the Saint drops to 0 HP, she instead drops to 60 HP and enters Full Bloom (Phase 2): lair actions trigger on initiative 20 and 10; Petalfall recharges on 4-6 and widens to 30 ft.; when the Saint uses Renewal, creatures within 10 ft. gain 1 Radiance.
+Radiance (Condition). Radiance is a stacking blessing that burns. At 3 Radiance a creature is Overbright: disadvantage on attack rolls and cannot regain HP until all Radiance fades. Lesser restoration removes 1 Radiance; a short rest removes 1.
+
+ACTIONS
+Multiattack. The Saint makes two Notched Blade attacks.
+Notched Blade. Melee Weapon Attack (magical): +8 to hit, reach 10 ft., one target. Hit: 17 (2d8 + 4) slashing plus 9 (2d8) radiant, and the target gains 1 Radiance.
+Petalfall (Recharge 5-6). 15-ft cone of shining petals. DC 16 Dexterity save: 27 (6d8) radiant on a fail (half on success); creatures that fail gain 1 Radiance.
+
+LEGENDARY ACTIONS (3/round)
+Drift. Fly up to half speed without provoking opportunity attacks.
+Radiant Lash. One creature within 30 ft. makes a DC 16 CON save or gains 1 Radiance.
+Renewal (Costs 2). The Saint regains 15 HP if below maximum.
+
+LAIR ACTIONS (initiative 20; also 10 in Full Bloom)
+- Blossoming vines erupt in a 10-ft radius: difficult terrain; DC 14 STR save or restrained (escape DC 14).
+- A cloud of glowing motes (20-ft sphere); a creature entering/starting its turn there gains 1 Radiance.
+
+----------------------------------------
+BLOOMROT HUSK
+Medium celestial, neutral  ·  CR 1/2 (100 XP)
+Armor Class 12   Hit Points 26 (4d8 + 8)   Speed 20 ft.
+STR 14 (+2) DEX 10 (+0) CON 14 (+2) INT 4 (-3) WIS 8 (-1) CHA 6 (-2)
+Damage Resistances radiant ; Condition Immunities charmed, frightened
+Burst on Death. On death, blooms flare (5 ft, DC 12 CON or 1 Radiance).
+Slam. Melee Weapon Attack: +4 to hit, reach 5 ft. Hit: 7 (1d8 + 2) bludgeoning plus 2 (1d4) radiant; on a d8 roll of 5+, target gains 1 Radiance.
+
+EndoCraft · endocraft.app

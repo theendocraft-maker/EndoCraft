@@ -1,0 +1,16 @@
+[0:v]scale=1080:1920,eq=brightness=-0.04,drawbox=x=0:y=596:w=1080:h=770:color=black@0.42:t=fill[bg];
+[1:v]format=rgba,fade=t=in:st=0:d=0.5:alpha=1[hd];
+[2:v]format=rgba,fade=t=in:st=0.55:d=0.25:alpha=1[n0];
+[3:v]format=rgba,fade=t=in:st=0.97:d=0.25:alpha=1[n1];
+[4:v]format=rgba,fade=t=in:st=1.39:d=0.25:alpha=1[n2];
+[5:v]format=rgba,fade=t=in:st=1.81:d=0.25:alpha=1[n3];
+[6:v]format=rgba,fade=t=in:st=2.23:d=0.25:alpha=1[n4];
+[7:v]format=rgba,fade=t=in:st=2.65:d=0.25:alpha=1[n5];
+[bg][hd]overlay=x=(W-w)/2:y=628[o_];
+[o_][n0]overlay=x=(W-w)/2:y='752+20*(1-min(max((t-0.55)/0.22\,0)\,1))'[o0];
+[o0][n1]overlay=x=(W-w)/2:y='850+20*(1-min(max((t-0.97)/0.22\,0)\,1))'[o1];
+[o1][n2]overlay=x=(W-w)/2:y='948+20*(1-min(max((t-1.39)/0.22\,0)\,1))'[o2];
+[o2][n3]overlay=x=(W-w)/2:y='1046+20*(1-min(max((t-1.81)/0.22\,0)\,1))'[o3];
+[o3][n4]overlay=x=(W-w)/2:y='1144+20*(1-min(max((t-2.23)/0.22\,0)\,1))'[o4];
+[o4][n5]overlay=x=(W-w)/2:y='1242+20*(1-min(max((t-2.65)/0.22\,0)\,1))'[o5];
+[o5]fade=t=out:st=3.7:d=0.3,format=yuv420p[v]

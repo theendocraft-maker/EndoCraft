@@ -1,0 +1,14 @@
+[0:v]scale=1080:1920,eq=brightness=-0.05,drawbox=x=0:y=800:w=1080:h=360:color=black@0.4:t=fill[bg];
+[1:v]format=rgba,fade=t=in:st=0.00:d=0.18:alpha=1,fade=t=out:st=1.78:d=0.2:alpha=1[n0];
+[2:v]format=rgba,fade=t=in:st=2.00:d=0.18:alpha=1,fade=t=out:st=3.78:d=0.2:alpha=1[n1];
+[3:v]format=rgba,fade=t=in:st=4.00:d=0.18:alpha=1,fade=t=out:st=5.78:d=0.2:alpha=1[n2];
+[4:v]format=rgba,fade=t=in:st=6.00:d=0.18:alpha=1,fade=t=out:st=7.78:d=0.2:alpha=1[n3];
+[5:v]format=rgba,fade=t=in:st=8.00:d=0.18:alpha=1,fade=t=out:st=9.78:d=0.2:alpha=1[n4];
+[6:v]format=rgba,fade=t=in:st=10.00:d=0.18:alpha=1,fade=t=out:st=11.78:d=0.2:alpha=1[n5];
+[bg][n0]overlay=0:0:enable='between(t,0.00,2.00)'[o0];
+[o0][n1]overlay=0:0:enable='between(t,2.00,4.00)'[o1];
+[o1][n2]overlay=0:0:enable='between(t,4.00,6.00)'[o2];
+[o2][n3]overlay=0:0:enable='between(t,6.00,8.00)'[o3];
+[o3][n4]overlay=0:0:enable='between(t,8.00,10.00)'[o4];
+[o4][n5]overlay=0:0:enable='between(t,10.00,12.00)'[o5];
+[o5]format=yuv420p[v]
