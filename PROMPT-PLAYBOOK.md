@@ -1,0 +1,37 @@
+# EndoCraft Prompt-Playbook (lebendes Dokument)
+*Gemeinsamer Stand Marco + Claude · Start 02.07.2026 · nach jeder Review-Runde aktualisieren*
+
+## Die Formel (Stand heute)
+
+**Charaktere/Porträts:**
+`[Shot Type] + [Charakter] + [STORY-MOMENT] + [Emotion] + [Environment] + [Lighting]`
+- Shot: „Head-and-shoulders portrait" / „Tight head-and-shoulders portrait"
+- STORY-MOMENT (Marco-Regel 02.07.): jedes Bild erzählt eine kleine Geschichte — über Umgebungs-Details, NICHT über Hand-Aktionen (verlaufende Kriegsbemalung, brennendes Dorf im Rücken, Hirsch hinter der Schulter, Vogel auf der Schulter, Atem dampft)
+- Emotion konkret („grim weary eyes", „quiet trust", „thousand-yard stare softening")
+- ⚠️ PFLICHT-NACHBEARBEITUNG: Seedream zwängt IMMER Hände rein (8/8 bestätigt) → 1800×2400 generieren, PIL-Crop obere ~70% + Center auf 3:4 (1260×1680)
+- quality_lock: AN (default)
+
+**Locations:**
+- 12–20 Wörter, Studio-Stil: `[Setting] + [Licht] + [2–3 Features]`
+- `quality_lock: false` (sonst erzwingt der Character-Prefix Figuren/Hände)
+- NIE Negation („no people" zieht Leute REIN)
+- **Test läuft:** Story-Objekt statt Person — Gegenstände, die eine Geschichte implizieren (dampfender Tee, zurückgelassenes Schwert, einzelnes Banner, Fußspuren im Schnee). Kein Hände-Risiko, voller Moment-Effekt.
+
+## Harte Regeln (nie brechen)
+1. Keine Negationen im Prompt
+2. Keine Projektile/Hand-to-Hand-Choreo/eingebrannter Text
+3. Min. 3.686.400 px (safe: 1800×2400, 2880×1620, 2240×1680)
+4. Jedes Bild → Marco-Review VOR Veröffentlichung (nur Self-Use-Assets ausgenommen)
+5. Charakter-Fidelity: kanonische Persönlichkeit treffen, nicht generisch hübsch
+
+## Offene Test-Fragen (je Runde eine klären)
+- [ ] **R1 (02.07., läuft):** Locations — klassisch-atmosphärisch (A) vs. Story-Objekt (B)?
+- [ ] R2: Emotion im Prompt vorn vs. hinten — Einfluss auf Gesichtsausdruck?
+- [ ] R3: Lichtfarbe benennen („cold blue night, orange rim") vs. Stimmung („moody twilight")?
+- [ ] R4: Welche Story-Objekte funktionieren am besten? (Liste aufbauen)
+- [ ] R5: Kling-Motion: welche Location-Stills animieren am ruhigsten?
+
+## Learnings-Log
+- 02.07. **R1-Ergebnis (Marco):** 6/8 approved (1A, 2B, 3A+3B, 4A+4B). Kein pauschaler A/B-Sieger — **beide Stile tragen, Ausführung entscheidet**. Story-Objekte (Schwert am Stuhl, Banner, Fußspuren) funktionieren hervorragend; abgelehnt: 1B (Tee-Variante schwächer als klassische Bibliothek), 2A (ungewollter Wirt trotz quality_lock:false — Interiors mit Personal-Erwartung ziehen Figuren → Story-Objekt nutzen).
+- 02.07. **R2-Ergebnis (Marco):** 6/8 approved (2A/2B, 3A/3B, 4A/4B). Abgelehnt: 1A/1B — „offerings floating" wurde zu **schwimmenden Obsttellern** (Seedream-Literalismus: abstrakte Ritual-Begriffe werden zu Essen/Alltagsobjekten → konkrete Objekte benennen: „candles", „carved idols", nicht „offerings"). **A/B-Erkenntnis: Lichtfarbe vs. Stimmungswort macht kaum Unterschied** (3A≈3B, 4A≈4B) → Stimmungswörter ok, Lichtfarbe nur für gezielte Palette. R3-Kandidat: Kompositions-Anweisungen testen.
+- 02.07. **Kreaturen-Konsistenz (Sluglord-Trailer, Marco-Kritik):** Mehrere unabhängige Generierungen derselben Kreatur = sichtbar verschiedene Tiere (Schnecke mal mit/ohne Haus, andere Farben). **Regel: Für Multi-Shot-Trailer eines Monsters EIN Master-Bild wählen und alle weiteren Cuts als Crops/Zooms daraus + aus dessen Kling-Frames bauen** (Trailer-Close-ups: Kopf, Textur, Detail). Alternative für echte Neue-Winkel-Shots: Seedream Image-Reference über die API testen (DM Studio nutzt das für NPC-Konsistenz).
