@@ -29,10 +29,23 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Assemble site (Werkstatt-Assets ausschliessen)
+        run: |
+          mkdir -p /tmp/_site
+          rsync -a \
+            --exclude='.git' --exclude='.github' \
+            --exclude='social/' \
+            --exclude='*.zip' \
+            --exclude='*.md' \
+            --exclude='MOTION-*.mp4' --exclude='EPIC-*.mp4' \
+            --exclude='_bro_*.jpg' --exclude='_cel_*.jpg' \
+            --exclude='IMG_*.PNG' \
+            ./ /tmp/_site/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '/tmp/_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
