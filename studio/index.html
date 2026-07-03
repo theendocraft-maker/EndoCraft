@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#10131c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EndoCraft">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
 <title>EndoCraft Studio — Create in our look</title>
 <meta name="description" content="Create cinematic, hand-curated D&D characters, monsters and locations in one signature look — in seconds. No prompt-wrangling, no model-juggling.">
 <link rel="canonical" href="https://endocraft.app/studio/">
@@ -1124,5 +1132,27 @@ load('npc');
     <div id="fbDone" class="fbDone" style="display:none">Thank you — got it! ✦</div>
   </div>
 </div>
+
+<nav class="appbar" aria-label="App navigation">
+  <a href="#generate"><span class="ab-ic">&#10022;</span>Create</a>
+  <a href="#showroom"><span class="ab-ic">&#9670;</span>Showroom</a>
+  <a href="#library"><span class="ab-ic">&#9639;</span>Library</a>
+  <a href="#pricing"><span class="ab-ic">&#9733;</span>Pricing</a>
+</nav>
+<style>
+.appbar{display:none}
+@media(max-width:680px){
+  .appbar{position:fixed;bottom:0;left:0;right:0;z-index:60;display:flex;justify-content:space-around;
+    background:linear-gradient(0deg,#0d101a 70%,#0d101aee);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+  .appbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);flex:1;text-align:center}
+  .appbar a .ab-ic{font-size:17px;color:var(--gold-dim)}
+  .appbar a:active .ab-ic,.appbar a:hover .ab-ic{color:var(--gold)}
+  .topbar .nav{display:none}
+  body{padding-bottom:64px}
+  #fbBtn{bottom:74px}
+}
+</style>
 </body>
 </html>
