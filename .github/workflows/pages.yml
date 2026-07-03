@@ -48,9 +48,42 @@ jobs:
         with:
           path: '/tmp/_site'
 
+      # Pages-Backend ist flaky ("Deployment failed, try again later") — bis zu 3 Versuche
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
         with:
-          timeout: 1800000  # 30 Minuten statt default 10
           error_count: 20
+
+      - name: Warten vor Retry 1
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 60
+
+      - name: Deploy (Retry 1)
+        id: deploy2
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+        with:
+          error_count: 20
+
+      - name: Warten vor Retry 2
+        if: steps.deployment.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 120
+
+      - name: Deploy (Retry 2)
+        id: deploy3
+        if: steps.deployment.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          error_count: 20
+
+      - name: Deploy-Ergebnis prüfen
+        if: always()
+        run: |
+          if [ "${{ steps.deployment.outcome }}" = "success" ] || [ "${{ steps.deploy2.outcome }}" = "success" ] || [ "${{ steps.deploy3.outcome }}" = "success" ]; then
+            echo "Deploy erfolgreich."
+          else
+            echo "Alle 3 Deploy-Versuche fehlgeschlagen."; exit 1
+          fi
