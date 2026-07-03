@@ -1,67 +1,58 @@
 @echo off
 echo.
 echo  ================================
-echo   EndoCraft Deploy to GitHub
+echo   EndoCraft Website Deploy
+echo   (GitHub Pages - endocraft.app)
 echo  ================================
 echo.
 
 cd /d "%~dp0"
 
-REM --- 1. Stale Git-Sperrdateien entfernen (sonst bricht commit/push ab) ---
-if exist ".git\index.lock" (
-    echo  - Entferne stale index.lock
-    del /F /Q ".git\index.lock"
-)
-if exist ".git\HEAD.lock" (
-    echo  - Entferne stale HEAD.lock
-    del /F /Q ".git\HEAD.lock"
-)
-
-REM --- 2. Cruft wegraeumen, das nicht deployed werden soll ---
-if exist "free\_preview-thankyou.html" (
-    echo  - Loesche Preview-Datei
-    del /F /Q "free\_preview-thankyou.html"
-)
-if exist "free\portraits\*.png" (
-    echo  - Loesche unbenutzte PNG-Originale ^(nur JPGs gehen live^)
-    del /F /Q "free\portraits\*.png"
-)
-
+echo  Dateien die hochgeladen werden:
+git status --short
 echo.
-echo  Staging changes...
-git add -A
+
+git add .
 
 set TIMESTAMP=%date% %time%
 git commit -m "Deploy: %TIMESTAMP%"
-if errorlevel 1 echo  ^(Nichts Neues zu committen - pushe ggf. bestehende Commits^)
 
 echo.
-echo  Syncing with GitHub...
-git pull origin main --rebase
+echo  Pulling remote changes (rebase) ...
+git pull --rebase origin main
 if errorlevel 1 (
-    echo.
-    echo  !! PULL/REBASE fehlgeschlagen - bitte Ausgabe oben pruefen.
-    echo     Haeufig: Merge-Konflikt. Loesen, dann 'git rebase --continue'.
-    echo.
-    pause
-    exit /b 1
+  echo.
+  echo  ================================
+  echo   FEHLER: Rebase-Konflikt!
+  echo   - Rebase abbrechen:  git rebase --abort
+  echo   - Konflikt loesen + git rebase --continue
+  echo  ================================
+  echo.
+  pause
+  exit /b 1
 )
 
 echo.
-echo  Uploading...
+echo  Uploading to GitHub...
 git push origin main
 if errorlevel 1 (
-    echo.
-    echo  !! PUSH fehlgeschlagen - bitte Ausgabe oben pruefen.
-    echo.
-    pause
-    exit /b 1
+  echo.
+  echo  ================================
+  echo   FEHLER: Push abgelehnt.
+  echo   Nochmal manuell pruefen.
+  echo  ================================
+  echo.
+  pause
+  exit /b 1
 )
 
 echo.
 echo  ================================
-echo   Done! endocraft.app updated
-echo   in ~1-2 minutes.
+echo   Done! endocraft.app aktualisiert
+echo   in ca. 1-2 Minuten.
+echo   (Werkstatt-Ordner social/, ZIPs
+echo   und .md-Dateien bleiben privat -
+echo   der Workflow filtert sie raus.)
 echo  ================================
 echo.
 pause
