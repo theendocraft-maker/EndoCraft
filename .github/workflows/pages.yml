@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir -p /tmp/_site
           rsync -a \
+            --include='free/endocraft-free-pack.zip' \
             --exclude='.git' --exclude='.github' \
             --exclude='social/' \
             --exclude='*.zip' \

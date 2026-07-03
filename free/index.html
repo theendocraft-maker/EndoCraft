@@ -182,10 +182,18 @@ const API_BASE = 'https://endocraft-production.up.railway.app';
   if(!reel) return;
   const list=[
     ['clips/cutscene_lich.mp4','The Lich King'],
+    ['clips/clip_sluglord.mp4','Sluglord, Lord of Slugs'],
     ['clips/cutscene_beholder.mp4','Beholder'],
+    ['clips/clip_shadowhound.mp4','The Devil\'s Hound'],
     ['clips/cutscene_dragon.mp4','Ancient Red Dragon'],
-    ['clips/cutscene_mindflayer.mp4','Mind Flayer']
+    ['clips/clip_saint.mp4','The Bloomrot Saint'],
+    ['clips/cutscene_mindflayer.mp4','Mind Flayer'],
+    ['clips/clip_katerina.mp4','Katerina'],
+    ['clips/clip_fullbloom.mp4','Full Bloom'],
+    ['clips/clip_houndpack.mp4','The Pack Closes In'],
+    ['clips/clip_oldroad.mp4','The Old Road']
   ];
+  for(let s=list.length-1;s>0;s--){const r=Math.floor(Math.random()*(s+1));[list[s],list[r]]=[list[r],list[s]];}
   let i=0;
   function play(n){
     i=((n%list.length)+list.length)%list.length;
