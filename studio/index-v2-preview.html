@@ -453,7 +453,16 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 
 
 <aside class="v2duo-side">
-  <div class="v2demo-label" style="margin-bottom:14px">Your words. Our craft &mdash; watch it work</div>
+  <div class="v2demo-label" style="margin-bottom:12px">How it works &mdash; live</div>
+  <ol class="v2steps">
+    <li id="v2s1"><b>1</b> Pick what you create</li>
+    <li id="v2s2"><b>2</b> Describe the moment</li>
+    <li id="v2s3"><b>3</b> Get your image</li>
+    <li id="v2s4"><b>4</b> Bring it to life</li>
+  </ol>
+  <div class="v2chips" id="v2chips">
+    <span data-t="Character">Character</span><span data-t="Monster">Monster</span><span data-t="Location">Location</span><span data-t="Ambience">Ambience</span>
+  </div>
   <div class="v2demo-grid">
     <div class="v2demo-input">
       <div class="v2demo-label">You type</div>
@@ -464,7 +473,8 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     <div class="v2demo-result">
       <div class="v2demo-label">You get</div>
       <div class="v2demo-stage">
-        <div id="v2load" class="v2load"><span class="v2spin"></span>Crafting your scene&hellip;</div>
+        <div id="v2load" class="v2load"><span class="v2spin"></span><span id="v2loadTxt">Crafting your image&hellip;</span></div>
+        <img id="v2still" alt="">
         <video id="v2result" muted playsinline preload="auto"></video>
       </div>
     </div>
@@ -489,6 +499,18 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 .v2load.on{opacity:1}
 .v2spin{width:16px;height:16px;border:2px solid #2c3247;border-top-color:#d8b46a;border-radius:50%;animation:v2rot .8s linear infinite}
 @keyframes v2rot{to{transform:rotate(360deg)}}
+
+.v2steps{list-style:none;display:flex;flex-direction:column;gap:7px;margin:0 0 16px;padding:0}
+.v2steps li{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;transition:color .3s}
+.v2steps li b{width:22px;height:22px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);transition:all .3s;flex:none}
+.v2steps li.act{color:var(--ink)}
+.v2steps li.act b{border-color:var(--gold);color:var(--gold);box-shadow:0 0 8px rgba(216,180,106,.35)}
+
+.v2chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.v2chips span{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12px;color:var(--muted);transition:all .3s}
+.v2chips span.act{border-color:var(--gold);color:var(--gold);box-shadow:0 0 8px rgba(216,180,106,.3)}
+#v2still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+#v2still.on{opacity:1}
 .v2proof{text-align:center;color:#d8b46a;margin:34px 20px 10px;font-size:15px}
 .v2proof b{color:#e6c878}
 @media(max-width:760px){.v2demo-grid{grid-template-columns:1fr}.v2demo-arrow{display:none}}
@@ -505,33 +527,48 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 <script>
 (function(){
   const EX=[
-    ["a colossal slug cresting the hill above a torchlit village at dusk...", "showroom/v2-sluglord.mp4"],
-    ["a shadow hound with burning red eyes, moonlit mist at its back...", "showroom/v2-shadowhound.mp4"],
-    ["an ancient red dragon resting on its hoard, torchlight on gold...", "showroom/char-dragon.mp4"],
-    ["a fallen saint in rose-grown golden armor, wading through a flooded chapel...", "showroom/v2-saint.mp4"],
-    ["a tiefling warlock, violet flame curling in her palm...", "showroom/char-warlock.mp4"],
-    ["a vampire bride beneath the blood moon, her castle behind her...", "showroom/v2-katerina.mp4"],
-    ["the lich king on his ruined throne, crowned in green fire...", "showroom/char-lich.mp4"]
+    ["Monster","a colossal slug cresting the hill above a torchlit village at dusk...","showroom/v2-sluglord.mp4","showroom/v2-sluglord_poster.jpg"],
+    ["Character","a fallen saint in rose-grown golden armor, wading through a flooded chapel...","showroom/v2-saint.mp4","showroom/v2-saint_poster.jpg"],
+    ["Ambience","a warm tavern after closing, the fire still burning...","showroom/tavern_loop.mp4","showroom/tavern_loop_poster.jpg"],
+    ["Monster","an ancient red dragon resting on its hoard, torchlight on gold...","showroom/char-dragon.mp4","showroom/char-dragon_poster.jpg"],
+    ["Location","sunbeams through the dust of a lost library...","showroom/library_loop.mp4","showroom/library_loop_poster.jpg"],
+    ["Character","a vampire bride beneath the blood moon, her castle behind her...","showroom/v2-katerina.mp4","showroom/v2-katerina_poster.jpg"]
   ];
-  const el=document.getElementById('v2type'), vid=document.getElementById('v2result'), load=document.getElementById('v2load');
+  const el=document.getElementById('v2type'), vid=document.getElementById('v2result'), still=document.getElementById('v2still'),
+        load=document.getElementById('v2load'), loadTxt=document.getElementById('v2loadTxt'), chips=document.getElementById('v2chips');
   let ex=0, started=false;
+  function setStep(n){ for(let s=1;s<=4;s++){ const e=document.getElementById('v2s'+s); if(e) e.classList.toggle('act', s===n); } }
+  function setChip(t){ chips.querySelectorAll('span').forEach(c=>c.classList.toggle('act', c.dataset.t===t)); }
   function typeText(t,done){ let k=0; (function s(){ if(k<=t.length){ el.textContent=t.slice(0,k); k++; setTimeout(s, 34+Math.random()*46); } else done(); })(); }
   function eraseText(done){ (function e(){ const t=el.textContent; if(t.length){ el.textContent=t.slice(0,-2); setTimeout(e,12); } else done(); })(); }
   function run(){
     const item=EX[ex%EX.length]; ex++;
-    typeText(item[0], function(){
-      load.classList.add('on');
-      const next=EX[ex%EX.length]; const pre=document.createElement('video'); pre.src=next[1]; pre.preload='auto'; pre.muted=true;
-      setTimeout(function(){
-        vid.src=item[1]; vid.classList.remove('on');
-        let advanced=false;
-        function advance(){ if(advanced) return; advanced=true; load.classList.remove('on'); vid.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
-        vid.oncanplay=function(){ vid.oncanplay=null; load.classList.remove('on'); vid.classList.add('on'); vid.playbackRate=0.6; vid.play().catch(function(){}); };
-        vid.onended=function(){ setTimeout(advance, 700); };
-        vid.load();
-        setTimeout(advance, 16000); /* Sicherheitsnetz */
-      }, 1400);
-    });
+    /* Phase 1: Typ waehlen */
+    setStep(1); setChip(null); vid.classList.remove('on'); still.classList.remove('on');
+    setTimeout(function(){ setChip(item[0]); }, 600);
+    setTimeout(function(){
+      /* Phase 2: beschreiben */
+      setStep(2);
+      typeText(item[1], function(){
+        /* Phase 3: Bild entsteht */
+        loadTxt.textContent='Crafting your image\u2026'; load.classList.add('on');
+        const pre=document.createElement('video'); pre.src=EX[ex%EX.length][2]; pre.preload='auto'; pre.muted=true;
+        setTimeout(function(){
+          load.classList.remove('on'); still.src=item[3]; still.classList.add('on'); setStep(3);
+          /* Phase 4: animieren */
+          setTimeout(function(){
+            loadTxt.textContent='Bringing it to life\u2026'; load.classList.add('on'); setStep(4);
+            vid.src=item[2];
+            let advanced=false;
+            function advance(){ if(advanced) return; advanced=true; load.classList.remove('on'); vid.classList.remove('on'); still.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
+            vid.oncanplay=function(){ vid.oncanplay=null; load.classList.remove('on'); still.classList.remove('on'); vid.classList.add('on'); vid.playbackRate=0.6; vid.play().catch(function(){}); };
+            vid.onended=function(){ setTimeout(advance, 700); };
+            vid.load();
+            setTimeout(advance, 18000);
+          }, 2200);
+        }, 1500);
+      });
+    }, 1400);
   }
   const io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting && !started){ started=true; setTimeout(run,500); io.disconnect(); } }); },{threshold:.4});
   io.observe(el.parentElement);
