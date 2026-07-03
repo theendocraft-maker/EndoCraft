@@ -39,7 +39,7 @@ a{color:var(--gold);text-decoration:none}
 .nav{display:flex;gap:18px;margin-left:8px;font-size:13.5px}
 .nav a{color:var(--muted)}.nav a:hover{color:var(--gold)}
 .spacer{flex:1}
-.pill{font-size:12px;border:1px solid var(--gold-dim);border-radius:999px;padding:5px 12px;color:var(--gold);background:rgba(216,180,106,.08);display:flex;align-items:center;gap:6px}
+.pill{font-size:12.5px;border:none;background:none;padding:0;color:var(--gold-bright);letter-spacing:.5px}
 .proto{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#1a1408;background:var(--gold);border-radius:4px;padding:3px 8px;font-weight:700}
 .btn{display:inline-block;border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:10px 16px;color:var(--ink);font-weight:500;cursor:pointer;font-family:inherit;font-size:14px;transition:.15s}
 .btn:hover{border-color:var(--gold-dim);background:#262b3c}
@@ -51,7 +51,7 @@ a{color:var(--gold);text-decoration:none}
 .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
 .hero .bgimg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.34;filter:saturate(1.05)}
 .hero .scrim{position:absolute;inset:0;background:radial-gradient(120% 120% at 30% 20%,transparent,#10131c 78%)}
-.hero .inner{position:relative;padding:78px 22px 70px}
+.hero .inner{position:relative;padding:54px 22px 40px}
 .kicker{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
 .hero h1{font-size:46px;line-height:1.1;max-width:760px}
 .hero h1 em{font-style:normal;color:var(--gold)}
@@ -196,7 +196,7 @@ textarea.prompt:focus{outline:none;border-color:var(--gold-dim)}
 .hero .kicker:before,.hero .kicker:after{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
 .hero-vid{opacity:.55}
 .brand{letter-spacing:.5px}
-.nav a{text-transform:uppercase;letter-spacing:1.5px;font-size:12px}
+.nav a{text-transform:uppercase;letter-spacing:1.5px;font-size:12px;padding:6px 2px}
 .btn{border-radius:3px;letter-spacing:.5px}
 .btn.primary{background:linear-gradient(180deg,#ecca7e,#c9a14e);border-color:#7a5e23;color:#1c1408;box-shadow:0 6px 18px -8px #000,inset 0 1px 0 #fff6d8,inset 0 -2px 0 #8a6a2a;text-shadow:0 1px 0 #f3e1ad}
 .hero .cta .btn{font-family:'Cinzel',serif;text-transform:uppercase;letter-spacing:2px;font-size:13px}
@@ -330,10 +330,10 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
   .brand .dot{display:none}
   .mine-link{font-size:10px;margin-left:4px}
   #switchLink{display:none!important}
-  .hero .inner{padding:38px 22px 32px}
+  .hero .inner{padding:30px 22px 22px}
   .hero .kicker{font-size:11px;gap:8px}
   .proto{display:none}
-  .pill{font-size:10px;padding:2px 8px}
+  .pill{font-size:11px;padding:0}
   .hero p.lead{margin:14px 0 22px}
   .hero .cta{flex-direction:column;align-items:stretch}
   .hero .cta .btn{width:100%}
@@ -361,7 +361,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
   .hero p.lead{font-size:15.5px;margin:12px 0 20px}
   .hero .kicker{font-size:10px}
   .sec-head h2{font-size:clamp(19px,4.6vw,23px)}
-  .hero .inner{padding:30px 20px 26px}
+  .hero .inner{padding:24px 20px 18px}
 }
 </style>
 </head>
@@ -371,13 +371,11 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
   <div class="brand"><span class="dot"></span>EndoCraft <span style="color:var(--muted);font-weight:400;font-size:14px">Studio</span></div>
   <nav class="nav">
     <a href="#showroom">Showroom</a>
-    <a href="#generate">Generate</a>
-    <a href="#library">Member Library</a>
+    <a href="#library">Library</a>
     <a href="#pricing">Pricing</a>
   </nav>
   <div class="spacer"></div>
   <span class="pill">◆ <b id="balPill">40</b> credits</span>
-  <span class="proto">Closed Beta</span>
 </div></div>
 
 <!-- HERO -->
@@ -388,96 +386,15 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     <div class="kicker">Your table. Your legend.</div>
     <h1>Create your own D&amp;D assets — in the <em>EndoCraft look</em>.</h1>
     <p class="lead">Cinematic NPCs, monsters, locations &amp; cutscenes — you describe the moment, we craft the look.</p>
-    <div class="cta">
-      <a class="btn primary lg" href="#generate">Start creating</a>
-      <a class="btn lg" href="#showroom">See the look</a>
-    </div>
-    <div class="trust">
-      <span><b>One look, locked in</b> — no prompt-wrangling.</span>
-      <span>Free starter library · cancel anytime.</span>
+    <div class="trust" style="margin-top:6px">
+      <span><b>One look, locked in</b> — no prompt-wrangling · free starter library · cancel anytime.</span>
     </div>
   </div>
 </header>
-<!-- V2: YOUR WORDS, OUR CRAFT -->
-<section class="wrap v2demo">
-  <div class="sec-head"><h2>Your <span>words</span>. Our craft.</h2>
-    <p>No prompt engineering. Describe the moment like you would at the table.</p></div>
-  <div class="v2demo-grid">
-    <div class="v2demo-input">
-      <div class="v2demo-label">You type</div>
-      <div class="v2demo-box"><span id="v2type"></span><span class="v2caret">|</span></div>
-      <div class="v2demo-hint">&hellip;that&rsquo;s all it takes.</div>
-    </div>
-    <div class="v2demo-arrow">&rarr;</div>
-    <div class="v2demo-result">
-      <div class="v2demo-label">You get</div>
-      <div class="v2demo-stage">
-        <div id="v2load" class="v2load"><span class="v2spin"></span>Crafting your scene&hellip;</div>
-        <video id="v2result" muted playsinline preload="auto"></video>
-      </div>
-    </div>
-  </div>
-</section>
-<div class="v2proof">&starf;&starf;&starf;&starf;&starf;&nbsp; <b>5.0 shop rating on Etsy</b> &mdash; EndoCraft kits are already in play at real tables.</div>
-<style>
-.v2demo{margin-top:8px}
-.v2demo-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:26px;align-items:center;max-width:900px;margin:0 auto}
-.v2demo-label{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#9c8244;margin-bottom:10px;font-weight:700}
-.v2demo-box{background:#181c28;border:1px solid #2c3247;border-radius:12px;padding:18px 20px;font-size:17px;min-height:86px;color:#f3edd9}
-.v2caret{color:#e6c878;animation:v2blink 1s steps(1) infinite}
-@keyframes v2blink{50%{opacity:0}}
-.v2demo-hint{color:#9aa0b3;font-size:13.5px;margin-top:10px;font-style:italic}
-.v2demo-arrow{font-size:34px;color:#d8b46a}
-.v2demo-stage{position:relative;aspect-ratio:3/4;max-height:360px;border-radius:12px;border:1px solid #2c3247;overflow:hidden;background:#10131c}
-.v2demo-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s}
-.v2demo-stage video.on{opacity:1}
-.v2load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;color:#9aa0b3;font-size:14px;opacity:0;transition:opacity .3s}
-.v2load.on{opacity:1}
-.v2spin{width:16px;height:16px;border:2px solid #2c3247;border-top-color:#d8b46a;border-radius:50%;animation:v2rot .8s linear infinite}
-@keyframes v2rot{to{transform:rotate(360deg)}}
-.v2proof{text-align:center;color:#d8b46a;margin:34px 20px 10px;font-size:15px}
-.v2proof b{color:#e6c878}
-@media(max-width:760px){.v2demo-grid{grid-template-columns:1fr}.v2demo-arrow{transform:rotate(90deg);text-align:center}}
-</style>
-<script>
-(function(){
-  const EX=[
-    ["a colossal slug cresting the hill above a torchlit village at dusk...", "showroom/v2-sluglord.mp4"],
-    ["a shadow hound with burning red eyes, moonlit mist at its back...", "showroom/v2-shadowhound.mp4"],
-    ["an ancient red dragon resting on its hoard, torchlight on gold...", "showroom/char-dragon.mp4"],
-    ["a fallen saint in rose-grown golden armor, wading through a flooded chapel...", "showroom/v2-saint.mp4"],
-    ["a tiefling warlock, violet flame curling in her palm...", "showroom/char-warlock.mp4"],
-    ["a vampire bride beneath the blood moon, her castle behind her...", "showroom/v2-katerina.mp4"],
-    ["the lich king on his ruined throne, crowned in green fire...", "showroom/char-lich.mp4"]
-  ];
-  const el=document.getElementById('v2type'), vid=document.getElementById('v2result'), load=document.getElementById('v2load');
-  let ex=0, started=false;
-  function typeText(t,done){ let k=0; (function s(){ if(k<=t.length){ el.textContent=t.slice(0,k); k++; setTimeout(s, 34+Math.random()*46); } else done(); })(); }
-  function eraseText(done){ (function e(){ const t=el.textContent; if(t.length){ el.textContent=t.slice(0,-2); setTimeout(e,12); } else done(); })(); }
-  function run(){
-    const item=EX[ex%EX.length]; ex++;
-    typeText(item[0], function(){
-      load.classList.add('on');
-      const next=EX[ex%EX.length]; const pre=document.createElement('video'); pre.src=next[1]; pre.preload='auto'; pre.muted=true;
-      setTimeout(function(){
-        vid.src=item[1]; vid.classList.remove('on');
-        let advanced=false;
-        function advance(){ if(advanced) return; advanced=true; load.classList.remove('on'); vid.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
-        vid.oncanplay=function(){ vid.oncanplay=null; load.classList.remove('on'); vid.classList.add('on'); vid.playbackRate=0.6; vid.play().catch(function(){}); };
-        vid.onended=function(){ setTimeout(advance, 700); };
-        vid.load();
-        setTimeout(advance, 16000); /* Sicherheitsnetz */
-      }, 1400);
-    });
-  }
-  const io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting && !started){ started=true; setTimeout(run,500); io.disconnect(); } }); },{threshold:.4});
-  io.observe(el.parentElement);
-})();
-</script>
 
-
+<div class="wrap v2duo">
 <!-- GENERATE -->
-<section id="generate" class="wrap">
+<section id="generate" class="v2duo-main">
   <div class="sec-head"><h2><span>Generate</span> your own</h2>
     <p>Pick a type, describe it in plain words. We handle the style, the lighting, the craft.</p></div>
   <div class="studio">
@@ -532,6 +449,94 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     </div>
   </div>
 </section>
+
+
+
+<aside class="v2duo-side">
+  <div class="v2demo-label" style="margin-bottom:14px">Your words. Our craft &mdash; watch it work</div>
+  <div class="v2demo-grid">
+    <div class="v2demo-input">
+      <div class="v2demo-label">You type</div>
+      <div class="v2demo-box"><span id="v2type"></span><span class="v2caret">|</span></div>
+      <div class="v2demo-hint">&hellip;that&rsquo;s all it takes.</div>
+    </div>
+    <div class="v2demo-arrow">&rarr;</div>
+    <div class="v2demo-result">
+      <div class="v2demo-label">You get</div>
+      <div class="v2demo-stage">
+        <div id="v2load" class="v2load"><span class="v2spin"></span>Crafting your scene&hellip;</div>
+        <video id="v2result" muted playsinline preload="auto"></video>
+      </div>
+    </div>
+  </div>
+</aside>
+</div>
+
+<div class="v2proof">&starf;&starf;&starf;&starf;&starf;&nbsp; <b>5.0 shop rating on Etsy</b> &mdash; EndoCraft kits are already in play at real tables.</div>
+<style>
+.v2demo{margin-top:8px}
+.v2demo-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:26px;align-items:center;max-width:900px;margin:0 auto}
+.v2demo-label{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#9c8244;margin-bottom:10px;font-weight:700}
+.v2demo-box{background:#181c28;border:1px solid #2c3247;border-radius:12px;padding:18px 20px;font-size:17px;min-height:86px;color:#f3edd9}
+.v2caret{color:#e6c878;animation:v2blink 1s steps(1) infinite}
+@keyframes v2blink{50%{opacity:0}}
+.v2demo-hint{color:#9aa0b3;font-size:13.5px;margin-top:10px;font-style:italic}
+.v2demo-arrow{font-size:34px;color:#d8b46a}
+.v2demo-stage{position:relative;aspect-ratio:3/4;max-height:360px;border-radius:12px;border:1px solid #2c3247;overflow:hidden;background:#10131c}
+.v2demo-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s}
+.v2demo-stage video.on{opacity:1}
+.v2load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;color:#9aa0b3;font-size:14px;opacity:0;transition:opacity .3s}
+.v2load.on{opacity:1}
+.v2spin{width:16px;height:16px;border:2px solid #2c3247;border-top-color:#d8b46a;border-radius:50%;animation:v2rot .8s linear infinite}
+@keyframes v2rot{to{transform:rotate(360deg)}}
+.v2proof{text-align:center;color:#d8b46a;margin:34px 20px 10px;font-size:15px}
+.v2proof b{color:#e6c878}
+@media(max-width:760px){.v2demo-grid{grid-template-columns:1fr}.v2demo-arrow{display:none}}
+.v2duo{display:grid;grid-template-columns:1.3fr .7fr;gap:30px;align-items:start;padding-top:34px}
+.v2duo-main .sec-head{text-align:left}
+.v2duo-side{position:sticky;top:70px}
+.v2duo-side .v2demo-grid{grid-template-columns:1fr;gap:14px;max-width:none}
+.v2duo-side .v2demo-arrow{display:none}
+.v2duo-side .v2demo-box{font-size:15px;min-height:64px;padding:14px 16px}
+.v2duo-side .v2demo-stage{max-height:300px}
+@media(max-width:900px){.v2duo{grid-template-columns:1fr}.v2duo-side{position:static}}
+
+</style>
+<script>
+(function(){
+  const EX=[
+    ["a colossal slug cresting the hill above a torchlit village at dusk...", "showroom/v2-sluglord.mp4"],
+    ["a shadow hound with burning red eyes, moonlit mist at its back...", "showroom/v2-shadowhound.mp4"],
+    ["an ancient red dragon resting on its hoard, torchlight on gold...", "showroom/char-dragon.mp4"],
+    ["a fallen saint in rose-grown golden armor, wading through a flooded chapel...", "showroom/v2-saint.mp4"],
+    ["a tiefling warlock, violet flame curling in her palm...", "showroom/char-warlock.mp4"],
+    ["a vampire bride beneath the blood moon, her castle behind her...", "showroom/v2-katerina.mp4"],
+    ["the lich king on his ruined throne, crowned in green fire...", "showroom/char-lich.mp4"]
+  ];
+  const el=document.getElementById('v2type'), vid=document.getElementById('v2result'), load=document.getElementById('v2load');
+  let ex=0, started=false;
+  function typeText(t,done){ let k=0; (function s(){ if(k<=t.length){ el.textContent=t.slice(0,k); k++; setTimeout(s, 34+Math.random()*46); } else done(); })(); }
+  function eraseText(done){ (function e(){ const t=el.textContent; if(t.length){ el.textContent=t.slice(0,-2); setTimeout(e,12); } else done(); })(); }
+  function run(){
+    const item=EX[ex%EX.length]; ex++;
+    typeText(item[0], function(){
+      load.classList.add('on');
+      const next=EX[ex%EX.length]; const pre=document.createElement('video'); pre.src=next[1]; pre.preload='auto'; pre.muted=true;
+      setTimeout(function(){
+        vid.src=item[1]; vid.classList.remove('on');
+        let advanced=false;
+        function advance(){ if(advanced) return; advanced=true; load.classList.remove('on'); vid.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
+        vid.oncanplay=function(){ vid.oncanplay=null; load.classList.remove('on'); vid.classList.add('on'); vid.playbackRate=0.6; vid.play().catch(function(){}); };
+        vid.onended=function(){ setTimeout(advance, 700); };
+        vid.load();
+        setTimeout(advance, 16000); /* Sicherheitsnetz */
+      }, 1400);
+    });
+  }
+  const io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting && !started){ started=true; setTimeout(run,500); io.disconnect(); } }); },{threshold:.4});
+  io.observe(el.parentElement);
+})();
+</script>
 
 
 <!-- SHOWROOM -->
