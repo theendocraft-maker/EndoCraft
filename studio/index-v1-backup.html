@@ -398,83 +398,6 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     </div>
   </div>
 </header>
-<!-- V2: YOUR WORDS, OUR CRAFT -->
-<section class="wrap v2demo">
-  <div class="sec-head"><h2>Your <span>words</span>. Our craft.</h2>
-    <p>No prompt engineering. Describe the moment like you would at the table.</p></div>
-  <div class="v2demo-grid">
-    <div class="v2demo-input">
-      <div class="v2demo-label">You type</div>
-      <div class="v2demo-box"><span id="v2type"></span><span class="v2caret">|</span></div>
-      <div class="v2demo-hint">&hellip;that&rsquo;s all it takes.</div>
-    </div>
-    <div class="v2demo-arrow">&rarr;</div>
-    <div class="v2demo-result">
-      <div class="v2demo-label">You get</div>
-      <div class="v2demo-stage">
-        <div id="v2load" class="v2load"><span class="v2spin"></span>Crafting your scene&hellip;</div>
-        <video id="v2result" muted playsinline preload="auto"></video>
-      </div>
-    </div>
-  </div>
-</section>
-<div class="v2proof">&starf;&starf;&starf;&starf;&starf;&nbsp; <b>5.0 shop rating on Etsy</b> &mdash; EndoCraft kits are already in play at real tables.</div>
-<style>
-.v2demo{margin-top:8px}
-.v2demo-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:26px;align-items:center;max-width:900px;margin:0 auto}
-.v2demo-label{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#9c8244;margin-bottom:10px;font-weight:700}
-.v2demo-box{background:#181c28;border:1px solid #2c3247;border-radius:12px;padding:18px 20px;font-size:17px;min-height:86px;color:#f3edd9}
-.v2caret{color:#e6c878;animation:v2blink 1s steps(1) infinite}
-@keyframes v2blink{50%{opacity:0}}
-.v2demo-hint{color:#9aa0b3;font-size:13.5px;margin-top:10px;font-style:italic}
-.v2demo-arrow{font-size:34px;color:#d8b46a}
-.v2demo-stage{position:relative;aspect-ratio:3/4;max-height:360px;border-radius:12px;border:1px solid #2c3247;overflow:hidden;background:#10131c}
-.v2demo-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s}
-.v2demo-stage video.on{opacity:1}
-.v2load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;color:#9aa0b3;font-size:14px;opacity:0;transition:opacity .3s}
-.v2load.on{opacity:1}
-.v2spin{width:16px;height:16px;border:2px solid #2c3247;border-top-color:#d8b46a;border-radius:50%;animation:v2rot .8s linear infinite}
-@keyframes v2rot{to{transform:rotate(360deg)}}
-.v2proof{text-align:center;color:#d8b46a;margin:34px 20px 10px;font-size:15px}
-.v2proof b{color:#e6c878}
-@media(max-width:760px){.v2demo-grid{grid-template-columns:1fr}.v2demo-arrow{transform:rotate(90deg);text-align:center}}
-</style>
-<script>
-(function(){
-  const EX=[
-    ["a colossal slug cresting the hill above a torchlit village at dusk...", "showroom/v2-sluglord.mp4"],
-    ["a shadow hound with burning red eyes, moonlit mist at its back...", "showroom/v2-shadowhound.mp4"],
-    ["an ancient red dragon resting on its hoard, torchlight on gold...", "showroom/char-dragon.mp4"],
-    ["a fallen saint in rose-grown golden armor, wading through a flooded chapel...", "showroom/v2-saint.mp4"],
-    ["a tiefling warlock, violet flame curling in her palm...", "showroom/char-warlock.mp4"],
-    ["a vampire bride beneath the blood moon, her castle behind her...", "showroom/v2-katerina.mp4"],
-    ["the lich king on his ruined throne, crowned in green fire...", "showroom/char-lich.mp4"]
-  ];
-  const el=document.getElementById('v2type'), vid=document.getElementById('v2result'), load=document.getElementById('v2load');
-  let ex=0, started=false;
-  function typeText(t,done){ let k=0; (function s(){ if(k<=t.length){ el.textContent=t.slice(0,k); k++; setTimeout(s, 34+Math.random()*46); } else done(); })(); }
-  function eraseText(done){ (function e(){ const t=el.textContent; if(t.length){ el.textContent=t.slice(0,-2); setTimeout(e,12); } else done(); })(); }
-  function run(){
-    const item=EX[ex%EX.length]; ex++;
-    typeText(item[0], function(){
-      load.classList.add('on');
-      const next=EX[ex%EX.length]; const pre=document.createElement('video'); pre.src=next[1]; pre.preload='auto'; pre.muted=true;
-      setTimeout(function(){
-        vid.src=item[1]; vid.classList.remove('on');
-        let advanced=false;
-        function advance(){ if(advanced) return; advanced=true; vid.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
-        vid.oncanplay=function(){ vid.oncanplay=null; load.classList.remove('on'); vid.classList.add('on'); vid.playbackRate=0.6; vid.play().catch(function(){}); };
-        vid.onended=function(){ setTimeout(advance, 700); };
-        vid.load();
-        setTimeout(advance, 16000); /* Sicherheitsnetz */
-      }, 1400);
-    });
-  }
-  const io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting && !started){ started=true; setTimeout(run,500); io.disconnect(); } }); },{threshold:.4});
-  io.observe(el.parentElement);
-})();
-</script>
-
 
 <!-- SHOWROOM -->
 <section id="showroom" class="wrap">
@@ -573,7 +496,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
       <div class="pr">€6.99<small> / mo</small></div>
       <div class="cr">◆ 40 credits / month</div>
       <ul><li>~40 images a month</li><li>Full member library</li><li>Guided prompt templates</li><li>Personal gallery</li></ul>
-      <button class="btn" onclick="waitlist()">Reserve founder pricing</button>
+      <button class="btn" onclick="waitlist()">Join waitlist</button>
     </div>
     <div class="tier feat">
       <span class="feat-tag">Most popular</span>
@@ -581,14 +504,14 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
       <div class="pr">€14.99<small> / mo</small></div>
       <div class="cr">◆ 100 credits / month</div>
       <ul><li>~100 images a month</li><li>Full member library</li><li>Faster generation queue</li><li>Personal gallery + re-generate</li></ul>
-      <button class="btn primary" onclick="waitlist()">Reserve founder pricing</button>
+      <button class="btn primary" onclick="waitlist()">Join waitlist</button>
     </div>
     <div class="tier">
       <div class="tn">Master</div>
       <div class="pr">€29.99<small> / mo</small></div>
       <div class="cr">◆ 250 credits / month</div>
       <ul><li>~250 images <i>or</i> cutscene clips</li><li>Animated cutscene generation</li><li>Commercial-use license</li><li>Everything in Adventurer</li></ul>
-      <button class="btn" onclick="waitlist()">Reserve founder pricing</button>
+      <button class="btn" onclick="waitlist()">Join waitlist</button>
     </div>
   </div>
   <div class="topups">
@@ -778,7 +701,7 @@ async function genClip(motionArg){
     const st=String(j.status||'').toLowerCase();
     if(url){
       const proxied=API+'/api/video/proxy?url='+encodeURIComponent(url);
-      frame.innerHTML='<video preload="metadata" src="'+proxied+'" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover"></video>';
+      frame.innerHTML='<video src="'+proxied+'" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover"></video>';
       const dl=document.getElementById('dlBtn');dl.href=proxied;dl.setAttribute('download','endocraft-'+cur+'-'+ecSlug(lastSubject)+'-cutscene.mp4');
       document.getElementById('animBtn').style.display='none';
       ecPreSaveAsset('video',cur,url,lastSubject);
@@ -950,7 +873,7 @@ async function fbSubmit(){
   function mkVideo(src){
     const v=document.createElement('video');
     v.src=src;v.loop=true;v.muted=true;v.defaultMuted=true;v.playsInline=true;
-    v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='none';v.poster=src.replace('.mp4','_poster.jpg');
+    v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='none';
     v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0';
     return v;
   }
@@ -1063,7 +986,7 @@ function freePack(){
 }
 WLDONE_ORIG=document.getElementById('wlDone').innerHTML;
 (function(){var lg=document.querySelector('.libgrid');if(lg){var w=document.createElement('div');w.id='locDlWrap';w.innerHTML='<button class="btn primary lg" id="locDl">⬇ Download all 6 locations — free</button>';lg.parentNode.insertBefore(w,lg.nextSibling);document.getElementById('locDl').onclick=function(){freePack();};}})();
-(function(){var h=document.querySelector('.hero');if(h){var v=document.createElement('video');v.src='showroom/dungeon_loop.mp4';v.autoplay=true;v.loop=true;v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.className='hero-vid';v.poster='showroom/dungeon_loop_poster.jpg';v.preload='auto';var bg=h.querySelector('.bgimg');h.insertBefore(v,bg?bg.nextSibling:h.firstChild);var p=v.play();if(p&&p.catch)p.catch(function(){});}})();
+(function(){var h=document.querySelector('.hero');if(h){var v=document.createElement('video');v.src='showroom/dungeon_loop.mp4';v.autoplay=true;v.loop=true;v.muted=true;v.defaultMuted=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.className='hero-vid';var bg=h.querySelector('.bgimg');h.insertBefore(v,bg?bg.nextSibling:h.firstChild);var p=v.play();if(p&&p.catch)p.catch(function(){});}})();
 wzStep1();
 load('npc');
 </script>
