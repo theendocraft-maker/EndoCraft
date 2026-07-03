@@ -462,7 +462,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
       setTimeout(function(){
         vid.src=item[1]; vid.classList.remove('on');
         let advanced=false;
-        function advance(){ if(advanced) return; advanced=true; vid.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
+        function advance(){ if(advanced) return; advanced=true; load.classList.remove('on'); vid.classList.remove('on'); eraseText(function(){ setTimeout(run, 500); }); }
         vid.oncanplay=function(){ vid.oncanplay=null; load.classList.remove('on'); vid.classList.add('on'); vid.playbackRate=0.6; vid.play().catch(function(){}); };
         vid.onended=function(){ setTimeout(advance, 700); };
         vid.load();
