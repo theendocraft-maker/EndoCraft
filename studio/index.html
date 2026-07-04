@@ -401,6 +401,13 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
 </style>
 </head>
 <body>
+<script>
+(function(){ try{
+  var sa = matchMedia('(display-mode:standalone)').matches || navigator.standalone;
+  var force = /[?&]app=1/.test(location.search);
+  if(sa || force) document.documentElement.classList.add('is-app'); /* auf <html> für frühes CSS */
+}catch(e){} })();
+</script>
 
 <div class="topbar"><div class="wrap">
   <div class="brand"><img src="../assets/logo-seal.png" class="brand-seal" alt="EndoCraft"/>EndoCraft <span style="color:var(--muted);font-weight:400;font-size:14px">Studio</span></div>
@@ -1161,10 +1168,10 @@ load('npc');
 </div>
 
 <nav class="appbar" aria-label="App navigation">
-  <a href="#generate"><span class="ab-ic">&#10022;</span>Create</a>
-  <a href="#showroom"><span class="ab-ic">&#9670;</span>Showroom</a>
-  <a href="#library"><span class="ab-ic">&#9639;</span>Library</a>
-  <a href="#pricing"><span class="ab-ic">&#9733;</span>Pricing</a>
+  <a href="#generate" data-screen="create"><span class="ab-ic">&#10022;</span>Create</a>
+  <a href="#showroom" data-screen="showroom"><span class="ab-ic">&#9670;</span>Showroom</a>
+  <a href="#library" data-screen="library"><span class="ab-ic">&#9639;</span>Library</a>
+  <a href="#pricing" data-screen="account"><span class="ab-ic">&#9733;</span>Account</a>
 </nav>
 <style>
 .appbar{display:none}
@@ -1384,6 +1391,7 @@ body{-webkit-overflow-scrolling:touch}
 (function(){
   /* aktive Tab-Hervorhebung in der App-Bar via Scroll-Position */
   var bar=document.querySelector('.appbar'); if(!bar) return;
+  if(document.documentElement.classList.contains('is-app')) return; /* App-Mode steuert Tabs selbst */
   var links=[].slice.call(bar.querySelectorAll('a'));
   var map=links.map(function(a){ var id=(a.getAttribute('href')||'').replace('#',''); return {a:a, el:id?document.getElementById(id):null}; }).filter(function(x){return x.el;});
   if(!map.length) return;
@@ -1396,6 +1404,46 @@ body{-webkit-overflow-scrolling:touch}
   var tick=false;
   window.addEventListener('scroll', function(){ if(!tick){ requestAnimationFrame(function(){ onScroll(); tick=false; }); tick=true; } }, {passive:true});
   onScroll();
+})();
+</script>
+
+<style>
+/* ===== APP-SHELL (nur installierter App-Modus / ?app=1) ===== */
+html.is-app body{padding-bottom:76px}
+html.is-app .appbar{display:flex!important}
+html.is-app .hero,html.is-app .v2duo-side,html.is-app .v2proof,html.is-app footer,
+html.is-app .topbar .nav,html.is-app .char-head{display:none!important}
+html.is-app .v2duo{display:block;padding:10px 0 0}
+html.is-app .v2duo-main .sec-head{text-align:center}
+/* Screens: nur der aktive sichtbar */
+html.is-app #generate,html.is-app #showroom,html.is-app #library,html.is-app #pricing{display:none}
+html.is-app.screen-create #generate{display:block}
+html.is-app.screen-showroom #showroom{display:block}
+html.is-app.screen-library #library{display:block}
+html.is-app.screen-account #pricing{display:block}
+html.is-app section.wrap,html.is-app .v2duo{min-height:calc(100vh - 130px)}
+/* Screen-Wechsel-Animation */
+html.is-app #generate,html.is-app #showroom,html.is-app #library,html.is-app #pricing{animation:appScreenIn .28s ease}
+@keyframes appScreenIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){html.is-app #generate,html.is-app #showroom,html.is-app #library,html.is-app #pricing{animation:none}}
+</style>
+<script>
+(function(){
+  if(!document.documentElement.classList.contains('is-app')) return;
+  var root=document.documentElement, bar=document.querySelector('.appbar');
+  if(!bar) return;
+  var tabs=[].slice.call(bar.querySelectorAll('a[data-screen]'));
+  function setScreen(name){
+    root.classList.remove('screen-create','screen-showroom','screen-library','screen-account');
+    root.classList.add('screen-'+name);
+    tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-screen')===name); });
+    window.scrollTo(0,0);
+    try{ if(navigator.vibrate) navigator.vibrate(8); }catch(e){}
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(e){ e.preventDefault(); setScreen(t.getAttribute('data-screen')); }); });
+  /* Start-Screen = Create */
+  setScreen('create');
+  window.EC_setScreen=setScreen; /* damit Hero-Buttons/andere Links Screens ansteuern können */
 })();
 </script>
 </body>
