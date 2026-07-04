@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon-64.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1353,6 +1353,49 @@ load('npc');
       document.getElementById('pwaIosX').onclick=function(){ iosBar.hidden=true; try{ localStorage.setItem('ec_pwa_dismiss','1'); }catch(e){} };
     }
   }
+})();
+</script>
+
+<style>
+/* --- Native-App-Feel (v5) --- */
+html{overscroll-behavior-y:none}
+body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+/* UI-Chrome nicht markierbar/kein Long-Press-Callout; Inhalt & Eingaben bleiben nutzbar */
+.topbar,.appbar,.btn,.nav a,.v2steps,.v2chips,.pwa-install,.wz-types,.types,.sec-head{
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable],.varimg,.result,#v2result,#v2still{-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+img{-webkit-touch-callout:none}
+/* sanftes Momentum-Scrollen */
+body{-webkit-overflow-scrolling:touch}
+/* Standalone-Modus: Notch-Abstand oben + aktive Tab-Optik */
+@media (display-mode: standalone){
+  .topbar{padding-top:env(safe-area-inset-top)}
+  body{padding-top:env(safe-area-inset-top)}
+}
+@media(max-width:680px){
+  .appbar a{position:relative;transition:color .2s}
+  .appbar a.active{color:var(--gold)}
+  .appbar a.active .ab-ic{color:var(--gold);filter:drop-shadow(0 0 6px rgba(216,180,106,.5))}
+  .appbar a.active::before{content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+    width:22px;height:3px;border-radius:0 0 3px 3px;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+}
+</style>
+<script>
+(function(){
+  /* aktive Tab-Hervorhebung in der App-Bar via Scroll-Position */
+  var bar=document.querySelector('.appbar'); if(!bar) return;
+  var links=[].slice.call(bar.querySelectorAll('a'));
+  var map=links.map(function(a){ var id=(a.getAttribute('href')||'').replace('#',''); return {a:a, el:id?document.getElementById(id):null}; }).filter(function(x){return x.el;});
+  if(!map.length) return;
+  function onScroll(){
+    var y=window.scrollY+window.innerHeight*0.35, best=null, bestTop=-1e9;
+    map.forEach(function(x){ var t=x.el.getBoundingClientRect().top+window.scrollY; if(t<=y && t>bestTop){ bestTop=t; best=x; } });
+    links.forEach(function(a){ a.classList.remove('active'); });
+    if(best) best.a.classList.add('active');
+  }
+  var tick=false;
+  window.addEventListener('scroll', function(){ if(!tick){ requestAnimationFrame(function(){ onScroll(); tick=false; }); tick=true; } }, {passive:true});
+  onScroll();
 })();
 </script>
 </body>
