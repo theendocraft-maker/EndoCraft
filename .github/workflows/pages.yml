@@ -36,6 +36,7 @@ jobs:
             --include='free/endocraft-free-pack.zip' \
             --exclude='.git' --exclude='.github' \
             --exclude='social/' \
+            --exclude='etsy-updates/' \
             --exclude='*.zip' \
             --exclude='*.md' \
             --exclude='MOTION-*.mp4' --exclude='EPIC-*.mp4' \
@@ -58,7 +59,7 @@ jobs:
 
       - name: Warten vor Retry 1
         if: steps.deployment.outcome == 'failure'
-        run: sleep 60
+        run: sleep 300
 
       - name: Deploy (Retry 1)
         id: deploy2
@@ -70,7 +71,7 @@ jobs:
 
       - name: Warten vor Retry 2
         if: steps.deployment.outcome == 'failure' && steps.deploy2.outcome == 'failure'
-        run: sleep 120
+        run: sleep 600
 
       - name: Deploy (Retry 2)
         id: deploy3

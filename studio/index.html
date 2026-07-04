@@ -372,6 +372,14 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
   .hero .inner{padding:24px 20px 18px}
 }
 </style>
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)};
+  (function(){ var dev = matchMedia('(max-width:680px)').matches ? 'mobile' : (matchMedia('(max-width:1024px)').matches ? 'tablet':'desktop');
+    var pwa = (matchMedia('(display-mode:standalone)').matches || navigator.standalone) ? 'installed-pwa':'browser';
+    try{ plausible('pageview', {props:{device:dev, mode:pwa}}); }catch(e){}
+  })();
+</script>
 </head>
 <body>
 
@@ -480,7 +488,7 @@ textarea.prompt:focus,.gate-input:focus{outline:none;border-color:var(--gold);bo
     <div class="v2demo-arrow">&rarr;</div>
     <div class="v2demo-result">
       <div class="v2demo-label">You get</div>
-      <div class="v2demo-stage">
+      <div class="v2demo-stage" id="demoStage">
         <div id="v2load" class="v2load"><span class="v2spin"></span><span id="v2loadTxt">Crafting your image&hellip;</span></div>
         <img id="v2still" alt="">
         <video id="v2result" muted playsinline preload="auto"></video>
@@ -1154,5 +1162,96 @@ load('npc');
   #fbBtn{bottom:74px}
 }
 </style>
+
+<!-- ===== FIRST-VISIT ONBOARDING ===== -->
+<div id="onb" class="onb" hidden>
+  <div class="onb-scrim"></div>
+  <!-- Welcome card -->
+  <div class="onb-card" id="onbWelcome">
+    <div class="onb-kicker">Welcome to</div>
+    <div class="onb-brand">EndoCraft <span>Studio</span></div>
+    <p>Create cinematic D&amp;D assets in one consistent look &mdash; no prompt-wrangling. Let us show you how it works in 15 seconds.</p>
+    <button class="onb-btn" id="onbStart">Show me &rarr;</button>
+    <button class="onb-skip" id="onbSkip1">Skip, I&rsquo;ll explore</button>
+  </div>
+  <!-- Coachmark bubble (reused across steps) -->
+  <div class="onb-coach" id="onbCoach" hidden>
+    <div class="onb-coach-step" id="onbStep"></div>
+    <div class="onb-coach-txt" id="onbTxt"></div>
+    <div class="onb-coach-row">
+      <span class="onb-dots" id="onbDots"></span>
+      <button class="onb-btn sm" id="onbNext">Next</button>
+    </div>
+  </div>
+</div>
+<style>
+.onb{position:fixed;inset:0;z-index:2000;font-family:'EB Garamond',Georgia,serif}
+.onb-scrim{position:absolute;inset:0;background:rgba(6,8,14,.82);backdrop-filter:blur(2px)}
+.onb-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(420px,90vw);
+  background:linear-gradient(180deg,#161a26,#10131c);border:1px solid var(--gold-dim);border-radius:18px;
+  padding:34px 30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.onb-kicker{color:var(--gold);letter-spacing:.28em;text-transform:uppercase;font-size:11px;font-weight:700}
+.onb-brand{font-family:'Cinzel',serif;font-size:30px;color:var(--ink);margin:6px 0 14px;letter-spacing:.5px}
+.onb-brand span{color:var(--gold-bright)}
+.onb-card p{color:var(--muted);font-size:15.5px;line-height:1.6;margin-bottom:24px}
+.onb-btn{background:var(--gold);color:#14161f;font-weight:700;border:none;border-radius:10px;padding:12px 26px;font-size:15px;cursor:pointer;font-family:inherit}
+.onb-btn:hover{background:var(--gold-bright)}
+.onb-btn.sm{padding:8px 18px;font-size:13.5px}
+.onb-skip{display:block;margin:14px auto 0;background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit}
+.onb-skip:hover{color:var(--ink)}
+.onb-coach{position:absolute;width:min(300px,86vw);background:linear-gradient(180deg,#161a26,#10131c);
+  border:1px solid var(--gold-dim);border-radius:14px;padding:18px 18px 14px;box-shadow:0 14px 40px rgba(0,0,0,.55);transition:top .35s,left .35s}
+.onb-coach-step{color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-size:10.5px;font-weight:700;margin-bottom:6px}
+.onb-coach-txt{color:var(--ink);font-size:14.5px;line-height:1.5;margin-bottom:14px}
+.onb-coach-row{display:flex;align-items:center;justify-content:space-between}
+.onb-dots{display:flex;gap:5px}
+.onb-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);display:block}
+.onb-dots i.on{background:var(--gold)}
+.onb-spot{position:relative;z-index:2001;box-shadow:0 0 0 3px var(--gold),0 0 0 9999px rgba(6,8,14,.82);border-radius:12px;transition:box-shadow .3s}
+</style>
+<script>
+(function(){
+  var KEY='ec_studio_onboarded_v1';
+  try{ if(localStorage.getItem(KEY)) return; }catch(e){}
+  var onb=document.getElementById('onb'), welcome=document.getElementById('onbWelcome'),
+      coach=document.getElementById('onbCoach'), stepEl=document.getElementById('onbStep'),
+      txtEl=document.getElementById('onbTxt'), dots=document.getElementById('onbDots'),
+      nextBtn=document.getElementById('onbNext');
+  function done(){ try{localStorage.setItem(KEY,'1');}catch(e){} document.querySelectorAll('.onb-spot').forEach(function(el){el.classList.remove('onb-spot');}); onb.hidden=true; document.body.style.overflow=''; }
+  document.getElementById('onbSkip1').onclick=done;
+  onb.hidden=false; document.body.style.overflow='hidden';
+
+  /* Steps: [selector, kicker, text]. selector null = center (demo highlight) */
+  var STEPS=[
+    ['#demoStage','See it work','Watch the Studio turn a sentence into a finished, animated scene &mdash; live, on the right.'],
+    ['#types','Step 1 — Pick a type','Choose what to create: an NPC, a monster, a location, an item or a cutscene.'],
+    ['#gate, #wizard, #genWrap','Step 2 — Describe it','Type the moment in plain words. No prompt engineering &mdash; we handle the look.'],
+    ['.appbar, .nav','Find your way','Jump to the Showroom, your Library or Pricing anytime from here.']
+  ];
+  var i=0;
+  dots.innerHTML=STEPS.map(function(){return '<i></i>';}).join('');
+  function firstEl(sel){ var parts=sel.split(','); for(var p=0;p<parts.length;p++){ var e=document.querySelector(parts[p].trim()); if(e && e.offsetParent!==null) return e; } return null; }
+  function place(el){
+    var r=el.getBoundingClientRect(), cw=Math.min(300,window.innerWidth*0.86), ch=coach.offsetHeight||140, m=14;
+    var top=r.bottom+m, left=r.left;
+    if(top+ch>window.innerHeight-10) top=Math.max(10,r.top-ch-m);
+    if(left+cw>window.innerWidth-10) left=window.innerWidth-cw-10;
+    if(left<10) left=10;
+    coach.style.top=top+'px'; coach.style.left=left+'px';
+  }
+  function show(){
+    document.querySelectorAll('.onb-spot').forEach(function(el){el.classList.remove('onb-spot');});
+    var s=STEPS[i], el=firstEl(s[0]);
+    stepEl.innerHTML=s[1]; txtEl.innerHTML=s[2];
+    [].forEach.call(dots.children,function(d,k){ d.classList.toggle('on',k<=i); });
+    nextBtn.textContent = i===STEPS.length-1 ? 'Start creating' : 'Next';
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ el.classList.add('onb-spot'); place(el); coach.hidden=false; },380); }
+    else { coach.hidden=false; coach.style.top='50%'; coach.style.left='50%'; }
+  }
+  document.getElementById('onbStart').onclick=function(){ welcome.hidden=true; i=0; show(); };
+  nextBtn.onclick=function(){ i++; if(i>=STEPS.length){ done(); return; } show(); };
+  window.addEventListener('resize',function(){ if(!coach.hidden){ var el=firstEl(STEPS[i][0]); if(el) place(el); } });
+})();
+</script>
 </body>
 </html>
