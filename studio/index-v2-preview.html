@@ -1279,6 +1279,11 @@ load('npc');
   <div class="pwa-splash-wm">ENDO<span>CRAFT</span></div>
   <div class="pwa-splash-tag">Cinematic D&amp;D Assets</div>
 </div>
+<div id="pwaIos" class="pwa-install pwa-ios" hidden>
+  <img src="../assets/favicon-64.png" alt="" class="pwa-ins-ic">
+  <div class="pwa-ins-txt"><b>Install EndoCraft</b><span>Tap <span class="pwa-share">&#x2191;</span> Share, then &ldquo;Add to Home Screen&rdquo;</span></div>
+  <button id="pwaIosX" class="pwa-ins-x" aria-label="Dismiss">&times;</button>
+</div>
 <div id="pwaInstall" class="pwa-install" hidden>
   <img src="../assets/favicon-64.png" alt="" class="pwa-ins-ic">
   <div class="pwa-ins-txt"><b>Install EndoCraft</b><span>Add the Studio to your home screen</span></div>
@@ -1307,6 +1312,7 @@ load('npc');
 .pwa-ins-btn:hover{background:var(--gold-bright)}
 .pwa-ins-x{background:none;border:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:0 4px}
 .pwa-ins-x:hover{color:var(--ink)}
+.pwa-share{display:inline-block;border:1px solid var(--gold-dim);border-radius:4px;padding:0 5px;color:var(--gold-bright);font-size:11px;line-height:1.4}
 @media(max-width:680px){.pwa-install{bottom:74px}}
 </style>
 <script>
@@ -1334,6 +1340,19 @@ load('npc');
     banner.hidden=true; try{ localStorage.setItem('ec_pwa_dismiss','1'); }catch(e){}
   };
   window.addEventListener('appinstalled', function(){ banner.hidden=true; });
+
+  /* Service Worker registrieren (macht die App installierbar) */
+  if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+
+  /* iOS/Safari: kein beforeinstallprompt -> eigener Hinweis-Banner */
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  var isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+  if(isIOS && isSafari && !standalone && !dismissed){
+    var iosBar=document.getElementById('pwaIos');
+    if(iosBar){ iosBar.hidden=false;
+      document.getElementById('pwaIosX').onclick=function(){ iosBar.hidden=true; try{ localStorage.setItem('ec_pwa_dismiss','1'); }catch(e){} };
+    }
+  }
 })();
 </script>
 </body>
