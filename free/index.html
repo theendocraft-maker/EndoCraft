@@ -32,7 +32,8 @@ img,video{display:block;max-width:100%}
 a{color:var(--gold);text-decoration:none}
 a:hover{color:var(--gold-bright)}
 .nav{position:absolute;top:0;left:0;right:0;z-index:10;padding:18px 28px;display:flex;justify-content:space-between;align-items:center}
-.brand{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:17px;color:var(--gold);letter-spacing:2px}
+.brand{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:17px;color:var(--gold);letter-spacing:2px;display:flex;align-items:center;gap:9px}
+.brand-seal{width:28px;height:28px;border-radius:50%;box-shadow:0 0 10px rgba(216,180,106,.4)}
 .nav-link{font-family:'Cinzel',serif;font-size:12.5px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:84px 22px 40px;background:radial-gradient(ellipse at center,#1a1f2e 0%,#08090e 80%)}
 .hero-bg{position:absolute;inset:0;background-image:url('hero-bg.jpg');background-size:cover;background-position:center 32%;pointer-events:none;opacity:.7}
@@ -155,7 +156,7 @@ a:hover{color:var(--gold-bright)}
 <body>
 
 <nav class="nav">
-  <div class="brand">ENDOCRAFT</div>
+  <div class="brand"><img src="../assets/logo-seal.png" class="brand-seal" alt="EndoCraft" width="28" height="28">ENDOCRAFT</div>
   <a class="nav-link" href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=nav&amp;utm_campaign=cutscene" target="_blank" rel="noopener">Shop on Etsy →</a>
 </nav>
 

@@ -1410,7 +1410,15 @@ body{-webkit-overflow-scrolling:touch}
 <style>
 /* ===== APP-SHELL (nur installierter App-Modus / ?app=1) ===== */
 html.is-app body{padding-bottom:76px}
-html.is-app .appbar{display:flex!important}
+html.is-app .appbar{display:flex!important;position:fixed;bottom:0;left:0;right:0;z-index:60;justify-content:space-around;
+  background:linear-gradient(0deg,#0d101a 70%,#0d101aee);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+html.is-app .appbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);flex:1;text-align:center;max-width:120px}
+html.is-app .appbar a .ab-ic{font-size:17px;color:var(--gold-dim)}
+html.is-app .appbar a.active{color:var(--gold)}
+html.is-app .appbar a.active .ab-ic{color:var(--gold);filter:drop-shadow(0 0 6px rgba(216,180,106,.5))}
+html.is-app .appbar a.active::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--gold);box-shadow:0 0 8px var(--gold)}
 html.is-app .hero,html.is-app .v2duo-side,html.is-app .v2proof,html.is-app footer,
 html.is-app .topbar .nav,html.is-app .char-head{display:none!important}
 html.is-app .v2duo{display:block;padding:10px 0 0}
