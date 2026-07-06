@@ -182,6 +182,7 @@ a:hover{color:var(--gold-bright)}
         </div>
         <div id="formError"></div>
       </form>
+      <p style="margin:11px 0 6px;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72)">Plus a free 5-portrait NPC pack lands in your inbox <b style="color:#e6c878">instantly</b> — your cutscene follows within a few days.</p>
       <span class="scarcity-badge" id="slotsBadge"><span class="dot"></span>Only the first 50 are free · no spam</span><script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){if(d&&typeof d.left==="number"&&d.left>0&&d.left<50){var el=document.getElementById("slotsBadge");el.innerHTML='<span class="dot"></span>'+d.left+" of 50 free spots left · no spam"}}).catch(function(){});</script>
     </div>
    </div>
