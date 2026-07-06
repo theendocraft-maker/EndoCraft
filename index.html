@@ -60,7 +60,11 @@ body{background:radial-gradient(120% 90% at 50% 0%,#161a26 0%,#0a0c14 60%);color
 .card.primary::after{content:"Most loved";position:absolute;top:14px;right:14px;font-family:'Cinzel',serif;font-size:9.5px;
   letter-spacing:1.5px;text-transform:uppercase;color:#14161f;background:var(--gold);padding:3px 8px;border-radius:20px}
 .card.primary{position:relative}
-.foot{margin-top:36px;color:var(--muted);font-size:13px;letter-spacing:.5px}
+.guides{margin-top:38px;text-align:center;max-width:760px;margin-left:auto;margin-right:auto;border-top:1px solid var(--line);padding-top:22px}
+.guides-h{font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.guides a{display:inline-block;color:var(--gold-b);text-decoration:none;font-size:14px;margin:5px 12px;border-bottom:1px solid transparent;transition:border-color .2s}
+.guides a:hover{border-color:var(--gold-d)}
+.foot{margin-top:30px;color:var(--muted);font-size:13px;letter-spacing:.5px}
 .foot a{color:var(--gold);text-decoration:none}
 @media(max-width:720px){.cards{grid-template-columns:1fr}.card{flex-direction:row;align-items:center;gap:16px;padding:18px}
   .card .ic{margin:0;font-size:24px}.card .txt{flex:1}.card .go{margin-top:6px}}
@@ -93,6 +97,17 @@ body{background:radial-gradient(120% 90% at 50% 0%,#161a26 0%,#0a0c14 60%);color
         <div class="go">Browse the shop &rarr;</div></div>
     </a>
   </div>
+
+  <nav class="guides" aria-label="D&amp;D guides">
+    <div class="guides-h">D&amp;D Guides</div>
+    <a href="/resources/visualize-your-dnd-character/">Visualize your D&amp;D character</a>
+    <a href="/resources/dnd-villain-ideas/">D&amp;D villain ideas</a>
+    <a href="/resources/free-dnd-character-art/">Free D&amp;D character art</a>
+    <a href="/resources/describe-dnd-locations/">Describe D&amp;D locations</a>
+    <a href="/resources/cinematic-dnd-boss-fights/">Cinematic boss fights</a>
+    <a href="/resources/homebrew-monster-ideas/">Homebrew monster ideas</a>
+    <a href="/resources/dnd-session-zero-ideas/">Session zero ideas</a>
+  </nav>
 
   <div class="foot">EndoCraft &middot; <a href="/free/">Free pack</a> &middot; <a href="/studio/">Studio</a> &middot; <a href="https://www.etsy.com/shop/EndoCraft" target="_blank" rel="noopener">Etsy</a></div>
 </main>

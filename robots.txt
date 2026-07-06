@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /*mockup
+Disallow: /*-backup
+Disallow: /*-preview
+Disallow: /*-PREVIEW
+Disallow: /studio/_
 
 Sitemap: https://endocraft.app/sitemap.xml
