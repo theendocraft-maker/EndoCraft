@@ -277,6 +277,7 @@ async function submitDetail(){
     const r=await fetch(API_BASE+'/api/wishes/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:getEmail()||null,wish:'CUTSCENE REQUEST: '+detail,source:'free-cutscene'})});
     if(!r.ok)throw new Error('Network');
     btn.textContent='Sent ✓';status.textContent='Got it — your character is in our queue. We’ll email your cutscene.';wishEl.disabled=true;
+    if(window.plausible)window.plausible('CutsceneDetail',{props:{source:detectSource()}});
   }catch(e){btn.disabled=false;btn.textContent='Send my character →';status.textContent='Could not send — try again in a moment.';}
 }
 const form=document.getElementById('leadForm'),submitBtn=document.getElementById('submitBtn'),emailInput=document.getElementById('email'),errorEl=document.getElementById('formError'),thankYou=document.getElementById('thankYou');
@@ -302,7 +303,7 @@ form.addEventListener('submit',async(e)=>{
     if(!res.ok&&res.status!==409){const d=await res.json().catch(()=>({}));throw new Error(d.error||'Network error');}
     try{localStorage.setItem('endocraft_free_email',email);}catch(_){}
     thankYou.classList.add('show');
-    if(window.plausible)window.plausible('CutsceneSignup');
+    if(window.plausible)window.plausible('CutsceneSignup',{props:{source:source}});
   }catch(err){
     errorEl.innerHTML='<div class="error-msg">Something went wrong: '+(err.message||'unknown')+'. Try again in a moment.</div>';
     submitBtn.disabled=false;submitBtn.textContent='Get my free cutscene →';
