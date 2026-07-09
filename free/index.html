@@ -121,6 +121,13 @@ a:hover{color:var(--gold-bright)}
 </style>
 
 <script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<!-- Pinterest Tag -->
+<script>
+!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version="3.0";var t=document.createElement("script");t.async=!0,t.src=e;var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
+pintrk('load','2613053380173',{np:'endocraft'});
+pintrk('page');
+</script>
+<!-- end Pinterest Tag -->
 <script>
   window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
   plausible.init()
@@ -306,6 +313,7 @@ form.addEventListener('submit',async(e)=>{
     try{localStorage.setItem('endocraft_free_email',email);}catch(_){}
     thankYou.classList.add('show');
     if(window.plausible)window.plausible('CutsceneSignup',{props:{source:source}});
+    if(window.pintrk)window.pintrk('track','lead',{lead_type:'free_cutscene'});
   }catch(err){
     errorEl.innerHTML='<div class="error-msg">Something went wrong: '+(err.message||'unknown')+'. Try again in a moment.</div>';
     submitBtn.disabled=false;submitBtn.textContent='Get my free cutscene →';
