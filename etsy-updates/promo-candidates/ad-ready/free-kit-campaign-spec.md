@@ -9,8 +9,8 @@
 3. Dann Kampagne starten (siehe unten).
 
 ## Kampagnen-Einstellungen (Pinterest Ads)
-- **Ziel:** **Conversions** (nicht „Traffic"/„Awareness" — das war der Fehler beim 56K-Pin). Optimieren auf das **Lead-Event** (Tag 2613053380173 feuert `lead` bei Signup).
-- **Optimierung/Attribution:** Lead, 30-Tage-Klick.
+- **Ziel:** ⚠️ **Conversions ist noch GESPERRT** — Pinterest schaltet es erst frei, wenn das Konto in den letzten 7 Tagen ≥1 Conversion aufgezeichnet hat (haben wir noch nicht). Bis dahin: **Consideration (Traffic)** wählen, optimieren auf **Outbound-Klicks**. Der Lead-Tag (2613053380173) feuert trotzdem im Hintergrund und sammelt die Conversion-Historie → schaltet das Conversion-Ziel für die NÄCHSTE Kampagne frei. Der Unterschied zum 56K-Flop ist diesmal die reparierte /free-Seite, nicht das Ziel.
+- **Kill-Schwelle manuell:** Pinterest optimiert bei Consideration nicht auf Leads → CPL selbst prüfen via Lead-Tag + `/api/free-slots` (taken-Count). Wenn nach ~20 € kaum neue Anmeldungen → pausieren.
 - **Budget:** klein & gedeckelt — **5–8 €/Tag**, Laufzeit 5–7 Tage (Testbudget ~35–55 €).
 - **Targeting:**
   - Interessen: Dungeons & Dragons, Tabletop RPG, D&D character art, Dungeon Master.
