@@ -93,7 +93,7 @@ a:hover{color:var(--gold-bright)}
 .ty-shop{margin-top:20px;font-family:'EB Garamond',serif;font-size:13.5px;color:var(--muted)}
 .ty-shop a{font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1px;text-transform:uppercase}
 @media (max-width:860px){
-  .hero-grid{grid-template-columns:1fr;grid-template-areas:"copy" "monitor" "cta";justify-items:center;row-gap:16px}
+  .hero-grid{grid-template-columns:1fr;grid-template-areas:"copy" "cta" "monitor";justify-items:center;row-gap:16px}
   .hero-copy{text-align:center;max-width:560px}
   .hero-cta{display:flex;flex-direction:column;align-items:center;width:100%}
   .hero-cta .form{margin:0 auto;width:100%;max-width:420px}
@@ -174,8 +174,8 @@ pintrk('page');
    <div class="hero-grid">
     <div class="hero-copy">
       <span class="eyebrow">Free for D&amp;D players &amp; dungeon masters</span>
-      <h1><span class="free">FREE</span>A Cinematic Cutscene of <em>Your</em> Character</h1>
-      <p class="hero-tag">We craft a cinematic cutscene of your hero or villain — and send it to your inbox. Free.</p>
+      <h1><span class="free">FREE</span>Cinematic Assets for <em>Your</em> Table</h1>
+      <p class="hero-tag">A free taste of our cinematic library — hand-crafted NPC portraits, atmospheric location art, and a custom cutscene of your own hero. Straight to your inbox.</p>
     </div>
     <div class="monitor">
       <div class="monitor-top"><span class="dot"></span>Now playing</div>
@@ -190,27 +190,10 @@ pintrk('page');
         </div>
         <div id="formError"></div>
       </form>
-      <p style="margin:11px 0 6px;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72)">Plus a free 5-portrait NPC pack lands in your inbox <b style="color:#e6c878">instantly</b> — your cutscene follows within a few days.</p>
+      <p style="margin:11px 0 6px;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72)">Your cinematic asset pack — NPC portraits + location art — lands <b style="color:#e6c878">instantly</b> · a custom cutscene of your character follows within days.</p>
       <span class="scarcity-badge" id="slotsBadge"><span class="dot"></span>Only the first 50 are free · no spam</span><script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){if(d&&typeof d.left==="number"&&d.left>0&&d.left<50){var el=document.getElementById("slotsBadge");el.innerHTML='<span class="dot"></span>'+d.left+" of 50 free spots left · no spam"}}).catch(function(){});</script>
     </div>
    </div>
-  </div>
-</section>
-
-<!-- ===== V2: Free Adventure ===== -->
-<section class="v2sec">
-  <div class="v2inner">
-    <div class="v2kicker">Free One-Shot Adventure</div>
-    <h2 class="v2h">Sluglord, Lord of Slugs</h2>
-    <p class="v2sub">Our gift to every table. No email needed.</p>
-    <div class="v2card">
-      <a href="sluglord/"><video src="clips/clip_sluglord.mp4" poster="clips/clip_sluglord_poster.jpg" muted autoplay loop playsinline preload="metadata" poster="sluglord/sluglord-wide.jpg"></video></a>
-      <div class="v2slugcopy">
-        <em>&ldquo;It does not chase. It does not need to.&rdquo;</em>
-        <p>A gargantuan slug is coming for the village. Five feet per round. Arrival: three days. A complete free one-shot &mdash; boss statblock, three-day siege timeline, and the legendary beer-moat gambit.</p>
-        <a class="v2btn" href="sluglord/">Get the free one-shot &rarr;</a>
-      </div>
-    </div>
   </div>
 </section>
 
