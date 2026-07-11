@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FREE · Your Character's Cinematic Cutscene · EndoCraft</title>
-<meta name="description" content="Tell us your D&D hero or villain — we craft a cinematic encounter cutscene of them and send it to your inbox. Free.">
+<title>FREE · Cinematic D&D Assets for Your Table · EndoCraft</title>
+<meta name="description" content="A free taste of our cinematic library — hand-crafted NPC portraits and atmospheric location art for your D&D table, plus a custom cutscene of your hero. Straight to your inbox.">
 <link rel="canonical" href="https://endocraft.app/free/">
-<meta property="og:title" content="FREE · A Cinematic Cutscene of YOUR D&D Character · EndoCraft">
-<meta property="og:description" content="Tell us your hero or villain. We craft a cinematic encounter cutscene and email it to you. Free.">
+<meta property="og:title" content="FREE · Cinematic D&D Assets for Your Table · EndoCraft">
+<meta property="og:description" content="Free cinematic NPC portraits + atmospheric location art for your table — plus a custom cutscene of your own hero. Straight to your inbox.">
 <meta property="og:image" content="https://endocraft.app/free/og-image.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EndoCraft">
 <meta property="og:url" content="https://endocraft.app/free/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FREE · A Cinematic Cutscene of YOUR D&D Character · EndoCraft">
-<meta name="twitter:description" content="Tell us your hero or villain. We craft a cinematic encounter cutscene and email it to you. Free.">
+<meta name="twitter:title" content="FREE · Cinematic D&D Assets for Your Table · EndoCraft">
+<meta name="twitter:description" content="Free cinematic NPC portraits + atmospheric location art for your table — plus a custom cutscene of your own hero. Straight to your inbox.">
 <meta name="twitter:image" content="https://endocraft.app/free/og-image.jpg">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"EndoCraft","url":"https://endocraft.app/","logo":"https://endocraft.app/free/og-image.jpg","description":"Cinematic, hand-curated D&D assets for dungeon masters.","sameAs":["https://www.pinterest.com/theendocraft/","https://www.instagram.com/theendocraft/","https://www.etsy.com/shop/EndoCraft"]}
@@ -186,11 +186,11 @@ pintrk('page');
       <form class="form" id="leadForm">
         <div class="form-row">
           <input type="email" id="email" placeholder="your@email.com" required autocomplete="email">
-          <button class="btn-primary" type="submit" id="submitBtn">Get my free cutscene →</button>
+          <button class="btn-primary" type="submit" id="submitBtn">Get my free kit →</button>
         </div>
         <div id="formError"></div>
       </form>
-      <p style="margin:11px 0 6px;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72)">Your cinematic asset pack — NPC portraits + location art — lands <b style="color:#e6c878">instantly</b> · a custom cutscene of your character follows within days.</p>
+      <p style="margin:11px 0 6px;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72)">Lands in your inbox <b style="color:#e6c878">instantly</b> · no spam, unsubscribe anytime · your custom cutscene follows within days.</p>
       <span class="scarcity-badge" id="slotsBadge"><span class="dot"></span>Only the first 50 are free · no spam</span><script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){if(d&&typeof d.left==="number"&&d.left>0&&d.left<50){var el=document.getElementById("slotsBadge");el.innerHTML='<span class="dot"></span>'+d.left+" of 50 free spots left · no spam"}}).catch(function(){});</script>
     </div>
    </div>
@@ -299,7 +299,7 @@ form.addEventListener('submit',async(e)=>{
     if(window.pintrk)window.pintrk('track','lead',{lead_type:'free_cutscene'});
   }catch(err){
     errorEl.innerHTML='<div class="error-msg">Something went wrong: '+(err.message||'unknown')+'. Try again in a moment.</div>';
-    submitBtn.disabled=false;submitBtn.textContent='Get my free cutscene →';
+    submitBtn.disabled=false;submitBtn.textContent='Get my free kit →';
   }
 });
 try{if(localStorage.getItem('endocraft_free_email')){emailInput.value=localStorage.getItem('endocraft_free_email');}}catch(_){}
