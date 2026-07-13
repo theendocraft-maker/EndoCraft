@@ -1,0 +1,33 @@
+THE ASHEN WARDEN
+Medium undead (hollow), neutral
+Armor Class 18 (battered plate, raised guard)
+Hit Points 97 (13d8 + 39)
+Speed 30 ft.
+
+STR 16 (+3)  DEX 11 (+0)  CON 16 (+3)  INT 8 (-1)  WIS 12 (+1)  CHA 9 (-1)
+
+Saving Throws STR +6, CON +6
+Damage Immunities poison
+Condition Immunities exhaustion, frightened, poisoned
+Senses darkvision 60 ft., passive Perception 11
+Languages understands the tongue it knew in life but cannot speak
+Challenge 5 (1,800 XP)   Proficiency Bonus +3
+
+TRAITS
+Ashen Weapons. The Warden's weapon attacks are magical and deal an extra 1d8 necrotic damage (included below).
+Undying Post (1/encounter). The first time the Warden drops to 0 hit points, it instead drops to 1 hit point.
+
+ACTIONS
+Multiattack. The Warden makes two Ashen Blade attacks.
+Ashen Blade. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d10 + 3) slashing plus 4 (1d8) necrotic damage.
+Cinder Sweep (Recharge 5-6). The Warden sweeps its blade in a 15-foot cone of embers. Each creature in that area makes a DC 14 Dexterity saving throw, taking 18 (4d8) fire damage on a failure, or half as much on a success.
+
+REACTION
+Ember-Guard. The first time each round the Warden is hit by a melee attack, it reduces that attack's damage by 1d10 + 3. If the damage is reduced to 0, the Warden immediately makes one Ashen Blade attack against the attacker.
+
+RUNNING IT
+- Bait the guard: a small or ranged hit burns his reaction, then land the real blow.
+- Scaling: solo for a 4th-level party; add two ashen husks (commoner, 10 HP, shortsword) for 6th level.
+- If the party leaves him standing at 1 HP, he returns to his post and bows once.
+
+(c) EndoCraft - endocraft.app - Original homebrew. Not affiliated with Wizards of the Coast.
