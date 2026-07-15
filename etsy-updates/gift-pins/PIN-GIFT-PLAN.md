@@ -3,7 +3,8 @@
 **Ziel-Persona:** Geschenkkäufer:in ohne D&D-Wissen (Partnerin/Freund/Familie). Pinterest = ihr Kanal.
 **Board:** „Dark Fantasy D&D Art, Bosses & Locations" ODER neues Board „D&D Gifts" (Empfehlung: neues Board — eigener Suchkontext, Marco entscheidet).
 **Einstellungen pro Pin:** AI-Modified AN · Person-Haken nur wo Figur erkennbar (Pin A/B/D) · Wasserzeichen = Siegel ist im Layout.
-**Kadenz-Vorschlag:** 2 Pins/Woche (Mi + Sa 15:00), Serie wiederholen ab Oktober mit Weihnachts-Kicker („stocking stuffer", „christmas gift for dm").
+**Kadenz (freigegeben, 15.07.):** Pin A Do 16.07. 15:00 · Pin B Sa 18.07. 15:00 · Pin C Mi 22.07. 15:00 · Pin D Sa 25.07. 15:00. Danach ab Oktober Q4-Variante mit Weihnachts-Kicker.
+**Status 15.07. 20:40:** Etsy-Teil erledigt (Gift-Foto = Foto 2 im Trailer-Listing, live). Pinterest-Scheduling blockiert durch SPA-Freeze (alles rendert leer) — automatischer Retry 22:00, sonst 16.07. 09:00. Board „D&D Gifts" wird beim ersten Pin im Builder angelegt.
 
 ---
 
