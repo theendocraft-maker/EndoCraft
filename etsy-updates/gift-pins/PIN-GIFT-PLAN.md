@@ -1,4 +1,9 @@
-# Gift-Pin-Serie — „For the D&D nerd in your life" (Entwurf, wartet auf Marco-Freigabe)
+# Gift-Pin-Serie — „For the D&D nerd in your life"
+
+**✅ TERMINIERT (16.07., alle mit „Pin Scheduled"-Bestätigung, Board „D&D Gifts", AI-Modified an):**
+Pin A → Do 16.07. 13:00 · Pin B → Sa 18.07. 12:00 · Pin C → Mi 22.07. 12:00 · Pin D → Sa 25.07. 12:00
+(Uhrzeiten vom Pinterest-Scheduler auf eigene Slots gesnappt — Plan war 15:00, egal.)
+**⏳ Pin E (Video):** manuell von Marco (Datei: _review/ashen-trailer/ASHEN-REALM-trailer-v1.mp4, Copy unten) ODER nach Desktop-App-Update — Video geht nicht über den Canvas-Weg.
 
 **Ziel-Persona:** Geschenkkäufer:in ohne D&D-Wissen (Partnerin/Freund/Familie). Pinterest = ihr Kanal.
 **Board:** „Dark Fantasy D&D Art, Bosses & Locations" ODER neues Board „D&D Gifts" (Empfehlung: neues Board — eigener Suchkontext, Marco entscheidet).
