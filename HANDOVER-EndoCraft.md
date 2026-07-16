@@ -1,4 +1,4 @@
-# EndoCraft — Vollständige Übergabe (Stand 2026-07-02)
+# EndoCraft — Vollständige Übergabe (Stand 2026-07-16)
 
 > Dieses Dokument in einem neuen Chat als Erstes einlesen. Es fasst Marke, Regeln, Tech, Produkte, Automations-Fallen und offene Punkte zusammen. Kommunikation mit Marco: **Deutsch**. Marco = cx.ratti@gmx.de.
 
@@ -37,6 +37,15 @@ API-Base: **`https://endocraft-production.up.railway.app`** (NICHT endocraft.app
 - **Bundle Studio** (`endocraft.app/tools/bundle-studio/`): 5 Tools zum Bundle-Produzieren. Roadmap: Strahd → Phandelver → Storm King → Tomb of Annihilation.
 - **EndoCraft Studio** (self-serve Gen für User, Credits+Abo, Stripe-Test-Modus): post-Validation-Build.
 
+### 4b. GESCHENK-SCHIENE (NEU, 14.–16.07.) — Zielgruppe: Geschenkkäufer OHNE D&D-Wissen
+- **Preisleiter (Marco-approved):** Fallen Hero Memorial **$9,99** (4537987222) < Custom Cutscene **$12,99** (4536112275, von 19,99 gesenkt) < Campaign Trailer **$24,99** (4537969559). Upgrade-Pfade nach ersten Sales in den ETSY-LISTING.md-Dateien.
+- **Gutschein-Mechanik:** Instant-Download = druckbarer Geschenk-Gutschein (Trailer) bzw. How-It-Works-PDF mit ausschneidbarer In-Memoriam-Karte (Memorial). Beschenkte:r meldet sich selbst mit Details ("Write GIFT"-Konvention im Personalisierungsfeld). Deshalb "Wann hergestellt" = **2020–2026, NICHT made-to-order** (made-to-order-Digital killt den Sofort-Download!).
+- **Shop-Sektion "Gifts"** (section_id **59396610**) mit allen 3 Custom-Listings · Anlass=Geburtstag + Feiertag=Weihnachten auf beiden neuen Listings · Artikelvideo (Lich-Cutscene) im Trailer-Listing · Geschenk-Foto als Foto 2.
+- **Cross-Sell:** 🎁-Absatz am Ende ALLER 18 Nicht-Gift-Listings (führt auf die Gifts-Sektion).
+- **SEO:** Pillar-Page endocraft.app/resources/dnd-gift-ideas/ live + GSC-Indexierung beantragt (16.07.).
+- **Gift-Pin-Serie:** 4 Pins fertig (etsy-updates/gift-pins/ + PIN-GIFT-PLAN.md), Board "D&D Gifts" wird beim Schedulen angelegt. Q4-Weihnachtsvariante ab Oktober geplant.
+- **Beispiel-Trailer "The Ashen Realm":** _review/ashen-trailer/ (33s + 15s-Etsy-Cut), gebaut aus approbten Assets + 5 Kling-Clips + /api/tts (Clyde) + Suno-Bett aus vo-test. Kosten ~1,60 $. Wartet auf Marco-Review — danach als Etsy-Artikelvideo/Social nutzbar. = Pilot für Trailer-/Recap-Fulfillment.
+
 ## 5. AUTOMATIONS-FALLEN (bei UI-Arbeit VORHER lesen — spart Stunden)
 ### Etsy (Web-UI, weil API blockiert)
 - **Etsy-API blockiert seit 18.06.:** Data-Calls → 502 „Shared secret required in x-api-key header". Fehlt Railway-Env **`ETSY_API_KEY` = Shared Secret** der App (nur Marco kann setzen). Bis dahin **Etsy nur per Browser (Chrome MCP)**. NICHT neu diagnostizieren.
@@ -45,11 +54,14 @@ API-Base: **`https://endocraft-production.up.railway.app`** (NICHT endocraft.app
 - **`file_upload`-Limit 10 MB/Call** (nicht Etsys 20 MB) → ZIPs splitten. Digital-File-Input hat leeres `accept=""`.
 - Kategorie **Rollenspiele**, Typ **Digitale Dateien**, „Mit einem KI-Generator" (ehrliche AI-Offenlegung), Stückzahl Pflicht (999). $0,20-Gebühr-Dialog beim Publish bestätigen.
 - „Wann hergestellt" ist ein NATIVE `<select>` → per JS setzen (`change`-Event).
+- **NEU 15./16.07.:** Etsy-Titel erlaubt nur **1× „&"** (2. & → unsichtbarer „Titel"-Fehler). · Titel/Beschreibung im NEUEN Listing-Editor: JS-Native-Setter reicht NICHT immer → `form_input`-Tool oder echtes Tippen; auf EDIT-Seiten funktioniert der Native-Setter (+input/change). · **file_upload-Tool ist in Marcos Desktop-App-Version gesperrt** → Workaround: Dateien ins Repo committen + deployen, dann im Seiten-Kontext `fetch(raw.githubusercontent.com/...)` → `DataTransfer` → `input.files` + change-Event (endocraft.app liefert etsy-updates/ NICHT aus, raw.githubusercontent schon, CORS *). Change-Event kann mehrfach feuern → Foto-Anzahl nachzählen, Duplikate über Kachel-Button mit Klasse `wt-text-brick` löschen. · Attribute (Anlass/Feiertag): Typeahead-Wert setzen + Enter+blur. · Shop-Sektion neu: Dialog „Neue Abteilung" braucht ECHTES Tippen + „Speichern".
+- **/api/tts existiert** (ElevenLabs via AIML, x-internal-key): {text, voice:'Clyde'} → MP3. Für VO-Zeilen nutzen.
 
 ### Pinterest (Chrome MCP)
 - **Renderer friert ein → Screenshots timeouten. Nur `find`/`javascript_tool` nutzen, DOM lebt.**
 - Neuer Tab bootstrappt oft leer → erst `de.pinterest.com/` (Home) laden zum Aufwärmen, dann `pin-builder/`.
 - Media→`file_upload`; Titel+Link→`form_input`; Beschreibung ist Draft.js-DIV → `execCommand('insertText')`; „Mark as AI-Modified" an; **Publish-Button feuert unzuverlässig → 1-2× klicken, Erfolg = URL wechselt weg von /pin-builder/.**
+- **NEU 15./16.07.: SPA-Hydration-Freeze** — Pinterest liefert HTML, aber React-Root bleibt leeres Suspense-Template (innerText=0), über Stunden, alle Seiten, auch frische Tabs. Nichts klickbar; abwarten und später erneut versuchen (Retry-Zeitplan via geplante Aufgabe).
 - **Schedulen:** Radio „publish-later"; Datum-Textfeld (MM/DD/YYYY) per **JS-Native-Setter** setzen (nicht tippen): `Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(inp,'07/09/2026')` + input/change-Events. Geplante Pins unter Profil → „Erstellt" → „Scheduled Pins".
 
 ### itch.io
@@ -78,7 +90,11 @@ API-Base: **`https://endocraft-production.up.railway.app`** (NICHT endocraft.app
 ## 6. GO-TO-MARKET-PLAYBOOK (pro neuem Kit durchziehen)
 Kit (PDF+Tokens+Art+ZIP) → 3-4 Hero-Bilder (Gesichts-Crop gg. Hände) → Kling-Clips → 9:16-Reveal-Trailer (Hook→Clip→Reveal→Titel→Endkarte, kein Schwarz-Start) → **Etsy live** (Web-UI) → **Pinterest** (Pins + 2-Wochen-Schedule-Drip) → **itch** (Draft) → **TikTok/IG** (fertige Clips + Schedule-Plan für Marco). Danach Views/Sales tracken → beste Hooks/Tags fürs nächste Kit wiederholen.
 
-## 7. OFFENE PUNKTE (Stand jetzt)
+## 7. OFFENE PUNKTE (Stand 16.07. nachts)
+- **Gift-Pins schedulen** sobald Pinterest-Freeze endet (automatischer Retry 16.07. 09:00; Plan: etsy-updates/gift-pins/PIN-GIFT-PLAN.md; Board „D&D Gifts" beim 1. Pin anlegen).
+- **Ashen-Realm-Trailer-Review** (Marco): _review/ashen-trailer/ → bei Go: 15s-Cut als weiteres Etsy-Artikelvideo? + Social-Nutzung.
+- **Playbook-Neuzugänge ggf. in Memory spiegeln** (quality_lock-Falle, Memorial-Still-Pattern).
+- Ältere Punkte (unverändert):
 - **Pinterest Devil's Hound:** 4 Pins LIVE (Cover, Trailer-Video, Hero A, Ruined Chapel) + 8 Pins im Scheduled-Queue. Ein Hero-B-Pin war beim Terminieren (09.07.) — Status unbestätigt, ggf. prüfen. Rest des 2-Wochen-Drips (loc_lodge, loc_grave, gallery_tokens, hound-Bilder) noch offen zum Schedulen.
 - **itch Devil's Hound** (Projekt 4736901, Draft): Titel/Tagline/physical_game/5,99/Beschreibung gesetzt. **FEHLT: ZIP-Dateien + Cover hochladen** (nativer Dialog → Marco) + Payout-Setup, dann veröffentlichen.
 - **TikTok Launch-Woche:** 7 fertige 9:16-Clips + Caption/Schedule-Plan in `Desktop\EndoCraft\social\tiktok-week\` (`SCHEDULE-tiktok-woche.md`). Marco lädt hoch/schedult (Gate).

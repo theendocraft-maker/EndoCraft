@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<script>
+// ═══ AUFTRAGSDATEN HIER EINTRAGEN ═══════════════════════════════
+const CARD = {
+  name:      'Thalon Greycloak',
+  cls:       'FIGHTER · LEVEL 9',
+  fate:      'Fell holding the bridge at Emberwatch,<br>alone, so the others could run.',
+  sessions:  'SURVIVED 47 SESSIONS',
+  epitaph:   '“The war wasn\'t worth it. He was.”',
+  serial:    'ENDOCRAFT · FALLEN HERO No. 002',   // fortlaufend!
+};
+// Rendern: chromium --headless --window-size=1200,1680 --screenshot=card.png memorial-card-template.html
+// ════════════════════════════════════════════════════════════════
+</script>
+<style>
+  @font-face { font-family:'Cinzel'; src:url('../fonts/node_modules/@fontsource/cinzel/files/cinzel-latin-600-normal.woff2') format('woff2'); font-weight:600; }
+  @font-face { font-family:'Cinzel Decorative'; src:url('../fonts/node_modules/@fontsource/cinzel-decorative/files/cinzel-decorative-latin-700-normal.woff2') format('woff2'); font-weight:700; }
+  @font-face { font-family:'IM Fell'; src:url('../fonts/node_modules/@fontsource/im-fell-english/files/im-fell-english-latin-400-italic.woff2') format('woff2'); font-style:italic; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:#0d0f16; }
+  body { width:1200px; height:1680px; background:#101219; font-family:'Cinzel',serif; padding:24px; }
+  .frame { width:100%; height:100%; border:3px solid #d8b46a; outline:1px solid #8a5e1e; outline-offset:-14px;
+           display:flex; flex-direction:column; align-items:center; text-align:center; padding:90px 80px; }
+  .seal { width:150px; height:150px; }
+  .im { font-family:'Cinzel Decorative',serif; color:#d8b46a; font-size:64px; margin:26px 0 60px; letter-spacing:4px; }
+  .name { font-family:'Cinzel Decorative',serif; color:#f6efdd; font-size:88px; line-height:1.15; }
+  .cls { color:#c9b98f; font-size:40px; letter-spacing:8px; margin-top:26px; }
+  .rule { width:420px; height:1px; background:linear-gradient(90deg,transparent,#8a5e1e,transparent); margin:52px 0; }
+  .fate { font-family:'IM Fell',serif; font-style:italic; color:#b9ad8f; font-size:44px; line-height:1.5; }
+  .sess { color:#d8b46a; font-size:40px; letter-spacing:7px; margin-top:56px; font-weight:600; }
+  .epi { font-family:'IM Fell',serif; font-style:italic; color:#e8dcc0; font-size:50px; margin-top:52px; line-height:1.4; }
+  .ser { color:#6f6446; font-size:28px; letter-spacing:5px; margin-top:auto; }
+</style></head>
+<body>
+  <div class="frame">
+    <img class="seal" src="../seal.png">
+    <div class="im">In Memoriam</div>
+    <div class="name" id="name"></div>
+    <div class="cls" id="cls"></div>
+    <div class="rule"></div>
+    <div class="fate" id="fate"></div>
+    <div class="sess" id="sess"></div>
+    <div class="epi" id="epi"></div>
+    <div class="ser" id="ser"></div>
+  </div>
+  <script>
+    document.getElementById('name').innerHTML = CARD.name;
+    document.getElementById('cls').textContent = CARD.cls;
+    document.getElementById('fate').innerHTML = CARD.fate;
+    document.getElementById('sess').textContent = CARD.sessions;
+    document.getElementById('epi').innerHTML = CARD.epitaph;
+    document.getElementById('ser').textContent = CARD.serial;
+  </script>
+</body></html>

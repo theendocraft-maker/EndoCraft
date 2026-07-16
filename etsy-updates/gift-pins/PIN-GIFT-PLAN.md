@@ -42,3 +42,11 @@
 ## Hinweis
 - **Kein Dragonrider-/Codax-Motiv verwendet** — Kundencharaktere (philcampion/deathrider174) brauchen erst deren OK.
 - Messung: utm_campaign=gift in Plausible + Etsy-Traffic-Quelle „Social" beobachten; Ziel = erste Gift-Sales vor Q4, dann Serie skalieren.
+
+
+## Pin E — Video-Pin: Ashen-Realm-Trailer (NEU, freigegeben 16.07. nachts)
+- **Datei:** voller Trailer `ASHEN-REALM-trailer-v1.mp4` (33s, 9:16 — ideales Pinterest-Video-Format)
+- **Link:** Trailer-Listing 4537969559 · utm_campaign=gift
+- **Titel:** *Your D&D Campaign as a Movie Trailer — Watch a Real Example*
+- **Beschreibung:** This is what a custom campaign trailer looks like: their villain, their world, a cinematic narrator. Made to order — printable gift voucher included. #dnd #dndgift #dungeonmaster #ttrpg #campaigntrailer
+- **Schedule:** So 20.07. 15:00 (zwischen Pin B und C, Video als Mid-Serie-Highlight)
