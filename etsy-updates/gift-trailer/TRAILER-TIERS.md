@@ -3,7 +3,8 @@
 **STATUS:**
 - ✅ Deluxe LIVE als Personalisierungs-Zusatzfeld (+25 $) auf Listing 4537969559 — Variationen sind bei Digital-Listings NICHT möglich (Etsy zeigt das jetzt explizit an), daher Fallback wie geplant. GO-DELUXE-Block in Beschreibung ergänzt.
 - ✅ Streamer-Intro-Listing ENTWURF (ID 4538798363, 89,99 $ · 999 Stk · 13 Tags · Digital · 2020–2026 · KI-Offenlegung · Personalisierungsfeld "Your show (or write GIFT)"). **Artikelvideo (Ashen-Realm 15s) hängt dran** (16.07., via endocraft.app-Fetch).
-- ⏳ FEHLT NOCH: 3 Fotos (cover-A/cover-B/how-it-works) + Instant-Download-PDF — liegen freigegeben in `etsy-updates\stream-intro\`. Upload braucht: `deploy.bat` (dann raw.githubusercontent-Fetch) ODER Chrome-Erweiterungs-Update (dann file_upload direkt). Danach Publish-Klick Marco.
+- ✅ 3 Fotos (cover-A = Hauptfoto, cover-B, how-it-works) + Instant-Download-PDF hochgeladen & gespeichert (16.07. abends, via deploy + raw.githubusercontent-Fetch). **Entwurf ist KOMPLETT — es fehlt nur noch Marcos Publish-Klick.**
+- ℹ️ file_upload der Chrome-Erweiterung ist trotz App-Update+Neustart+Extension-Update WEITER kaputt (gleiche Fehlermeldung) — der raw.githubusercontent-Weg bleibt bis auf Weiteres der Standard. Pin E (Video-Pin) geht damit NICHT (Pinterest-CSP blockt fetch, Canvas-Trick kann kein Video) → bleibt manueller Drag&Drop.
 - ⚠️ „Nachricht an Käufer digitaler Artikel" ist im neuen Editor NICHT pro Listing editierbar — es ist der SHOP-WEITE Text (redet vom Encounter Kit, passt nicht zu Gift/Intro-Listings). Neuer Universaltext liegt Marco zur Freigabe vor; Änderung unter Shop-Einstellungen wirkt auf alle Listings.
 
 **Modell:** Etsy-Variation „Trailer Edition" mit 2 Optionen (Variationen sind bei Digital-Listings mit Preisen möglich; falls Etsy bei diesem Listing-Typ blockt: Fallback = Zusatzpreis auf Personalisierungsfeld oder separates Deluxe-Listing).
