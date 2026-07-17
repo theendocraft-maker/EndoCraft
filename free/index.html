@@ -175,9 +175,10 @@ pintrk('page');
       <span class="eyebrow">Free for D&amp;D players &amp; dungeon masters</span>
       <h1><span class="free">FREE</span>Cinematic Assets for <em>Your</em> Table</h1>
       <p class="hero-tag">A free taste of our cinematic library — hand-crafted NPC portraits and atmospheric location art. Straight to your inbox.</p>
+      <p style="font-family:'EB Garamond',serif;font-size:14.5px;color:var(--muted);margin-top:10px">✦ And when you’re ready for more: we craft <a href="#made-to-order">campaign trailers, cutscenes, memorials &amp; stream intros</a> — made to order.</p>
     </div>
     <div class="monitor">
-      <div class="monitor-top"><span class="dot"></span>Now playing</div>
+      <div class="monitor-top"><span class="dot"></span>What we make</div>
       <div class="screen"><video id="reel" muted autoplay playsinline preload="auto"></video></div>
       <div class="screen-label" id="reelLabel">The Lich King</div>
     </div>
@@ -198,7 +199,7 @@ pintrk('page');
 
 
 <!-- ===== Made to order (Beispieltrailer + Services) ===== -->
-<section class="v2sec">
+<section class="v2sec" id="made-to-order">
   <div class="v2inner">
     <div class="v2kicker">Made to order</div>
     <h2 class="v2h">Your campaign, as a movie.</h2>
@@ -272,6 +273,7 @@ const API_BASE = 'https://endocraft-production.up.railway.app';
     ['clips/clip_oldroad.mp4','The Old Road']
   ];
   for(let s=list.length-1;s>0;s--){const r=Math.floor(Math.random()*(s+1));[list[s],list[r]]=[list[r],list[s]];}
+  list.unshift(['clips/ashen-realm-etsy-15s.mp4','Your campaign as a trailer \u2014 made to order']);
   let i=0;
   function play(n){
     i=((n%list.length)+list.length)%list.length;
