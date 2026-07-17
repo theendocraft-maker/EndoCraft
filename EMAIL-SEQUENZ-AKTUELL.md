@@ -158,3 +158,15 @@ Roll high,
 Marco
 
 P.S. — If your table enjoys villains with more teeth and fewer antennae, the premium encounter kits are on Etsy (WELCOME10 works).
+
+---
+## BROADCAST — Made-to-Order-Launch (NEU, 17.07., wartet auf Marco-Freigabe + Versand)
+**Zweck:** Bestehende Leads (7+) einmalig über die neuen Individual-Services informieren — Trailer, Cutscene, Memorial, Stream-Intro.
+**Betreff-Vorschläge:** „We started making something new" · „Your campaign, as a movie" · „I turned a D&D campaign into a movie trailer"
+**Datei:** `emails/BROADCAST-made-to-order.html` (fertiges HTML, Resend-tauglich) · Poster: `assets/email-trailer-poster.jpg`
+**Aufbau:** klickbares Trailer-Poster (→ /free/#made-to-order) → „wir machen jetzt was Neues" → 4 Services mit Preisen → CTA Etsy → 1-of-1/Zertifikat/Gutschein → Reply-Einladung → P.S. (WELCOME10 für Free-Art-Only-Leute).
+**VOR VERSAND:**
+- ⚠️ Poster muss unter https://endocraft.app/assets/email-trailer-poster.jpg erreichbar sein → **erst deployen, dann senden** (sonst broken image).
+- `<TOKEN>` im Unsubscribe-Link wird von Resend/Backend pro Empfänger ersetzt (wie bei Mail 1–3).
+- Versand als Resend-Broadcast (marco@endocraft.app), NICHT in den Drip einhängen — einmalige Ankündigung.
+- Kein Free-Cutscene-Versprechen mehr enthalten (bewusst).
