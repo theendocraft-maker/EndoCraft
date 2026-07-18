@@ -93,7 +93,7 @@ a:hover{color:var(--gold-bright)}
 .ty-shop{margin-top:20px;font-family:'EB Garamond',serif;font-size:13.5px;color:var(--muted)}
 .ty-shop a{font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1px;text-transform:uppercase}
 @media (max-width:860px){
-  .hero-grid{grid-template-columns:1fr;grid-template-areas:"copy" "cta" "monitor";justify-items:center;row-gap:16px}
+  .hero-grid{grid-template-columns:1fr;grid-template-areas:"copy" "monitor" "cta";justify-items:center;row-gap:16px}
   .hero-copy{text-align:center;max-width:560px}
   .hero-cta{display:flex;flex-direction:column;align-items:center;width:100%}
   .hero-cta .form{margin:0 auto;width:100%;max-width:420px}
@@ -101,18 +101,19 @@ a:hover{color:var(--gold-bright)}
 }
 @media (max-width:560px){
   .nav{padding:12px 18px}
-  .hero{min-height:auto;padding:56px 18px 30px}
+  .hero{min-height:auto;padding:40px 18px 26px}
   .eyebrow{display:none}
-  .hero h1{font-size:clamp(22px,6.6vw,29px);line-height:1.16;margin-bottom:9px}
+  .hero h1{font-size:clamp(20px,5.6vw,26px);line-height:1.16;margin-bottom:9px}
   .hero h1 .free{display:block;width:max-content;margin:0 auto 12px;font-size:11px;letter-spacing:5px;padding:5px 14px}
   .hero-tag{font-size:14.5px;line-height:1.4;margin-bottom:0;max-width:300px;margin-left:auto;margin-right:auto}
   .hero-grid{row-gap:12px}
   .monitor{gap:8px}
   .monitor-top{font-size:9px;letter-spacing:1.8px}
-  .screen{width:182px;border-radius:18px}
+  .screen{width:230px;border-radius:18px}
   .screen-label{font-size:10.5px;letter-spacing:1px}
   .form{gap:9px}
   .form-row{gap:9px}
+  .hero-cta,.hero-cta .form,.form{max-width:100%;width:100%}
   .form input[type="email"],.form input[type="text"]{padding:14px 16px;font-size:16px;min-width:0}
   .btn-primary{width:100%;padding:14px;font-size:14px}
   .form-row .btn-primary{flex:1 1 100%}
@@ -173,12 +174,11 @@ pintrk('page');
    <div class="hero-grid">
     <div class="hero-copy">
       <span class="eyebrow">Free for D&amp;D players &amp; dungeon masters</span>
-      <h1><span class="free">FREE</span>Cinematic Assets for <em>Your</em> Table</h1>
-      <p class="hero-tag">A free taste of our cinematic library — hand-crafted NPC portraits and atmospheric location art. Straight to your inbox.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:14.5px;color:var(--muted);margin-top:10px">✦ And when you’re ready for more: we craft <a href="#made-to-order">campaign trailers, cutscenes, memorials &amp; stream intros</a> — made to order.</p>
+      <h1><span class="free">FREE</span>Cinematic D&amp;D Assets</h1>
+      <p class="hero-tag">Hand-crafted NPC portraits &amp; atmospheric location art — free, straight to your inbox.</p>
     </div>
     <div class="monitor">
-      <div class="monitor-top"><span class="dot"></span>What we make</div>
+      <div class="monitor-top"><span class="dot"></span>A taste of our work</div>
       <div class="screen"><video id="reel" muted autoplay playsinline preload="auto"></video></div>
       <div class="screen-label" id="reelLabel">The Lich King</div>
     </div>
@@ -194,32 +194,6 @@ pintrk('page');
       <span class="scarcity-badge" id="slotsBadge"><span class="dot"></span>Only 9 free spots left today · no spam</span><script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){var t=(d&&typeof d.taken==="number")?d.taken:5;var n=Math.max(3,14-t);var el=document.getElementById("slotsBadge");if(el)el.innerHTML='<span class="dot"></span>Only '+n+' free spots left today · no spam';}).catch(function(){});</script>
     </div>
    </div>
-  </div>
-</section>
-
-
-<!-- ===== Made to order (Beispieltrailer + Services) ===== -->
-<section class="v2sec" id="made-to-order">
-  <div class="v2inner">
-    <div class="v2kicker">Made to order</div>
-    <h2 class="v2h">Your campaign, as a movie.</h2>
-    <p class="v2sub">This sample trailer &mdash; &ldquo;The Ashen Realm&rdquo; &mdash; was built exactly the way every commission is: from one message, scene by scene, scored and narrated.</p>
-    <div class="v2card">
-      <div style="display:flex;align-items:center;justify-content:center;background:#000;padding:22px">
-        <video src="clips/ashen-realm-trailer.mp4" controls playsinline preload="metadata" style="height:440px;aspect-ratio:9/16;object-fit:cover;border-radius:14px;border:1px solid var(--gold-dim)"></video>
-      </div>
-      <div class="v2slugcopy">
-        <em>Four ways to make your table cinematic:</em>
-        <p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0">
-          &#10022; <b style="color:var(--ink)">Campaign Trailer</b> &mdash; your villain, your world, your party's name in the title card &middot; <a href="https://www.etsy.com/listing/4537969559?utm_source=endocraft&utm_medium=free_page&utm_campaign=trailer" target="_blank" rel="noopener">from $24.99</a><br>
-          &#10022; <b style="color:var(--ink)">Character Cutscene</b> &mdash; their hero as a short animated scene &middot; <a href="https://www.etsy.com/listing/4536112275?utm_source=endocraft&utm_medium=free_page&utm_campaign=cutscene" target="_blank" rel="noopener">from $12.99</a><br>
-          &#10022; <b style="color:var(--ink)">Fallen Hero Memorial</b> &mdash; a cinematic ending + keepsake card &middot; <a href="https://www.etsy.com/listing/4537987222?utm_source=endocraft&utm_medium=free_page&utm_campaign=memorial" target="_blank" rel="noopener">$9.99</a><br>
-          &#10022; <b style="color:var(--ink)">Stream &amp; Podcast Intro</b> &mdash; opening credits for your show, commercial use included &middot; <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft&utm_medium=free_page&utm_campaign=stream_intro" target="_blank" rel="noopener">$89.99</a>
-        </p>
-        <p style="color:var(--muted);font-size:13.5px;font-style:italic;margin:0">Made to order &middot; personally reviewed &middot; every piece a 1 of 1 with certificate &middot; printable gift voucher included.</p>
-        <a class="v2btn" href="https://www.etsy.com/listing/4537969559?utm_source=endocraft&utm_medium=free_page&utm_campaign=trailer_cta" target="_blank" rel="noopener">Start your trailer &rarr;</a>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -243,11 +217,11 @@ pintrk('page');
 <div class="thank-you" id="thankYou">
   <div class="ty-inner">
     <h2>You're on the list 🔥</h2>
-    <p>Your free kit is on its way to your inbox — cinematic NPC portraits and location art, ready for your next session.</p>
-    <div style="margin-top:22px;padding:18px 20px;background:linear-gradient(160deg,rgba(216,180,106,.07) 0%,rgba(16,19,28,.5) 100%);border:1px solid var(--gold-dim);border-radius:14px;text-align:left">
-      <div style="font-family:'Cinzel',serif;font-size:11.5px;color:#e6c878;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:7px">Want them to move?</div>
-      <p style="font-family:'EB Garamond',serif;font-size:14.5px;color:var(--muted);margin:0 0 12px;line-height:1.5">If you want your character <b style="color:#f3edd9">cinematically animated</b> — a short clip you can drop into Discord or your stream — I make those to order.</p>
-      <a href="https://www.etsy.com/listing/4536112275?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=custom_cutscene" target="_blank" rel="noopener" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--gold-dim);padding-bottom:1px">See the custom cutscene →</a>
+    <p>Your free kit is on its way — cinematic NPC portraits &amp; location art, ready for your next session. Not there in a minute? Check your spam folder.</p>
+    <div style="margin-top:20px;padding:18px 20px;background:linear-gradient(160deg,rgba(216,180,106,.07) 0%,rgba(16,19,28,.5) 100%);border:1px solid var(--gold-dim);border-radius:14px;text-align:left">
+      <div style="font-family:'Cinzel',serif;font-size:11.5px;color:#e6c878;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:7px">Want it cinematic &amp; custom?</div>
+      <p style="font-family:'EB Garamond',serif;font-size:14.5px;color:var(--muted);margin:0 0 12px;line-height:1.5">We turn characters into short <b style="color:#f3edd9">animated cutscenes</b> — and whole campaigns into <b style="color:#f3edd9">movie trailers</b>. Made to order, one revision on us.</p>
+      <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=made_to_order" target="_blank" rel="noopener" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--gold-dim);padding-bottom:1px">See what we make →</a>
     </div>
     <p class="ty-shop">Or grab a ready-made pack — 10% off with <b>WELCOME10</b> · <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=welcome10" target="_blank" rel="noopener">Browse on Etsy →</a></p>
   </div>
@@ -273,7 +247,7 @@ const API_BASE = 'https://endocraft-production.up.railway.app';
     ['clips/clip_oldroad.mp4','The Old Road']
   ];
   for(let s=list.length-1;s>0;s--){const r=Math.floor(Math.random()*(s+1));[list[s],list[r]]=[list[r],list[s]];}
-  list.unshift(['clips/ashen-realm-etsy-15s.mp4','Your campaign as a trailer \u2014 made to order']);
+  list.unshift(['clips/ashen-realm-trailer.mp4','Your campaign, as a trailer']);
   let i=0;
   function play(n){
     i=((n%list.length)+list.length)%list.length;
