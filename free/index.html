@@ -3,22 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FREE · Cinematic D&D Assets for Your Table · EndoCraft</title>
-<meta name="description" content="A free taste of our cinematic library — hand-crafted NPC portraits and atmospheric location art for your D&D table. Straight to your inbox.">
+<title>FREE Cinematic Arrival Scene · for Curse of Strahd DMs · EndoCraft</title>
+<meta name="description" content="A free, table-ready cinematic arrival scene for your Curse of Strahd game — the carriage, the village, the castle, the lord. Straight to your inbox.">
 <link rel="canonical" href="https://endocraft.app/free/">
-<meta property="og:title" content="FREE · Cinematic D&D Assets for Your Table · EndoCraft">
-<meta property="og:description" content="Free cinematic NPC portraits + atmospheric location art for your table. Straight to your inbox.">
+<meta property="og:title" content="FREE Cinematic Arrival Scene · for Curse of Strahd DMs · EndoCraft">
+<meta property="og:description" content="Play your players the valley. A free table-ready arrival scene for Curse of Strahd — straight to your inbox.">
 <meta property="og:image" content="https://endocraft.app/free/og-image.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EndoCraft">
 <meta property="og:url" content="https://endocraft.app/free/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FREE · Cinematic D&D Assets for Your Table · EndoCraft">
-<meta name="twitter:description" content="Free cinematic NPC portraits + atmospheric location art for your table. Straight to your inbox.">
+<meta name="twitter:title" content="FREE Cinematic Arrival Scene · for Curse of Strahd DMs · EndoCraft">
+<meta name="twitter:description" content="Play your players the valley. A free table-ready arrival scene for Curse of Strahd.">
 <meta name="twitter:image" content="https://endocraft.app/free/og-image.jpg">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"EndoCraft","url":"https://endocraft.app/","logo":"https://endocraft.app/free/og-image.jpg","description":"Cinematic, hand-curated D&D assets for dungeon masters.","sameAs":["https://www.pinterest.com/theendocraft/","https://www.instagram.com/theendocraft/","https://www.etsy.com/shop/EndoCraft"]}
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital@0;1&family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500;0,700&display=swap" rel="stylesheet">
 <style>
@@ -35,129 +32,98 @@ a:hover{color:var(--gold-bright)}
 .nav{position:absolute;top:0;left:0;right:0;z-index:10;padding:18px 28px;display:flex;justify-content:space-between;align-items:center}
 .brand{font-family:'Cinzel Decorative',serif;font-weight:700;font-size:17px;color:var(--gold);letter-spacing:2px;display:flex;align-items:center;gap:9px}
 .brand-seal{width:28px;height:28px;border-radius:50%;box-shadow:0 0 10px rgba(216,180,106,.4)}
-.nav-link{font-family:'Cinzel',serif;font-size:12.5px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:84px 22px 40px;background:radial-gradient(ellipse at center,#1a1f2e 0%,#08090e 80%)}
-.hero-bg{position:absolute;inset:0;background-image:url('hero-bg.jpg');background-size:cover;background-position:center 32%;pointer-events:none;opacity:.7}
-.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 95% 80% at 50% 42%,rgba(8,9,14,.84) 0%,rgba(8,9,14,.6) 52%,rgba(8,9,14,.92) 100%),linear-gradient(180deg,rgba(8,9,14,.6) 0%,rgba(8,9,14,.25) 30%,rgba(8,9,14,.9) 100%)}
-.hero-inner{position:relative;max-width:1040px;width:100%;z-index:2}
-.hero-grid{display:grid;grid-template-columns:1fr 300px;grid-template-areas:"copy monitor" "cta monitor";column-gap:54px;row-gap:24px;align-items:center;max-width:1000px;margin:0 auto}
-.hero-copy{grid-area:copy;max-width:540px;text-align:left}
-.hero-cta{grid-area:cta;max-width:540px;width:100%}
-.hero-cta .form{margin:0}
-.monitor{grid-area:monitor;justify-self:center;display:flex;flex-direction:column;align-items:center;gap:13px}
-.monitor-top{font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
-.monitor-top .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green);animation:pulse 1.8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.screen{width:300px;border-radius:26px;overflow:hidden;border:1px solid var(--gold-dim);background:#000;position:relative;box-shadow:0 28px 64px -18px rgba(0,0,0,.92),0 0 44px -10px rgba(216,180,106,.28)}
-.screen::before{content:'';position:absolute;inset:0;border-radius:26px;border:1px solid rgba(255,255,255,.05);pointer-events:none;z-index:2}
-.screen video{width:100%;aspect-ratio:9/16;object-fit:cover;display:block;transition:opacity .25s}
-.screen-label{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-bright)}
-.eyebrow{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);letter-spacing:5px;text-transform:uppercase;margin-bottom:16px;display:inline-flex;align-items:center;gap:12px}
+
+/* ===== HERO (clip-led) ===== */
+.hero{position:relative;padding:96px 22px 56px;background:radial-gradient(ellipse 80% 70% at 50% 30%,#1a1f2e 0%,#08090e 82%);text-align:center}
+.hero-inner{position:relative;max-width:880px;margin:0 auto;z-index:2}
+.eyebrow{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:16px;display:inline-flex;align-items:center;gap:12px}
 .eyebrow::before,.eyebrow::after{content:'';width:26px;height:1px;background:var(--gold-dim)}
-.hero h1{font-family:'Cinzel Decorative',serif;font-size:clamp(28px,4.8vw,48px);font-weight:900;line-height:1.08;color:var(--gold-bright);margin-bottom:12px;letter-spacing:.5px}
-.hero h1 .free{font-family:'Cinzel',serif;font-size:.34em;color:#f3edd9;letter-spacing:7px;font-weight:500;vertical-align:middle;margin-right:10px;border:1px solid var(--gold-dim);padding:4px 12px;border-radius:6px}
-.hero h1 em{color:var(--gold)}
-.hero-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(17px,2vw,21px);color:#c2c8d8;margin:0 auto 26px;max-width:600px}
-.form{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:11px}
+.hero h1{font-family:'Cinzel Decorative',serif;font-size:clamp(34px,6vw,60px);font-weight:900;line-height:1.05;color:var(--gold-bright);margin-bottom:14px;letter-spacing:.5px}
+.hero-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,2.2vw,23px);color:#c8cede;margin:0 auto 30px;max-width:620px}
+.hero-tag b{color:var(--ink);font-style:normal}
+/* the film */
+.film{position:relative;max-width:820px;margin:0 auto 30px;border-radius:16px;overflow:hidden;border:1px solid var(--gold-dim);background:#000;box-shadow:0 34px 80px -24px rgba(0,0,0,.92),0 0 60px -14px rgba(216,180,106,.26)}
+.film::after{content:'';position:absolute;inset:0;border-radius:16px;border:1px solid rgba(255,255,255,.05);pointer-events:none}
+.film video{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#000}
+.film-badge{position:absolute;top:12px;left:12px;z-index:3;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-bright);background:rgba(8,9,14,.7);border:1px solid var(--gold-dim);padding:5px 12px;border-radius:20px;backdrop-filter:blur(4px)}
+.sound-btn{position:absolute;bottom:12px;right:12px;z-index:3;background:rgba(8,9,14,.72);border:1px solid var(--gold-dim);color:var(--gold-bright);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:7px 13px;border-radius:8px;cursor:pointer;backdrop-filter:blur(4px)}
+.sound-btn:hover{background:rgba(24,28,40,.9)}
+/* form */
+.form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:11px}
 .form-row{display:flex;gap:10px;flex-wrap:wrap}
-.form input[type="email"],.form input[type="text"]{flex:1;min-width:220px;background:rgba(24,28,40,.92);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:15px 17px;font-size:15.5px;font-family:inherit;transition:.2s}
-.form input[type="text"]#character{width:100%;flex:none}
+.form input[type="email"]{flex:1;min-width:220px;background:rgba(24,28,40,.92);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:16px 18px;font-size:16px;font-family:inherit;transition:.2s}
 .form input:focus{outline:none;border-color:var(--gold);background:var(--panel2)}
 .form input::placeholder{color:var(--muted)}
-.btn-primary{background:linear-gradient(180deg,#e6c878,#c7a253);color:#1a1408;border:none;border-radius:10px;padding:15px 26px;font-size:15px;font-family:'Cinzel',serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn-primary{background:linear-gradient(180deg,#e6c878,#c7a253);color:#1a1408;border:none;border-radius:10px;padding:16px 28px;font-size:15px;font-family:'Cinzel',serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.15s;white-space:nowrap}
 .btn-primary:hover{background:linear-gradient(180deg,#f0d088,#d8b46a);transform:translateY(-1px)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.scarcity-badge{display:inline-flex;align-items:center;gap:9px;margin-top:18px;font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-bright);border:1px solid var(--gold-dim);padding:8px 18px;border-radius:30px;background:rgba(216,180,106,.07)}
-.scarcity-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
-.privacy{font-size:12px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;margin-top:2px}
-.shopline{margin-top:30px;font-family:'EB Garamond',serif;font-size:14px;color:var(--muted)}
-.shopline a{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--gold-dim);padding-bottom:1px}
+.micro{margin:12px auto 0;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72);max-width:460px}
+.micro b{color:var(--gold-bright)}
+.badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.badge{display:inline-flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-bright);border:1px solid var(--gold-dim);padding:7px 15px;border-radius:30px;background:rgba(216,180,106,.06)}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.badge.gw{color:#c8cede;border-color:var(--line)}
+.badge.gw b{color:var(--gold-bright)}
 .error-msg{background:rgba(217,138,138,.12);border:1px solid var(--red);color:var(--red);padding:11px 16px;border-radius:8px;font-size:13px;text-align:center}
-.thank-you{position:fixed;inset:0;background:radial-gradient(ellipse 82% 56% at 50% 6%,rgba(216,180,106,.13) 0%,transparent 55%),rgba(8,9,14,.975);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;overflow-y:auto}
-.thank-you.show{display:flex}
-.ty-inner{max-width:540px;text-align:center;background:linear-gradient(180deg,#1c2130 0%,var(--panel) 60%);border:1px solid rgba(216,180,106,.5);border-radius:18px;padding:46px 36px;animation:rise .4s ease-out;box-shadow:0 24px 70px -20px rgba(0,0,0,.85),0 0 90px -30px rgba(216,180,106,.3)}
-@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.ty-inner h2{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--gold-bright);margin-bottom:12px;font-weight:900;letter-spacing:1px}
-.ty-inner p{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--muted);margin-bottom:22px;line-height:1.6}
-.ty-inner p b{color:var(--ink)}
-.wishes-card{margin-top:6px;padding:20px;background:linear-gradient(160deg,rgba(216,180,106,.04) 0%,rgba(16,19,28,.5) 100%);border:1px solid var(--line);border-radius:14px;text-align:left}
-.wishes-label{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
-.wishes-help{font-family:'EB Garamond',serif;font-size:13.5px;color:var(--muted);margin-bottom:12px;line-height:1.5}
-.wishes-input{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:9px;padding:11px 13px;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical;box-sizing:border-box;transition:.15s}
-.wishes-input::placeholder{color:#6b7185}
-.wishes-input:focus{outline:none;border-color:var(--gold-dim);background:rgba(0,0,0,.4)}
-.wishes-submit{margin-top:11px;background:transparent;color:var(--gold);border:1px solid var(--gold-dim);padding:10px 20px;border-radius:8px;font-family:'Cinzel',serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:.15s}
-.wishes-submit:hover{background:var(--gold);color:#1a1408;border-color:var(--gold)}
-.wishes-submit:disabled{opacity:.5;cursor:default}
-.wishes-status{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--green);margin-top:9px;min-height:1.2em}
-.ty-shop{margin-top:20px;font-family:'EB Garamond',serif;font-size:13.5px;color:var(--muted)}
-.ty-shop a{font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1px;text-transform:uppercase}
-@media (max-width:860px){
-  .hero-grid{grid-template-columns:1fr;grid-template-areas:"copy" "monitor" "cta";justify-items:center;row-gap:16px}
-  .hero-copy{text-align:center;max-width:560px}
-  .hero-cta{display:flex;flex-direction:column;align-items:center;width:100%}
-  .hero-cta .form{margin:0 auto;width:100%;max-width:420px}
-  .hero-copy .eyebrow{justify-content:center}
-}
-@media (max-width:560px){
-  .nav{padding:12px 18px}
-  .hero{min-height:auto;padding:40px 18px 26px}
-  .eyebrow{display:none}
-  .hero h1{font-size:clamp(20px,5.6vw,26px);line-height:1.16;margin-bottom:9px}
-  .hero h1 .free{display:block;width:max-content;margin:0 auto 12px;font-size:11px;letter-spacing:5px;padding:5px 14px}
-  .hero-tag{font-size:14.5px;line-height:1.4;margin-bottom:0;max-width:300px;margin-left:auto;margin-right:auto}
-  .hero-grid{row-gap:12px}
-  .monitor{gap:8px}
-  .monitor-top{font-size:9px;letter-spacing:1.8px}
-  .screen{width:230px;border-radius:18px}
-  .screen-label{font-size:10.5px;letter-spacing:1px}
-  .form{gap:9px}
-  .form-row{gap:9px}
-  .hero-cta,.hero-cta .form,.form{max-width:100%;width:100%}
-  .form input[type="email"],.form input[type="text"]{padding:14px 16px;font-size:16px;min-width:0}
-  .btn-primary{width:100%;padding:14px;font-size:14px}
-  .form-row .btn-primary{flex:1 1 100%}
-  .scarcity-badge{margin-top:11px;font-size:9.5px;letter-spacing:1px;padding:6px 13px}
-}
-</style>
 
-<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
-<!-- Pinterest Tag -->
-<script>
-!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version="3.0";var t=document.createElement("script");t.async=!0,t.src=e;var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
-pintrk('load','2613053380173',{np:'endocraft'});
-pintrk('page');
-</script>
-<!-- end Pinterest Tag -->
-<script>
-  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-  plausible.init()
-</script>
-
-<style>
-.v2sec{padding:72px 20px;border-top:1px solid var(--line);background:var(--bg2)}
-.v2alt{background:var(--bg)}
+/* ===== secondary: more of our work ===== */
+.v2sec{padding:70px 20px;border-top:1px solid var(--line);background:var(--bg2)}
 .v2inner{max-width:1020px;margin:0 auto;text-align:center}
-.v2kicker{color:var(--gold);letter-spacing:.28em;text-transform:uppercase;font-size:12px;font-weight:700;margin-bottom:10px}
-.v2h{font-size:clamp(26px,4vw,38px);line-height:1.15;margin-bottom:14px}
-.v2sub{color:var(--muted);max-width:640px;margin:0 auto 30px}
+.v2kicker{color:var(--gold);letter-spacing:.28em;text-transform:uppercase;font-size:12px;font-weight:700;margin-bottom:10px;font-family:'Cinzel',serif}
+.v2h{font-size:clamp(24px,3.6vw,34px);line-height:1.15;margin-bottom:12px;font-family:'Cinzel Decorative',serif;color:var(--gold-bright)}
+.v2sub{color:var(--muted);max-width:640px;margin:0 auto 28px}
 .v2code{display:inline-block;border:1px solid var(--gold-dim);border-radius:8px;padding:2px 12px;color:var(--gold-bright);margin-top:8px}
-.v2card{display:grid;grid-template-columns:1fr 1.1fr;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-align:left;margin:0 auto;max-width:860px}
-.v2card video{width:100%;height:100%;object-fit:cover;max-height:420px}
-.v2slugcopy{padding:30px 28px;display:flex;flex-direction:column;gap:14px;justify-content:center}
-.v2slugcopy em{color:var(--gold-bright);font-size:18px}
-.v2btn{display:inline-block;background:var(--gold);color:#14161f;font-weight:700;padding:12px 22px;border-radius:10px;align-self:flex-start}
-.v2btn:hover{background:var(--gold-bright)}
-.v2ghost{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);align-self:center}
-.v2ghost:hover{background:var(--panel2);color:var(--gold-bright)}
-.v2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:28px}
+.v2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:26px}
 .v2tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .2s,border-color .2s;display:block}
 .v2tile:hover{transform:translateY(-4px);border-color:var(--gold-dim)}
 .v2tile video{width:100%;aspect-ratio:3/4;object-fit:cover}
 .v2tile .t{padding:12px 14px;font-size:14.5px;color:var(--ink);text-align:left;line-height:1.35}
 .v2tile .t small{color:var(--muted);display:block;margin-top:2px}
-@media(max-width:720px){.v2card{grid-template-columns:1fr}.v2card video{max-height:300px}}
+.v2btn{display:inline-block;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-weight:700;padding:12px 22px;border-radius:10px}
+.v2btn:hover{background:var(--panel2);color:var(--gold-bright)}
+
+/* footer */
+.foot{padding:34px 20px 40px;text-align:center;border-top:1px solid var(--line);background:var(--bg)}
+.foot .seal{width:40px;height:40px;border-radius:50%;margin:0 auto 12px;opacity:.9}
+.foot p{font-family:'EB Garamond',serif;font-size:13px;color:var(--muted);line-height:1.6}
+.foot a{font-size:12px}
+
+/* thank you */
+.thank-you{position:fixed;inset:0;background:radial-gradient(ellipse 82% 56% at 50% 6%,rgba(216,180,106,.13) 0%,transparent 55%),rgba(8,9,14,.975);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;overflow-y:auto}
+.thank-you.show{display:flex}
+.ty-inner{max-width:540px;text-align:center;background:linear-gradient(180deg,#1c2130 0%,var(--panel) 60%);border:1px solid rgba(216,180,106,.5);border-radius:18px;padding:46px 36px;animation:rise .4s ease-out;box-shadow:0 24px 70px -20px rgba(0,0,0,.85),0 0 90px -30px rgba(216,180,106,.3)}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.ty-inner h2{font-family:'Cinzel Decorative',serif;font-size:27px;color:var(--gold-bright);margin-bottom:12px;font-weight:900;letter-spacing:1px}
+.ty-inner p{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.ty-inner p b{color:var(--ink)}
+.ty-box{margin-top:18px;padding:18px 20px;background:linear-gradient(160deg,rgba(216,180,106,.06) 0%,rgba(16,19,28,.5) 100%);border:1px solid var(--gold-dim);border-radius:14px;text-align:left}
+.ty-box .lab{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold-bright);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:7px}
+.ty-box p{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--muted);margin:0 0 12px;line-height:1.5}
+.ty-shop{margin-top:18px;font-family:'EB Garamond',serif;font-size:13.5px;color:var(--muted)}
+.ty-shop a{font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1px;text-transform:uppercase}
+
+@media (max-width:560px){
+  .nav{padding:12px 18px}
+  .hero{padding:70px 18px 40px}
+  .eyebrow{letter-spacing:2.5px;font-size:10px}
+  .hero h1{font-size:clamp(28px,8vw,38px)}
+  .hero-tag{font-size:16px;max-width:340px}
+  .film{border-radius:12px}
+  .form-row .btn-primary{flex:1 1 100%}
+  .form input[type="email"]{min-width:0}
+}
 </style>
+
+<script async src="https://plausible.io/js/pa-XyfUV-SPa2VMk20wnbpyy.js"></script>
+<script>
+!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version="3.0";var t=document.createElement("script");t.async=!0,t.src=e;var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)}}("https://s.pinimg.com/ct/core.js");
+pintrk('load','2613053380173',{np:'endocraft'});
+pintrk('page');
+</script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
 <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon-64.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
@@ -169,109 +135,80 @@ pintrk('page');
 </nav>
 
 <section class="hero">
-  <div class="hero-bg"></div>
   <div class="hero-inner">
-   <div class="hero-grid">
-    <div class="hero-copy">
-      <span class="eyebrow">Free for D&amp;D players &amp; dungeon masters</span>
-      <h1><span class="free">FREE</span>Cinematic D&amp;D Assets</h1>
-      <p class="hero-tag">Hand-crafted NPC portraits &amp; atmospheric location art — free, straight to your inbox.</p>
+    <span class="eyebrow">Free · for Curse of Strahd dungeon masters</span>
+    <h1>Play them the valley.</h1>
+    <p class="hero-tag">A cinematic arrival scene — <b>table-ready</b>. Play it the moment your party crosses into the valley, and let the mist do the talking.</p>
+
+    <div class="film">
+      <span class="film-badge">The Arrival · free scene</span>
+      <video id="film" src="clips/arrival-cursed-valley.mp4" poster="arrival-poster.jpg" muted autoplay loop playsinline preload="auto"></video>
+      <button class="sound-btn" id="soundBtn" type="button">♪ Sound on</button>
     </div>
-    <div class="monitor">
-      <div class="monitor-top"><span class="dot"></span>A taste of our work</div>
-      <div class="screen"><video id="reel" muted autoplay playsinline preload="auto"></video></div>
-      <div class="screen-label" id="reelLabel">The Lich King</div>
+
+    <form class="form" id="leadForm">
+      <div class="form-row">
+        <input type="email" id="email" placeholder="your@email.com" required autocomplete="email">
+        <button class="btn-primary" type="submit" id="submitBtn">Send me the scene →</button>
+      </div>
+      <div id="formError"></div>
+    </form>
+    <p class="micro">The full <b>1080p MP4</b> lands in your inbox — yours to play at the table. No spam, unsubscribe anytime.</p>
+    <div class="badges">
+      <span class="badge" id="slotsBadge"><span class="dot"></span>Only 9 free spots left today</span>
+      <span class="badge gw">▸ On TikTok? Grabbing the scene enters this month's <b>free custom-clip giveaway</b></span>
     </div>
-    <div class="hero-cta">
-      <form class="form" id="leadForm">
-        <div class="form-row">
-          <input type="email" id="email" placeholder="your@email.com" required autocomplete="email">
-          <button class="btn-primary" type="submit" id="submitBtn">Get my free kit →</button>
-        </div>
-        <div id="formError"></div>
-      </form>
-      <p style="margin:11px 0 6px;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72)">Lands in your inbox <b style="color:#e6c878">instantly</b> · no spam, unsubscribe anytime.</p>
-      <span class="scarcity-badge" id="slotsBadge"><span class="dot"></span>Only 9 free spots left today · no spam</span><script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){var t=(d&&typeof d.taken==="number")?d.taken:5;var n=Math.max(3,14-t);var el=document.getElementById("slotsBadge");if(el)el.innerHTML='<span class="dot"></span>Only '+n+' free spots left today · no spam';}).catch(function(){});</script>
-    </div>
-   </div>
+    <script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){var t=(d&&typeof d.taken==="number")?d.taken:5;var n=Math.max(3,14-t);var el=document.getElementById("slotsBadge");if(el)el.innerHTML='<span class="dot"></span>Only '+n+' free spots left today';}).catch(function(){});</script>
   </div>
 </section>
 
-<!-- ===== V2: From the Shop ===== -->
-<section class="v2sec v2alt">
+<!-- ===== secondary: what else we make ===== -->
+<section class="v2sec">
   <div class="v2inner">
-    <div class="v2kicker">From the Shop</div>
-    <h2 class="v2h">Living previews. Complete packs.</h2>
-    <p class="v2sub">Cinematic NPC cards, VTT tokens &amp; location art &mdash; print-ready, Roll20 &amp; Foundry ready.<br><span class="v2code">Code <b>WELCOME10</b> &mdash; 10% off your first pack</span></p>
+    <div class="v2kicker">This is just a taste</div>
+    <h2 class="v2h">We turn campaigns into cinema.</h2>
+    <p class="v2sub">Character cutscenes, boss reveals, whole-campaign trailers — cinematic NPC cards, VTT tokens &amp; location art, print-ready for Roll20 &amp; Foundry.<br><span class="v2code">Code <b>WELCOME10</b> &mdash; 10% off your first pack</span></p>
     <div class="v2grid">
-      <a class="v2tile" href="https://www.etsy.com/listing/4531234914?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_dh" target="_blank" rel="noopener"><video src="shop/tile_dh.mp4" poster="shop/tile_dh_poster.jpg" muted autoplay loop playsinline preload="metadata"></video><div class="t">The Devil&rsquo;s Hound<small>Complete encounter kit</small></div></a>
+      <a class="v2tile" href="https://www.etsy.com/listing/4531234914?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_dh" target="_blank" rel="noopener"><video src="shop/tile_dh.mp4" poster="shop/tile_dh_poster.jpg" muted autoplay loop playsinline preload="metadata"></video><div class="t">The Devil&rsquo;s Hound<small>Curse of Strahd encounter kit</small></div></a>
       <a class="v2tile" href="https://www.etsy.com/listing/4530867864?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_bloomrot" target="_blank" rel="noopener"><video src="shop/tile_bloomrot.mp4" poster="shop/tile_bloomrot_poster.jpg" muted autoplay loop playsinline preload="metadata"></video><div class="t">The Bloomrot Saint<small>Boss encounter kit</small></div></a>
       <a class="v2tile" href="https://www.etsy.com/listing/4528139082?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_dragons" target="_blank" rel="noopener"><video src="shop/tile_dragons.mp4" poster="shop/tile_dragons_poster.jpg" muted autoplay loop playsinline preload="metadata"></video><div class="t">Animated Dragons<small>Living encounter clips</small></div></a>
       <a class="v2tile" href="https://www.etsy.com/listing/4528136284?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_ambience" target="_blank" rel="noopener"><video src="shop/tile_ambience.mp4" poster="shop/tile_ambience_poster.jpg" muted autoplay loop playsinline preload="metadata"></video><div class="t">Animated Ambience<small>Living location scenes</small></div></a>
     </div>
-    <a class="v2btn v2ghost" href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_all" target="_blank" rel="noopener">Browse the full shop on Etsy &rarr;</a>
+    <a class="v2btn" href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft&utm_medium=free_page&utm_campaign=shop_all" target="_blank" rel="noopener">Browse the full shop on Etsy &rarr;</a>
   </div>
 </section>
 
+<footer class="foot">
+  <img src="../assets/logo-seal.png" class="seal" alt="EndoCraft" width="40" height="40">
+  <p>EndoCraft · <a href="https://endocraft.app">endocraft.app</a> · cinematic D&amp;D, made to order<br>
+  Compatible with any 5e game — not affiliated with Wizards of the Coast.</p>
+</footer>
 
 <div class="thank-you" id="thankYou">
   <div class="ty-inner">
-    <h2>You're on the list 🔥</h2>
-    <p>Your free kit is on its way — cinematic NPC portraits &amp; location art, ready for your next session. Not there in a minute? Check your spam folder.</p>
-    <div style="margin-top:20px;padding:18px 20px;background:linear-gradient(160deg,rgba(216,180,106,.07) 0%,rgba(16,19,28,.5) 100%);border:1px solid var(--gold-dim);border-radius:14px;text-align:left">
-      <div style="font-family:'Cinzel',serif;font-size:11.5px;color:#e6c878;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:7px">Want it cinematic &amp; custom?</div>
-      <p style="font-family:'EB Garamond',serif;font-size:14.5px;color:var(--muted);margin:0 0 12px;line-height:1.5">We turn characters into short <b style="color:#f3edd9">animated cutscenes</b> — and whole campaigns into <b style="color:#f3edd9">movie trailers</b>. Made to order, one revision on us.</p>
+    <h2>The scene is on its way 🕯️</h2>
+    <p>Check your inbox — your <b>table-ready arrival scene</b> is landing now. Not there in a minute? Peek in your spam folder.</p>
+    <div class="ty-box">
+      <div class="lab">Want your OWN campaign like this?</div>
+      <p>We build custom arrival scenes, character cutscenes &amp; whole-campaign trailers — made to order, one revision on us.</p>
       <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=made_to_order" target="_blank" rel="noopener" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--gold-dim);padding-bottom:1px">See what we make →</a>
     </div>
-    <p class="ty-shop">Or grab a ready-made pack — 10% off with <b>WELCOME10</b> · <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=welcome10" target="_blank" rel="noopener">Browse on Etsy →</a></p>
+    <p class="ty-shop">Prepping the whole campaign? The Curse of Strahd packs are 10% off with <b>WELCOME10</b> · <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=welcome10" target="_blank" rel="noopener">Browse on Etsy →</a></p>
   </div>
 </div>
 
 <script>
-const API_BASE = 'https://endocraft-production.up.railway.app';
-/* Rotating "monitor": play each cutscene once, then the next — endless loop. */
+const API_BASE='https://endocraft-production.up.railway.app';
+/* sound toggle for the hero film */
 (function(){
-  const reel=document.getElementById('reel'), label=document.getElementById('reelLabel');
-  if(!reel) return;
-  const list=[
-    ['clips/cutscene_lich.mp4','The Lich King'],
-    ['clips/clip_sluglord.mp4','Sluglord, Lord of Slugs'],
-    ['clips/cutscene_beholder.mp4','Beholder'],
-    ['clips/clip_shadowhound.mp4','The Devil\'s Hound'],
-    ['clips/cutscene_dragon.mp4','Ancient Red Dragon'],
-    ['clips/clip_saint.mp4','The Bloomrot Saint'],
-    ['clips/cutscene_mindflayer.mp4','Mind Flayer'],
-    ['clips/clip_katerina.mp4','Katerina'],
-    ['clips/clip_fullbloom.mp4','Full Bloom'],
-    ['clips/clip_houndpack.mp4','The Pack Closes In'],
-    ['clips/clip_oldroad.mp4','The Old Road']
-  ];
-  for(let s=list.length-1;s>0;s--){const r=Math.floor(Math.random()*(s+1));[list[s],list[r]]=[list[r],list[s]];}
-  list.unshift(['clips/ashen-realm-trailer.mp4','Your campaign, as a trailer']);
-  let i=0;
-  function play(n){
-    i=((n%list.length)+list.length)%list.length;
-    reel.style.opacity='0';
-    setTimeout(function(){ reel.src=list[i][0]; label.textContent=list[i][1]; reel.play().catch(function(){}); reel.style.opacity='1'; },220);
-  }
-  reel.addEventListener('ended',function(){play(i+1);});
-  reel.addEventListener('error',function(){play(i+1);});
-  play(0);
+  const v=document.getElementById('film'),b=document.getElementById('soundBtn');
+  if(!v||!b)return;
+  b.addEventListener('click',function(){
+    v.muted=!v.muted;
+    if(!v.muted){v.play().catch(function(){});b.textContent='♪ Sound off';if(window.plausible)window.plausible('FilmSoundOn');}
+    else b.textContent='♪ Sound on';
+  });
 })();
-function getEmail(){ const e=document.getElementById('email'); return e?(e.value||'').trim().toLowerCase():''; }
-async function submitDetail(){
-  const wishEl=document.getElementById('wishText'),btn=document.getElementById('wishBtn'),status=document.getElementById('wishStatus');
-  const detail=(wishEl.value||'').trim();
-  if(!detail){status.textContent='Type your character first :)';return;}
-  btn.disabled=true;btn.textContent='Sending…';
-  try{
-    const r=await fetch(API_BASE+'/api/wishes/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:getEmail()||null,wish:'SCENE REQUEST: '+detail,source:'free-scene'})});
-    if(!r.ok)throw new Error('Network');
-    btn.textContent='Sent ✓';status.textContent='Got it — your character is in our queue. We’ll email your cutscene.';wishEl.disabled=true;
-    if(window.plausible)window.plausible('CutsceneDetail',{props:{source:detectSource()}});
-  }catch(e){btn.disabled=false;btn.textContent='Send my character →';status.textContent='Could not send — try again in a moment.';}
-}
-const form=document.getElementById('leadForm'),submitBtn=document.getElementById('submitBtn'),emailInput=document.getElementById('email'),errorEl=document.getElementById('formError'),thankYou=document.getElementById('thankYou');
 function detectSource(){
   const p=new URLSearchParams(window.location.search);
   if(p.get('utm_source'))return p.get('utm_source');
@@ -283,6 +220,7 @@ function detectSource(){
   if(/google/i.test(ref))return 'google';
   return 'direct';
 }
+const form=document.getElementById('leadForm'),submitBtn=document.getElementById('submitBtn'),emailInput=document.getElementById('email'),errorEl=document.getElementById('formError'),thankYou=document.getElementById('thankYou');
 form.addEventListener('submit',async(e)=>{
   e.preventDefault();
   const email=emailInput.value.trim().toLowerCase();
@@ -294,11 +232,11 @@ form.addEventListener('submit',async(e)=>{
     if(!res.ok&&res.status!==409){const d=await res.json().catch(()=>({}));throw new Error(d.error||'Network error');}
     try{localStorage.setItem('endocraft_free_email',email);}catch(_){}
     thankYou.classList.add('show');
-    if(window.plausible)window.plausible('CutsceneSignup',{props:{source:source}});
-    if(window.pintrk)window.pintrk('track','lead',{lead_type:'free_cutscene'});
+    if(window.plausible)window.plausible('SceneSignup',{props:{source:source}});
+    if(window.pintrk)window.pintrk('track','lead',{lead_type:'free_scene'});
   }catch(err){
     errorEl.innerHTML='<div class="error-msg">Something went wrong: '+(err.message||'unknown')+'. Try again in a moment.</div>';
-    submitBtn.disabled=false;submitBtn.textContent='Get my free kit →';
+    submitBtn.disabled=false;submitBtn.textContent='Send me the scene →';
   }
 });
 try{if(localStorage.getItem('endocraft_free_email')){emailInput.value=localStorage.getItem('endocraft_free_email');}}catch(_){}
@@ -306,4 +244,3 @@ try{if(localStorage.getItem('endocraft_free_email')){emailInput.value=localStora
 
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
