@@ -60,10 +60,11 @@ a:hover{color:var(--gold-bright)}
 .micro{margin:12px auto 0;font-size:14px;line-height:1.45;color:rgba(243,237,225,.72);max-width:460px}
 .micro b{color:var(--gold-bright)}
 .badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
-.badge{display:inline-flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-bright);border:1px solid var(--gold-dim);padding:7px 15px;border-radius:30px;background:rgba(216,180,106,.06)}
+.badge{display:inline-flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-bright);border:1px solid var(--gold-dim);padding:7px 15px;border-radius:30px;background:rgba(216,180,106,.06);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
 .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
 .badge.gw{color:#c8cede;border-color:var(--line)}
 .badge.gw b{color:var(--gold-bright)}
+a.badge.gw:hover{border-color:var(--gold-dim);color:var(--ink);background:rgba(216,180,106,.1)}
 .error-msg{background:rgba(217,138,138,.12);border:1px solid var(--red);color:var(--red);padding:11px 16px;border-radius:8px;font-size:13px;text-align:center}
 
 /* ===== secondary: more of our work ===== */
@@ -156,7 +157,7 @@ pintrk('page');
     <p class="micro">The full <b>1080p MP4</b> lands in your inbox — yours to play at the table. No spam, unsubscribe anytime.</p>
     <div class="badges">
       <span class="badge" id="slotsBadge"><span class="dot"></span>Only 9 free spots left today</span>
-      <span class="badge gw">▸ On TikTok? Grabbing the scene enters this month's <b>free custom-clip giveaway</b></span>
+      <a class="badge gw" href="https://www.tiktok.com/@theendocraft" target="_blank" rel="noopener">▸ Follow <b>@theendocraft</b> on TikTok — the scene enters you in this month's <b>free custom-clip giveaway</b></a>
     </div>
     <script>fetch("https://endocraft-production.up.railway.app/api/free-slots").then(function(r){return r.json()}).then(function(d){var t=(d&&typeof d.taken==="number")?d.taken:5;var n=Math.max(3,14-t);var el=document.getElementById("slotsBadge");if(el)el.innerHTML='<span class="dot"></span>Only '+n+' free spots left today';}).catch(function(){});</script>
   </div>
