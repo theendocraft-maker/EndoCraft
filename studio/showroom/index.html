@@ -92,6 +92,13 @@
   .loc:hover{transform:translateY(-4px);border-color:var(--gold-dim)}
   .loc img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
   .loc .label{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);background:linear-gradient(0deg,rgba(6,7,12,.9),transparent);pointer-events:none}
+
+  #lb{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(4,5,9,.93);backdrop-filter:blur(4px);cursor:zoom-out;padding:24px}
+  #lb.open{display:flex}
+  #lb .media{max-width:92vw;max-height:90vh;border-radius:10px;border:1px solid rgba(216,180,106,.3);box-shadow:0 30px 80px -20px #000;cursor:default;background:#000}
+  #lb .close{position:fixed;top:16px;right:24px;color:var(--gold);font-family:'Cinzel',serif;font-size:24px;cursor:pointer;line-height:1;z-index:1000;opacity:.85}
+  #lb .close:hover{opacity:1}
+  .card,.feature,.loc{cursor:zoom-in}
 </style>
 </head>
 <body>
@@ -103,18 +110,16 @@
   </video>
   <div class="veil"></div>
   <div class="wrap hero-inner">
-    <div class="eyebrow">EndoCraft · for D&amp;D creators</div>
-    <h1>Scenes your audience will stop scrolling for.</h1>
-    <p>I make short cinematic D&amp;D moments — vertical, made to be watched. I'll make one of your character or your campaign's big bad, free — yours to post.</p>
+    <div class="eyebrow">EndoCraft · for D&amp;D 5e</div>
+    <h1>Scenes for your campaign.</h1>
+    <p>Characters &middot; Scenes &middot; Big Bads.</p>
   </div>
 </header>
 
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">The bar — every one of these shipped</div>
-      <h2>This is the scene I make</h2>
-      <p>Full-HD vertical reveals, ten seconds each. No stock, no filler — most generations get thrown out and only the clean ones make it here.</p>
+      <h2>Boss introductions</h2>
     </div>
     <div class="grid reveals" id="reveals"></div>
   </div>
@@ -123,9 +128,7 @@
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Not just a monster — a moment</div>
-      <h2>Scenes that tell a story</h2>
-      <p>Some scenes carry a whole beat &mdash; the arrival into the cursed valley buys a table its first moment of dread before a word is spoken.</p>
+      <h2>Storytelling cutscenes</h2>
     </div>
     <div class="feature">
       <video muted loop playsinline preload="none" poster="bestof-posters/arrival.jpg" data-lazy="../../free/clips/arrival-cursed-valley.mp4"></video>
@@ -137,9 +140,7 @@
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Set the scene</div>
       <h2>Locations &amp; atmosphere</h2>
-      <p>Drop-in mood for the next room &mdash; a crypt, a tavern, a misty lake. Same gothic look, ready under a voiceover or on a second screen.</p>
     </div>
     <div class="locgrid"><div class="loc"><img src="locations/crossroads-shrine.jpg" loading="lazy"><div class="label">The Crossroads Shrine</div></div><div class="loc"><img src="locations/hill-graveyard.jpg" loading="lazy"><div class="label">The Hill Graveyard</div></div><div class="loc"><img src="locations/village-lane.jpg" loading="lazy"><div class="label">The Village Lane</div></div><div class="loc"><img src="locations/forest-wisps.jpg" loading="lazy"><div class="label">The Forest of Wisps</div></div><div class="loc"><img src="locations/keep-on-crag.jpg" loading="lazy"><div class="label">The Keep on the Crag</div></div><div class="loc"><img src="locations/frozen-gorge.jpg" loading="lazy"><div class="label">The Frozen Gorge</div></div><div class="loc"><img src="locations/tavern.jpg" loading="lazy"><div class="label">The Tavern</div></div><div class="loc"><img src="locations/throne-hall.jpg" loading="lazy"><div class="label">The Throne Hall</div></div><div class="loc"><img src="locations/crypt-corridor.jpg" loading="lazy"><div class="label">The Crypt Corridor</div></div><div class="loc"><img src="locations/misty-lake.jpg" loading="lazy"><div class="label">The Misty Lake</div></div><div class="loc"><img src="locations/castle-peak.jpg" loading="lazy"><div class="label">The Castle Peak</div></div><div class="loc"><img src="locations/old-library.jpg" loading="lazy"><div class="label">The Old Library</div></div></div>
   </div>
@@ -154,7 +155,7 @@
       <div class="body">
         <div class="eyebrow">Ready-made — a free key for you</div>
         <h3>Cinematic Boss Reveals — a 6-pack</h3>
-        <p>Six vertical monster reveals like these, ready to drop into a video. Want the whole set? I'll send you a free key — yours to use.</p>
+        <p>Six vertical reveals, ready to drop in. Free key on request.</p>
         <a class="btn" href="https://endocraft.itch.io/cinematic-boss-reveals-6-monster-scenes-for-dd-5e" target="_blank" rel="noopener">See the pack →</a>
       </div>
     </div>
@@ -165,7 +166,7 @@
   <div class="wrap">
     <div class="eyebrow">Let's make something</div>
     <h2>Want a clip of your character?</h2>
-    <p>Tell me who or what — your character, your big bad, the moment your campaign's building toward — and I'll build a cinematic of it, free. Yours to post.</p>
+    <p>Your character or your big bad, cinematic — free.</p>
     <a class="btn" href="https://endocraft.itch.io" target="_blank" rel="noopener">EndoCraft on itch</a>
     &nbsp;
     <a class="btn ghost" href="https://endocraft.app/free" target="_blank" rel="noopener">Grab a free scene</a>
@@ -206,6 +207,32 @@
     });
   },{rootMargin:'200px 0px',threshold:0.25});
   document.querySelectorAll('video[data-lazy]').forEach(function(v){io.observe(v);});
+</script>
+
+<div id="lb"><span class="close" id="lbClose">&#10005;</span></div>
+<script>
+(function(){
+  var lb=document.getElementById('lb'), closeBtn=document.getElementById('lbClose');
+  function clear(){ lb.querySelectorAll('.media').forEach(function(m){ if(m.tagName==='VIDEO'){try{m.pause();}catch(e){}} m.remove(); }); }
+  function openEl(el){
+    clear();
+    var v=el.querySelector('video'), img=el.querySelector('img'), media;
+    if(v){
+      var s=v.dataset.lazy || (v.querySelector('source')&&v.querySelector('source').getAttribute('src'));
+      if(!s) return;
+      media=document.createElement('video'); media.className='media'; media.src=s;
+      media.controls=true; media.autoplay=true; media.loop=true; media.playsInline=true; media.setAttribute('playsinline','');
+    } else if(img){
+      media=document.createElement('img'); media.className='media'; media.src=img.src;
+    } else { return; }
+    lb.appendChild(media); lb.classList.add('open');
+  }
+  function close(){ lb.classList.remove('open'); clear(); }
+  document.querySelectorAll('.card, .feature, .loc').forEach(function(el){ el.addEventListener('click', function(){ openEl(el); }); });
+  lb.addEventListener('click', function(e){ if(e.target===lb) close(); });
+  closeBtn.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+})();
 </script>
 </body>
 </html>
