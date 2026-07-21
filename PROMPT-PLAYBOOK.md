@@ -17,6 +17,15 @@
 - NIE Negation („no people" zieht Leute REIN)
 - **Test läuft:** Story-Objekt statt Person — Gegenstände, die eine Geschichte implizieren (dampfender Tee, zurückgelassenes Schwert, einzelnes Banner, Fußspuren im Schnee). Kein Hände-Risiko, voller Moment-Effekt.
 
+## Pin-Mix-Raster (NEU 18.07.2026 — datenbasiert aus 30-Tage-Analyse, ~90 Pins)
+**Befund:** CoS-Board = 192 Impr./Pin vs. Character-Board = 61 (Faktor 3). Saves fast nur bei Nutzwert-Titeln („Battlemap", „Token" — Svalich Road allein 19 von 55 Account-Saves). Outbound-Klicks fast nur bei Angebots-Titeln (Bloomrot 5,5 %, Free Kit 8,3 % vs. 0,12 % Account-Schnitt). Drachen-Art (10 Pins) + Animated-Ambience-Videos (5 Pins): zusammen ~0 Saves/Klicks.
+**Raster für jeden künftigen Pin-Batch (12er-Batch):**
+- **6× CoS-Location im Nutzwert-Frame** — Titel MUSS Werkzeug-Keyword tragen („… DM Scene", „… Session Opener", „… VTT Slide", „… Battlemap"), nominative „Curse of Strahd"-Nennung, SRD-safe (generische Ortsnamen!)
+- **3× Angebots-Pin** — konkretes Free-/Produkt-Angebot im Titel UND im Bild (Endcard-Stil)
+- **3× Tavern/Cozy-Atmosphäre** als Reichweiten-Träger — auch diese mit Offer-Layer in Beschreibung + Karte im Bild
+- **Pausiert:** Drachen-Einzelporträts, generische Character-Art, Loop-Ambience-Videos ohne Hook
+- **Jeder Pin:** Vollbleed 2:3 (1568×2352), Hook im Bild (Cinzel), Endcard-Karte unten (Seal + Free-CTA), eigenes UTM (`pin2_<slug>`), AI-Modified an, Marco-Review vor Publish
+
 ## Harte Regeln (nie brechen)
 1. Keine Negationen im Prompt
 2. Keine Projektile/Hand-to-Hand-Choreo/eingebrannter Text

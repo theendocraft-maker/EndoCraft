@@ -1,18 +1,27 @@
-# Was Claude von Marco braucht — Stand 16.07. abends
+# Was Claude von Marco braucht — Stand 21.07.2026 morgens (komplett erneuert)
 
-## 🔴 Kurz & entsperrt sofort weitere Arbeit
-1. ~~Korrekturlesen TRAILER-TIERS.md~~ ✅ ERLEDIGT (16.07.): Deluxe (+25 $) live am Trailer-Listing, Streamer-Intro-Listing liegt als ENTWURF im Shop-Manager (Texte/Preis/Tags komplett). Es fehlen nur Fotos/Video/PDF (siehe #2), dann dein Publish-Klick.
-2. **Desktop-App KOMPLETT NEU STARTEN (nicht nur updaten!):** Update allein hat den Datei-Upload nicht repariert — vermutlich lädt der Fix erst nach vollständigem Beenden + Neustart der Claude-App. Danach gehen: Video-Pins, Etsy-Foto-Uploads, PDF-Uploads — alles ohne Deploy-Umweg.
-3. **Pin E — Video-Pin (2 Min, falls du nicht auf #2 warten willst):** `_review\ashen-trailer\ASHEN-REALM-trailer-v1.mp4` in den Pin-Builder ziehen; Titel/Beschreibung/Link stehen in `PIN-GIFT-PLAN.md` unter „Pin E". Board: D&D Gifts, AI-Modified an, Schedule So 20.07.
+Ein Dokument für alle offenen Gates, priorisiert nach Hebel pro Minute. Alles andere läuft autonom.
 
-## 🟡 Altlasten (nicht Gift-Schiene, aber liegen bei dir)
-4. **Codax-Mail senden** (falls noch nicht passiert): Doppelklick `social\cutscene-requests\codax\SEND-EMAIL.bat` (fragt ADMIN_KEY). Kunde wartet seit 13.07.
-5. **philcampion fragen** (TRANS-01): darf sein Dragonrider in Social-Content? Entsperrt das stärkste Reel + weitere Pin-Motive.
-6. **TikTok Reel-Woche v2 posten/schedulen** (Handy): Plan in `social\reels-week\WOCHENPLAN.md`, Clips in `v2/`.
-7. **Pinterest-Ads-Kampagne:** Spec liegt fertig (`etsy-updates\promo-candidates\ad-ready\free-kit-campaign-spec.md`). Braucht dein Budget-Go — Empfehlung: erst nach den ersten Gift-Sales.
-8. **ETSY_API_KEY (Shared Secret) in Railway setzen** — entsperrt Direct-Publish/Sync, macht die Browser-Fallen überflüssig.
-9. **itch.io Devil's Hound:** ZIP + Cover hochladen (nativer Dialog), dann veröffentlichen.
+## 🔴 Höchster Hebel — bitte zuerst
 
-## 🟢 Nichts tun nötig — läuft/wartet von selbst
-- Pins A–D terminiert (A geht HEUTE 13:00 live) · GSC-Indexierung beantragt · Cross-Sell auf 18 Listings live · Gifts-Sektion live · Trailer-Beispielvideo im Listing live · Gift-Page mit Video-Embed live.
-- **Messen ab jetzt wöchentlich:** Etsy-Traffic Quelle „Social" + utm_campaign=gift, Views der 3 Gift-Listings, erste Sales/Reviews. Nächster Checkpoint: ~23.07. (1 Woche Pin-Drip).
+1. **Ein Pinterest-Login (~10 Min) — erledigt drei Dinge auf einmal:**
+   - **Gift-Pins A+B verifizieren:** seit 15./17.07. „draußen", aber unbestätigt ob je live gegangen. Der Gift-Checkpoint 23.07. ist wertlos, wenn das Experiment nie lief.
+   - **PIN2-Welle reviewen + schedulen** (12 Pins fertig): Location+Produkt-Drips enden 25.07., der Pipeline-Alarm kommt MORGEN (22.07.). Ohne Nachschub trägt ab 26.07. Charakter allein.
+   - **tavern_test-Pinterest-Spalten ausfüllen:** Gerüst liegt jetzt in `social\prompt-lab\tavern-test\AUSWERTUNG.md` — Saves/Impressions der 5 Varianten + Original eintragen, Entscheidungsregel steht drin.
+2. **TikTok-Woche: Giveaway-Go/No-Go (2 Min Entscheidung):** Die 5 Clips (`social\tiktok-week\`) sind fertig, ABER 4 von 5 Captions versprechen ein **monatliches Custom-Clip-Giveaway** — das ist eine wiederkehrende Verpflichtung, die du nie beschlossen hast. **Ohne dein Go geht nichts davon raus** (Korrekturlese-Regel). Bei Go korrigiere ich noch `#charakterart` → `#characterart` (FR-Clip) und du postest vom Handy (2 Min/Tag, ab realistisch heute; MO-Clip als Sa/So-Repost). Bei No-Go schreibe ich 4 Captions um.
+3. **Angebots-Mail an deathrider174 (2 Min):** Text liegt fertig. Einziger halbwegs warmer Cutscene-Lead (13.07., Tag 8) — Fenster schließt. altersean67 (23 Tage) realistisch kalt.
+
+## 🟡 Ein-Klick-Altlasten
+
+4. **Streamer-Intro publishen:** Listing 4538798363 (89,99 $) liegt fertig als Entwurf im Shop-Manager — nur dein Publish-Klick.
+5. **Codax-Mail senden** (falls noch nicht passiert): Doppelklick `social\cutscene-requests\codax\SEND-EMAIL.bat` (fragt ADMIN_KEY). Kunde wartet seit 13.07.
+6. **philcampion fragen** (TRANS-01): darf sein Dragonrider in Social-Content? Entsperrt das stärkste Reel + Pin-Motive.
+7. **ETSY_API_KEY (Shared Secret) in Railway setzen:** beendet den Etsy-Blindflug (heute Tag 33 — Cockpit zeigt seit 18.06. sales/listings = 0). Entsperrt auch Teil B der tavern_test-Auswertung ohne manuelles Ablesen.
+
+## 🟢 Wartet ohne Eile / läuft von selbst
+
+8. **itch.io Devil's Hound:** ZIP + Cover hochladen (nativer Dialog), dann veröffentlichen.
+9. **Pinterest-Ads-Neustart:** pausiert seit 13.07., Neustart-Bedingungen dokumentiert — erst wenn Leadwert bewiesen (z. B. erste Gift-/Cutscene-Sales).
+10. **Läuft autonom:** Daily Briefing 08:00 · Pipeline-Monitor · Welcome-Cron · Self-Review 22:00 · Pinterest-Drips (solange Queue trägt).
+
+**Nächster Messpunkt:** Gift-Checkpoint ~23.07. — nur valide, wenn #1 (Pin-Verify) vorher passiert ist.
