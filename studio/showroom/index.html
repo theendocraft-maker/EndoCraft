@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EndoCraft — Cinematic scenes for your table</title>
 <meta name="description" content="Cinematic D&D scenes for creators — vertical, made to post. I'll make one of your character, free.">
-<meta property="og:title" content="EndoCraft — Cinematic D&D for creators">
-<meta property="og:description" content="Vertical cinematic D&D scenes, made to post. I'll make one of your character, free — yours to share.">
-<meta property="og:image" content="https://endocraft.app/free/arrival-poster.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
@@ -23,8 +20,8 @@
   .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
   h1,h2,h3{font-family:'Cinzel Decorative',serif;font-weight:900;letter-spacing:.5px;line-height:1.15}
   .eyebrow{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .previewbar{background:linear-gradient(90deg,#2a2010,#171a24);border-bottom:1px solid var(--gold-dim);color:var(--gold-bright);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;padding:8px 12px}
 
-  /* HERO */
   .hero{position:relative;height:82vh;min-height:520px;display:flex;align-items:flex-end;overflow:hidden}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
   .hero .veil{position:absolute;inset:0;z-index:1;background:
@@ -35,19 +32,15 @@
   .hero p{font-size:clamp(16px,2.2vw,22px);color:var(--ink);max-width:640px;margin-top:16px;text-shadow:0 2px 20px rgba(0,0,0,.9)}
   .hero .eyebrow{margin-bottom:16px}
 
-  /* SECTIONS */
   section.block{padding:74px 0 20px}
-  .sec-head{text-align:center;max-width:720px;margin:0 auto 40px}
+  .sec-head{text-align:center;max-width:760px;margin:0 auto 40px}
   .sec-head h2{font-size:clamp(26px,3.5vw,40px);color:var(--gold-bright);margin:14px 0 12px}
   .sec-head p{color:var(--muted);font-size:17px}
 
-  /* GRIDS */
   .grid{display:grid;gap:18px}
-  .grid.chars{grid-template-columns:repeat(6,1fr)}
-  .grid.scenes{grid-template-columns:repeat(3,1fr)}
-  @media(max-width:900px){.grid.chars{grid-template-columns:repeat(3,1fr)}}
-  @media(max-width:760px){.grid.scenes{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:520px){.grid.chars{grid-template-columns:repeat(2,1fr)}.grid.scenes{grid-template-columns:1fr}}
+  .grid.reveals{grid-template-columns:repeat(5,1fr)}
+  @media(max-width:980px){.grid.reveals{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:600px){.grid.reveals{grid-template-columns:repeat(2,1fr)}}
   .card{position:relative;border-radius:14px;overflow:hidden;background:var(--panel);
         border:1px solid rgba(216,180,106,.18);box-shadow:0 16px 40px -20px rgba(0,0,0,.8);
         transition:transform .3s ease,border-color .3s ease}
@@ -55,14 +48,25 @@
   .card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
   .card.portrait video{aspect-ratio:9/16}
   .card.land video{aspect-ratio:16/9}
-  .card .label{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 12px;
-        font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);
-        background:linear-gradient(0deg,rgba(6,7,12,.9) 0%,transparent 100%);pointer-events:none}
+  .card.tall video{aspect-ratio:3/4}
+  .card .label{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 12px;
+        font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);
+        background:linear-gradient(0deg,rgba(6,7,12,.92) 0%,transparent 100%);pointer-events:none}
 
-  /* PACK CALLOUT */
+  /* STORY */
+  .feature{border-radius:16px;overflow:hidden;border:1px solid rgba(216,180,106,.2);box-shadow:0 20px 50px -24px rgba(0,0,0,.85);position:relative}
+  .feature video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}
+  .feature .label{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 14px;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);background:linear-gradient(0deg,rgba(6,7,12,.92),transparent)}
+  .transform{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:26px;flex-wrap:wrap}
+  .transform .t-card{position:relative;flex:0 1 300px;border-radius:14px;overflow:hidden;border:1px solid rgba(216,180,106,.2);background:#000}
+  .transform .t-card video{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#000}
+  .transform .t-card .label{position:absolute;left:0;right:0;bottom:0;padding:24px 12px 10px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;background:linear-gradient(0deg,rgba(6,7,12,.92),transparent)}
+  .arrow{font-family:'Cinzel',serif;color:var(--gold);font-size:34px;line-height:1}
+  @media(max-width:680px){.arrow{transform:rotate(90deg)}}
+
   .pack{margin:60px 0 10px;background:linear-gradient(150deg,var(--panel2) 0%,var(--panel) 100%);
         border:1px solid var(--gold-dim);border-radius:18px;padding:34px;display:flex;gap:30px;align-items:center;flex-wrap:wrap}
-  .pack .thumb{flex:0 0 260px;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid rgba(216,180,106,.25)}
+  .pack .thumb{flex:0 0 240px;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid rgba(216,180,106,.25)}
   .pack .thumb video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
   .pack .body{flex:1;min-width:260px}
   .pack h3{font-size:24px;color:var(--gold-bright);margin-bottom:10px}
@@ -73,7 +77,6 @@
   .btn:hover{transform:translateY(-2px)}
   .btn.ghost{background:none;color:var(--gold);border:1px solid var(--gold-dim);box-shadow:none}
 
-  /* CTA */
   .cta{text-align:center;padding:86px 0 40px}
   .cta h2{font-size:clamp(28px,4vw,46px);color:var(--gold-bright);margin-bottom:18px}
   .cta p{font-size:19px;color:var(--muted);max-width:600px;margin:0 auto 28px}
@@ -85,10 +88,10 @@
 </head>
 <body>
 
+
 <header class="hero">
-  <video id="hero-vid" muted loop playsinline autoplay preload="auto"
-         poster="/free/arrival-poster.jpg">
-    <source src="/free/clips/arrival-cursed-valley.mp4" type="video/mp4">
+  <video id="hero-vid" muted loop playsinline autoplay preload="auto" poster="bestof-posters/arrival.jpg">
+    <source src="../../free/clips/arrival-cursed-valley.mp4" type="video/mp4">
   </video>
   <div class="veil"></div>
   <div class="wrap hero-inner">
@@ -101,22 +104,36 @@
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">A clip of your character — on me</div>
-      <h2>Made for you, made to post</h2>
-      <p>A short 9:16 cinematic of your hero or your villain — drops straight into a Short, a Reel, or your next video. Tell me who, and I'll build it, free.</p>
+      <div class="eyebrow">The bar — every one of these shipped</div>
+      <h2>This is the scene I make</h2>
+      <p>Full-HD vertical reveals, ten seconds each. No stock, no filler — most generations get thrown out and only the clean ones make it here.</p>
     </div>
-    <div class="grid chars" id="chars"></div>
+    <div class="grid reveals" id="reveals"></div>
   </div>
 </section>
 
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">B-roll that sets the mood</div>
-      <h2>Scenes to cut into your content</h2>
-      <p>Looping locations for your streams, your videos, or a second screen at the table — drop them under a voiceover and go.</p>
+      <div class="eyebrow">Not just a monster — a moment</div>
+      <h2>Scenes that tell a story</h2>
+      <p>Some scenes carry a whole beat. The arrival into the valley sets a table's dread in one shot — and some villains don't just appear, they <em>turn</em>.</p>
     </div>
-    <div class="grid scenes" id="scenes"></div>
+    <div class="feature">
+      <video muted loop playsinline preload="none" poster="bestof-posters/arrival.jpg" data-lazy="../../free/clips/arrival-cursed-valley.mp4"></video>
+      <div class="label">Arrival — into the cursed valley</div>
+    </div>
+    <div class="transform">
+      <div class="t-card">
+        <video muted loop playsinline preload="none" poster="bestof-posters/bloomrot-saint.jpg" data-lazy="bloomrot-saint.mp4"></video>
+        <div class="label">The Bloomrot Saint</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="t-card">
+        <video muted loop playsinline preload="none" poster="bestof-posters/bloomrot-fullbloom.jpg" data-lazy="bloomrot-fullbloom.mp4"></video>
+        <div class="label">…in full bloom</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -124,12 +141,12 @@
   <div class="wrap">
     <div class="pack">
       <div class="thumb">
-        <video muted loop playsinline preload="none" poster="char-lich_poster.jpg" data-lazy="char-lich.mp4"></video>
+        <video muted loop playsinline preload="none" poster="bestof-posters/colossus.jpg" data-lazy="../../_review/serie-clips/colossus.mp4"></video>
       </div>
       <div class="body">
         <div class="eyebrow">Ready-made — a free key for you</div>
         <h3>Cinematic Boss Reveals — a 6-pack</h3>
-        <p>Six vertical monster reveals, ready to drop into a video. Want the whole set? I'll send you a free key — yours to use.</p>
+        <p>Six vertical monster reveals like these, ready to drop into a video. Want the whole set? I'll send you a free key — yours to use.</p>
         <a class="btn" href="https://endocraft.itch.io/cinematic-boss-reveals-6-monster-scenes-for-dd-5e" target="_blank" rel="noopener">See the pack →</a>
       </div>
     </div>
@@ -155,24 +172,21 @@
 </footer>
 
 <script>
-  var CHARS=[
-    ["char-paladin","The Paladin"],["char-warlock","The Warlock"],["char-cleric","The Cleric"],
-    ["char-dragon","The Dragon"],["char-lich","The Lich"],["char-beholder","The Eye Tyrant"]
+  var REVEALS=[
+    ["../../_review/serie-clips/hollowking","bestof-posters/hollowking.jpg","The Hollow King"],
+    ["../../_review/serie-clips/katerina","bestof-posters/katerina.jpg","Katerina · Devil's Hound"],
+    ["../../_review/serie-clips/bloomrot","bestof-posters/bloomrot.jpg","The Bloomrot Saint"],
+    ["../../_review/serie-clips/colossus","bestof-posters/colossus.jpg","The Crowned Colossus"],
+    ["../../_review/serie-clips/warden","bestof-posters/warden.jpg","The Ashen Warden"]
   ];
-  var SCENES=[
-    ["tavern_loop","The Tavern"],["throne_loop","The Empty Throne"],["dungeon_loop","The Dungeon"],
-    ["forest_loop","The Old Forest"],["icecave_loop","The Frozen Cavern"],["library_loop","The Lost Library"]
-  ];
-  function card(base,label,cls){
-    var d=document.createElement('div'); d.className='card '+cls;
-    d.innerHTML='<video muted loop playsinline preload="none" poster="'+base+'_poster.jpg" data-lazy="'+base+'.mp4"></video>'+
+  function card(base,poster,label){
+    var d=document.createElement('div'); d.className='card portrait';
+    d.innerHTML='<video muted loop playsinline preload="none" poster="'+poster+'" data-lazy="'+base+'.mp4"></video>'+
                 '<div class="label">'+label+'</div>';
     return d;
   }
-  var cw=document.getElementById('chars'); CHARS.forEach(function(c){cw.appendChild(card(c[0],c[1],'portrait'));});
-  var sw=document.getElementById('scenes'); SCENES.forEach(function(s){sw.appendChild(card(s[0],s[1],'land'));});
+  var rw=document.getElementById('reveals'); REVEALS.forEach(function(r){rw.appendChild(card(r[0],r[1],r[2]));});
 
-  // Lazy-load + play only when in view (keeps it light with ~13 videos)
   var io=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       var v=e.target;
