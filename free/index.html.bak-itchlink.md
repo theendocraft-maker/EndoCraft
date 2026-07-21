@@ -195,7 +195,6 @@ pintrk('page');
       <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=made_to_order" target="_blank" rel="noopener" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--gold-dim);padding-bottom:1px">See what we make →</a>
     </div>
     <p class="ty-shop">Prepping the whole campaign? The Curse of Strahd packs are 10% off with <b>WELCOME10</b> · <a href="https://www.etsy.com/shop/EndoCraft?utm_source=endocraft_free&amp;utm_medium=thank_you&amp;utm_campaign=welcome10" target="_blank" rel="noopener">Browse on Etsy →</a></p>
-    <p class="ty-shop" style="margin-top:8px">More free stuff — a one-shot, an art pack &amp; cinematic scenes on <a href="https://endocraft.itch.io" target="_blank" rel="noopener">our itch page →</a></p>
   </div>
 </div>
 
