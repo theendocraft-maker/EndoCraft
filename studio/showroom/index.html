@@ -112,6 +112,12 @@
   .grid.classics{grid-template-columns:repeat(4,1fr)}
   @media(max-width:820px){.grid.classics{grid-template-columns:repeat(2,1fr)}}
   .feature.dragon video{aspect-ratio:4/3}
+  .grid.archetypes{grid-template-columns:repeat(3,1fr);max-width:760px;margin:0 auto}
+  @media(max-width:600px){.grid.archetypes{grid-template-columns:repeat(2,1fr);max-width:none}}
+  .grid.souls{grid-template-columns:repeat(5,1fr);gap:14px}
+  @media(max-width:900px){.grid.souls{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.grid.souls{grid-template-columns:repeat(2,1fr)}}
+  .souls .card video,.souls .card .img{aspect-ratio:2/3}
 </style>
 </head>
 <body>
@@ -158,6 +164,15 @@
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
+      <h2>Character archetypes</h2>
+    </div>
+    <div class="grid archetypes"><div class="card portrait"><video muted loop playsinline preload="none" poster="char-paladin_poster.jpg" data-lazy="char-paladin.mp4"></video><div class="label">The Paladin</div></div><div class="card portrait"><video muted loop playsinline preload="none" poster="char-warlock_poster.jpg" data-lazy="char-warlock.mp4"></video><div class="label">The Warlock</div></div><div class="card portrait"><video muted loop playsinline preload="none" poster="char-cleric_poster.jpg" data-lazy="char-cleric.mp4"></video><div class="label">The Cleric</div></div></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
       <h2>Storytelling cutscenes</h2>
     </div>
     <div class="feature">
@@ -177,6 +192,15 @@
       <h2>Locations &amp; atmosphere</h2>
     </div>
     <div class="locgrid"><div class="loc"><img src="locations/crossroads-shrine.jpg" loading="lazy"><div class="label">The Crossroads Shrine</div></div><div class="loc"><img src="locations/hill-graveyard.jpg" loading="lazy"><div class="label">The Hill Graveyard</div></div><div class="loc"><img src="locations/village-lane.jpg" loading="lazy"><div class="label">The Village Lane</div></div><div class="loc"><img src="locations/forest-wisps.jpg" loading="lazy"><div class="label">The Forest of Wisps</div></div><div class="loc"><img src="locations/keep-on-crag.jpg" loading="lazy"><div class="label">The Keep on the Crag</div></div><div class="loc"><img src="locations/frozen-gorge.jpg" loading="lazy"><div class="label">The Frozen Gorge</div></div><div class="loc"><img src="locations/tavern.jpg" loading="lazy"><div class="label">The Tavern</div></div><div class="loc"><img src="locations/throne-hall.jpg" loading="lazy"><div class="label">The Throne Hall</div></div><div class="loc"><img src="locations/crypt-corridor.jpg" loading="lazy"><div class="label">The Crypt Corridor</div></div><div class="loc"><img src="locations/misty-lake.jpg" loading="lazy"><div class="label">The Misty Lake</div></div><div class="loc"><img src="locations/castle-peak.jpg" loading="lazy"><div class="label">The Castle Peak</div></div><div class="loc"><img src="locations/old-library.jpg" loading="lazy"><div class="label">The Old Library</div></div></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Soulslike &mdash; dark fantasy</h2>
+    </div>
+    <div class="grid souls"><div class="card"><img src="soulslike/souls-wolf.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Dread Wolf</div></div><div class="card"><img src="soulslike/souls-titan.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Frozen Titan</div></div><div class="card"><img src="soulslike/souls-wanderer.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Wanderer</div></div><div class="card"><img src="soulslike/souls-cleric.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Plague Cleric</div></div><div class="card"><img src="soulslike/souls-idol.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Idol</div></div></div>
   </div>
 </section>
 
