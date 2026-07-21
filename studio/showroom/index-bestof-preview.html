@@ -38,7 +38,7 @@
   .sec-head p{color:var(--muted);font-size:17px}
 
   .grid{display:grid;gap:18px}
-  .grid.reveals{grid-template-columns:repeat(5,1fr)}
+  .grid.reveals{grid-template-columns:repeat(6,1fr)}
   @media(max-width:980px){.grid.reveals{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:600px){.grid.reveals{grid-template-columns:repeat(2,1fr)}}
   .card{position:relative;border-radius:14px;overflow:hidden;background:var(--panel);
@@ -125,22 +125,11 @@
     <div class="sec-head">
       <div class="eyebrow">Not just a monster — a moment</div>
       <h2>Scenes that tell a story</h2>
-      <p>Some scenes carry a whole beat. The arrival into the valley sets a table's dread in one shot — and some villains don't just appear, they <em>turn</em>.</p>
+      <p>Some scenes carry a whole beat &mdash; the arrival into the cursed valley buys a table its first moment of dread before a word is spoken.</p>
     </div>
     <div class="feature">
       <video muted loop playsinline preload="none" poster="bestof-posters/arrival.jpg" data-lazy="../../free/clips/arrival-cursed-valley.mp4"></video>
       <div class="label">Arrival — into the cursed valley</div>
-    </div>
-    <div class="transform">
-      <div class="t-card">
-        <video muted loop playsinline preload="none" poster="bestof-posters/bloomrot-saint.jpg" data-lazy="bloomrot-saint.mp4"></video>
-        <div class="label">The Bloomrot Saint</div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="t-card">
-        <video muted loop playsinline preload="none" poster="bestof-posters/bloomrot-fullbloom.jpg" data-lazy="bloomrot-fullbloom.mp4"></video>
-        <div class="label">…in full bloom</div>
-      </div>
     </div>
   </div>
 </section>
@@ -194,9 +183,10 @@
   var REVEALS=[
     ["../../_review/serie-clips/hollowking","bestof-posters/hollowking.jpg","The Hollow King"],
     ["../../_review/serie-clips/katerina","bestof-posters/katerina.jpg","Katerina · Devil's Hound"],
-    ["../../_review/serie-clips/bloomrot","bestof-posters/bloomrot.jpg","The Bloomrot Saint"],
     ["../../_review/serie-clips/colossus","bestof-posters/colossus.jpg","The Crowned Colossus"],
-    ["../../_review/serie-clips/warden","bestof-posters/warden.jpg","The Ashen Warden"]
+    ["../../_review/serie-clips/warden","bestof-posters/warden.jpg","The Ashen Warden"],
+    ["bloomrot-saint","bestof-posters/bloomrot-saint.jpg","Bloomrot — the Saint"],
+    ["bloomrot-fullbloom","bestof-posters/bloomrot-fullbloom.jpg","→ in full bloom"]
   ];
   function card(base,poster,label){
     var d=document.createElement('div'); d.className='card portrait';
