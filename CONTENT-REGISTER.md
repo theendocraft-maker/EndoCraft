@@ -115,3 +115,10 @@ Sortierte Bibliothek unter `pins/` (74 Kopien, 56 MB): barovia-cos (18 statisch 
 - **2026-07-21 (13)** · Pins-Deploy: `pages.yml` ist geschützt (nicht remote editierbar) → `pins/`-Bibliothek nach `social/pins-library/` verschoben (social/ ist vom Deploy ausgeschlossen). Root `/pins/` entfällt beim nächsten Deploy; nur `free/pins/` bleibt öffentlich.
 - **2026-07-21 (14)** · Showroom v13/v14: „Character archetypes"-Reihe (Paladin/Warlock/Cleric aus studio/showroom/char-*) + „Soulslike — dark fantasy"-Sektion (5 Stills nach studio/showroom/soulslike/ kopiert: wolf/titan/wanderer/cleric/idol; die 3 low-res Foto-Pins weggelassen). Showroom deckt jetzt alle Facetten ab. `index.html` = v14.
 - **2026-07-21 (15)** · Archetyp-Cleric (char-cleric.mp4, 2,2s, Animation abgelehnt) aus Showroom entfernt → nur Paladin + Warlock (2, zentriert). Alternativen für Cleric: Plague-Doctor-Variante (char-cleric-plaguedoctor.mp4, 5s flüssiger aber nur 720p + optisch doppelt zum Soulslike-Plague-Cleric) ODER volle Klassen-Reihe via Hero-Batch (Kling-Pipeline). Soulslike-Plague-Cleric bleibt. `index.html` = v15.
+
+## Housekeeping / Ordnung (Konvention)
+- **Archiv:** `social/_archive/` (deploy-ausgeschlossen) mit `backups/` (alte index/free/studio-Backups), `mockups/` (card_/misprint_/pack_/scroll_/home.html etc.), `broll-checks/` (_bro_/_cel_), `loose-media/` (root dragon-cutscenes, _pin-Reste). Am 2026-07-21 Root von ~18 auf 5 .html reduziert.
+- **Papierkorb:** `_to_delete/` am Root = endgültig löschbar (Claude darf kein rm — bitte manuell leeren).
+- **Pins:** `social/pins-library/` (sortiert, privat). Öffentlich nur `free/pins/`.
+- **Konvention künftig:** Arbeits-/Preview-/Versionsdateien NICHT im Repo-Root ablegen; Backups → `social/_archive/backups/`; dieses Register ist der Master-Katalog. Showroom-Assets sammeln sich in `studio/showroom/` (+ `bestof-posters/`, `locations/`, `soulslike/`).
+- **2026-07-21 (16)** · Showroom v16: Barbar (studio/showroom/char-barbarian.jpg) bei Archetypen (Paladin/Warlock/Barbarian); animierter „Fallen Knight" (kneeling-knight-loop) im Soulslike-Block (jetzt 6, 3×2). Root aufgeräumt → social/_archive/.
