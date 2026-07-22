@@ -122,3 +122,10 @@ Sortierte Bibliothek unter `pins/` (74 Kopien, 56 MB): barovia-cos (18 statisch 
 - **Pins:** `social/pins-library/` (sortiert, privat). Öffentlich nur `free/pins/`.
 - **Konvention künftig:** Arbeits-/Preview-/Versionsdateien NICHT im Repo-Root ablegen; Backups → `social/_archive/backups/`; dieses Register ist der Master-Katalog. Showroom-Assets sammeln sich in `studio/showroom/` (+ `bestof-posters/`, `locations/`, `soulslike/`).
 - **2026-07-21 (16)** · Showroom v16: Barbar (studio/showroom/char-barbarian.jpg) bei Archetypen (Paladin/Warlock/Barbarian); animierter „Fallen Knight" (kneeling-knight-loop) im Soulslike-Block (jetzt 6, 3×2). Root aufgeräumt → social/_archive/.
+
+## SEO-Overhaul (2026-07-22)
+- **free/index.html war korrupt** (645 echte Null-Bytes → `file` erkannte es als „data"): bereinigt (tr -d), jetzt valides HTML. Backup: `social/_archive/backups/free-index-corrupt-20260722.html`. (Alle anderen Seiten sauber — der grep-„Null"-Alarm war ein Zeilen-Artefakt.)
+- **Showroom SEO ergänzt** (war flagship, aber ohne): Canonical, OG (Title/Desc/Image/Type/URL), Twitter-Card, JSON-LD @graph (WebPage+Organization+WebSite), Favicons, theme-color. Neues OG-Bild `studio/showroom/og-image.jpg` (1200×630). `index.html` = v17.
+- **sitemap.xml** neu: Showroom-URL ergänzt (priority 0.9), `<lastmod>2026-07-22</lastmod>` überall, nach Priorität sortiert (12 URLs).
+- **Bestand ok:** robots.txt (allow + admin/mockup/backup/preview disallow + Sitemap-Ref), GSC-Verify-File, 8 Resources-Seiten (Article+ImageObject+Organization JSON-LD, sauber), Homepage (Organization+WebSite), Studio (WebApplication+Offer). Preview-Duplikat `index-bestof-preview.html` ist per robots `/*-preview` von Indexierung ausgeschlossen.
+- **Offene Feinschliff-Optionen:** BreadcrumbList-JSON-LD (Home›Studio›Showroom), Alt-Texte auf Showroom-Bildern, interne Verlinkung Resources→Showroom/Produkte.
