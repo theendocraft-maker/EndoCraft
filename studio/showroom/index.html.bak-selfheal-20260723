@@ -347,22 +347,5 @@ document.querySelectorAll('.dragstrip .drag').forEach(function(w){var v=w.queryS
  function go(){if(!v.dataset.l){var so=document.createElement('source');so.src=v.dataset.src;so.type='video/mp4';v.appendChild(so);v.load();v.dataset.l='1';}v.play().catch(function(){});}
  w.addEventListener('mouseenter',go); w.addEventListener('mouseleave',function(){v.pause();});});
 </script>
-<script>
-/* self-heal: if an image ever loads broken (stale/partial CDN or browser cache),
-   re-fetch it once with a cache-buster so no visitor gets stranded on a blank tile */
-(function(){
-  function heal(img){
-    if(img.dataset.healed) return;
-    img.dataset.healed='1';
-    var base=img.src.split('?')[0];
-    img.src=base+(base.indexOf('?')>-1?'&':'?')+'r='+Date.now();
-  }
-  document.querySelectorAll('img').forEach(function(img){
-    img.addEventListener('error',function(){heal(img);});
-    img.addEventListener('load',function(){ if(img.naturalWidth===0) heal(img); });
-    if(img.complete && img.naturalWidth===0 && img.src) heal(img);
-  });
-})();
-</script>
 </body>
 </html>
