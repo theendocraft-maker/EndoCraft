@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EndoCraft — Cinematic scenes for your table</title>
+<meta name="description" content="The cinematic D&D best-of: boss reveals, storytelling cutscenes, atmospheric locations, classic monsters, character archetypes & Soulslike art for your table. AI-generated, human-curated.">
+<link rel="canonical" href="https://endocraft.app/studio/showroom/">
+<meta name="theme-color" content="#08090e">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:title" content="EndoCraft Showroom — Cinematic D&D scenes, reveals & locations">
+<meta property="og:description" content="Boss reveals, storytelling cutscenes, atmospheric locations, classic monsters & character art for your D&D table. AI-generated, human-curated.">
+<meta property="og:image" content="https://endocraft.app/studio/showroom/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://endocraft.app/studio/showroom/">
+<meta property="og:site_name" content="EndoCraft">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EndoCraft Showroom — Cinematic D&D best-of">
+<meta name="twitter:description" content="Boss reveals, cutscenes, atmospheric locations & character art for your D&D table.">
+<meta name="twitter:image" content="https://endocraft.app/studio/showroom/og-image.jpg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://endocraft.app/studio/showroom/#webpage","url":"https://endocraft.app/studio/showroom/","name":"EndoCraft Showroom — Cinematic D&D scenes, reveals & locations","isPartOf":{"@id":"https://endocraft.app/#website"},"about":{"@id":"https://endocraft.app/#org"},"primaryImageOfPage":"https://endocraft.app/studio/showroom/og-image.jpg","description":"The cinematic D&D best-of: boss reveals, cutscenes, atmospheric locations, classic monsters and character art for your table.","inLanguage":"en"},{"@type":"Organization","@id":"https://endocraft.app/#org","name":"EndoCraft","url":"https://endocraft.app/","logo":"https://endocraft.app/assets/logo-seal.png","sameAs":["https://www.pinterest.com/theendocraft/","https://www.instagram.com/theendocraft/","https://www.etsy.com/shop/EndoCraft","https://endocraft.itch.io"]},{"@type":"WebSite","@id":"https://endocraft.app/#website","name":"EndoCraft","url":"https://endocraft.app/","publisher":{"@id":"https://endocraft.app/#org"},"inLanguage":"en"}]}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08090e; --panel:#12141c; --panel2:#171a24;
+    --gold:#d8b46a; --gold-bright:#f0d68a; --gold-dim:rgba(216,180,106,.4);
+    --ink:#f3edd9; --muted:#a9a290;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'EB Garamond',serif;line-height:1.6;overflow-x:hidden}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:'Cinzel Decorative',serif;font-weight:900;letter-spacing:.5px;line-height:1.15}
+  .eyebrow{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .previewbar{background:linear-gradient(90deg,#2a2010,#171a24);border-bottom:1px solid var(--gold-dim);color:var(--gold-bright);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;padding:8px 12px}
+
+  .hero{position:relative;height:82vh;min-height:520px;display:flex;align-items:flex-end;overflow:hidden}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .hero .veil{position:absolute;inset:0;z-index:1;background:
+     radial-gradient(ellipse 90% 70% at 50% 30%,transparent 0%,rgba(8,9,14,.35) 70%,rgba(8,9,14,.9) 100%),
+     linear-gradient(180deg,rgba(8,9,14,.55) 0%,transparent 30%,rgba(8,9,14,.85) 100%)}
+  .hero-inner{position:relative;z-index:2;padding-bottom:54px}
+  .hero h1{font-size:clamp(34px,6vw,68px);color:var(--gold-bright);text-shadow:0 4px 40px rgba(0,0,0,.8)}
+  .hero p{font-size:clamp(16px,2.2vw,22px);color:var(--ink);max-width:640px;margin-top:16px;text-shadow:0 2px 20px rgba(0,0,0,.9)}
+  .hero .eyebrow{margin-bottom:16px}
+
+  section.block{padding:74px 0 20px}
+  .sec-head{text-align:center;max-width:760px;margin:0 auto 40px}
+  .sec-head h2{font-size:clamp(26px,3.5vw,40px);color:var(--gold-bright);margin:14px 0 12px}
+  .sec-head p{color:var(--muted);font-size:17px}
+
+  .grid{display:grid;gap:18px}
+  .grid.reveals{grid-template-columns:repeat(6,1fr)}
+  @media(max-width:980px){.grid.reveals{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:600px){.grid.reveals{grid-template-columns:repeat(2,1fr)}}
+  .card{position:relative;border-radius:14px;overflow:hidden;background:var(--panel);
+        border:1px solid rgba(216,180,106,.18);box-shadow:0 16px 40px -20px rgba(0,0,0,.8);
+        transition:transform .3s ease,border-color .3s ease}
+  .card:hover{transform:translateY(-4px);border-color:var(--gold-dim)}
+  .card video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+  .card.portrait video{aspect-ratio:9/16}
+  .card.land video{aspect-ratio:16/9}
+  .card.tall video{aspect-ratio:3/4}
+  .card .label{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 12px;
+        font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);
+        background:linear-gradient(0deg,rgba(6,7,12,.92) 0%,transparent 100%);pointer-events:none}
+
+  /* STORY */
+  .feature{border-radius:16px;overflow:hidden;border:1px solid rgba(216,180,106,.2);box-shadow:0 20px 50px -24px rgba(0,0,0,.85);position:relative}
+  .feature video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}
+  .feature .label{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 14px;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);background:linear-gradient(0deg,rgba(6,7,12,.92),transparent)}
+  .transform{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:26px;flex-wrap:wrap}
+  .transform .t-card{position:relative;flex:0 1 300px;border-radius:14px;overflow:hidden;border:1px solid rgba(216,180,106,.2);background:#000}
+  .transform .t-card video{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#000}
+  .transform .t-card .label{position:absolute;left:0;right:0;bottom:0;padding:24px 12px 10px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;background:linear-gradient(0deg,rgba(6,7,12,.92),transparent)}
+  .arrow{font-family:'Cinzel',serif;color:var(--gold);font-size:34px;line-height:1}
+  @media(max-width:680px){.arrow{transform:rotate(90deg)}}
+
+  .pack{margin:60px 0 10px;background:linear-gradient(150deg,var(--panel2) 0%,var(--panel) 100%);
+        border:1px solid var(--gold-dim);border-radius:18px;padding:34px;display:flex;gap:30px;align-items:center;flex-wrap:wrap}
+  .pack .thumb{flex:0 0 240px;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid rgba(216,180,106,.25)}
+  .pack .thumb video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+  .pack .body{flex:1;min-width:260px}
+  .pack h3{font-size:24px;color:var(--gold-bright);margin-bottom:10px}
+  .pack p{color:var(--muted);margin-bottom:18px}
+  .btn{display:inline-block;font-family:'Cinzel',serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+       padding:13px 26px;border-radius:10px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));
+       color:#1a140a;font-weight:600;text-decoration:none;box-shadow:0 8px 24px -8px rgba(216,180,106,.5);transition:transform .2s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn.ghost{background:none;color:var(--gold);border:1px solid var(--gold-dim);box-shadow:none}
+
+  .cta{text-align:center;padding:86px 0 40px}
+  .cta h2{font-size:clamp(28px,4vw,46px);color:var(--gold-bright);margin-bottom:18px}
+  .cta p{font-size:19px;color:var(--muted);max-width:600px;margin:0 auto 28px}
+
+  footer{border-top:1px solid rgba(216,180,106,.15);margin-top:40px;padding:30px 0 60px;text-align:center;color:var(--muted);font-size:14px}
+  footer a{color:var(--gold);text-decoration:none}
+  footer .disc{font-size:12.5px;opacity:.7;margin-top:12px;font-style:italic}
+
+  .locgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:820px){.locgrid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.locgrid{grid-template-columns:1fr}}
+  .loc{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(216,180,106,.18);background:#000;transition:transform .3s,border-color .3s}
+  .loc:hover{transform:translateY(-4px);border-color:var(--gold-dim)}
+  .loc img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+  .loc .label{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;font-family:'Cinzel',serif;font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink);background:linear-gradient(0deg,rgba(6,7,12,.9),transparent);pointer-events:none}
+
+  #lb{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(4,5,9,.93);backdrop-filter:blur(4px);cursor:zoom-out;padding:24px}
+  #lb.open{display:flex}
+  #lb .media{max-width:92vw;max-height:90vh;border-radius:10px;border:1px solid rgba(216,180,106,.3);box-shadow:0 30px 80px -20px #000;cursor:default;background:#000}
+  #lb .close{position:fixed;top:16px;right:24px;color:var(--gold);font-family:'Cinzel',serif;font-size:24px;cursor:pointer;line-height:1;z-index:1000;opacity:.85}
+  #lb .close:hover{opacity:1}
+  .card,.feature,.loc{cursor:zoom-in}
+  .hint{text-align:center;color:var(--muted);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:30px 0 0;opacity:.7}
+  .pingrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:820px){.pingrid{grid-template-columns:repeat(2,1fr)}}
+  .pin{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(216,180,106,.16);background:#000;display:block;transition:transform .25s,border-color .25s}
+  .pin:hover{transform:translateY(-4px);border-color:var(--gold-dim)}
+  .pin img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover}
+  .brandbar{position:absolute;top:20px;left:26px;z-index:5;display:flex;align-items:center;gap:11px;text-decoration:none}
+  .brandbar img{width:46px;height:46px;border-radius:50%;box-shadow:0 0 24px rgba(216,180,106,.35)}
+  .brandbar span{font-family:'Cinzel Decorative',serif;font-weight:900;letter-spacing:3px;font-size:18px;color:var(--ink);text-shadow:0 2px 16px rgba(0,0,0,.85)}
+  @media(max-width:560px){.brandbar span{display:none}}
+  .grid.classics{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:820px){.grid.classics{grid-template-columns:repeat(2,1fr)}}
+  .feature.dragon video{aspect-ratio:4/3}
+  .grid.archetypes{grid-template-columns:repeat(3,1fr);max-width:820px;margin:0 auto}
+  @media(max-width:600px){.grid.archetypes{grid-template-columns:repeat(2,1fr);max-width:none}}
+  .grid.souls{grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:900px){.grid.souls{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.grid.souls{grid-template-columns:repeat(2,1fr)}}
+  .souls .card video,.souls .card .img{aspect-ratio:2/3}
+</style>
+</head>
+<body>
+
+
+<header class="hero">
+  <video id="hero-vid" muted loop playsinline autoplay preload="auto" poster="bestof-posters/arrival.jpg">
+    <source src="../../free/clips/arrival-cursed-valley.mp4" type="video/mp4">
+  </video>
+  <div class="veil"></div>
+  <a class="brandbar" href="/" aria-label="EndoCraft home">
+    <img src="../../assets/logo-seal.png" alt="EndoCraft" width="46" height="46">
+    <span>ENDOCRAFT</span>
+  </a>
+  <div class="wrap hero-inner">
+    <div class="eyebrow">EndoCraft · for D&amp;D 5e</div>
+    <h1>Scenes for your campaign.</h1>
+    <p>Characters &middot; Scenes &middot; Big Bads.</p>
+    <a class="btn" href="https://endocraft.app/free" style="margin-top:24px" target="_blank" rel="noopener">Grab your free scene &rarr;</a>
+  </div>
+</header>
+
+<div class="wrap"><div class="hint">&#10530; Click any scene to enlarge</div></div>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Boss introductions</h2>
+    </div>
+    <div class="grid reveals" id="reveals"></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Classic D&amp;D monsters</h2>
+    </div>
+    <div class="grid classics"><div class="card portrait"><video muted loop playsinline preload="none" poster="bestof-posters/classic-dragon.jpg" data-lazy="../../free/clips/loop_dragon.mp4"></video><div class="label">The Dragon</div></div><div class="card portrait"><video muted loop playsinline preload="none" poster="bestof-posters/classic-lich.jpg" data-lazy="../../free/clips/loop_lich.mp4"></video><div class="label">The Lich</div></div><div class="card portrait"><video muted loop playsinline preload="none" poster="bestof-posters/classic-beholder.jpg" data-lazy="../../free/clips/loop_beholder.mp4"></video><div class="label">The Eye Tyrant</div></div><div class="card portrait"><video muted loop playsinline preload="none" poster="bestof-posters/classic-mindflayer.jpg" data-lazy="../../free/clips/loop_mindflayer.mp4"></video><div class="label">The Mind Eater</div></div></div>
+  </div>
+</section>
+
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Character archetypes</h2>
+    </div>
+    <div class="grid archetypes"><div class="card portrait"><video muted loop playsinline preload="none" poster="char-paladin_poster.jpg" data-lazy="char-paladin.mp4"></video><div class="label">The Paladin</div></div><div class="card portrait"><video muted loop playsinline preload="none" poster="char-warlock_poster.jpg" data-lazy="char-warlock.mp4"></video><div class="label">The Warlock</div></div><div class="card portrait"><img src="char-barbarian.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:9/16;object-fit:cover"><div class="label">The Barbarian</div></div></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Storytelling cutscenes</h2>
+    </div>
+    <div class="feature">
+      <video muted loop playsinline preload="none" poster="bestof-posters/arrival.jpg" data-lazy="../../free/clips/arrival-cursed-valley.mp4"></video>
+      <div class="label">Arrival — into the cursed valley</div>
+    </div>
+    <div class="feature dragon" style="margin-top:18px">
+      <video muted loop playsinline preload="none" poster="bestof-posters/dragon-scene.jpg" data-lazy="dragon-scene.mp4"></video>
+      <div class="label">The dragon descends</div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Locations &amp; atmosphere</h2>
+    </div>
+    <div class="locgrid"><div class="loc"><img src="locations/crossroads-shrine.jpg" loading="lazy"><div class="label">The Crossroads Shrine</div></div><div class="loc"><img src="locations/hill-graveyard.jpg" loading="lazy"><div class="label">The Hill Graveyard</div></div><div class="loc"><img src="locations/village-lane.jpg" loading="lazy"><div class="label">The Village Lane</div></div><div class="loc"><img src="locations/forest-wisps.jpg" loading="lazy"><div class="label">The Forest of Wisps</div></div><div class="loc"><img src="locations/keep-on-crag.jpg" loading="lazy"><div class="label">The Keep on the Crag</div></div><div class="loc"><img src="locations/frozen-gorge.jpg" loading="lazy"><div class="label">The Frozen Gorge</div></div><div class="loc"><img src="locations/tavern.jpg" loading="lazy"><div class="label">The Tavern</div></div><div class="loc"><img src="locations/throne-hall.jpg" loading="lazy"><div class="label">The Throne Hall</div></div><div class="loc"><img src="locations/crypt-corridor.jpg" loading="lazy"><div class="label">The Crypt Corridor</div></div><div class="loc"><img src="locations/misty-lake.jpg" loading="lazy"><div class="label">The Misty Lake</div></div><div class="loc"><img src="locations/castle-peak.jpg" loading="lazy"><div class="label">The Castle Peak</div></div><div class="loc"><img src="locations/old-library.jpg" loading="lazy"><div class="label">The Old Library</div></div><div class="loc"><img src="locations/dungeon-stairs.jpg" loading="lazy"><div class="label">The Descending Stair</div></div><div class="loc"><img src="locations/burning-village.jpg" loading="lazy"><div class="label">The Burning Village</div></div><div class="loc"><img src="locations/blood-moon-road.jpg" loading="lazy"><div class="label">The Blood-Moon Road</div></div><div class="loc"><img src="locations/abbey-ruins.jpg" loading="lazy"><div class="label">The Abbey Ruins</div></div><div class="loc"><img src="locations/swamp-crossing.jpg" loading="lazy"><div class="label">The Swamp Crossing</div></div><div class="loc"><img src="locations/cathedral-nave.jpg" loading="lazy"><div class="label">The Cathedral Nave</div></div><div class="loc"><img src="locations/cursed-well.jpg" loading="lazy"><div class="label">The Cursed Well</div></div><div class="loc"><img src="locations/catacomb-vault.jpg" loading="lazy"><div class="label">The Catacomb Vault</div></div><div class="loc"><img src="locations/windmill-hill.jpg" loading="lazy"><div class="label">The Windmill Hill</div></div><div class="loc"><img src="locations/frozen-lake-manor.jpg" loading="lazy"><div class="label">The Manor on the Lake</div></div><div class="loc"><img src="locations/market-square-night.jpg" loading="lazy"><div class="label">The Empty Market</div></div></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Soulslike &mdash; dark fantasy</h2>
+    </div>
+    <div class="grid souls"><div class="card"><img src="soulslike/souls-wolf.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Dread Wolf</div></div><div class="card"><img src="soulslike/souls-titan.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Frozen Titan</div></div><div class="card"><img src="soulslike/souls-wanderer.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Wanderer</div></div><div class="card"><img src="soulslike/souls-cleric.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Plague Cleric</div></div><div class="card"><img src="soulslike/souls-idol.jpg" loading="lazy" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"><div class="label">The Idol</div></div><div class="card"><video muted loop playsinline preload="none" poster="soulslike/souls-knight-loop.jpg" data-lazy="soulslike/souls-knight-loop.mp4" style="display:block;width:100%;aspect-ratio:2/3;object-fit:cover"></video><div class="label">The Fallen Knight</div></div></div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>From our Pinterest</h2>
+    </div>
+    <div class="pingrid"><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN-static-castle.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN-static-lord.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN-static-road.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-camp.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-church.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-gates.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-tavern-hearth.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-wolves.jpg" loading="lazy" alt=""></a></div>
+    <div style="text-align:center;margin-top:28px">
+      <a class="btn ghost" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener">Hundreds more on Pinterest &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="pack">
+      <div class="thumb">
+        <video muted loop playsinline preload="none" poster="bestof-posters/colossus.jpg" data-lazy="../../_review/serie-clips/colossus.mp4"></video>
+      </div>
+      <div class="body">
+        <div class="eyebrow">Ready-made — a free key for you</div>
+        <h3>Cinematic Boss Reveals — a 6-pack</h3>
+        <p>Six vertical reveals, ready to drop in. Free key on request.</p>
+        <a class="btn" href="https://endocraft.itch.io/cinematic-boss-reveals-6-monster-scenes-for-dd-5e" target="_blank" rel="noopener">See the pack →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="eyebrow">Let's make something</div>
+    <h2>Want a clip of your character?</h2>
+    <p>Your character or your big bad, cinematic — free.</p>
+    <a class="btn" href="https://endocraft.app/free" target="_blank" rel="noopener">Grab your free scene</a>
+    &nbsp;
+    <a class="btn ghost" href="https://endocraft.itch.io" target="_blank" rel="noopener">Browse on itch</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="../../assets/logo-seal.png" alt="" width="34" height="34" style="border-radius:50%;vertical-align:middle;margin-bottom:10px;opacity:.9"><br>Made by Marco · <a href="https://endocraft.app">endocraft.app</a> · <a href="https://endocraft.itch.io">itch.io</a>
+    <div class="disc">AI-generated, human-curated — most generations get thrown out, only the clean ones ship. Compatible with any 5e game. Not affiliated with Wizards of the Coast.</div>
+  </div>
+</footer>
+
+<script>
+  var REVEALS=[
+    ["../../_review/serie-clips/hollowking","bestof-posters/hollowking.jpg","The Hollow King"],
+    ["../../_review/serie-clips/katerina","bestof-posters/katerina.jpg","Katerina · Devil's Hound"],
+    ["../../_review/serie-clips/colossus","bestof-posters/colossus.jpg","The Crowned Colossus"],
+    ["../../_review/serie-clips/warden","bestof-posters/warden.jpg","The Ashen Warden"],
+    ["bloomrot-saint","bestof-posters/bloomrot-saint.jpg","Bloomrot — the Saint"],
+    ["bloomrot-fullbloom","bestof-posters/bloomrot-fullbloom.jpg","→ in full bloom"]
+  ];
+  function card(base,poster,label){
+    var d=document.createElement('div'); d.className='card portrait';
+    d.innerHTML='<video muted loop playsinline preload="none" poster="'+poster+'" data-lazy="'+base+'.mp4"></video>'+
+                '<div class="label">'+label+'</div>';
+    return d;
+  }
+  var rw=document.getElementById('reveals'); REVEALS.forEach(function(r){rw.appendChild(card(r[0],r[1],r[2]));});
+
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      var v=e.target;
+      if(e.isIntersecting){
+        if(!v.dataset.loaded){var s=document.createElement('source');s.src=v.dataset.lazy;s.type='video/mp4';v.appendChild(s);v.load();v.dataset.loaded='1';}
+        v.play().catch(function(){});
+      } else { v.pause(); }
+    });
+  },{rootMargin:'200px 0px',threshold:0.25});
+  document.querySelectorAll('video[data-lazy]').forEach(function(v){io.observe(v);});
+</script>
+
+<div id="lb"><span class="close" id="lbClose">&#10005;</span></div>
+<script>
+(function(){
+  var lb=document.getElementById('lb'), closeBtn=document.getElementById('lbClose');
+  function clear(){ lb.querySelectorAll('.media').forEach(function(m){ if(m.tagName==='VIDEO'){try{m.pause();}catch(e){}} m.remove(); }); }
+  function openEl(el){
+    clear();
+    var v=el.querySelector('video'), img=el.querySelector('img'), media;
+    if(v){
+      var s=v.dataset.lazy || (v.querySelector('source')&&v.querySelector('source').getAttribute('src'));
+      if(!s) return;
+      media=document.createElement('video'); media.className='media'; media.src=s;
+      media.controls=true; media.autoplay=true; media.loop=true; media.playsInline=true; media.setAttribute('playsinline','');
+    } else if(img){
+      media=document.createElement('img'); media.className='media'; media.src=img.src;
+    } else { return; }
+    lb.appendChild(media); lb.classList.add('open');
+  }
+  function close(){ lb.classList.remove('open'); clear(); }
+  document.querySelectorAll('.card, .feature, .loc').forEach(function(el){ el.addEventListener('click', function(){ openEl(el); }); });
+  lb.addEventListener('click', function(e){ if(e.target===lb) close(); });
+  closeBtn.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+})();
+</script>
+</body>
+</html>
