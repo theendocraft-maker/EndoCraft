@@ -138,14 +138,6 @@
   @media(max-width:900px){.grid.souls{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:560px){.grid.souls{grid-template-columns:repeat(2,1fr)}}
   .souls .card video,.souls .card .img{aspect-ratio:2/3}
-
-  /* DRAGONS STRIP */
-  .dragstrip{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
-  .dragstrip .drag{position:relative;flex:0 0 150px;border-radius:10px;overflow:hidden;border:1px solid rgba(216,180,106,.18);background:var(--panel);transition:border-color .25s}
-  .dragstrip .drag:hover{border-color:var(--gold-dim)}
-  .dragstrip .drag video{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:#000}
-  .dragstrip .drag .dl{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 6px;font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink);background:linear-gradient(0deg,rgba(6,7,12,.92),transparent);pointer-events:none}
-  @media(max-width:520px){.dragstrip .drag{flex:0 0 128px}}
 </style>
 </head>
 <body>
@@ -194,7 +186,7 @@
       <h2>Chromatic dragons</h2>
       <p>The full six-colour set &mdash; animated loops, ready to drop in.</p>
     </div>
-    <div class="dragstrip"><div class="drag"><video muted loop playsinline preload="none" poster="dragons/red_poster.jpg" data-src="dragons/red.mp4"></video><span class="dl">Red</span></div><div class="drag"><video muted loop playsinline preload="none" poster="dragons/gold_poster.jpg" data-src="dragons/gold.mp4"></video><span class="dl">Gold</span></div><div class="drag"><video muted loop playsinline preload="none" poster="dragons/green_poster.jpg" data-src="dragons/green.mp4"></video><span class="dl">Green</span></div><div class="drag"><video muted loop playsinline preload="none" poster="dragons/blue_poster.jpg" data-src="dragons/blue.mp4"></video><span class="dl">Blue</span></div><div class="drag"><video muted loop playsinline preload="none" poster="dragons/black_poster.jpg" data-src="dragons/black.mp4"></video><span class="dl">Black</span></div><div class="drag"><video muted loop playsinline preload="none" poster="dragons/white_poster.jpg" data-src="dragons/white.mp4"></video><span class="dl">White</span></div></div>
+    <div class="grid chars"><div class="card"><video muted loop playsinline preload="none" poster="dragons/red_poster.jpg" data-lazy="dragons/red.mp4" style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover"></video><div class="label">Red Dragon</div></div><div class="card"><video muted loop playsinline preload="none" poster="dragons/gold_poster.jpg" data-lazy="dragons/gold.mp4" style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover"></video><div class="label">Gold Dragon</div></div><div class="card"><video muted loop playsinline preload="none" poster="dragons/green_poster.jpg" data-lazy="dragons/green.mp4" style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover"></video><div class="label">Green Dragon</div></div><div class="card"><video muted loop playsinline preload="none" poster="dragons/blue_poster.jpg" data-lazy="dragons/blue.mp4" style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover"></video><div class="label">Blue Dragon</div></div><div class="card"><video muted loop playsinline preload="none" poster="dragons/black_poster.jpg" data-lazy="dragons/black.mp4" style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover"></video><div class="label">Black Dragon</div></div><div class="card"><video muted loop playsinline preload="none" poster="dragons/white_poster.jpg" data-lazy="dragons/white.mp4" style="display:block;width:100%;aspect-ratio:3/4;object-fit:cover"></video><div class="label">White Dragon</div></div></div>
     <div style="text-align:center;margin-top:28px">
       <a class="btn" href="https://www.etsy.com/shop/EndoCraft" target="_blank" rel="noopener">Get the Dragons pack &rarr;</a>
     </div>
@@ -340,12 +332,6 @@
   closeBtn.addEventListener('click', close);
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 })();
-</script>
-
-<script>
-document.querySelectorAll('.dragstrip .drag').forEach(function(w){var v=w.querySelector('video');
- function go(){if(!v.dataset.l){var so=document.createElement('source');so.src=v.dataset.src;so.type='video/mp4';v.appendChild(so);v.load();v.dataset.l='1';}v.play().catch(function(){});}
- w.addEventListener('mouseenter',go); w.addEventListener('mouseleave',function(){v.pause();});});
 </script>
 </body>
 </html>
