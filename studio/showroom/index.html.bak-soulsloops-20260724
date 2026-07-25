@@ -138,9 +138,6 @@
   @media(max-width:900px){.grid.souls{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:560px){.grid.souls{grid-template-columns:repeat(2,1fr)}}
   .souls .card video,.souls .card .img{aspect-ratio:2/3}
-  .grid.loops{grid-template-columns:repeat(3,1fr);gap:14px}
-  @media(max-width:900px){.grid.loops{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:560px){.grid.loops{grid-template-columns:repeat(1,1fr)}}
 
   /* DRAGONS STRIP */
   .draggrid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
@@ -248,15 +245,6 @@
 <section class="block">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Soulslike &mdash; cinematic loops</h2>
-    </div>
-    <div class="grid loops"><div class="card"><video class="noauto" muted loop playsinline preload="none" poster="loops/souls-bonfire-poster.jpg" data-lazy="loops/souls-bonfire.mp4" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover"></video><div class="label">Bonfire Courtyard</div></div><div class="card"><video class="noauto" muted loop playsinline preload="none" poster="loops/souls-cathedral-poster.jpg" data-lazy="loops/souls-cathedral.mp4" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover"></video><div class="label">Ruined Cathedral</div></div><div class="card"><video class="noauto" muted loop playsinline preload="none" poster="loops/souls-vista-poster.jpg" data-lazy="loops/souls-vista.mp4" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover"></video><div class="label">Kingdom Vista</div></div><div class="card"><video class="noauto" muted loop playsinline preload="none" poster="loops/souls-colossus-poster.jpg" data-lazy="loops/souls-colossus.mp4" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover"></video><div class="label">Fallen Colossus</div></div><div class="card"><video class="noauto" muted loop playsinline preload="none" poster="loops/souls-swamp-poster.jpg" data-lazy="loops/souls-swamp.mp4" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover"></video><div class="label">Ashen Swamp</div></div><div class="card"><video class="noauto" muted loop playsinline preload="none" poster="loops/souls-throne-poster.jpg" data-lazy="loops/souls-throne.mp4" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover"></video><div class="label">Decayed Throne</div></div></div>
-  </div>
-</section>
-
-<section class="block">
-  <div class="wrap">
-    <div class="sec-head">
       <h2>From our Pinterest</h2>
     </div>
     <div class="pingrid"><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN-static-castle.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN-static-lord.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN-static-road.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-camp.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-church.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-gates.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-tavern-hearth.jpg" loading="lazy" alt=""></a><a class="pin" href="https://www.pinterest.com/theendocraft/" target="_blank" rel="noopener"><img src="../../free/pins/PIN2-wolves.jpg" loading="lazy" alt=""></a></div>
@@ -326,7 +314,7 @@
       } else { v.pause(); }
     });
   },{rootMargin:'200px 0px',threshold:0.25});
-  document.querySelectorAll('video[data-lazy]:not(.noauto)').forEach(function(v){io.observe(v);});
+  document.querySelectorAll('video[data-lazy]').forEach(function(v){io.observe(v);});
 </script>
 
 <div id="lb"><span class="close" id="lbClose">&#10005;</span></div>
