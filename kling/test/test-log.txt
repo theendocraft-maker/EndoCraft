@@ -1,0 +1,7 @@
+=== Lauf gestartet 28.07.2026 23:01:40,38 === 
+Python: python  
+Python wurde nicht gefunden; ohne Argumente ausführen, um aus dem Microsoft Store zu installieren, oder deaktivieren Sie diese Verknüpfung unter "Einstellungen > Apps > Erweiterte App-Einstellungen > App-Ausführungsaliase".
+=== TEST 1 === 
+Python wurde nicht gefunden; ohne Argumente ausführen, um aus dem Microsoft Store zu installieren, oder deaktivieren Sie diese Verknüpfung unter "Einstellungen > Apps > Erweiterte App-Einstellungen > App-Ausführungsaliase".
+=== TEST 2 === 
+Python wurde nicht gefunden; ohne Argumente ausführen, um aus dem Microsoft Store zu installieren, oder deaktivieren Sie diese Verknüpfung unter "Einstellungen > Apps > Erweiterte App-Einstellungen > App-Ausführungsaliase".
