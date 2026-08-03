@@ -1,4 +1,4 @@
-# Was du machen musst, wenn du am PC bist — Stand 30.07.2026
+# Was du machen musst, wenn du am PC bist — Stand 03.08.2026
 
 Ersetzt die Version vom 26.07. ~~Alles, was dort noch offen war, ist hier drin~~ — plus alles Neue aus Payhip, Fiverr und der Streamer-Umwidmung.
 
@@ -13,6 +13,14 @@ Ersetzt die Version vom 26.07. ~~Alles, was dort noch offen war, ist hier drin~~
 > **D. Punkt 10 (Giveaway) ist veraltet:** Die no-giveaway-Bereinigung vom 29.07. hat die Captions bereits entschärft (`social/tiktok-week/no-giveaway/`). Nur noch `FR-giveaway.mp4` betroffen — Entscheid also nur noch für diesen einen Clip nötig.
 >
 > **E. Bio-Link (Punkt 3):** Nicht erst ab 04.08. zeitkritisch — der Posting-Plan läuft seit 30.07. 19:00 und 11 von 23 Captions sagen „link in bio". Ab dem ersten Post verpuffen Klicks auf den Etsy-Link.
+
+> **NACHTRAG 03.08. (Streamer-Seite entschlackt + Payhip-Cover):**
+>
+> **F. Punkt 4 ist wieder dran — die Seite ist neu gebaut.** Du hattest gesagt, die Streamer-Seite hat zu viel Text und zu wenig zu sehen. Stimmt. Sie ist jetzt bei **253 statt 729 Wörtern** und **3908 statt 4777 Pixel** Höhe. Das Hero-Video war das eigentliche Problem: es war eine quadratische Werbekachel mit eingebranntem Text und einer kleinen Szene darin. Jetzt läuft dort ein echtes 16:9-Video aus drei textfreien Vol.-1-Szenen (Kathedrale → Taverne → Burgblick, 13 s, blendet aus Schwarz auf und nach Schwarz ab, damit der Loop-Punkt unsichtbar ist). Die sechs Kacheln sind doppelt so groß; ihre Beschriftungen habe ich entfernt, weil die Videos ihre Titel selbst eingebrannt haben. Neue Dateien liegen schon in `Desktop\EndoCraft\streamers\`: `index.html`, `media\hero.mp4`, `media\hero-poster.jpg`. **Es fehlt nur dein `deploy.bat`.** Ehrlich dazu: echtes Abspielen kann ich hier nicht prüfen, der Browser in meiner Umgebung hat keinen H.264-Decoder — Layout und Standbild habe ich geprüft, das Abspielen musst du nach dem Deploy einmal ansehen.
+>
+> **G. Punkt 7 ist für Produkt A erledigt — aber das war nicht die Ursache.** Du hattest recht, `payhip.com/b/PXU1N` hatte keine Fotos. Ich habe drei Cover hochgeladen und gespeichert (Szene → OBS-Mockup → Sechser-Grid). **Der eigentliche Grund, warum die Seite leer aussieht, ist aber Punkt 1: das Produkt steht auf „Invisible".** Solange das so ist, zeigt der Link nicht das Produkt, sondern deine leere Store-Seite — mit oder ohne Cover. Und der Haupt-Button der neuen Streamer-Seite zeigt genau dorthin. Ein Klick von dir, dann greift alles ineinander.
+>
+> **H. Payhip Produkt B (Vol. I) existiert noch nicht.** Ich hatte angenommen, es liegt als Entwurf. Nachgesehen: im Dashboard steht genau **ein** Produkt. Das ausgefüllte Formular lebt nur im offenen Tab — siehe Punkt 2, und den Tab bitte weiterhin nicht neu laden.
 
 Sortiert nach Hebel pro Minute. Was hier **nicht** steht, läuft autonom weiter und braucht dich nicht.
 
@@ -77,11 +85,12 @@ PDF-Slot bleibt leer. Dann **Save & Continue**.
 
 **Schritt 6 ist „Publish". Da klicke ich nicht** — das ist deine Entscheidung. Details und alle sieben Abweichungen von meinem Entwurf: `_geld-verdienen\FIVERR-JETZT-DU.md`.
 
-### 7. Cover-Bilder für beide Payhip-Produkte
-Beide Felder sind leer. Ein Produkt ohne Bild sieht aus wie ein Fehler.
-Vol. I → `01_Titelbild_Grid.jpg` · Gratis-Szene → `02_Starting-Soon.jpg`
+### 7. ~~Cover-Bilder für beide Payhip-Produkte~~ — für Produkt A erledigt (03.08.)
+Gratis-Szene hat jetzt drei Cover: `02_Starting-Soon.jpg` (die Szene) · `05_Mockup.jpg` (OBS-Kontext) · `01_Titelbild_Grid.jpg` (alle sechs als Upsell). Gespeichert, Sichtbarkeit dabei unverändert auf Invisible gelassen — ich veröffentliche nichts.
 
-### 8. 20-%-Rabatt läuft am 03.08. aus — Entscheidung
+Für Vol. I geht es erst nach Punkt 2, weil das Produkt noch nicht existiert.
+
+### 8. ~~20-%-Rabatt läuft am 03.08. aus~~ — erledigt durch Nichtstun (03.08.)
 Meine Empfehlung: **auslaufen lassen.** Drei Verkäufe in vier Monaten liegen nicht am Preis, sondern daran, dass niemand den Shop findet. Ein Dauerrabatt macht daraus nur einen niedrigeren Normalpreis.
 
 Ich fasse deine Etsy-Einstellungen nicht ohne dein Ja an — das ist dein echtes Geld.
@@ -110,7 +119,7 @@ Tag 13, letzter warmer Cutscene-Lead. Text steht. Ich schreibe, du schickst.
 - **18. Zahlungsmethode bei Payhip** (PayPal oder Stripe) verbinden. Ohne das ist der Store-Builder gesperrt — kein Logo, kein Cover, keine Store-Beschreibung. Das machst du selbst; an Zahlungsdaten gehe ich nicht.
 - **19. 21 von 23 TikTok-Entwürfen** sind noch nicht terminiert.
 - **20. Mailing-Liste / Double-Opt-in:** Der Haken „Automatically subscribe customers to mailing list" ist bei Payhip bewusst **nicht** gesetzt. EU-Käufer ungefragt in einen Verteiler zu schieben ist eine Rechtsfrage, kein Häkchen — das gehört zu einem Anwalt, nicht zu mir.
-- **21. `Desktop\EndoCraft\_to_delete\vol1tmp\` löschen.** Da habe ich das Komplett-ZIP entpackt, um die Quellvideos für die Loop-Previews zu holen (rund 75 MB). Ich kann auf deinem Rechner nichts löschen — nur verschieben. Der Ordner wird nicht mehr gebraucht.
+- **21. `Desktop\EndoCraft\_to_delete\` aufräumen — drei Ordner:** `vol1tmp\` (~75 MB), `herotmp\` (3 Dateien, ~19,8 MB, die textfreien Quellclips fürs neue Hero) und `git-locks-2026-08-03\` (die 13 hängengebliebenen Git-Lock-Dateien vom Deploy-Ärger). Ich kann auf deinem Rechner nichts löschen — nur verschieben. Keiner der drei wird noch gebraucht.
 
 ---
 
@@ -126,4 +135,4 @@ Wir haben ein fertiges Produkt und kein Publikum. Das Etsy-Listing ist die Kasse
 
 Meine Erwartung für die nächsten sechs Wochen bleibt **0 bis 5 Verkäufe**. Wenn es mehr werden, war ich zu vorsichtig. Wenn es null bleiben, liegt es an der Reichweite und nicht am Produkt — und dann reden wir über Kanäle, nicht über Preise.
 
-**17 Tage ohne neuen Lead** (letzter: 13.07.).
+**21 Tage ohne neuen Lead** (letzter: 13.07.).
