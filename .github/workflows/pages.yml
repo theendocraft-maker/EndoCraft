@@ -36,6 +36,8 @@ jobs:
             --include='free/endocraft-free-pack.zip' \
             --exclude='.git' --exclude='.github' \
             --exclude='social/' \
+            --exclude='fae/' \
+            --exclude='_to_delete/' \
             --exclude='etsy-updates/' \
             --exclude='*.zip' \
             --exclude='*.md' \

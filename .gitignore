@@ -16,3 +16,6 @@ desktop.ini
 # Node/logs (falls du mal npm brauchst)
 node_modules/
 npm-debug.log*
+
+# Werkstatt-Muell: wird nie deployed, nie committed
+_to_delete/
