@@ -41,6 +41,7 @@ jobs:
             --exclude='etsy-updates/' \
             --exclude='*.zip' \
             --exclude='*.md' \
+            --exclude='*.csv' \
             --exclude='MOTION-*.mp4' --exclude='EPIC-*.mp4' \
             --exclude='_bro_*.jpg' --exclude='_cel_*.jpg' \
             --exclude='IMG_*.PNG' \
