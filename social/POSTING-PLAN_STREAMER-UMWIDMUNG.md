@@ -281,3 +281,57 @@ zwei getrennten Ansatzpunkte pro Seite.
 - Der Bio-Link zeigt weiter auf Etsy (TODO 3). Für diesen Beitrag wäre `endocraft.app`
   das richtigere Ziel — im Reel steht die Domain unten drin, der Weg funktioniert also
   auch ohne Bio-Link-Änderung.
+
+---
+
+## 8. Nachtrag Di 04.08. — ST-11 „One of these is a PNG" (auf Zuruf gebaut)
+
+Marco wollte am 04.08. einen Clip für heute. Für heute stand laut §2 bereits
+**Slot 6 · ST-01-starting-soon.mp4** bereit, Caption in §3. ST-11 ist zusätzlich
+gebaut, damit er die Wahl hat — er verbraucht keinen Slot. Wird ST-11 heute
+gepostet, rutscht ST-01 auf den nächsten freien S-Slot.
+
+| Datei | Länge | Größe | Szene | Idee |
+|---|---|---|---|---|
+| `ST-11-one-of-these-is-a-png.mp4` | 15,85 s | 2,6 MB | 03 Just Chatting | Zwei 16:9-Fenster übereinander, **gleiche Szene**: oben der eingefrorene erste Frame, unten die laufende Szene. Ab 4,0 s blenden die Labels „A STATIC PNG" / „AN ENDOCRAFT SCENE" ein. |
+
+### Warum dieses Konzept
+
+ST-09 beweist den Unterschied **nacheinander** — 1,9 s Standbild, dann läuft es
+los. ST-11 zeigt ihn **gleichzeitig**. Das ist für den Feed stärker, weil der
+Kontrast schon im ersten Frame im Bild ist und nicht erst entsteht: Wer scrollt,
+sieht zwei identische Kacheln, von denen sich nur eine bewegt. Der Blick bleibt
+hängen, ohne dass jemand auf etwas warten muss.
+
+Die beiden Fenster zeigen bewusst **exakt dasselbe Material**, nicht ein
+schlechteres Fremdbild oben. Der einzige Unterschied ist Bewegung — das ist
+ehrlich und genau das, was verkauft wird.
+
+**Länge 15,85 s statt 10 s:** Das ist die volle Länge der Originalszene. Dadurch
+ist der Clip selbst ein sauberer Loop — wenn TikTok ihn neu startet, springt
+nichts. Bei einem Video, das mit „seamless loop" wirbt, wollte ich das nicht
+brechen. (Gemessen: Der Übergang letzter Frame → erster Frame liegt bei 1,9/255
+mittlerer Abweichung, ein normaler Bildschritt liegt bei 1,0 — für das Auge
+nicht sichtbar.)
+
+### Caption Di 04.08. — ST-11
+
+> One of them is a PNG. The other one is what your Just Chatting screen could look like. 🔥
+>
+> Same tavern, same frame — the top one just never moves. Animated dark fantasy scenes for OBS, Streamlabs and StreamElements: 1080p60, seamless loop, no audio so your own music runs undisturbed. Link in bio.
+>
+> #twitchoverlay #streamoverlay #justchatting #obs #streamlabs #streamelements #twitchstreamer #streamersetup #darkfantasy #smallstreamer
+
+### Technisch geprüft
+
+1080 × 1920, 60/1 fps, 951 Frames, 15,85 s, **keine Tonspur**. Ober- und
+Unterkante sowie die rechte Button-Spalte von TikTok bleiben frei von Text.
+Gegengeprüft, dass das obere Fenster über den ganzen Clip stillsteht und das
+untere durchgehend Bewegung zeigt.
+
+**Sound:** Wie bei allen Clips beim Hochladen einen ruhigen, atmosphärischen
+Sound aus der App wählen.
+
+**Bio-Link:** zeigt weiter auf Etsy (Listing 4545874540 = Vol. I). Sobald
+TODO-Punkt 1+3 erledigt sind, führt der Weg über die Gratis-Szene und wird
+stärker.
