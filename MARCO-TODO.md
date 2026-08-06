@@ -23,11 +23,16 @@ KW36/37 online. Danach die Seite einmal selbst ansehen: laufen Hero-Video,
 die sechs Kacheln **und die zwei neuen Custom-Kacheln** wirklich? Ich kann nur
 prüfen, dass die Seite 200 liefert — H.264 abspielen kann mein Browser nicht.
 
-### 2. Die Pin-CSVs importieren — 2 Minuten
-`PINTEREST-UPLOAD-KW31-freigegeben.csv` (2 Pins) ·
-`PINTEREST-UPLOAD-KW34-35-soulslike.csv` (8 Pins) ·
-**neu:** `PINTEREST-UPLOAD-KW36-37.csv` (6 Pins, 08.–18.09., nach dem Deploy
-aus Punkt 1). Die IP-SAFE-Variante bleibt liegen, bis du die IP-Frage aufmachst.
+### 2. Die Pin-CSVs importieren — Stand 06.08. abends
+✅ KW31 (2 Pins) ist importiert — Warteschlange steht auf 12.
+➡️ KW34/35: nimm die korrigierte Datei
+**`PINTEREST-UPLOAD-KW34-35-soulslike-FIX.csv`** — das Original scheiterte,
+weil der letzte Pin (06.09.) über Pinterests **30-Tage-Planungslimit** lag;
+im Fix liegt er auf 04.09. 18:00.
+⏳ KW36-37 (6 Pins, 08.–18.09.): **erst ab dem 19.08. importieren** — vorher
+liegen die Termine über dem 30-Tage-Limit. Braucht außerdem den geglückten
+Deploy aus Punkt 1. Das Daily Briefing erinnert dich am 19.08.
+Die IP-SAFE-Variante bleibt liegen, bis du die IP-Frage aufmachst.
 
 ### 3. Claude-Desktop-App updaten — schaltet meine Uploads frei
 Ohne das Update kann ich keine Dateien in Browser-Uploads einspeisen. Daran
